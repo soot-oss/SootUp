@@ -617,6 +617,33 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     return block;
   }
 
+  /** the block that block falls through into, or null */
+  @Nullable
+  private static MutableBasicBlockImpl fallThroughSuccessor(@NonNull MutableBasicBlockImpl block) {
+    return block.getTail() instanceof FallsThroughStmt ? block.successorAt(0) : null;
+  }
+
+  /** true if the fall-through chain starting at from reaches to */
+  private static boolean fallsThroughTo(
+      @Nullable MutableBasicBlockImpl from, @NonNull MutableBasicBlockImpl to) {
+    Set<MutableBasicBlockImpl> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (MutableBasicBlockImpl c = from; c != null && seen.add(c); c = fallThroughSuccessor(c)) {
+      if (c == to) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static IllegalArgumentException fallThroughCycle(Stmt from, Stmt to) {
+    return new IllegalArgumentException(
+        "A fall-through edge from '"
+            + from
+            + "' to '"
+            + to
+            + "' closes a fall-through cycle, which can not be linearized - use a goto.");
+  }
+
   /** removes every edge into and out of block */
   private void detach(@NonNull MutableBasicBlockImpl block) {
     block.unlinkAllSuccessors();
@@ -709,8 +736,9 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
           "there is no handler for the given ClassType: " + exceptionType);
     }
     modified();
-    block.unlinkExc(exceptionType);
-    normalize(block);
+    MutableBasicBlockImpl separated = isolate(node);
+    separated.unlinkExc(exceptionType);
+    normalize(separated);
   }
 
   @Override
@@ -720,8 +748,9 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       return;
     }
     modified();
-    block.unlinkAllExc();
-    normalize(block);
+    MutableBasicBlockImpl separated = isolate(node);
+    separated.unlinkAllExc();
+    normalize(separated);
   }
 
   @Override
@@ -988,6 +1017,13 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
                 + ") successors.");
       }
     }
+    if (newStmt instanceof FallsThroughStmt
+        && !newStmt.branches()
+        && !(oldStmt instanceof FallsThroughStmt)
+        && block.successorSlots() > 0
+        && fallsThroughTo(block.successorAt(0), block)) {
+      throw fallThroughCycle(newStmt, block.successorAt(0).getHead());
+    }
     modified();
     final boolean newIsInner = newStmt instanceof FallsThroughStmt && !newStmt.branches();
     if (!newIsInner && idx < block.size() - 1) {
@@ -1226,16 +1262,20 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
     final MutableBasicBlockImpl existingB = stmtToBlock.get(stmtB);
     final boolean fallsThrough = !stmtA.branches();
+    // a JIfStmt may use its fall-through slot as back edge (analysis graphs do); a plain
+    // fall-through cycle can never be linearized
+    if (!stmtA.branches()
+        && blockA != null
+        && existingB != null
+        && fallsThroughTo(existingB, blockA)) {
+      throw fallThroughCycle(stmtA, stmtB);
+    }
     if (fallsThrough && existingB != null) {
       if (existingB.getHead() != stmtB) {
         throw new IllegalArgumentException(
             "StmtB '"
                 + stmtB
                 + "' is already in the Graph and has already a non-branching predecessor!");
-      }
-      if (existingB == blockA) {
-        throw new IllegalArgumentException(
-            "StmtA '" + stmtA + "' can not fall through into the head of its own block.");
       }
     }
 
@@ -1365,9 +1405,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   public void setStartingStmt(@NonNull Stmt startingStmt) {
     modified();
-    if (!stmtToBlock.containsKey(startingStmt)) {
-      newBlock(startingStmt);
-    }
+    // the start must be a block head, otherwise iteration would skip the stmts before it
+    blockStartingAt(startingStmt);
     this.startingStmt = startingStmt;
   }
 

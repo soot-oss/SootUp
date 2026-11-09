@@ -341,7 +341,7 @@ public class MutableBlockControlFlowGraphFuzzTest {
       Map<Integer, ClassType> handlerType = new HashMap<>();
       int handlers = rnd.nextInt(3);
       for (int k = 0; k < handlers; k++) {
-        int i = 1 + rnd.nextInt(n - 1);
+        int i = 1 + rnd.nextInt(n - 2); // never the last stmt, it becomes a return
         if (handlerIdx.add(i)) handlerType.put(i, types[rnd.nextInt(types.length)]);
       }
       for (int i = 0; i < n; i++) {

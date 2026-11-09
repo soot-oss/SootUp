@@ -121,7 +121,10 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         // create the longest FallsThroughStmt sequence possible
         final BasicBlock<?> successorBlock = successors.get(i);
         BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
-        while (true) {
+        // guards against fall-through cycles, which would loop forever
+        final Set<BasicBlock<?>> visitedLeaders =
+            Collections.newSetFromMap(new IdentityHashMap<>());
+        while (visitedLeaders.add(leaderOfFallsthroughBlocks)) {
           final List<? extends BasicBlock<?>> itPreds =
               leaderOfFallsthroughBlocks.getPredecessors();
 
