@@ -25,7 +25,7 @@ public class JimpleVisitorTest {
   public void setUp() {
     EagerInputLocation loc = new EagerInputLocation();
     JavaView view = new JavaView(loc);
-    JimpleConverterUtil util = new JimpleConverterUtil(Paths.get(""));
+    JimpleConverterUtil util = new JimpleConverterUtil(Paths.get(""), view.getIdentifierFactory());
     ClassType clazz = view.getIdentifierFactory().getClassType("TestClass");
 
     state =

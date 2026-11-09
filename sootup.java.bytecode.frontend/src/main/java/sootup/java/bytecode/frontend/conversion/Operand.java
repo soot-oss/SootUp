@@ -21,6 +21,7 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
@@ -47,8 +48,7 @@ import sootup.core.types.UnknownType;
  */
 class Operand {
 
-  @SuppressWarnings("ConstantConditions")
-  static final Operand DWORD_DUMMY = new Operand(null, null, null);
+  static final Operand DWORD_DUMMY = new Operand();
 
   @NonNull protected AbstractInsnNode insn;
   @NonNull protected final Value value;
@@ -67,6 +67,18 @@ class Operand {
   private final Set<TryCatchBlockNode> activeTrapHandlers;
 
   /**
+   * special constructor for the {@link #DWORD_DUMMY} sentinel that operates with null arguments.
+   */
+  @SuppressWarnings("ConstantConditions")
+  private Operand() {
+    this.insn = null;
+    this.value = null;
+    this.methodSource = null;
+    this.positionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    this.activeTrapHandlers = Collections.emptySet();
+  }
+
+  /**
    * Constructs a new stack operand.
    *
    * @param insn the instruction that produced this operand.
@@ -77,9 +89,12 @@ class Operand {
     this.insn = insn;
     this.value = value;
     this.methodSource = methodSource;
-    this.positionInfo = methodSource == null ? null : methodSource.getStmtPositionInfo();
-    this.activeTrapHandlers =
-        methodSource == null ? new HashSet<>() : new HashSet<>(methodSource.activeTrapHandlers);
+    this.positionInfo = methodSource.getStmtPositionInfo(insn);
+    this.activeTrapHandlers = new HashSet<>(methodSource.activeTrapHandlers);
+  }
+
+  @NonNull StmtPositionInfo getPositionInfo() {
+    return positionInfo;
   }
 
   Local getOrAssignValueToStackLocal() {
@@ -207,5 +222,13 @@ class Operand {
   @Override
   public boolean equals(Object other) {
     return other instanceof Operand && equivTo((Operand) other);
+  }
+
+  @Override
+  public int hashCode() {
+    if (this == DWORD_DUMMY) {
+      return 0;
+    }
+    return (stackLocal == null ? value : stackLocal).equivHashCode();
   }
 }

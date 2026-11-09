@@ -14,10 +14,10 @@ class AllocationNodeTest {
   ClassType aType = SparkTestUtil.simpleType("A");
   ClassType bType = SparkTestUtil.simpleType("B");
   MethodSignature methodSig =
-      JavaIdentifierFactory.getInstance()
+      new JavaIdentifierFactory()
           .getMethodSignature(aType, "test", "void", Collections.emptyList());
   MethodSignature otherMethodSig =
-      JavaIdentifierFactory.getInstance()
+      new JavaIdentifierFactory()
           .getMethodSignature(aType, "other", "void", Collections.emptyList());
 
   @Test

@@ -29,7 +29,7 @@ public class ApkToDexTest {
 
   @BeforeAll
   public static void createView() {
-    String apk_path_string = "resources/FlowSensitivity1.apk";
+    String apk_path_string = "src/test/resources/FlowSensitivity1.apk";
     Path apkPath = Paths.get(apk_path_string);
     String androidPlatformsPath = "";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
@@ -115,7 +115,7 @@ public class ApkToDexTest {
             .filter(javaSootMethod -> javaSootMethod.getName().equals(interestedMethodName))
             .toList();
     assert abstractMethods.size() == 1;
-    Type sootType = DexUtil.toSootType("Ljava/lang/CharSequence;", 0);
+    Type sootType = DexUtil.toSootType("Ljava/lang/CharSequence;", 0, view.getIdentifierFactory());
     Type paramType = abstractMethods.get(0).getParameterTypes().get(0);
     assert paramType.equals(sootType);
   }

@@ -25,6 +25,7 @@ package sootup.analysis.interprocedural.icfg;
 import java.util.*;
 import java.util.stream.Collectors;
 import sootup.callgraph.CallGraph;
+import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -32,7 +33,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.DotExporter;
 import sootup.core.views.View;
@@ -141,11 +141,12 @@ public class ICFGDotExporter {
     methodSignatureInSubClass.forEach(
         subclassmethodSignature -> {
           Optional<? extends SootMethod> method = view.getMethod(target);
+          IdentifierFactory identifierFactory = view.getIdentifierFactory();
           MethodSignature initMethod =
-              new MethodSignature(
+              identifierFactory.getMethodSignature(
                   subclassmethodSignature.getDeclClassType(),
-                  new MethodSubSignature(
-                      "<init>", Collections.emptyList(), VoidType.getInstance()));
+                  identifierFactory.getMethodSubSignature(
+                      "<init>", VoidType.getInstance(), Collections.emptyList()));
           if (method.isPresent()
               && !subclassmethodSignature.toString().equals(initMethod.toString())) {
             if (method.get().hasBody()) {

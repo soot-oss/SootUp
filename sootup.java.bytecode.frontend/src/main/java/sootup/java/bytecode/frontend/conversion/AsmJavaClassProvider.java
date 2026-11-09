@@ -21,30 +21,72 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.IdentifierFactory;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.types.ModuleJavaClassType;
 
-/** A {@link ClassProvider} capable of handling Java bytecode */
-public class AsmJavaClassProvider implements ClassProvider {
+/** A {@link PathbasedClassProvider} capable of handling Java bytecode */
+public class AsmJavaClassProvider implements PathbasedClassProvider {
 
   @NonNull private final View view;
   private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
 
   public AsmJavaClassProvider(@NonNull View view) {
     this.view = view;
+  }
+
+  public SootClassSource createClassSource(
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final Path sourcePath,
+      @NonNull final ClassType classType,
+      @NonNull final ClassNode classNode) {
+    final IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
+      return new AsmAnnotationClassSource(
+          analysisInputLocation, sourcePath, classType, classNode, identifierFactory);
+    }
+
+    AsmClassSource asmClassSource =
+        new AsmClassSource(
+            analysisInputLocation, sourcePath, classType, classNode, identifierFactory);
+
+    // copy and load the complete class at once into memory so the newly created asmClassSource can
+    // release the memory and structures from the asm library
+    return InMemoryJavaClassSource.builder()
+        .withAnalysisInputLocation(asmClassSource.getAnalysisInputLocation())
+        .withClassType(asmClassSource.getClassType())
+        .withSourcePath(asmClassSource.getSourcePath())
+        .withSuperclass(asmClassSource.resolveSuperclass().orElse(null))
+        .withInterfaces(asmClassSource.resolveInterfaces())
+        .withOuterClass(asmClassSource.resolveOuterClass().orElse(null))
+        .withFields(asmClassSource.resolveFields())
+        .withMethods(asmClassSource.resolveMethods())
+        .withModifiers(asmClassSource.resolveModifiers())
+        .withPosition(asmClassSource.resolvePosition())
+        .withAnnotations(asmClassSource.resolveAnnotations())
+        // TODO! implement method annotations
+        .withClassFileMetadata(asmClassSource.getClassFileMetadata())
+        .build();
+
+    //    return asmClassSource;
   }
 
   @Override
@@ -59,14 +101,14 @@ public class AsmJavaClassProvider implements ClassProvider {
       return Optional.empty();
     }
     final var classNode = new SootClassNode(analysisInputLocation);
-    final var actualClassFQNOpt = AsmUtil.readClassName(sourcePath, classNode);
+    final var actualClassFQNOpt = classNode.readClassName(sourcePath);
     final var requestedClassFQN = classType.getFullyQualifiedName();
 
     if (actualClassFQNOpt.isEmpty()) {
       return Optional.empty();
     }
 
-    if (actualClassFQNOpt.isPresent() && !actualClassFQNOpt.get().equals(requestedClassFQN)) {
+    if (!actualClassFQNOpt.get().equals(requestedClassFQN)) {
       logger.warn(
           "Class names do not match. Actual:{}, Requested:{}",
           actualClassFQNOpt.get(),
@@ -74,8 +116,7 @@ public class AsmJavaClassProvider implements ClassProvider {
       return Optional.empty();
     }
 
-    return Optional.of(
-        AsmUtil.createClassSource(analysisInputLocation, sourcePath, classType, classNode));
+    return Optional.of(createClassSource(analysisInputLocation, sourcePath, classType, classNode));
   }
 
   @Override
@@ -87,10 +128,30 @@ public class AsmJavaClassProvider implements ClassProvider {
   class SootClassNode extends ClassNode {
 
     private final AnalysisInputLocation analysisInputLocation;
+    private byte[] classBytes;
 
     SootClassNode(AnalysisInputLocation analysisInputLocation) {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
       this.analysisInputLocation = analysisInputLocation;
+    }
+
+    /**
+     * Initializes a class node.
+     *
+     * @param classSource The source.
+     * @return the actual class signature found in the compilation unit
+     */
+    protected Optional<String> readClassName(@NonNull final Path classSource) {
+      try {
+        classBytes = Files.readAllBytes(classSource);
+        ClassReader classReader = new ClassReader(classBytes);
+        // method code is re-read from classBytes on body resolution, see AsmMethodSource
+        classReader.accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+        return Optional.of(classReader.getClassName().replace('/', '.'));
+      } catch (IOException | IllegalArgumentException exception) {
+        logger.debug("Cannot create class source for {}", classSource, exception);
+      }
+      return Optional.empty();
     }
 
     @Override
@@ -110,7 +171,8 @@ public class AsmJavaClassProvider implements ClassProvider {
               signature,
               exceptions,
               view,
-              analysisInputLocation.getBodyInterceptors());
+              analysisInputLocation.getBodyInterceptors(),
+              classBytes);
       methods.add(mn);
       return mn;
     }

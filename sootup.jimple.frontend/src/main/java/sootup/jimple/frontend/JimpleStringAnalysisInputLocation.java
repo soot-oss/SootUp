@@ -30,12 +30,12 @@ import org.antlr.v4.runtime.CharStreams;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.InMemoryJavaClassSource;
 
 /**
  * This AnalysisInputLocation encapsulates and represents a single Jimple "file" - the contents of
@@ -48,7 +48,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
   @NonNull final Path path = Paths.get("only-in-memory.jimple");
   @NonNull final List<BodyInterceptor> bodyInterceptors;
   @NonNull final SourceType sourceType;
-  @NonNull private final Map<View, OverridingJavaClassSource> cache;
+  @NonNull private final Map<View, InMemoryJavaClassSource> cache;
   private final String jimpleFileContents;
 
   public JimpleStringAnalysisInputLocation(@NonNull String jimpleFileContents) {
@@ -68,7 +68,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
     this.cache = new IdentityHashMap<>();
   }
 
-  private synchronized OverridingJavaClassSource getOverridingClassSource(@NonNull View view) {
+  private synchronized InMemoryJavaClassSource getOverridingClassSource(@NonNull View view) {
     return cache.computeIfAbsent(
         view,
         (v) -> {
@@ -86,7 +86,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    OverridingJavaClassSource classSource = getOverridingClassSource(view);
+    InMemoryJavaClassSource classSource = getOverridingClassSource(view);
     if (!type.equals(classSource.getClassType())) {
       return Optional.empty();
     }

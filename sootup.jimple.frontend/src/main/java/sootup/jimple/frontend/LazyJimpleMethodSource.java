@@ -29,6 +29,7 @@ import sootup.core.IdentifierFactory;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.*;
@@ -38,7 +39,6 @@ import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.jimple.JimpleParser;
@@ -165,7 +165,7 @@ public class LazyJimpleMethodSource implements BodySource {
               for (JimpleParser.ImmediateContext immediate : immediates) {
                 if (immediate != null && immediate.local != null) {
                   String localname = immediate.local.getText();
-                  locals.put(localname, new Local(localname, localtype));
+                  locals.put(localname, Jimple.newLocal(localname, localtype));
                 } else {
                   throw new ResolveException(
                       "Thats not a Local in the Local Declaration.",
@@ -184,33 +184,17 @@ public class LazyJimpleMethodSource implements BodySource {
               sourcePath, util, declaringClass, identifierFactory, unresolvedBranches, locals);
       StmtVisitor stmtVisitor = new StmtVisitor(state);
       final JimpleParser.StatementsContext statements = method_body_contentsContext.statements();
+      final BlockBuilder blockBuilder = new BlockBuilder(blocks, unresolvedBranches);
       if (statements != null && statements.statement() != null) {
-        List<Stmt> currentStmtList = new ArrayList<>();
         for (JimpleParser.StatementContext stmtCtx : statements.statement()) {
           Stmt newestStmt = stmtVisitor.visitStatement(stmtCtx);
           if (stmtCtx.label_name != null) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
             final String labelname = stmtCtx.label_name.getText();
             labeledStmts.put(labelname, newestStmt);
           }
-
-          currentStmtList.add(newestStmt);
-
-          if (newestStmt.branches()) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
-          }
+          blockBuilder.add(newestStmt, stmtCtx.label_name != null);
         }
-
-        // check for dangling Block
-        if (!currentStmtList.isEmpty()) {
-          blocks.add(currentStmtList);
-        }
+        blockBuilder.finish();
       }
 
       // catch_clause
@@ -222,6 +206,8 @@ public class LazyJimpleMethodSource implements BodySource {
           String beginLabel = it.from.getText();
           String toLabel = it.to.getText();
           if (beginLabel.equals(toLabel)) continue;
+          // the Trap covers only omitted i.e. unreachable Stmts
+          if (blockBuilder.isOmitted(labeledStmts.get(beginLabel))) continue;
 
           String handlerLabel = it.with.getText();
           traps.add(

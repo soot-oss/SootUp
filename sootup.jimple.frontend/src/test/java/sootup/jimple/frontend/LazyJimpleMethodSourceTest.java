@@ -26,7 +26,7 @@ public class LazyJimpleMethodSourceTest {
 
     EagerInputLocation loc = new EagerInputLocation();
     View view = new JavaView(loc);
-    JimpleConverterUtil util = new JimpleConverterUtil(Paths.get(""));
+    JimpleConverterUtil util = new JimpleConverterUtil(Paths.get(""), view.getIdentifierFactory());
     ClassType clazz = view.getIdentifierFactory().getClassType("Test");
 
     // Mocking the signature and modifiers

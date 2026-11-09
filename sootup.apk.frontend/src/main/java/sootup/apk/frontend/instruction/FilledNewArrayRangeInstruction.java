@@ -36,7 +36,6 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
@@ -46,12 +45,16 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
     Instruction3rc filledNewArrayInstr = (Instruction3rc) instruction;
 
     int usedRegister = filledNewArrayInstr.getRegisterCount();
-    Type t = DexUtil.toSootType(((TypeReference) filledNewArrayInstr.getReference()).getType(), 0);
+    Type t =
+        DexUtil.toSootType(
+            ((TypeReference) filledNewArrayInstr.getReference()).getType(),
+            0,
+            body.getIdentifierFactory());
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =
         JavaJimple.newNewArrayExpr(
-            arrayType, IntConstant.getInstance(usedRegister), JavaIdentifierFactory.getInstance());
+            arrayType, IntConstant.getInstance(usedRegister), body.getIdentifierFactory());
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(arrayLocal, arrayExpr, new SimpleStmtPositionInfo(lineNumber));

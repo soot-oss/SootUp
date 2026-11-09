@@ -18,54 +18,62 @@
 
 package qilin.test.context;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.core.config.ContextSensitivity;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class OBJTests extends JunitTests {
+public class OBJTests extends QilinFrameworkTests {
   @Test
   public void testOBJ1k0() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k0", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k0", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ1k1() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k1", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k1", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ1k2() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k2", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k2", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ1k3() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k3", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k3", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ1k4() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k4", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k4", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ1k5() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ1k5", "1o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ1k5", ContextSensitivity.objectSensitive(1, 0)));
   }
 
   @Test
   public void testOBJ2k0() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ2k0", "2o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ2k0", ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testOBJ2k1() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ2k1", "2o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ2k1", ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testOBJ2k2() {
-    checkAssertions(run("qilin.microben.context.obj.OBJ2k2", "2o"));
+    checkAssertions(
+        run("qilin.microben.context.obj.OBJ2k2", ContextSensitivity.objectSensitive(2, 1)));
   }
 }

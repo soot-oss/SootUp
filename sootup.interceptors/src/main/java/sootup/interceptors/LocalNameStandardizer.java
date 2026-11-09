@@ -24,12 +24,12 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
@@ -67,7 +67,9 @@ public class LocalNameStandardizer implements BodyInterceptor {
       Local local = iterator.next();
       Local newLocal;
       Type type = local.getType();
-      newLocal = lgen.generateLocal(type);
+      // Generate a standard name, then copy the original local with that name to preserve its kind,
+      // JVM slot index, and Java annotations.
+      newLocal = local.withName(lgen.generateLocal(type).getName());
       builder.replaceLocal(local, newLocal);
     }
   }

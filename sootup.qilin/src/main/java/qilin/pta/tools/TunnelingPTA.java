@@ -19,14 +19,11 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PipelineSelector;
+import qilin.core.config.PointerAnalysisComponents;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.parm.select.UniformSelector;
-import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.TunnelingConstructor;
 
 /*
@@ -35,20 +32,16 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
  * not show the claimed effectiveness. Maybe we should train the benchmarks to get new formulas?
  * */
 public class TunnelingPTA extends BasePTA {
-  public TunnelingPTA(PTAScene scene, CtxConstructor ctxCons, int k, int hk) {
+  public TunnelingPTA(PTAScene scene, ContextConstructor contextConstructor, int k, int hk) {
     super(scene);
-    this.ctxCons = new TunnelingConstructor(getView(), ctxCons);
-    CtxSelector us = new UniformSelector(k, hk);
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    ContextConstructor tunnelingContextConstructor =
+        new TunnelingConstructor(getView(), pag, contextConstructor);
+    ContextSelector us = new UniformSelector(k, hk);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(tunnelingContextConstructor, contextSelector, heapAbstractor);
     System.out.println("context-tunneling ...");
   }
 }

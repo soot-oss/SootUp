@@ -35,21 +35,31 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
 import sootup.callgraph.MutableCallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.FunctionalObject;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.DefaultCallResolver;
+import sootup.callgraph.scope.VirtualCallResolver;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
+import sootup.spark.node.LambdaAllocationNode;
 import sootup.spark.node.Node;
 
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Slf4j
 class Solver {
 
   private View view;
@@ -57,26 +67,64 @@ class Solver {
   private PAG pag;
   private List<MethodSignature> entryPoints;
   private SparkOptions sparkOptions;
+  private ReflectionModel reflectionModel;
+  private DynamicInvokeResolver dynamicInvokeResolver;
 
   /** Non-null only when {@link SparkOptions#isOnFlyCallGraph()} is set. */
   private IncrementalPointsToAnalysis incrementalAnalysis;
 
   @Builder
-  Solver(View view, List<MethodSignature> entryPoints, SparkOptions sparkOptions) {
+  Solver(
+      View view,
+      List<MethodSignature> entryPoints,
+      SparkOptions sparkOptions,
+      CallGraph callGraph,
+      ReflectionModel reflectionModel,
+      DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
+    this.reflectionModel = reflectionModel != null ? reflectionModel : ReflectionModel.none();
+    this.dynamicInvokeResolver =
+        dynamicInvokeResolver != null
+            ? dynamicInvokeResolver
+            : DynamicInvokeResolver.bootstrapMethodHandles();
     this.entryPoints = entryPoints;
     this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     this.pag = new PAG(this.sparkOptions);
     if (this.sparkOptions.isOnFlyCallGraph()) {
+      if (callGraph != null) {
+        log.warn(
+            "a pre-built call graph was supplied but onFlyCallGraph is enabled; discarding it "
+                + "since OTF mode grows its own call graph incrementally from the entry points");
+      }
+      requireEntryPoints(entryPoints);
       GraphBasedCallGraph cg = new GraphBasedCallGraph(entryPoints);
       for (MethodSignature ep : entryPoints) {
         cg.addMethod(ep);
       }
       this.callGraph = cg;
       this.incrementalAnalysis = new IncrementalPointsToAnalysis(this.pag);
-    } else {
-      this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
+    } else if (callGraph != null) {
+      this.callGraph = callGraph;
       this.incrementalAnalysis = null;
+    } else {
+      requireEntryPoints(entryPoints);
+      this.callGraph =
+          new ClassHierarchyAnalysisAlgorithm(
+                  view,
+                  new DefaultCallResolver(view),
+                  VirtualCallResolver.all(),
+                  true,
+                  this.reflectionModel,
+                  this.dynamicInvokeResolver)
+              .initialize(entryPoints);
+      this.incrementalAnalysis = null;
+    }
+  }
+
+  private static void requireEntryPoints(List<MethodSignature> entryPoints) {
+    if (entryPoints == null || entryPoints.isEmpty()) {
+      throw new IllegalArgumentException(
+          "entryPoints is required unless a pre-built callGraph is supplied");
     }
   }
 
@@ -84,14 +132,33 @@ class Solver {
     if (sparkOptions.isOnFlyCallGraph()) {
       solveOnTheFly();
     } else {
-      callGraph
-          .getMethodSignatures()
-          .forEach(
-              methodSignature -> view.getMethod(methodSignature).ifPresent(this::buildMethodPAG));
+      List<SootMethod> methods =
+          callGraph.getMethodSignatures().stream()
+              .flatMap(sig -> view.getMethod(sig).stream())
+              .filter(SootMethod::hasBody)
+              .map(SootMethod.class::cast)
+              .toList();
+      Map<MethodSignature, List<FunctionalObject>> functionalObjects = new HashMap<>();
+      for (SootMethod method : methods) {
+        body(method).getStmts().stream()
+            .flatMap(stmt -> FunctionalObject.of(stmt, dynamicInvokeResolver, view).stream())
+            .forEach(
+                fo ->
+                    functionalObjects
+                        .computeIfAbsent(fo.dispatchedImplementation(view), k -> new ArrayList<>())
+                        .add(fo));
+      }
+      methods.forEach(method -> buildMethodPAG(method, functionalObjects));
     }
   }
 
-  private void buildMethodPAG(SootMethod method) {
+  private Body body(SootMethod method) {
+    return dynamicInvokeResolver.desugar(
+        method, reflectionModel.resolve(method, method.getBody()), view);
+  }
+
+  private void buildMethodPAG(
+      SootMethod method, Map<MethodSignature, List<FunctionalObject>> functionalObjects) {
     if (!method.hasBody()) return;
     MethodPAGStmtVisitor stmtVisitor =
         MethodPAGStmtVisitor.builder()
@@ -99,9 +166,12 @@ class Solver {
             .PAG(pag)
             .callGraph(callGraph)
             .view(view)
-            .nodeFactory(new NodeFactory(sparkOptions))
+            .nodeFactory(new NodeFactory(sparkOptions, view.getIdentifierFactory()))
+            .reflectionModel(reflectionModel)
+            .dynamicInvokeResolver(dynamicInvokeResolver)
+            .functionalObjects(functionalObjects)
             .build();
-    method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
+    body(method).getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 
   /**
@@ -112,7 +182,7 @@ class Solver {
    */
   private void solveOnTheFly() {
     MutableCallGraph cg = (MutableCallGraph) callGraph;
-    NodeFactory nodeFactory = new NodeFactory(sparkOptions);
+    NodeFactory nodeFactory = new NodeFactory(sparkOptions, view.getIdentifierFactory());
     Deque<MethodSignature> worklist = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
     Map<MethodSignature, MethodPAGStmtVisitor> visitors = new HashMap<>();
@@ -139,9 +209,11 @@ class Solver {
                 .nodeFactory(nodeFactory)
                 .otfContext(
                     new MethodPAGStmtVisitor.OtfContext(incrementalAnalysis, worklist, pending))
+                .reflectionModel(reflectionModel)
+                .dynamicInvokeResolver(dynamicInvokeResolver)
                 .build();
         visitors.put(sig, visitor);
-        method.getBody().getStmts().forEach(stmt -> stmt.accept(visitor));
+        body(method).getStmts().forEach(stmt -> stmt.accept(visitor));
         changed = true;
       }
 
@@ -150,15 +222,22 @@ class Solver {
 
       // 3. Resolve pending virtual call sites against current points-to results.
       for (MethodPAGStmtVisitor.PendingVirtualCall call : pending) {
-        Optional<Node> receiver =
-            nodeFactory.createNode(
-                ((sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr) call.expr()).getBase(),
-                call.srcSig());
+        AbstractInstanceInvokeExpr expr = (AbstractInstanceInvokeExpr) call.expr();
+        Optional<Node> receiver = nodeFactory.createNode(expr.getBase(), call.srcSig());
         if (receiver.isEmpty()) continue;
         Set<AllocationNode> reaching = incrementalAnalysis.reachingObjects(receiver.get());
         for (AllocationNode o : reaching) {
+          FunctionalObject fo =
+              o instanceof LambdaAllocationNode lambda
+                      && lambda
+                          .getFunctionalObject()
+                          .answers(expr.getMethodSignature(), view.getTypeHierarchy())
+                  ? lambda.getFunctionalObject()
+                  : null;
           MethodSignature targetSig =
-              dispatch(o.getType(), call.expr().getMethodSignature()).orElse(null);
+              fo != null
+                  ? fo.dispatchedImplementation(view)
+                  : dispatch(o.getType(), expr.getMethodSignature()).orElse(null);
           if (targetSig == null) continue;
           ResolvedVirtualCall key = new ResolvedVirtualCall(call.srcSig(), call.stmt(), targetSig);
           if (!resolved.add(key)) continue;
@@ -173,8 +252,10 @@ class Solver {
           }
           // Install this/param/return edges via the source method's visitor.
           MethodPAGStmtVisitor sourceVisitor = visitors.get(call.srcSig());
-          if (sourceVisitor != null) {
-            sourceVisitor.installCallEdges(call.expr(), call.lhs(), targetSig);
+          if (sourceVisitor != null && fo != null) {
+            sourceVisitor.installLambdaCallEdges(expr, call.lhs(), call.stmt(), fo, targetSig);
+          } else if (sourceVisitor != null) {
+            sourceVisitor.installCallEdges(expr, call.lhs(), targetSig);
           }
           changed = true;
         }

@@ -32,7 +32,6 @@ import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.java.core.JavaIdentifierFactory;
 
 public class ConstStringInstruction extends DexLibAbstractInstruction {
   public ConstStringInstruction(Instruction instruction, int codeAddress) {
@@ -54,7 +53,7 @@ public class ConstStringInstruction extends DexLibAbstractInstruction {
           "Expected Instruction21c or Instruction31c but got neither.");
     }
     StringConstant stringConstant =
-        new StringConstant(s, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
+        new StringConstant(s, body.getIdentifierFactory().getType("java.lang.String"));
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest), stringConstant, new SimpleStmtPositionInfo(lineNumber));

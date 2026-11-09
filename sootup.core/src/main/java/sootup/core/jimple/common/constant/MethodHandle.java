@@ -48,7 +48,7 @@ public class MethodHandle implements Constant {
     private final int val;
     private final String valStr;
 
-    Kind(int val, String valStr) {
+    Kind(final int val, final String valStr) {
       this.val = val;
       this.valStr = valStr;
     }
@@ -66,8 +66,8 @@ public class MethodHandle implements Constant {
       return valStr;
     }
 
-    public static Kind getKind(int kind) {
-      for (Kind k : Kind.values()) {
+    public static Kind getKind(final int kind) {
+      for (final Kind k : Kind.values()) {
         if (k.getValue() == kind) {
           return k;
         }
@@ -75,8 +75,8 @@ public class MethodHandle implements Constant {
       throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
     }
 
-    public static Kind getKind(String kindName) {
-      for (Kind k : Kind.values()) {
+    public static Kind getKind(final String kindName) {
+      for (final Kind k : Kind.values()) {
         if (k.getValueName().equals(kindName)) {
           return k;
         }
@@ -91,16 +91,18 @@ public class MethodHandle implements Constant {
   @NonNull private final Kind kind;
 
   public MethodHandle(
-      @NonNull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
-      int tag,
-      @NonNull Type type) {
+      @NonNull
+          final SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      final int tag,
+      @NonNull final Type type) {
     this(referenceSignature, Kind.getKind(tag), type);
   }
 
   public MethodHandle(
-      @NonNull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
-      MethodHandle.@NonNull Kind kind,
-      @NonNull Type type) {
+      @NonNull
+          final SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      final MethodHandle.@NonNull Kind kind,
+      @NonNull final Type type) {
     this.kind = kind;
     this.type = type;
     this.referenceSignature = referenceSignature;
@@ -114,7 +116,7 @@ public class MethodHandle implements Constant {
     }
   }
 
-  public static boolean isMethodRef(int tag) {
+  public static boolean isMethodRef(final int tag) {
     return tag == Kind.REF_INVOKE_VIRTUAL.getValue()
         || tag == Kind.REF_INVOKE_STATIC.getValue()
         || tag == Kind.REF_INVOKE_SPECIAL.getValue()
@@ -122,7 +124,7 @@ public class MethodHandle implements Constant {
         || tag == Kind.REF_INVOKE_INTERFACE.getValue();
   }
 
-  public static boolean isFieldRef(int tag) {
+  public static boolean isFieldRef(final int tag) {
     return tag == Kind.REF_GET_FIELD.getValue()
         || tag == Kind.REF_PUT_FIELD.getValue()
         || tag == Kind.REF_PUT_FIELD_STATIC.getValue()
@@ -157,7 +159,7 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseMethodHandle(this);
     return v;
   }
@@ -171,7 +173,7 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -181,7 +183,12 @@ public class MethodHandle implements Constant {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    MethodHandle other = (MethodHandle) obj;
+    final MethodHandle other = (MethodHandle) obj;
     return referenceSignature.equals(other.referenceSignature);
+  }
+
+  @Override
+  public String getValue() {
+    return toString();
   }
 }

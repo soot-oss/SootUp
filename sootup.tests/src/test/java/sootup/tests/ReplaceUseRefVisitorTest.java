@@ -20,7 +20,7 @@ import sootup.java.core.types.JavaClassType;
  * @author Zun Wang
  */
 public class ReplaceUseRefVisitorTest {
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType arrayType = factory.getClassType("Array");
 
@@ -33,7 +33,8 @@ public class ReplaceUseRefVisitorTest {
   Local localIndex = JavaJimple.newLocal("index", intType);
   Local localNewIndex = JavaJimple.newLocal("newIndex", intType);
 
-  FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
+  FieldSignature fieldSignature =
+      new JavaIdentifierFactory().getFieldSignature("field", arrayType, intType);
 
   /** Test use replacing in case JArrayRef. */
   @Test

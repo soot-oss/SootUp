@@ -47,14 +47,21 @@ import sootup.java.core.types.JavaClassType;
 class AsmClassSource extends JavaSootClassSource {
 
   @NonNull private final ClassNode classNode;
+  @NonNull protected final IdentifierFactory identifierFactory;
 
   public AsmClassSource(
       @NonNull final AnalysisInputLocation inputLocation,
       @NonNull final Path sourcePath,
       @NonNull final ClassType javaClassType,
-      @NonNull final ClassNode classNode) {
-    super(inputLocation, javaClassType, sourcePath);
+      @NonNull final ClassNode classNode,
+      @NonNull final IdentifierFactory identifierFactory) {
+    super(
+        inputLocation,
+        javaClassType,
+        sourcePath,
+        AsmClassMetadata.read(classNode, identifierFactory));
     this.classNode = classNode;
+    this.identifierFactory = identifierFactory;
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -63,7 +70,7 @@ class AsmClassSource extends JavaSootClassSource {
         .map(
             fieldNode -> {
               String fieldName = fieldNode.name;
-              Type fieldType = AsmUtil.toJimpleType(fieldNode.desc);
+              Type fieldType = AsmUtil.toJimpleType(fieldNode.desc, signatureFactory);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers = AsmUtil.getFieldModifiers(fieldNode.access);
@@ -73,35 +80,64 @@ class AsmClassSource extends JavaSootClassSource {
                   fieldSignature,
                   modifiers,
                   Streams.concat(
-                          convertAnnotation(fieldNode.visibleAnnotations),
-                          convertAnnotation(fieldNode.invisibleAnnotations))
+                          convertAnnotation(fieldNode.visibleAnnotations, signatureFactory, true),
+                          convertAnnotation(
+                              fieldNode.invisibleAnnotations, signatureFactory, false))
                       .collect(Collectors.toList()),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.value == null
+                      ? null
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
             })
         .collect(Collectors.toSet());
   }
 
-  protected static Stream<AnnotationUsage> convertAnnotation(List<? extends AnnotationNode> nodes) {
+  protected static Stream<AnnotationUsage> convertAnnotation(
+      List<? extends AnnotationNode> nodes, @NonNull IdentifierFactory identifierFactory) {
+    return convertAnnotation(nodes, identifierFactory, true);
+  }
+
+  protected static Stream<AnnotationUsage> convertAnnotation(
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     if (nodes == null) {
       return Stream.empty();
     }
-    return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false);
+    return StreamSupport.stream(
+        AsmUtil.createAnnotationUsage(nodes, identifierFactory, runtimeVisible).spliterator(),
+        false);
+  }
+
+  /** Appends the converted annotations of {@code nodes} to {@code out} (no intermediate Stream). */
+  protected static void convertAnnotation(
+      @NonNull List<AnnotationUsage> out,
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory) {
+    convertAnnotation(out, nodes, identifierFactory, true);
+  }
+
+  protected static void convertAnnotation(
+      @NonNull List<AnnotationUsage> out,
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    AsmUtil.createAnnotationUsage(nodes, identifierFactory, runtimeVisible).forEach(out::add);
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     Stream<AnnotationUsage> annotations =
         Streams.concat(
-            convertAnnotation(classNode.visibleAnnotations),
-            convertAnnotation(classNode.invisibleAnnotations),
-            convertAnnotation(classNode.visibleTypeAnnotations),
-            convertAnnotation(classNode.invisibleTypeAnnotations));
+            convertAnnotation(classNode.visibleAnnotations, identifierFactory, true),
+            convertAnnotation(classNode.invisibleAnnotations, identifierFactory, false),
+            convertAnnotation(classNode.visibleTypeAnnotations, identifierFactory, true),
+            convertAnnotation(classNode.invisibleTypeAnnotations, identifierFactory, false));
     return annotations.collect(Collectors.toList());
   }
 
   @NonNull
   public Set<JavaSootMethod> resolveMethods() throws ResolveException {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return classNode.methods.stream()
         .map(
             methodSource -> {
@@ -109,27 +145,39 @@ class AsmClassSource extends JavaSootClassSource {
               asmClassClassSourceContent.setDeclaringClass(classSignature);
 
               List<ClassType> exceptions =
-                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
+                  new ArrayList<>(
+                      AsmUtil.asmIdToSignatures(methodSource.exceptions, identifierFactory));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
-              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
+              List<Type> sigTypes =
+                  AsmUtil.toJimpleSignatureDesc(methodSource.desc, identifierFactory);
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
               MethodSignature methodSignature =
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-              // TODO: position/line numbers if possible
+              // TODO: position/line numbers if possible.. e.g. get min/max line entry in
+              // LineNumberTable of each method to at least specify a region..
+              // Method annotations: declaration annotations (RuntimeVisible/InvisibleAnnotations,
+              // e.g. @Pure) plus JSR 308 return-type annotations (TYPE_USE on the return type,
+              // e.g. @Nat int foo()). Parameter type annotations are attached to the parameter
+              // Locals instead (see AsmMethodSource#buildPreambleLocals). Collected into one list
+              // (in/out) to avoid intermediate Stream allocation.
+              List<AnnotationUsage> annotations = new ArrayList<>();
+              convertAnnotation(
+                  annotations, methodSource.visibleAnnotations, identifierFactory, true);
+              convertAnnotation(
+                  annotations, methodSource.invisibleAnnotations, identifierFactory, false);
+              asmClassClassSourceContent.collectReturnTypeAnnotations(annotations);
+
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Streams.concat(
-                          convertAnnotation(methodSource.visibleAnnotations),
-                          convertAnnotation(methodSource.invisibleAnnotations))
-                      .collect(Collectors.toList()),
+                  annotations,
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
@@ -138,7 +186,6 @@ class AsmClassSource extends JavaSootClassSource {
   @Override
   @NonNull
   public Set<JavaSootField> resolveFields() throws ResolveException {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
@@ -149,7 +196,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<JavaClassType> resolveInterfaces() {
-    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces, identifierFactory));
   }
 
   @NonNull
@@ -157,20 +204,17 @@ class AsmClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName, identifierFactory));
   }
 
   @NonNull
   public Optional<JavaClassType> resolveOuterClass() {
-    if (classNode.outerClass == null) {
-      return Optional.empty();
-    }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass));
+    return AsmClassMetadata.resolveOuterClass(getClassFileMetadata(), classSignature);
   }
 
   @NonNull
   public Position resolvePosition() {
-    // TODO [ms]: implement line numbers for bytecode
+    // TODO [ms]: augment line numbers from bytecode
     return NoPositionInformation.getInstance();
   }
 

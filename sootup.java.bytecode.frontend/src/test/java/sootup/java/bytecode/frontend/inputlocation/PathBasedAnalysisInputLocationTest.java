@@ -27,8 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -51,6 +53,28 @@ import sootup.java.core.views.JavaView;
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
+
+  @Test
+  void testResourceLeaks() throws IOException {
+    Path path = Paths.get("src/test/resources/multi-release-jar/mrjar.jar");
+    try (FileSystem fileSystem =
+        FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
+
+      assertTrue(fileSystem.isOpen());
+
+      try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
+        stream
+            .filter(
+                p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar"))
+            .map(p -> p)
+            .forEach(
+                p -> {
+                  System.out.println(p);
+                });
+      }
+      assertTrue(fileSystem.isOpen());
+    }
+  }
 
   @Test
   public void testSingleClass() {
@@ -151,20 +175,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Build a soot class
     JavaSootClass c =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                classSignature,
-                null,
-                null,
-                null,
-                Collections.singleton(field),
-                Collections.emptySet(),
-                null,
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(classSignature)
+                .withFields(Collections.singleton(field))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
 
     assertEquals("java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());

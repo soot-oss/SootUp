@@ -25,14 +25,14 @@ package sootup.apk.frontend.dexpler;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
-public class DexClassProvider implements ClassProvider {
+public class DexClassProvider implements PathbasedClassProvider {
   @NonNull private final View view;
 
   public DexClassProvider(@NonNull View view) {
@@ -41,7 +41,9 @@ public class DexClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature) {
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
     DexClassSource dexClassSource =
         new DexClassSource(view, inputLocation, classSignature, sourcePath);
     if (dexClassSource.classInformation != null) {

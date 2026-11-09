@@ -19,7 +19,7 @@ public class PackageAnnotationTest extends MinimalBytecodeTestSuiteBase {
         identifierFactory.getClassType("dummyPackage.AnnotationPackage");
     assertEquals(
         Collections.singletonList(
-            new AnnotationUsage(annotationPackageType, Collections.emptyMap())),
+            new AnnotationUsage(annotationPackageType, Collections.emptyMap(), false)),
         sootClass.getAnnotations());
   }
 }

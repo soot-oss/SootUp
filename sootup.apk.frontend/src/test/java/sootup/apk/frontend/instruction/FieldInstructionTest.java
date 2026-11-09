@@ -21,6 +21,7 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.java.core.JavaIdentifierFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class FieldInstructionTest {
@@ -36,7 +37,10 @@ public class FieldInstructionTest {
   @Mock private Local localC;
 
   @BeforeEach
-  public void setUp() {}
+  public void setUp() {
+    // the instructions name their field's class and type through the body's factory
+    lenient().when(mockBody.getIdentifierFactory()).thenReturn(new JavaIdentifierFactory());
+  }
 
   @Test
   public void testIputInstruction() {

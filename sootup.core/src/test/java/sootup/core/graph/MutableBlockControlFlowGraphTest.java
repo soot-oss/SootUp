@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -15,6 +16,7 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 import sootup.core.util.printer.BriefStmtPrinter;
 
@@ -47,7 +49,7 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.lang");
+          return SignatureInterner.getPackageName("java.lang");
         }
       };
 
@@ -66,18 +68,18 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.io");
+          return SignatureInterner.getPackageName("java.io");
         }
       };
 
   Stmt firstHandlerStmt =
       new JIdentityStmt(
-          new Local("ex", throwableSig),
+          Jimple.newLocal("ex", throwableSig),
           new JCaughtExceptionRef(throwableSig),
           StmtPositionInfo.getNoStmtPositionInfo());
   Stmt secondHandlerStmt =
       new JIdentityStmt(
-          new Local("ex2", throwableSig),
+          Jimple.newLocal("ex2", throwableSig),
           new JCaughtExceptionRef(ioExceptionSig),
           StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -568,7 +570,7 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 
@@ -587,11 +589,11 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 
-    Local exc = new Local("ex", UnknownType.getInstance());
+    Local exc = Jimple.newLocal("ex", UnknownType.getInstance());
     // hint: applied types make no sense in this test!
     Stmt catchStmt1 =
         new JIdentityStmt(
@@ -622,10 +624,11 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph0);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
-      assertEquals(stmt2, traps.get(1).getBeginStmt());
-      assertEquals(returnStmt, traps.get(1).getEndStmt());
-      assertEquals(catchStmt1, traps.get(1).getHandlerStmt());
+      // stmt2 is exclusively reachable via stmt1 -> serialized directly after it -> one trap
+      assertEquals(1, traps.size());
+      assertEquals(stmt1, traps.get(0).getBeginStmt());
+      assertEquals(catchStmt1, traps.get(0).getEndStmt());
+      assertEquals(catchStmt1, traps.get(0).getHandlerStmt());
     }
 
     // test merging traps from sequential blocks with the same trap
@@ -702,7 +705,8 @@ public class MutableBlockControlFlowGraphTest {
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     briefStmtPrinter.buildTraps(graph4);
-    assertEquals(3, briefStmtPrinter.getTraps().size());
+    // stmt1..stmt3 serialized contiguous: exception1 merged, exception2 only stmt1
+    assertEquals(2, briefStmtPrinter.getTraps().size());
 
     // mixed 2
     MutableBlockControlFlowGraph graph5 = new MutableBlockControlFlowGraph();
@@ -738,7 +742,9 @@ public class MutableBlockControlFlowGraphTest {
 
     {
       briefStmtPrinter.buildTraps(graph5);
-      assertEquals(6, briefStmtPrinter.getTraps().size());
+      // exception2->catch1: stmt1..stmt3, exception1->catch1: stmt1, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, briefStmtPrinter.getTraps().size());
       assertEquals(6, graph5.getBlocks().size());
     }
 
@@ -775,7 +781,9 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph6);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(5, traps.size());
+      // exception1->catch1: stmt1, exception2->catch1: stmt1..stmt2, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, traps.size());
       assertEquals(6, graph6.getBlocks().size());
       assertEquals(
           "[Block [goto], Block [goto], Block [goto]]",
@@ -1045,7 +1053,7 @@ public class MutableBlockControlFlowGraphTest {
     JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt handlerStmt =
         new JIdentityStmt(
-            new Local("ex", throwableSig),
+            Jimple.newLocal("ex", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1083,13 +1091,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1130,13 +1138,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1157,5 +1165,159 @@ public class MutableBlockControlFlowGraphTest {
     assertTrue(entrypoints.contains(stmt1));
     assertTrue(entrypoints.contains(handlerStmt1));
     assertTrue(entrypoints.contains(handlerStmt2));
+  }
+
+  /** Inserting before a Trap handler must not strand its exceptional edges on a dropped block. */
+  @Test
+  public void insertBeforeAHandlerKeepsExceptionalEdgesOnALiveBlock() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+
+    JNopStmt handlerHead = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt handlerTail = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt thrower = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt inserted = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    graph.addBlock(Arrays.asList(handlerHead, handlerTail), Collections.emptyMap());
+    // an exceptional edge into the handler, no normal one
+    graph.addBlock(
+        Collections.singletonList(thrower), Collections.singletonMap(ioExceptionSig, handlerHead));
+    graph.setStartingStmt(thrower);
+    // and an ordinary path into the same handler head
+    graph.putEdge(firstNop, handlerHead);
+
+    graph.insertBefore(handlerHead, inserted);
+
+    assertExceptionalEdgesPointAtLiveBlocks(graph);
+  }
+
+  /** The same for a handler nothing reaches by ordinary flow: the inserted Stmt must still run. */
+  @Test
+  public void insertBeforeAHandlerReachedOnlyExceptionallyKeepsTheInsertedStmtReachable() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+
+    JNopStmt handlerHead = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt handlerTail = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt thrower = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt inserted = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    graph.addBlock(Arrays.asList(handlerHead, handlerTail), Collections.emptyMap());
+    graph.addBlock(
+        Collections.singletonList(thrower), Collections.singletonMap(ioExceptionSig, handlerHead));
+    graph.setStartingStmt(thrower);
+
+    graph.insertBefore(handlerHead, inserted);
+
+    assertExceptionalEdgesPointAtLiveBlocks(graph);
+
+    BasicBlock<?> insertedBlock = graph.getBlockOf(inserted);
+    boolean reached =
+        graph.getBlocks().stream()
+            .anyMatch(
+                b ->
+                    b != insertedBlock
+                        && (b.getSuccessors().contains(insertedBlock)
+                            || b.getExceptionalSuccessors().containsValue(insertedBlock)));
+    assertTrue(reached, "nothing reaches the inserted Stmt: " + inserted);
+  }
+
+  /** Every exceptional edge has to land on a block this graph still holds. */
+  private static void assertExceptionalEdgesPointAtLiveBlocks(MutableBlockControlFlowGraph graph) {
+    final Collection<? extends BasicBlock<?>> blocks = graph.getBlocks();
+    for (BasicBlock<?> block : blocks) {
+      for (BasicBlock<?> handler : block.getExceptionalSuccessors().values()) {
+        assertTrue(
+            blocks.contains(handler),
+            "an exceptional edge points at a block the graph does not hold anymore: "
+                + handler.getStmts());
+      }
+    }
+  }
+
+  private static JNopStmt nop() {
+    return new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  }
+
+  private static JReturnVoidStmt ret() {
+    return new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  }
+
+  /**
+   * A Trap ends at the head of a Block, and the Block that its end heads is not covered anymore.
+   */
+  @Test
+  public void initializeWithClosesATrapAtTheBlockItsEndHeads() {
+    JNopStmt begin = nop();
+    JNopStmt end = nop();
+    JReturnVoidStmt afterEnd = ret();
+    JReturnVoidStmt handlerReturn = ret();
+    Trap trap = new Trap(throwableSig, begin, end, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.initializeWith(
+        List.of(List.of(begin), List.of(end, afterEnd), List.of(firstHandlerStmt, handlerReturn)),
+        Collections.emptyMap(),
+        new ArrayList<>(List.of(trap)));
+
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(begin));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(end));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(afterEnd));
+  }
+
+  /**
+   * A Trap whose end is in no Block at all, e.g. because the frontend removed the unreachable Stmt
+   * behind the covered range, reaches the end of the body: it covers every Block from its begin to
+   * the last one.
+   */
+  @Test
+  public void initializeWithKeepsATrapWhoseEndIsInNoBlockOpenToTheEndOfTheBody() {
+    JGotoStmt jump = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt handlerReturn = ret();
+    JNopStmt work = nop();
+    JReturnVoidStmt workReturn = ret();
+    JNopStmt removedEnd = nop();
+    Trap trap = new Trap(throwableSig, work, removedEnd, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.initializeWith(
+        List.of(List.of(jump), List.of(firstHandlerStmt, handlerReturn), List.of(work, workReturn)),
+        Collections.singletonMap(jump, List.of(work)),
+        new ArrayList<>(List.of(trap)));
+
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(jump));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(firstHandlerStmt));
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(work));
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(workReturn));
+  }
+
+  /**
+   * A Trap cannot end in the middle of a Block: it would cover only part of it, which the Block's
+   * exceptional successors cannot express.
+   */
+  @Test
+  public void initializeWithRejectsATrapEndingInTheMiddleOfABlock() {
+    JNopStmt begin = nop();
+    JNopStmt middle = nop();
+    JReturnVoidStmt blockReturn = ret();
+    JReturnVoidStmt handlerReturn = ret();
+    Trap trap = new Trap(throwableSig, begin, middle, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    IllegalArgumentException e =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                graph.initializeWith(
+                    List.of(
+                        List.of(begin, middle, blockReturn),
+                        List.of(firstHandlerStmt, handlerReturn)),
+                    Collections.emptyMap(),
+                    new ArrayList<>(List.of(trap))));
+    assertTrue(e.getMessage().contains("middle of a Block"), e.getMessage());
   }
 }

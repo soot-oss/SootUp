@@ -19,25 +19,28 @@
 package qilin.core.pag;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.context.Context;
+import qilin.core.effect.MethodEffectModel;
+import qilin.core.effect.NativeEffectModel;
+import qilin.core.effect.ReflectionEffectModel;
+import qilin.core.invokedynamic.LambdaMetafactoryModel;
 import qilin.core.natives.NativeMethodDriver;
-import qilin.core.reflection.NopReflectionModel;
-import qilin.core.reflection.ReflectionModel;
-import qilin.core.reflection.TamiflexModel;
 import qilin.util.ArrayNumberer;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.invokedynamic.FunctionalObject;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.reflection.TamiflexReflectionModel;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -50,13 +53,17 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -65,7 +72,7 @@ import sootup.java.core.language.JavaJimple;
  * @author Ondrej Lhotak
  */
 public class PAG {
-  protected final NativeMethodDriver nativeDriver;
+  protected final List<MethodEffectModel> effectModels;
   protected final ReflectionModel reflectionModel;
 
   // ========================= context-sensitive nodes =================================
@@ -79,16 +86,35 @@ public class PAG {
   protected ArrayNumberer<AllocNode> allocNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<ValNode> valNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<FieldRefNode> fieldRefNodeNumberer = new ArrayNumberer<>();
-  private static final AtomicInteger maxFinishNumber = new AtomicInteger(0);
+
+  // the array-element pseudo-field is per-PAG (not a JVM-wide singleton) so that multiple PTA
+  // instances can run independently/concurrently without sharing mutable state.
+  private final ArrayElement arrayElement = new ArrayElement();
+  private final Map<ReferenceType, MergedNewExpr> mergedNewExprs = new ConcurrentHashMap<>();
+  private final Map<Object, FunctionalObject> lambdaTargets = new ConcurrentHashMap<>();
+
+  /**
+   * Fields referenced but not in the view, one instance per signature (fields compare by identity).
+   */
+  private final Map<FieldSignature, SootField> phantomFields = new ConcurrentHashMap<>();
 
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
   protected final Map<Object, ValNode> valToValNode;
+  // Concurrent: getMethodPAG() is reached from toolkit parallelStream() passes
+  // (e.g. qilin.pta.toolkits.conch.AbstractPAG, qilin.pta.toolkits.debloaterx.XPAG) run after
+  // the main solve, not just the single-threaded Solver.
   protected final Map<SootMethod, MethodPAG> methodToPag;
+  // Per-PAG, not JVM-global: each analysis (and each pre-analysis of a staged PTA) owns its
+  // own override table, so bodies simulated/rewritten by one analysis can't leak into another
+  // and the cache is reclaimed with the PAG instead of needing an explicit reset call. Concurrent
+  // for the same reason as methodToPag above - getMethodBody()/updateMethodBody() are reached
+  // from the same parallel toolkit passes.
+  private final Map<SootMethod, Body> methodToBody;
   protected final Set<FieldSignature> globals;
   protected final Set<Triple<SootMethod, Local, Type>> locals;
   // ==========================outer objects==============================
-  protected ChunkedQueue<Node> edgeQueue;
+  protected ChunkedQueue<PagNode> edgeQueue;
 
   protected final Map<ValNode, Set<ValNode>> simple;
   protected final Map<ValNode, Set<ValNode>> simpleInv;
@@ -103,29 +129,38 @@ public class PAG {
 
   public PAG(PTA pta) {
     this.pta = pta;
-    this.simple = DataFactory.createMap();
-    this.simpleInv = DataFactory.createMap();
-    this.load = DataFactory.createMap();
-    this.loadInv = DataFactory.createMap();
-    this.alloc = DataFactory.createMap();
-    this.allocInv = DataFactory.createMap();
-    this.store = DataFactory.createMap();
-    this.storeInv = DataFactory.createMap();
-    this.nativeDriver = new NativeMethodDriver(pta.getScene());
+    this.methodToBody = new ConcurrentHashMap<>();
+    this.simple = new HashMap<>();
+    this.simpleInv = new HashMap<>();
+    this.load = new HashMap<>();
+    this.loadInv = new HashMap<>();
+    this.alloc = new HashMap<>();
+    this.allocInv = new HashMap<>();
+    this.store = new HashMap<>();
+    this.storeInv = new HashMap<>();
+    List<MethodEffectModel> effectModels = new ArrayList<>();
     this.reflectionModel = createReflectionModel();
-    this.contextVarNodeMap = DataFactory.createMap(16000);
-    this.contextAllocNodeMap = DataFactory.createMap(6000);
-    this.contextMethodMap = DataFactory.createMap(6000);
-    this.addedContexts = DataFactory.createMap();
-    this.contextFieldMap = DataFactory.createMap(6000);
-    this.valToAllocNode = DataFactory.createMap(10000);
-    this.valToValNode = DataFactory.createMap(100000);
-    this.methodToPag = DataFactory.createMap();
-    this.globals = DataFactory.createSet(100000);
-    this.locals = DataFactory.createSet(100000);
+    effectModels.add(new ReflectionEffectModel(reflectionModel, pta.getScene(), this));
+    effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene(), this)));
+    if (pta.getConfig().isResolveDynamicInvoke()) {
+      effectModels.add(
+          new LambdaMetafactoryModel(
+              pta.getScene(), this, pta.getConfig().getDynamicInvokeResolver()));
+    }
+    this.effectModels = List.copyOf(effectModels);
+    this.contextVarNodeMap = new HashMap<>(16000);
+    this.contextAllocNodeMap = new HashMap<>(6000);
+    this.contextMethodMap = new HashMap<>(6000);
+    this.addedContexts = new HashMap<>();
+    this.contextFieldMap = new HashMap<>(6000);
+    this.valToAllocNode = new HashMap<>(10000);
+    this.valToValNode = new HashMap<>(100000);
+    this.methodToPag = new ConcurrentHashMap<>();
+    this.globals = new HashSet<>(100000);
+    this.locals = new HashSet<>(100000);
   }
 
-  public void setEdgeQueue(ChunkedQueue<Node> edgeQueue) {
+  public void setEdgeQueue(ChunkedQueue<PagNode> edgeQueue) {
     this.edgeQueue = edgeQueue;
   }
 
@@ -157,13 +192,13 @@ public class PAG {
     return pta.getCgb();
   }
 
-  public QueueReader<Node> edgeReader() {
+  public QueueReader<PagNode> edgeReader() {
     return edgeQueue.reader();
   }
 
   // =======================add edge===============================
   protected <K, V> boolean addToMap(Map<K, Set<V>> m, K key, V value) {
-    Set<V> valueList = m.computeIfAbsent(key, k -> DataFactory.createSet(4));
+    Set<V> valueList = m.computeIfAbsent(key, k -> new HashSet<>(4));
     return valueList.add(value);
   }
 
@@ -199,21 +234,21 @@ public class PAG {
     return false;
   }
 
-  public void addGlobalPAGEdge(Node from, Node to) {
+  public void addGlobalPAGEdge(PagNode from, PagNode to) {
     from = pta.parameterize(from, pta.emptyContext());
     to = pta.parameterize(to, pta.emptyContext());
     addEdge(from, to);
   }
 
   /** Adds an edge to the graph, returning false if it was already there. */
-  public final void addEdge(Node from, Node to) {
+  public final void addEdge(PagNode from, PagNode to) {
     if (addEdgeIntenal(from, to)) {
       edgeQueue.add(from);
       edgeQueue.add(to);
     }
   }
 
-  private boolean addEdgeIntenal(Node from, Node to) {
+  private boolean addEdgeIntenal(PagNode from, PagNode to) {
     if (from instanceof ValNode) {
       if (to instanceof ValNode) {
         return addSimpleEdge((ValNode) from, (ValNode) to);
@@ -265,8 +300,12 @@ public class PAG {
     return lookup(storeInv, key);
   }
 
-  public static int nextFinishNumber() {
-    return maxFinishNumber.incrementAndGet();
+  public ArrayElement getArrayElement() {
+    return arrayElement;
+  }
+
+  public MergedNewExpr getMergedNewExpr(ReferenceType type) {
+    return mergedNewExprs.computeIfAbsent(type, MergedNewExpr::new);
   }
 
   public ArrayNumberer<AllocNode> getAllocNodeNumberer() {
@@ -313,20 +352,50 @@ public class PAG {
   }
 
   // ==========================create nodes==================================
+  /**
+   * Registers {@code newExpr} (a synthetic {@link sootup.core.jimple.common.expr.JNewExpr} spliced
+   * in by {@link qilin.core.invokedynamic.LambdaMetafactoryModel}) so that the next {@link
+   * #makeAllocNode(Object, Type, SootMethod)} call for it produces a {@link LambdaAllocNode}
+   * instead of a plain one, bypassing the abstract-type guard - the type is deliberately the
+   * functional interface, not a concrete class, and the target is already statically known.
+   */
+  /** The field {@code sig} denotes: from the view, else a stable phantom stand-in. */
+  public SootField getField(FieldSignature sig) {
+    Optional<? extends SootField> field = pta.getView().getField(sig);
+    if (field.isPresent()) {
+      return field.get();
+    }
+    return phantomFields.computeIfAbsent(
+        sig,
+        k ->
+            new JavaSootField(
+                k,
+                Collections.singleton(FieldModifier.PUBLIC),
+                NoPositionInformation.getInstance()));
+  }
+
+  public void registerLambdaTarget(Object newExpr, FunctionalObject functionalObject) {
+    lambdaTargets.put(newExpr, functionalObject);
+  }
+
   public AllocNode makeAllocNode(Object newExpr, Type type, SootMethod m) {
-    if (type instanceof ClassType rt) {
+    FunctionalObject lambdaTarget = lambdaTargets.get(newExpr);
+    if (lambdaTarget == null && type instanceof ClassType rt) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
-        boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
-        if (!usesReflectionLog) {
+        if (reflectionModel.isNone()) {
           throw new RuntimeException("Attempt to create allocnode with abstract type " + rt);
         }
       }
     }
     AllocNode ret = valToAllocNode.get(newExpr);
     if (ret == null) {
-      valToAllocNode.put(newExpr, ret = new AllocNode(newExpr, type, m));
+      ret =
+          lambdaTarget != null
+              ? new LambdaAllocNode(newExpr, type, m, lambdaTarget)
+              : new AllocNode(newExpr, type, m);
+      valToAllocNode.put(newExpr, ret);
       allocNodeNumberer.add(ret);
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
@@ -337,8 +406,10 @@ public class PAG {
 
   public AllocNode makeStringConstantNode(StringConstant sc) {
     StringConstant stringConstant = sc;
-    if (!CoreConfig.v().getPtaConfig().stringConstants) {
-      stringConstant = JavaJimple.newStringConstant(PointsToAnalysis.STRING_NODE);
+    if (!pta.getConfig().isStringConstants()) {
+      stringConstant =
+          JavaJimple.newStringConstant(
+              PointsToAnalysis.STRING_NODE, pta.getView().getIdentifierFactory());
     }
     AllocNode ret = valToAllocNode.get(stringConstant);
     if (ret == null) {
@@ -418,7 +489,7 @@ public class PAG {
   /** Finds or creates the ContextVarNode for base variable base and context. */
   public ContextVarNode makeContextVarNode(VarNode base, Context context) {
     Map<Context, ContextVarNode> contextMap =
-        contextVarNodeMap.computeIfAbsent(base, k1 -> DataFactory.createMap());
+        contextVarNodeMap.computeIfAbsent(base, k1 -> new HashMap<>());
     ContextVarNode ret = contextMap.get(context);
     if (ret == null) {
       contextMap.put(context, ret = new ContextVarNode(base, context));
@@ -430,7 +501,7 @@ public class PAG {
   /** Finds or creates the ContextAllocNode for base alloc site and context. */
   public ContextAllocNode makeContextAllocNode(AllocNode allocNode, Context context) {
     Map<Context, ContextAllocNode> contextMap =
-        contextAllocNodeMap.computeIfAbsent(allocNode, k1 -> DataFactory.createMap());
+        contextAllocNodeMap.computeIfAbsent(allocNode, k1 -> new HashMap<>());
     ContextAllocNode ret = contextMap.get(context);
     if (ret == null) {
       contextMap.put(context, ret = new ContextAllocNode(allocNode, context));
@@ -442,7 +513,7 @@ public class PAG {
   /** Finds or creates the ContextMethod for method and context. */
   public ContextMethod makeContextMethod(Context context, SootMethod method) {
     Map<Context, ContextMethod> contextMap =
-        contextMethodMap.computeIfAbsent(method, k1 -> DataFactory.createMap());
+        contextMethodMap.computeIfAbsent(method, k1 -> new HashMap<>());
     return contextMap.computeIfAbsent(context, k -> new ContextMethod(method, context));
   }
 
@@ -479,10 +550,11 @@ public class PAG {
   public ContextField makeContextField(Context context, FieldValNode fieldValNode) {
     SparkField field = fieldValNode.getField();
     Map<SparkField, ContextField> field2odotf =
-        contextFieldMap.computeIfAbsent(context, k -> DataFactory.createMap());
+        contextFieldMap.computeIfAbsent(context, k -> new HashMap<>());
     ContextField ret = field2odotf.get(field);
     if (ret == null) {
-      field2odotf.put(field, ret = new ContextField(context, field));
+      field2odotf.put(
+          field, ret = new ContextField(context, field, pta.getConfig().isPreciseArrayElement()));
       valNodeNumberer.add(ret);
     }
     return ret;
@@ -527,26 +599,27 @@ public class PAG {
   }
 
   protected ReflectionModel createReflectionModel() {
-    ReflectionModel model;
-    if (CoreConfig.v().getAppConfig().REFLECTION_LOG != null
-        && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
-      model = new TamiflexModel(pta.getScene());
-    } else {
-      model = new NopReflectionModel(pta.getScene());
+    ReflectionModel configured = pta.getConfig().getReflectionModel();
+    if (configured != null) {
+      return configured;
     }
-    return model;
+    String reflectionLogPath = pta.getConfig().getReflectionLogPath();
+    if (reflectionLogPath != null && !reflectionLogPath.isEmpty()) {
+      return new TamiflexReflectionModel(pta.getView(), reflectionLogPath);
+    }
+    return ReflectionModel.none();
   }
 
   public MethodPAG getMethodPAG(SootMethod m) {
     if (methodToPag.containsKey(m)) {
       return methodToPag.get(m);
     }
-    if (m.isConcrete()) {
-      reflectionModel.buildReflection(m);
+    for (MethodEffectModel model : effectModels) {
+      if (model.appliesTo(m)) {
+        model.apply(m);
+      }
     }
-    if (m.isNative()) {
-      nativeDriver.buildNative(m);
-    } else {
+    if (!m.isNative()) {
       // we will revert these back in the future.
       /*
        * To keep same with Doop, we move the simulation of
@@ -557,13 +630,33 @@ public class PAG {
         handleArrayCopy(m);
       }
     }
-    Body body = PTAUtils.getMethodBody(m);
+    Body body = getMethodBody(m);
     return methodToPag.computeIfAbsent(m, k -> new MethodPAG(this, m, body));
   }
 
+  public Body getMethodBody(SootMethod m) {
+    Body body = methodToBody.get(m);
+    if (body == null) {
+      body =
+          m.isConcrete()
+              ? m.getBody()
+              : Body.builder().setMethodSignature(m.getSignature()).build();
+      methodToBody.putIfAbsent(m, body);
+    }
+    return body;
+  }
+
+  public void updateMethodBody(SootMethod m, Body body) {
+    methodToBody.put(m, body);
+  }
+
+  public boolean hasBody(SootMethod m) {
+    return methodToBody.containsKey(m);
+  }
+
   private void handleArrayCopy(SootMethod method) {
-    Map<Stmt, Collection<JAssignStmt>> newUnits = DataFactory.createMap();
-    Body body = PTAUtils.getMethodBody(method);
+    Map<Stmt, Collection<JAssignStmt>> newUnits = new HashMap<>();
+    Body body = getMethodBody(method);
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
     for (Stmt s : body.getStmts()) {
@@ -575,10 +668,10 @@ public class PAG {
           if (sig.equals(
               "<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
             Value srcArr = sie.getArg(0);
-            if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
+            if (JavaTypes.isPrimitiveArrayType(srcArr.getType())) {
               continue;
             }
-            Type objType = PTAUtils.getClassType("java.lang.Object");
+            Type objType = JavaTypes.OBJECT;
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
@@ -589,7 +682,7 @@ public class PAG {
               srcArr = localSrc;
             }
             Value dstArr = sie.getArg(2);
-            if (PTAUtils.isPrimitiveArrayType(dstArr.getType())) {
+            if (JavaTypes.isPrimitiveArrayType(dstArr.getType())) {
               continue;
             }
             if (dstArr.getType() == objType) {
@@ -603,15 +696,13 @@ public class PAG {
             }
             Value src = JavaJimple.newArrayRef((Local) srcArr, IntConstant.getInstance(0));
             LValue dst = JavaJimple.newArrayRef((Local) dstArr, IntConstant.getInstance(0));
-            Local local =
-                Jimple.newLocal(
-                    "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
+            Local local = Jimple.newLocal("nativeArrayCopy" + (localCount++), JavaTypes.OBJECT);
             builder.addLocal(local);
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> new HashSet<>())
                 .add(new JAssignStmt(local, src, StmtPositionInfo.getNoStmtPositionInfo()));
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> new HashSet<>())
                 .add(new JAssignStmt(dst, local, StmtPositionInfo.getNoStmtPositionInfo()));
           }
         }
@@ -624,7 +715,7 @@ public class PAG {
         controlFlowGraph.insertBefore(unit, succ);
       }
     }
-    PTAUtils.updateMethodBody(method, builder.build());
+    updateMethodBody(method, builder.build());
   }
 
   public void resetPointsToSet() {

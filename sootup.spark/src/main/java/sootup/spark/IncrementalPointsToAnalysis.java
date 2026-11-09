@@ -23,6 +23,7 @@ package sootup.spark;
  */
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -168,7 +169,10 @@ public class IncrementalPointsToAnalysis {
   }
 
   public Set<AllocationNode> reachingObjects(@NonNull Node n) {
-    return Collections.unmodifiableSet(ptsOf(n));
+    // Return a real copy, not a view over the live map-backed set: callers (e.g. the on-the-fly
+    // call graph builder) iterate the result while resolving virtual calls, and that resolution
+    // can trigger further edge propagation that grows pts(n) mid-iteration.
+    return Collections.unmodifiableSet(new LinkedHashSet<>(ptsOf(n)));
   }
 
   public Map<Node, Set<AllocationNode>> getPointsTo() {
@@ -205,7 +209,10 @@ public class IncrementalPointsToAnalysis {
   }
 
   private void applyLoad(InstanceFieldRefNode ifr, Node tgt) {
-    for (AllocationNode o : ptsOf(ifr.getBase())) {
+    // Snapshot: pts(ifr.getBase()) and pts(tgt) can be the same live set (e.g. "x = x.f"),
+    // and unionInto below grows pts(tgt), so iterating the map-backed set directly would
+    // throw ConcurrentModificationException.
+    for (AllocationNode o : new ArrayList<>(ptsOf(ifr.getBase()))) {
       Set<AllocationNode> stored = heap.get(new HeapKey(o, ifr.getField()));
       if (stored != null && unionInto(pointsTo, tgt, stored)) enqueue(tgt);
     }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -11,6 +12,7 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 
@@ -32,7 +34,7 @@ public class ImmutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.lang");
+          return SignatureInterner.getPackageName("java.lang");
         }
       };
 
@@ -53,7 +55,7 @@ public class ImmutableBlockControlFlowGraphTest {
   }
 
   private MutableBlockControlFlowGraph buildBranchingGraph() {
-    Local l = new Local("i", PrimitiveType.IntType.getInstance());
+    Local l = Jimple.newLocal("i", PrimitiveType.IntType.getInstance());
     MutableBlockControlFlowGraph g = new MutableBlockControlFlowGraph();
 
     JNopStmt entry = new JNopStmt(noPosInfo);
@@ -245,7 +247,7 @@ public class ImmutableBlockControlFlowGraphTest {
     MutableBlockControlFlowGraph mutable = new MutableBlockControlFlowGraph();
     JReturnVoidStmt body = new JReturnVoidStmt(noPosInfo);
 
-    Local caughtLocal = new Local("$e", throwableType);
+    Local caughtLocal = Jimple.newLocal("$e", throwableType);
     JIdentityStmt catchHandler =
         new JIdentityStmt(caughtLocal, new JCaughtExceptionRef(throwableType), noPosInfo);
     JReturnVoidStmt catchRet = new JReturnVoidStmt(noPosInfo);
