@@ -177,4 +177,34 @@ class ConstructionInvariantsTest {
     assertDoesNotThrow(
         () -> bodyWith(intSig, Jimple.newReturnStmt(IntConstant.getInstance(1), pos)).build());
   }
+
+  // --- names (JVMS 4.2.2) ---
+
+  @Test
+  void illegalNames() {
+    for (String bad : new String[] {"", "a.b", "a;b", "a[b", "a/b", "<foo>", "a<b"}) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () ->
+              SignatureInterner.getMethodSubSignature(
+                  bad, VoidType.getInstance(), Collections.emptyList()),
+          bad);
+    }
+    for (String bad : new String[] {"", "a.b", "a;b", "a[b", "a/b"}) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> SignatureInterner.getFieldSubSignature(bad, PrimitiveType.getInt()),
+          bad);
+    }
+    for (String ok :
+        new String[] {"<init>", "<clinit>", "lambda$main$0", "access$000", "a b-c", "\u00e4"}) {
+      assertDoesNotThrow(
+          () ->
+              SignatureInterner.getMethodSubSignature(
+                  ok, VoidType.getInstance(), Collections.emptyList()),
+          ok);
+    }
+    assertDoesNotThrow(
+        () -> SignatureInterner.getFieldSubSignature("a<b>", PrimitiveType.getInt()));
+  }
 }

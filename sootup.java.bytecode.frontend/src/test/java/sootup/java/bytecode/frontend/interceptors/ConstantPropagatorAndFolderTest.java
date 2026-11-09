@@ -107,7 +107,7 @@ public class ConstantPropagatorAndFolderTest {
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
         new JavaIdentifierFactory()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "int", Collections.emptyList()));
 
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(assignA);
