@@ -170,17 +170,17 @@ public class InstantiateClassValueVisitorTest {
         new JSpecialInvokeExpr(
             Jimple.newLocal("a", StringClass),
             toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Collections.emptyList()));
     listWithAllValues.add(
         new JVirtualInvokeExpr(
             Jimple.newLocal("a", StringClass),
             toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Collections.emptyList()));
     listWithAllValues.add(
         new JInterfaceInvokeExpr(
             Jimple.newLocal("a", StringClass),
             toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Collections.emptyList()));
     listWithAllValues.add(
         new JDynamicInvokeExpr(
             toStringMethod,
@@ -190,7 +190,7 @@ public class InstantiateClassValueVisitorTest {
                     identifierFactory.getClassType(
                         JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
                     toStringMethod.getSubSignature()),
-            Collections.singletonList(stringConstant)));
+            Collections.emptyList()));
     listWithAllValues.add(new JCastExpr(stringConstant, StringClass));
     listWithAllValues.add(new JInstanceOfExpr(stringConstant, StringClass));
     listWithAllValues.add(new JLengthExpr(stringConstant));
