@@ -34,6 +34,7 @@ import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
+import sootup.callgraph.MethodLookup;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -74,6 +75,11 @@ public class CallGraphBuilder {
   private final Map<InvokableStmt, JNewExpr> constructorRefAllocs = new HashMap<>();
 
   protected OnFlyCallGraph cicg;
+
+  /** Shared cached JVM method lookup (dispatch and static resolution). */
+  public MethodLookup getMethodLookup() {
+    return virtualCalls.getMethodLookup();
+  }
 
   public CallGraphBuilder(PTA pta) {
     this.pta = pta;
