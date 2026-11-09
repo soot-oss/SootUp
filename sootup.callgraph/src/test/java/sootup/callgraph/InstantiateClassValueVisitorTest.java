@@ -168,19 +168,13 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(new JXorExpr(stringConstant, stringConstant));
     listWithAllValues.add(
         new JSpecialInvokeExpr(
-            Jimple.newLocal("a", StringClass),
-            toStringMethod,
-            Collections.emptyList()));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JVirtualInvokeExpr(
-            Jimple.newLocal("a", StringClass),
-            toStringMethod,
-            Collections.emptyList()));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JInterfaceInvokeExpr(
-            Jimple.newLocal("a", StringClass),
-            toStringMethod,
-            Collections.emptyList()));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JDynamicInvokeExpr(
             toStringMethod,
