@@ -494,10 +494,11 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     private int off = 4;
     private int len = 0;
 
-    /** stmt -> key; index = key - base. null if not built */
+    /**
+     * stmt -> slot in buf, so index = slot - off. Only stmts that physically move need an update,
+     * which costs as much as the move itself. null if not built.
+     */
     @Nullable private IdentityHashMap<Stmt, Integer> pos;
-
-    private int base;
 
     @Override
     public int size() {
@@ -517,9 +518,18 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
       buf[off + i] = s;
       if (pos != null) {
         pos.remove(old);
-        pos.put(s, base + i);
+        pos.put(s, off + i);
       }
       return old;
+    }
+
+    /** records the slots [from, to) of buf in the index */
+    private void reindex(int from, int to) {
+      if (pos != null) {
+        for (int j = from; j < to; j++) {
+          pos.put(buf[j], j);
+        }
+      }
     }
 
     @Override
@@ -537,31 +547,19 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
         return false;
       }
       final Object[] in = c.toArray();
-      if (i == 0 && off >= k) {
-        off -= k;
-        System.arraycopy(in, 0, buf, off, k);
-        if (pos != null) {
-          base -= k;
-          for (int j = 0; j < k; j++) {
-            pos.put((Stmt) in[j], base + j);
-          }
-        }
-      } else if (i == len && off + len + k <= buf.length) {
-        System.arraycopy(in, 0, buf, off + len, k);
-        if (pos != null) {
-          for (int j = 0; j < k; j++) {
-            pos.put((Stmt) in[j], base + len + j);
-          }
-        }
-      } else if (i != 0 && i != len && off + len + k <= buf.length && len - i <= i) {
+      // move the shorter part; without room there, reallocate centered (amortized by doubling)
+      final boolean moveBack = len - i <= i;
+      if (moveBack && off + len + k <= buf.length) {
+        // move [i, len) back by k
         System.arraycopy(buf, off + i, buf, off + i + k, len - i);
         System.arraycopy(in, 0, buf, off + i, k);
-        pos = null;
-      } else if (i != 0 && i != len && off >= k) {
+        reindex(off + i, off + len + k);
+      } else if (!moveBack && off >= k) {
+        // move [0, i) front by k
         System.arraycopy(buf, off, buf, off - k, i);
         off -= k;
         System.arraycopy(in, 0, buf, off + i, k);
-        pos = null;
+        reindex(off, off + i + k);
       } else {
         int cap = Math.max(8, (len + k) * 2);
         Stmt[] nb = new Stmt[cap];
@@ -571,20 +569,8 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
         System.arraycopy(buf, off + i, nb, nOff + i + k, len - i);
         buf = nb;
         off = nOff;
-        if (pos != null) {
-          if (i == 0) {
-            base -= k;
-            for (int j = 0; j < k; j++) {
-              pos.put((Stmt) in[j], base + j);
-            }
-          } else if (i == len) {
-            for (int j = 0; j < k; j++) {
-              pos.put((Stmt) in[j], base + len + j);
-            }
-          } else {
-            pos = null;
-          }
-        }
+        // every slot moved: rebuild lazily, amortized by the doubling
+        pos = null;
       }
       len += k;
       modCount++;
@@ -606,36 +592,26 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
       }
       final int k = to - from;
       if (pos != null) {
-        if (from == 0 || to == len) {
-          for (int j = from; j < to; j++) {
-            pos.remove(buf[off + j]);
-          }
-          if (from == 0) {
-            base += k;
-          }
-        } else {
-          pos = null;
+        for (int j = from; j < to; j++) {
+          pos.remove(buf[off + j]);
         }
       }
-      if (from == 0) {
-        Arrays.fill(buf, off, off + k, null);
-        off += k;
-      } else if (to == len) {
-        Arrays.fill(buf, off + from, off + to, null);
-      } else if (from < len - to) {
-        // shift the (shorter) front part right
+      if (from < len - to) {
+        // move the (shorter) front part [0, from) back by k
         System.arraycopy(buf, off, buf, off + k, from);
         Arrays.fill(buf, off, off + k, null);
         off += k;
+        reindex(off, off + from);
       } else {
+        // move the back part [to, len) front by k
         System.arraycopy(buf, off + to, buf, off + from, len - to);
         Arrays.fill(buf, off + len - k, off + len, null);
+        reindex(off + from, off + len - k);
       }
       len -= k;
       if (len == 0) {
         off = buf.length / 2;
         pos = null;
-        base = 0;
       }
       modCount++;
     }
@@ -656,13 +632,10 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
           return -1;
         }
         pos = new IdentityHashMap<>(len * 2);
-        base = 0;
-        for (int j = 0; j < len; j++) {
-          pos.put(buf[off + j], j);
-        }
+        reindex(off, off + len);
       }
-      Integer key = pos.get(s);
-      return key == null ? -1 : key - base;
+      Integer slot = pos.get(s);
+      return slot == null ? -1 : slot - off;
     }
   }
 }
