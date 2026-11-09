@@ -140,6 +140,17 @@ public class MutableBlockControlFlowGraphFuzzTest {
         });
   }
 
+  @TestFactory
+  Stream<DynamicTest> everythingInABatch() {
+    return perSeed(
+        seed -> {
+          Run run = new Run(seed, EnumSet.allOf(Op.class));
+          run.batched = true;
+          run.run(STEPS);
+          run.checkCopies();
+        });
+  }
+
   // ===========================================================================================
   // reference model
 
@@ -241,6 +252,7 @@ public class MutableBlockControlFlowGraphFuzzTest {
     final MutableBlockControlFlowGraph g = new MutableBlockControlFlowGraph();
     final List<String> log = new ArrayList<>();
     final List<Stmt> names = new ArrayList<>(); // stable index for log output
+    boolean batched = false; // run all ops in one beginBatch()/endBatch()
 
     Run(long seed, EnumSet<Op> ops) {
       this.seed = seed;
@@ -271,6 +283,9 @@ public class MutableBlockControlFlowGraphFuzzTest {
       }
       check("after initializeWith");
       if (ops.isEmpty()) return;
+      if (batched) {
+        g.beginBatch();
+      }
       List<Op> opList = new ArrayList<>(ops);
       int done = 0;
       int attempts = 0;
@@ -289,6 +304,14 @@ public class MutableBlockControlFlowGraphFuzzTest {
           done++;
           check("after " + log.get(log.size() - 1));
         }
+      }
+      if (batched) {
+        try {
+          g.endBatch();
+        } catch (Throwable t) {
+          fail("endBatch threw", t);
+        }
+        check("after endBatch");
       }
     }
 

@@ -70,6 +70,13 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @NonNull private final Set<MutableBasicBlockImpl> blocks = new LinkedHashSet<>();
 
+  /** nesting depth of {@link #beginBatch()} */
+  private int batchDepth = 0;
+
+  /** heads and tails of blocks whose merging is deferred until {@link #endBatch()} */
+  @NonNull
+  private final Set<Stmt> pendingNormalize = Collections.newSetFromMap(new IdentityHashMap<>());
+
   public MutableBlockControlFlowGraph() {}
 
   public MutableBlockControlFlowGraph(
@@ -693,11 +700,41 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     return b;
   }
 
+  /**
+   * Starts a batch of changes: blocks that become mergeable are not merged until the matching
+   * {@link #endBatch()}, which saves repeated split/merge work in a sequence of edits. Within a
+   * batch the graph is consistent and its stmt-level flows are exact, only blocks may be smaller
+   * than necessary. Batches nest.
+   */
+  public void beginBatch() {
+    batchDepth++;
+  }
+
+  /** ends a batch; the outermost one merges the blocks touched since its {@link #beginBatch()} */
+  public void endBatch() {
+    if (batchDepth == 0) {
+      throw new IllegalStateException("endBatch() without beginBatch()");
+    }
+    if (--batchDepth > 0) {
+      return;
+    }
+    List<Stmt> pending = new ArrayList<>(pendingNormalize);
+    pendingNormalize.clear();
+    for (Stmt s : pending) {
+      normalize(stmtToBlock.get(s));
+    }
+  }
+
   /** merges block with its predecessor and/or successor where possible; returns the survivor */
   @Nullable
   private MutableBasicBlockImpl normalize(@Nullable MutableBasicBlockImpl block) {
     if (block == null || !blocks.contains(block)) {
       return null;
+    }
+    if (batchDepth > 0) {
+      pendingNormalize.add(block.getHead());
+      pendingNormalize.add(block.getTail());
+      return block;
     }
     List<MutableBasicBlockImpl> preds = block.normalPredecessors();
     if (preds.size() == 1 && isMergeable(preds.get(0), block)) {

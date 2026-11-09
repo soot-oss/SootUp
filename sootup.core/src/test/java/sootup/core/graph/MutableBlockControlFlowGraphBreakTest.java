@@ -931,6 +931,79 @@ public class MutableBlockControlFlowGraphBreakTest {
     }
   }
 
+  @Nested
+  class Batch {
+
+    @Test
+    void mergesAreDeferredUntilEndBatch() {
+      JNopStmt a = nop(), b = nop(), c = nop();
+      JReturnVoidStmt r = ret();
+      JIdentityStmt h = handler(EX_A);
+      MutableBlockControlFlowGraph g = chain(a, b, c, r);
+      g.addExceptionalEdge(b, EX_A, h);
+      g.putEdge(h, ret());
+      int blocksWithTrap = g.getBlocks().size();
+
+      g.beginBatch();
+      g.removeExceptionalEdge(b, EX_A);
+      // b keeps its own block within the batch, the flows are exact
+      assertEquals(blocksWithTrap, g.getBlocks().size());
+      assertEquals(list(c), g.successors(b));
+      assertTrue(g.exceptionalSuccessors(b).isEmpty());
+      assertConsistent(g);
+
+      g.endBatch();
+      assertEquals(blocksWithTrap - 2, g.getBlocks().size());
+      assertSame(g.getBlockOf(a), g.getBlockOf(r));
+      assertConsistent(g);
+    }
+
+    @Test
+    void nestedBatchesMergeAtTheOutermostEnd() {
+      JNopStmt a = nop(), b = nop();
+      JReturnVoidStmt r = ret();
+      JIdentityStmt h = handler(EX_A);
+      MutableBlockControlFlowGraph g = chain(a, b, r);
+      g.putEdge(h, ret());
+
+      g.beginBatch();
+      g.beginBatch();
+      g.addExceptionalEdge(b, EX_A, h);
+      g.removeExceptionalEdge(b, EX_A);
+      g.endBatch();
+      assertNotSame(g.getBlockOf(a), g.getBlockOf(b));
+      g.endBatch();
+
+      assertSame(g.getBlockOf(a), g.getBlockOf(r));
+      assertConsistent(g);
+    }
+
+    @Test
+    void removedStmtsOfABatchAreSkipped() {
+      JNopStmt a = nop(), b = nop(), c = nop();
+      JReturnVoidStmt r = ret();
+      JIdentityStmt h = handler(EX_A);
+      MutableBlockControlFlowGraph g = chain(a, b, c, r);
+      g.putEdge(h, ret());
+
+      g.beginBatch();
+      g.addExceptionalEdge(b, EX_A, h);
+      g.removeExceptionalEdge(b, EX_A);
+      g.removeNode(b);
+      g.endBatch();
+
+      assertEquals(list(c), g.successors(a));
+      assertSame(g.getBlockOf(a), g.getBlockOf(r));
+      assertConsistent(g);
+    }
+
+    @Test
+    void endBatchWithoutBeginBatchIsRejected() {
+      assertThrows(
+          IllegalStateException.class, () -> new MutableBlockControlFlowGraph().endBatch());
+    }
+  }
+
   private static List<Integer> list2(Integer... i) {
     return Arrays.asList(i);
   }
