@@ -49,7 +49,12 @@ import sootup.core.types.Type;
  *   <li>{@link #normalize}: merge a block with its neighbours where possible.
  * </ul>
  *
- * Operations split what they need, change edges, then normalize, so blocks stay maximal.
+ * Operations validate their arguments first, split what they need, change edges, then normalize, so
+ * blocks stay maximal. Within {@link #beginBatch()}/{@link #endBatch()} merging is deferred.
+ *
+ * <p>Costs: a stmt index ({@link IdentityHashMap}) maps stmts to blocks; blocks store stmts in a
+ * deque with a position cache, so lookups and head/tail changes are O(1) and a split or merge moves
+ * the smaller part. The linearized block order is cached and survives changes inside a block.
  *
  * @author Markus Schmidt
  */
@@ -204,10 +209,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             trapEnd.add(trap);
           });
 
-      // traps.sort(getTrapComparator(trapstmtToIdx));
-      /* debug print:
-           traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
-      */
     } else {
       trapComparator = null;
     }
@@ -240,11 +241,9 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         final boolean isRemovedFromActive = activeTrapMap.remove(exceptionType, trap);
         final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
         if (overridenTrapHandlers != null) {
-          // System.out.println("overlapping traps found");
           if (isRemovedFromActive) {
             // is there an overridden traprange that needs to take its place?
             if (!overridenTrapHandlers.isEmpty()) {
-              // System.out.println("update activeTrapMap with next trap from overlaps");
               activeTrapMap.put(exceptionType, overridenTrapHandlers.poll());
             }
           } else {
@@ -252,7 +251,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             // ending before it gets the active exception information again
             // not logical as a compiler output... but possible.
             overridenTrapHandlers.remove(trap);
-            // System.out.println("remove from overlapping: " + trap);
           }
         }
 
@@ -291,11 +289,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         exceptionToHandlerMap.clear();
         activeTrapMap.forEach(
             (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
-
-        /* debugprint
-         System.out.println("-- "+ i +" --");
-         activeTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
-        */
       }
 
       final MutableBasicBlockImpl current = newBlocks[i];
@@ -314,7 +307,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
       throw new IllegalStateException("The Traps are not iterated completely/correctly!");
-      //      System.out.println("The Traps are not iterated completely/correctly");
     }
 
     // link blocks
@@ -1399,7 +1391,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   /** Replaces all SuccessorEdge(s) of from to oldTo by newTo */
   @Override
-  public boolean replaceSucessorEdge(@NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo) {
+  public boolean replaceSuccessorEdge(
+      @NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo) {
     final MutableBasicBlockImpl fromBlock = blockOf(from);
     final MutableBasicBlockImpl oldBlock = blockOf(oldTo);
     if (fromBlock.getTail() != from) {

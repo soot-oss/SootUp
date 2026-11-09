@@ -532,7 +532,7 @@ public class MutableBlockControlFlowGraphBreakTest {
       MutableBlockControlFlowGraph g =
           init(blocks(list(i1), list(a, r1), list(t, r2), list(u, r3)), succ(i1, list(t)));
 
-      assertTrue(g.replaceSucessorEdge(i1, t, u));
+      assertTrue(g.replaceSuccessorEdge(i1, t, u));
 
       assertEquals(list(a, u), g.successors(i1));
       assertTrue(g.predecessors(t).isEmpty());
