@@ -178,6 +178,20 @@ loadScripts(document, 'script');</script>
 <div class="block">Searches for a method matching the given sub-signature in the class hierarchy starting from the
  given class and traversing superclasses.</div>
 </div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;holder,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Resolves signature-polymorphic method <code>name</code> declared in <code>holder</code>.</div>
+</div>
+<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolveInHierarchy(sootup.core.views.View,sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolveInHierarchy</a><wbr>(@NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ @NonNull <a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;start,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Like <a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)"><code>SignaturePolymorphicMethods.resolve(SootClass, String)</code></a>, but walks superclasses from <code>start</code> (JVMS
+ 5.4.3.3 step 3): call-site owner may be a JDK-internal subclass, e.g.</div>
+</div>
 </div>
 </section>
 </li>

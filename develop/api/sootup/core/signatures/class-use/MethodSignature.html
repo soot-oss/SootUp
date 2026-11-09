@@ -631,23 +631,29 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Preprocessing of a method in the RTA call graph algorithm</div>
 </div>
-<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveConcreteDispatch(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolveConcreteDispatch</a><wbr>(<a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
- <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;m)</code></div>
+<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callSite)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Resolves the declared signature-polymorphic method <code>callSite</code> refers to.</div>
+</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveConcreteDispatch(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolveConcreteDispatch</a><wbr>(<a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;m)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Searches for the signature of the method that is the concrete implementation of <code>m</code>.</div>
 </div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">CallGraph.</span><code><a href="../../../callgraph/CallGraph.html#sortedCallsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">sortedCallsFrom</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">CallGraph.</span><code><a href="../../../callgraph/CallGraph.html#sortedCallsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">sortedCallsFrom</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">This method returns all method signatures that are called by a given method signature.</div>
 </div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">GraphBasedCallGraph.</span><code><a href="../../../callgraph/GraphBasedCallGraph.html#sortedCallsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">sortedCallsFrom</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">GraphBasedCallGraph.</span><code><a href="../../../callgraph/GraphBasedCallGraph.html#vertexOf(sootup.core.signatures.MethodSignature)" class="member-name-link">vertexOf</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;method)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">GraphBasedCallGraph.</span><code><a href="../../../callgraph/GraphBasedCallGraph.html#sortedCallsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">sortedCallsFrom</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected int</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">GraphBasedCallGraph.</span><code><a href="../../../callgraph/GraphBasedCallGraph.html#vertexOf(sootup.core.signatures.MethodSignature)" class="member-name-link">vertexOf</a><wbr>(@NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;method)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">it returns the vertex of the graph that describes the given method signature in the call graph.</div>
 </div>
 </div>

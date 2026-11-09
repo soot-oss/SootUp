@@ -12697,6 +12697,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/builder/callgraph/Kind.html#isHandler(qilin.core.builder.callgraph.Kind)" class="member-name-link">isHandler(Kind)</a> - Static method in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html#isHolder(sootup.core.types.ClassType)" class="member-name-link">isHolder(ClassType)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/SignaturePolymorphicMethods.html" title="class in sootup.callgraph">SignaturePolymorphicMethods</a></dt>
+<dd>
+<div class="block"><code>java.lang.invoke.MethodHandle</code> or <code>java.lang.invoke.VarHandle</code>.</div>
+</dd>
 <dt><a href="sootup/core/model/SootClass.html#isInnerClass()" class="member-name-link">isInnerClass()</a> - Method in interface sootup.core.model.<a href="sootup/core/model/SootClass.html" title="interface in sootup.core.model">SootClass</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#isInnerClass()" class="member-name-link">isInnerClass()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
@@ -13207,6 +13211,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/types/PrimitiveType.ShortType.html#isShortType()" class="member-name-link">isShortType()</a> - Method in class sootup.core.types.<a href="sootup/core/types/PrimitiveType.ShortType.html" title="class in sootup.core.types">PrimitiveType.ShortType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html#isSignaturePolymorphic(sootup.core.model.SootMethod)" class="member-name-link">isSignaturePolymorphic(SootMethod)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/SignaturePolymorphicMethods.html" title="class in sootup.callgraph">SignaturePolymorphicMethods</a></dt>
+<dd>
+<div class="block">Whether <code>method</code> is signature polymorphic per JVMS 2.9.3.</div>
+</dd>
 <dt><a href="qilin/core/config/PointerAnalysisConfig.html#isSingleEntry()" class="member-name-link">isSingleEntry()</a> - Method in class qilin.core.config.<a href="qilin/core/config/PointerAnalysisConfig.html" title="class in qilin.core.config">PointerAnalysisConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/builder/callgraph/Edge.html#isSpecial()" class="member-name-link">isSpecial()</a> - Method in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/Edge.html" title="class in qilin.core.builder.callgraph">Edge</a></dt>
@@ -18049,10 +18057,18 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/interceptors/typeresolving/TypeResolver.html#resolve(sootup.core.model.Body.BodyBuilder)" class="member-name-link">resolve(Body.BodyBuilder)</a> - Method in class sootup.interceptors.typeresolving.<a href="sootup/interceptors/typeresolving/TypeResolver.html" title="class in sootup.interceptors.typeresolving">TypeResolver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolve(SootClass, String)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/SignaturePolymorphicMethods.html" title="class in sootup.callgraph">SignaturePolymorphicMethods</a></dt>
+<dd>
+<div class="block">Resolves signature-polymorphic method <code>name</code> declared in <code>holder</code>.</div>
+</dd>
 <dt><a href="sootup/callgraph/reflection/AbstractReflectionModel.html#resolve(sootup.core.model.SootMethod,sootup.core.model.Body)" class="member-name-link">resolve(SootMethod, Body)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/AbstractReflectionModel.html" title="class in sootup.callgraph.reflection">AbstractReflectionModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/reflection/ReflectionModel.html#resolve(sootup.core.model.SootMethod,sootup.core.model.Body)" class="member-name-link">resolve(SootMethod, Body)</a> - Method in interface sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/ReflectionModel.html" title="interface in sootup.callgraph.reflection">ReflectionModel</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolve(View, MethodSignature)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/SignaturePolymorphicMethods.html" title="class in sootup.callgraph">SignaturePolymorphicMethods</a></dt>
+<dd>
+<div class="block">Resolves the declared signature-polymorphic method <code>callSite</code> refers to.</div>
+</dd>
 <dt><a href="qilin/core/VirtualCalls.html#resolve(sootup.core.types.Type,sootup.core.types.Type,sootup.core.signatures.MethodSubSignature,sootup.core.model.SootMethod,qilin.util.queue.ChunkedQueue)" class="member-name-link">resolve(Type, Type, MethodSubSignature, SootMethod, ChunkedQueue&lt;SootMethod&gt;)</a> - Method in class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/VirtualCalls.html#resolve(sootup.core.types.Type,sootup.core.types.Type,sootup.core.types.Type,sootup.core.signatures.MethodSubSignature,sootup.core.model.SootMethod,qilin.util.queue.ChunkedQueue)" class="member-name-link">resolve(Type, Type, Type, MethodSubSignature, SootMethod, ChunkedQueue&lt;SootMethod&gt;)</a> - Method in class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
@@ -18159,6 +18175,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveFields()" class="member-name-link">resolveFields()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html#resolveInHierarchy(sootup.core.views.View,sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolveInHierarchy(View, SootClass, String)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/SignaturePolymorphicMethods.html" title="class in sootup.callgraph">SignaturePolymorphicMethods</a></dt>
+<dd>
+<div class="block">Like <a href="sootup/callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)"><code>SignaturePolymorphicMethods.resolve(SootClass, String)</code></a>, but walks superclasses from <code>start</code> (JVMS
+ 5.4.3.3 step 3): call-site owner may be a JDK-internal subclass, e.g.</div>
+</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/frontend/SootClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in interface sootup.core.frontend.<a href="sootup/core/frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a></dt>
@@ -18906,6 +18927,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Hash-conses (interns) the identifier objects of <code>sootup.core.signatures</code>: for a given value
  there is at most one live instance, so equal signatures are the same object and may be compared
  with <code>==</code>.</div>
+</dd>
+<dt><a href="sootup/callgraph/SignaturePolymorphicMethods.html" class="type-name-link" title="class in sootup.callgraph">SignaturePolymorphicMethods</a> - Class in <a href="sootup/callgraph/package-summary.html">sootup.callgraph</a></dt>
+<dd>
+<div class="block">Resolution of signature-polymorphic methods (JVMS 2.9.3, 5.4.3.3), e.g.</div>
 </dd>
 <dt><a href="qilin/core/pag/PAG.html#simple" class="member-name-link">simple</a> - Variable in class qilin.core.pag.<a href="qilin/core/pag/PAG.html" title="class in qilin.core.pag">PAG</a></dt>
 <dd>&nbsp;</dd>

@@ -1816,6 +1816,26 @@ loadScripts(document, 'script');</script>
 <div class="block">Searches for a method matching the given sub-signature in the class hierarchy starting from the
  given class and traversing superclasses.</div>
 </div>
+<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;holder,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Resolves signature-polymorphic method <code>name</code> declared in <code>holder</code>.</div>
+</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ @NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callSite)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Resolves the declared signature-polymorphic method <code>callSite</code> refers to.</div>
+</div>
+<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#resolveInHierarchy(sootup.core.views.View,sootup.core.model.SootClass,java.lang.String)" class="member-name-link">resolveInHierarchy</a><wbr>(@NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ @NonNull <a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;start,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Like <a href="../../../callgraph/SignaturePolymorphicMethods.html#resolve(sootup.core.model.SootClass,java.lang.String)"><code>SignaturePolymorphicMethods.resolve(SootClass, String)</code></a>, but walks superclasses from <code>start</code> (JVMS
+ 5.4.3.3 step 3): call-site owner may be a JDK-internal subclass, e.g.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../../callgraph/package-summary.html">sootup.callgraph</a> with parameters of type <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a></span></div>
 <div class="summary-table three-column-summary">
@@ -1848,59 +1868,64 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">It resolves the start-run implicit calls caused by the given source method</div>
 </div>
-<div class="col-first even-row-color"><code>protected void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
- @NonNull <a href="../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
- @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</code></div>
+<div class="col-first even-row-color"><code>static boolean</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SignaturePolymorphicMethods.</span><code><a href="../../../callgraph/SignaturePolymorphicMethods.html#isSignaturePolymorphic(sootup.core.model.SootMethod)" class="member-name-link">isSignaturePolymorphic</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Hook: a lambda created in <code>creator</code> was discovered.</div>
+<div class="block">Whether <code>method</code> is signature polymorphic per JVMS 2.9.3.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">RapidTypeAnalysisAlgorithm.</span><code><a href="../../../callgraph/RapidTypeAnalysisAlgorithm.html#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
  @NonNull <a href="../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">A constructor reference (<code>Foo::new</code>) instantiates its class.</div>
+<div class="block">Hook: a lambda created in <code>creator</code> was discovered.</div>
 </div>
 <div class="col-first even-row-color"><code>protected void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color"><span class="type-name-label">RapidTypeAnalysisAlgorithm.</span><code><a href="../../../callgraph/RapidTypeAnalysisAlgorithm.html#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+ @NonNull <a href="../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</code></div>
+<div class="col-last even-row-color">
+<div class="block">A constructor reference (<code>Foo::new</code>) instantiates its class.</div>
+</div>
+<div class="col-first odd-row-color"><code>protected void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">This method resolves all calls from a given source method. resolveCall is called for each
  invokable statements in the body of the source method that is implemented in the corresponding
  call graph algorithm.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-first even-row-color"><code>protected void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 </div>
-<div class="col-first even-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
- <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">This method resolves the possible targets of a given invoke expression.</div>
-</div>
-<div class="col-first even-row-color"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ClassHierarchyAnalysisAlgorithm.</span><code><a href="../../../callgraph/ClassHierarchyAnalysisAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+<div class="col-first even-row-color"><code>protected abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
 <div class="col-last even-row-color">
-<div class="block">In the CHA algorithm, every virtual call is resolved by only using the hierarchy.</div>
+<div class="block">This method resolves the possible targets of a given invoke expression.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">RapidTypeAnalysisAlgorithm.</span><code><a href="../../../callgraph/RapidTypeAnalysisAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color"><span class="type-name-label">ClassHierarchyAnalysisAlgorithm.</span><code><a href="../../../callgraph/ClassHierarchyAnalysisAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">In the CHA algorithm, every virtual call is resolved by only using the hierarchy.</div>
+</div>
+<div class="col-first even-row-color"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">RapidTypeAnalysisAlgorithm.</span><code><a href="../../../callgraph/RapidTypeAnalysisAlgorithm.html#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
+<div class="col-last even-row-color">
 <div class="block">In the RTA algorithm, every virtual call is resolved by using the hierarchy and a hashset
  containing every instantiated class.</div>
 </div>
