@@ -40,7 +40,6 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -62,7 +61,7 @@ public class DiagSoot1577Test {
     JavaView view = new JavaView(inputLocation);
 
     MethodSignature sig =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 "cn.com.chinatelecom.account.api.c.g",
                 "h",
@@ -84,7 +83,7 @@ public class DiagSoot1577Test {
     JavaView view = new JavaView(inputLocation);
 
     MethodSignature sig =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 "cn.com.chinatelecom.account.api.c.g",
                 "h",
