@@ -231,9 +231,10 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       }
     }
 
-    // special invokes and static invokes can only have one specific target
+    // special, static and signature-polymorphic (final native) invokes have one specific target
     if (MethodModifier.isStatic(actualTargetMethod.getModifiers())
-        || (invokeExpr instanceof JSpecialInvokeExpr)) {
+        || (invokeExpr instanceof JSpecialInvokeExpr)
+        || SignaturePolymorphicMethods.isSignaturePolymorphic(actualTargetMethod)) {
       return Stream.of(actualTargetMethod.getSignature());
     }
 

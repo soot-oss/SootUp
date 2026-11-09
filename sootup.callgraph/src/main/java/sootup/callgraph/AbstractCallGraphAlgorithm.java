@@ -1131,6 +1131,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       return defaultMethod;
     }
 
+    // call-site descriptor of MethodHandle/VarHandle polymorphic call never matches declaration
+    Optional<? extends SootMethod> polymorphic =
+        SignaturePolymorphicMethods.resolveInHierarchy(view, startClass, sig.getName());
+    if (polymorphic.isPresent()) {
+      return polymorphic;
+    }
+
     logger.warn(
         "Could not find \""
             + sig.getSubSignature()
