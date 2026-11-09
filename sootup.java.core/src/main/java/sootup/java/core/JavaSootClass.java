@@ -51,7 +51,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.types.JavaClassType;
 
-public class JavaSootClass implements SootClass, HasAnnotation {
+public class JavaSootClass implements SootClass, HasAnnotation, HasGenericSignature {
 
   final SootClassSource classSource;
   final SourceType sourceType;
@@ -257,6 +257,13 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public List<JavaInnerClassInfo> getInnerClasses() {
     return getClassFileMetadata().getInnerClasses();
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return getClassFileMetadata().getGenericSignature();
   }
 
   private JavaClassFileMetadata getClassFileMetadata() {
