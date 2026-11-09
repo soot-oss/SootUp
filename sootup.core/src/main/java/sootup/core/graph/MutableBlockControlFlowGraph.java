@@ -57,10 +57,14 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   @Nullable private Stmt startingStmt = null;
 
   /**
-   * The statements in {@link #iterator()} order, computed on demand; every change of the graph
-   * resets it. Interceptors ask for the statements of a body many times between changes.
+   * The blocks in {@link #getBlockIterator()} order, computed on demand. That order depends only on
+   * block tails, edges and the starting block, so structural changes reset it while in-place stmt
+   * changes inside a block keep it. Interceptors ask for the statements many times between changes.
    */
-  @Nullable private Stmt[] stmtsInOrder = null;
+  @Nullable private List<BasicBlock<?>> blockOrder = null;
+
+  /** {@link #getBlocksSorted()}, reset like {@link #blockOrder} */
+  @Nullable private List<BasicBlock<?>> reversePostOrder = null;
 
   @NonNull private final Map<Stmt, MutableBasicBlockImpl> stmtToBlock = new IdentityHashMap<>();
 
@@ -524,9 +528,13 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   // ===========================================================================================
   // structural primitives
 
-  /** call before every change */
+  /**
+   * call before every structural change: blocks, edges, tails or the starting block. Changes of
+   * non-tail stmts inside a block need not call it.
+   */
   private void modified() {
-    stmtsInOrder = null;
+    blockOrder = null;
+    reversePostOrder = null;
   }
 
   @NonNull
@@ -869,7 +877,33 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @NonNull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return new ReversePostOrderBlockTraversal(this).getBlockTraversal();
+    if (reversePostOrder == null) {
+      reversePostOrder =
+          Collections.unmodifiableList(
+              new ReversePostOrderBlockTraversal(this).getBlockTraversal());
+    }
+    return new ArrayList<>(reversePostOrder);
+  }
+
+  /** blocks in linearized order; iterates a snapshot, the graph may change meanwhile */
+  @Override
+  public Iterator<BasicBlock<?>> getBlockIterator() {
+    return blockOrder().iterator();
+  }
+
+  @NonNull
+  private List<BasicBlock<?>> blockOrder() {
+    if (blockOrder == null) {
+      blockOrder = Collections.unmodifiableList(computeBlockOrder());
+    }
+    return blockOrder;
+  }
+
+  /** walks the graph; package-private so tests can count the walks */
+  @NonNull List<BasicBlock<?>> computeBlockOrder() {
+    List<BasicBlock<?>> order = new ArrayList<>(blocks.size());
+    new BlockGraphIterator(this).forEachRemaining(order::add);
+    return order;
   }
 
   /**
@@ -1021,8 +1055,17 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             "Cannot keep the flows of a removed BranchingStmt if there is more than one successor.");
       }
     }
-    modified();
     final int idx = block.indexOf(stmt);
+    if (keepFlow && n > 1 && idx < n - 1) {
+      // head or inner stmt: tail, edges and starting block stay -> block order stays valid
+      block.removeStmt(idx);
+      stmtToBlock.remove(stmt);
+      if (stmt == startingStmt) {
+        startingStmt = block.getHead();
+      }
+      return;
+    }
+    modified();
 
     if (n == 1) {
       MutableBasicBlockImpl succ =
@@ -1050,13 +1093,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
 
     if (idx == 0) {
-      if (!keepFlow) {
-        detachPredecessors(block);
-      }
+      detachPredecessors(block);
       block.removeStmt(0);
       stmtToBlock.remove(stmt);
       if (stmt == startingStmt) {
-        startingStmt = keepFlow ? block.getHead() : null;
+        startingStmt = null;
       }
       return;
     }
@@ -1074,15 +1115,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       return;
     }
 
-    // stmt is in the middle of the block
-    if (keepFlow) {
-      block.removeStmt(idx);
-    } else {
-      split(block, idx + 1);
-      MutableBasicBlockImpl first = blockOf(stmt);
-      first.unlink(0);
-      first.removeStmt(first.size() - 1);
-    }
+    // stmt is in the middle of the block, !keepFlow
+    split(block, idx + 1);
+    MutableBasicBlockImpl first = blockOf(stmt);
+    first.unlink(0);
+    first.removeStmt(first.size() - 1);
     stmtToBlock.remove(stmt);
   }
 
@@ -1119,8 +1156,18 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         && fallsThroughTo(block.successorAt(0), block)) {
       throw fallThroughCycle(newStmt, block.successorAt(0).getHead());
     }
-    modified();
     final boolean newIsInner = newStmt instanceof FallsThroughStmt && !newStmt.branches();
+    if (newIsInner && idx < block.size() - 1) {
+      // inner stmt replaced by an inner stmt: block order stays valid
+      block.setStmt(idx, newStmt);
+      stmtToBlock.remove(oldStmt);
+      stmtToBlock.put(newStmt, block);
+      if (oldStmt == startingStmt) {
+        startingStmt = newStmt;
+      }
+      return;
+    }
+    modified();
     if (!newIsInner && idx < block.size() - 1) {
       // only a tail may branch or end the flow
       split(block, idx + 1);
@@ -1193,7 +1240,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       throw new IllegalArgumentException("The given list contains IfStmt or illegal order!");
     }
     checkNew(stmts);
-    modified();
     if (!isExceptionalFlowDifferent(exceptionMap, existingBlock)) {
       // same traps: insert in place, edges into existingStmt now reach the first inserted stmt
       existingBlock.insertStmts(existingBlock.indexOf(existingStmt), stmts);
@@ -1203,6 +1249,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       }
       return existingBlock;
     }
+    modified();
     blockStartingAt(existingStmt);
     newBlock(stmts);
     applyTraps(stmts, exceptionMap);
@@ -1249,14 +1296,15 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
           "JIdentityStmt should be not after Stmts with other types!");
     }
     checkNew(stmts);
-    modified();
     int idx = existingBlock.indexOf(existingStmt);
     if (!isExceptionalFlowDifferent(exceptionMap, existingBlock)) {
-      // same traps: insert in place; at the tail the successor moves on to the last inserted stmt
+      // same traps: insert in place; at the tail the successor moves on to the last inserted stmt,
+      // which falls through like existingStmt, so the block order stays valid
       existingBlock.insertStmts(idx + 1, stmts);
       stmts.forEach(s -> stmtToBlock.put(s, existingBlock));
       return existingBlock;
     }
+    modified();
     if (idx < existingBlock.size() - 1) {
       split(existingBlock, idx + 1);
     }
@@ -1533,10 +1581,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   @NonNull
   @Override
   public List<Stmt> getStmts() {
-    if (stmtsInOrder == null) {
-      stmtsInOrder = super.getStmts().toArray(new Stmt[0]);
+    List<Stmt> res = new ArrayList<>(stmtToBlock.size());
+    for (BasicBlock<?> b : blockOrder()) {
+      res.addAll(b.getStmts());
     }
-    return new ArrayList<>(Arrays.asList(stmtsInOrder));
+    return res;
   }
 
   @NonNull

@@ -235,6 +235,22 @@ final class CfgTestKit {
     if (start != null) {
       assertSame(start, ordered.get(0), "getStmts() must begin with the starting stmt");
     }
+
+    // the cached orders must match a fresh computation
+    List<BasicBlock<?>> fresh = new ArrayList<>();
+    new BlockGraphIterator(g).forEachRemaining(fresh::add);
+    List<BasicBlock<?>> cached = new ArrayList<>();
+    g.getBlockIterator().forEachRemaining(cached::add);
+    assertEquals(fresh, cached, "cached block order is stale");
+    List<Stmt> freshStmts = new ArrayList<>();
+    fresh.forEach(b -> freshStmts.addAll(b.getStmts()));
+    assertEquals(freshStmts, ordered, "cached stmt order is stale");
+    if (start != null) {
+      assertEquals(
+          new ReversePostOrderBlockTraversal(g).getBlockTraversal(),
+          g.getBlocksSorted(),
+          "cached reverse post order is stale");
+    }
   }
 
   // ---------------------------------------------------------------------------------------------
