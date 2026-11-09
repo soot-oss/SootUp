@@ -213,6 +213,19 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     adjustArity();
   }
 
+  /** puts stmts in front of the head; they must all fall through and not branch */
+  void prependStmts(@NonNull List<Stmt> front) {
+    for (Stmt s : front) {
+      if (s instanceof BranchingStmt || !(s instanceof FallsThroughStmt)) {
+        throw new IllegalArgumentException("only the tail of a Block may branch or end the flow");
+      }
+    }
+    stmts.addAll(0, front);
+    if (stmts.size() == front.size()) {
+      adjustArity();
+    }
+  }
+
   /** removes the stmt at idx; removing the tail keeps the successor slots the new tail can hold */
   Stmt removeStmt(int idx) {
     Stmt removed = stmts.remove(idx);

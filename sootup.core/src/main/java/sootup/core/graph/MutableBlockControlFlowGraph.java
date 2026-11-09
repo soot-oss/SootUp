@@ -94,33 +94,25 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
   }
 
-  /** copies a ControlFlowGraph into this Mutable instance */
+  /** copies a ControlFlowGraph into this Mutable instance, block by block */
   public MutableBlockControlFlowGraph(@NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
+    Collection<? extends BasicBlock<?>> sourceBlocks = graph.getBlocks();
+    for (BasicBlock<?> b : sourceBlocks) {
+      newBlock(b.getStmts());
+    }
+    for (BasicBlock<?> b : sourceBlocks) {
+      final MutableBasicBlockImpl copy = blockOf(b.getHead());
+      List<? extends BasicBlock<?>> successors = b.getSuccessors();
+      for (int i = 0; i < successors.size(); i++) {
+        copy.link(i, blockOf(successors.get(i).getHead()));
+      }
+      b.getExceptionalSuccessors()
+          .forEach((type, handler) -> copy.linkExc(type, blockOf(handler.getHead())));
+    }
     final Stmt startStmt = graph.getStartingStmt();
     if (startStmt != null) {
       setStartingStmt(startStmt);
     }
-    // copy blocks into this graph
-    graph
-        .getBlocks()
-        .forEach(
-            b -> {
-              final Map<ClassType, Stmt> exSuccs = new HashMap<>();
-              b.getExceptionalSuccessors().forEach((k, v) -> exSuccs.put(k, v.getHead()));
-              addBlock(b.getStmts(), exSuccs);
-            });
-
-    // copy links between the blocks
-    graph
-        .getBlocks()
-        .forEach(
-            b -> {
-              final MutableBasicBlockImpl blockOf = blockOf(b.getTail());
-              List<? extends BasicBlock<?>> successors = b.getSuccessors();
-              for (int i = 0; i < successors.size(); i++) {
-                blockOf.link(i, blockOf(successors.get(i).getHead()));
-              }
-            });
   }
 
   public static ControlFlowGraph<?> createUnmodifiableControlFlowGraph(
@@ -209,7 +201,14 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       trapComparator = null;
     }
 
-    setStartingStmt(blocks.get(0).get(0));
+    validateLegacyBlocks(blocks, successorMap);
+    final MutableBasicBlockImpl[] newBlocks = new MutableBasicBlockImpl[blocks.size()];
+    final Map<Stmt, MutableBasicBlockImpl> headToBlock = new IdentityHashMap<>();
+    for (int b = 0; b < blocks.size(); b++) {
+      newBlocks[b] = newBlock(blocks.get(b));
+      headToBlock.put(blocks.get(b).get(0), newBlocks[b]);
+    }
+    startingStmt = blocks.get(0).get(0);
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> activeTrapMap = new HashMap<>();
     Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
@@ -288,7 +287,12 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         */
       }
 
-      addBlock(block, exceptionToHandlerMap);
+      final MutableBasicBlockImpl current = newBlocks[i];
+      exceptionToHandlerMap.forEach(
+          (type, handler) -> {
+            MutableBasicBlockImpl handlerBlock = headToBlock.get(handler);
+            current.linkExc(type, handlerBlock != null ? handlerBlock : blockStartingAt(handler));
+          });
     }
 
     // a Trap whose end is in no Block reaches the end of the body, so it is never closed above
@@ -319,7 +323,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         }
         List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
         Stmt followingBlocksHead = followingBlock.get(0);
-        putEdge((FallsThroughStmt) tailStmt, followingBlocksHead);
+        blockOf(tailStmt).link(0, headToBlock.get(followingBlocksHead));
       } else {
         succIdxOffset = 0;
       }
@@ -344,7 +348,60 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         for (int k = 0; k < targets.size(); k++) {
           Stmt target = targets.get(k);
           // a possible fallsthrough (e.g. from IfStmt) is not in successorMap
-          putEdge(bStmt, k + succIdxOffset, target);
+          blockOf(bStmt).link(k + succIdxOffset, blockStartingAt(target));
+        }
+      }
+    }
+    // the given blocks need not be maximal
+    for (MutableBasicBlockImpl b : new ArrayList<>(this.blocks)) {
+      normalize(b);
+    }
+  }
+
+  /** checks the legacy block representation before anything is created */
+  private void validateLegacyBlocks(
+      @NonNull List<List<Stmt>> blocks, @NonNull Map<BranchingStmt, List<Stmt>> successorMap) {
+    Set<Stmt> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (int i = 0; i < blocks.size(); i++) {
+      List<Stmt> block = blocks.get(i);
+      if (block.isEmpty()) {
+        throw new IllegalArgumentException("Block " + i + " is empty.");
+      }
+      for (int j = 0; j < block.size(); j++) {
+        Stmt s = block.get(j);
+        if (stmtToBlock.containsKey(s) || !seen.add(s)) {
+          throw new IllegalArgumentException("Stmt '" + s + "' is contained twice.");
+        }
+        if (j < block.size() - 1
+            && (s instanceof BranchingStmt || !(s instanceof FallsThroughStmt))) {
+          throw new IllegalArgumentException(
+              "Only the last Stmt of a Block may branch or end the flow: '" + s + "'.");
+        }
+      }
+      Stmt tail = block.get(block.size() - 1);
+      int offset = 0;
+      if (tail instanceof FallsThroughStmt) {
+        offset = 1;
+        if (i + 1 >= blocks.size()) {
+          throw new IllegalStateException(
+              "FallsthroughStmt '"
+                  + tail
+                  + "' falls into the abyss - as there is no following Block!");
+        }
+      }
+      if (tail instanceof BranchingStmt) {
+        List<Stmt> targets = successorMap.get(tail);
+        int expected = tail.getExpectedSuccessorCount() - offset;
+        int targetCount = targets == null ? 0 : targets.size();
+        if (targetCount != expected) {
+          throw new IllegalArgumentException(
+              "The corresponding successorMap entry for the BranchingStmt ('"
+                  + tail
+                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
+                  + expected
+                  + " but has "
+                  + targetCount
+                  + ".");
         }
       }
     }
@@ -580,22 +637,38 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         && a.hasSameExceptionalSuccessors(b);
   }
 
-  /** appends b to a; b must be mergeable into a. returns the surviving block */
+  /**
+   * joins a with its fall-through successor b (must be mergeable). The stmts of the smaller block
+   * move; returns the surviving block. The other block leaves the graph but keeps its stmt list, so
+   * callers holding it can still read its head.
+   */
   @NonNull
   private MutableBasicBlockImpl merge(
       @NonNull MutableBasicBlockImpl a, @NonNull MutableBasicBlockImpl b) {
     modified();
     a.unlink(0);
-    MutableBasicBlockImpl[] targets = successorsOf(b);
-    b.unlinkAllSuccessors();
-    b.unlinkAllExc();
-    for (Stmt s : b.removeStmtsFrom(0)) {
-      a.addStmt(s);
-      stmtToBlock.put(s, a);
+    if (a.size() >= b.size()) {
+      MutableBasicBlockImpl[] targets = successorsOf(b);
+      b.unlinkAllSuccessors();
+      b.unlinkAllExc();
+      for (Stmt s : b.getStmts()) {
+        a.addStmt(s);
+        stmtToBlock.put(s, a);
+      }
+      relink(a, targets);
+      blocks.remove(b);
+      return a;
     }
-    relink(a, targets);
-    blocks.remove(b);
-    return a;
+    // a is smaller: put its stmts in front of b, b takes over a's predecessors
+    redirectPredecessors(a, b);
+    a.unlinkAllExc();
+    List<Stmt> front = new ArrayList<>(a.getStmts());
+    b.prependStmts(front);
+    for (Stmt s : front) {
+      stmtToBlock.put(s, b);
+    }
+    blocks.remove(a);
+    return b;
   }
 
   /** merges block with its predecessor and/or successor where possible; returns the survivor */
@@ -847,7 +920,10 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @Override
   public void removeBlock(BasicBlock<?> block) {
-    if (!(block instanceof MutableBasicBlockImpl) || !blocks.contains(block)) {
+    // membership by stmt index: callers may already have removed it from getBlocks()
+    if (!(block instanceof MutableBasicBlockImpl)
+        || block.getStmtCount() == 0
+        || stmtToBlock.get(block.getHead()) != block) {
       throw new IllegalArgumentException(
           "The given block is not contained in this MutableBlockControlFlowGraph.");
     }
