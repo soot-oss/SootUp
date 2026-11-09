@@ -84,18 +84,21 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TrapTightener</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a></span></div>
+<div class="block">Removes exceptional flows that can not be taken at runtime: an exceptional edge of a Stmt to a
+ handler catching <code>T</code> is removed if no exception the Stmt might throw can be caught as
+ <code>T</code>. Afterwards trap handlers which became unreachable are removed.
+
+ <p>In Soot, the TrapTightener shrinks the protected range of each Trap so that it begins at the
+ first and ends after the last unit which might throw an exception caught by the Trap. In SootUp
+ the Traps are derived from the exceptional flows of the <a href="../core/graph/ControlFlowGraph.html" title="class in sootup.core.graph"><code>ControlFlowGraph</code></a>, so the
+ exceptional flows are tightened per Stmt instead, which can split a Trap into several ones.
+
+ <p>The exceptions a Stmt might throw are inferred intraprocedurally by the <a href="../java/core/exceptions/StmtExceptionAnalyzer.html" title="class in sootup.java.core.exceptions"><code>StmtExceptionAnalyzer</code></a>. As every Stmt might throw an asynchronous <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/VirtualMachineError.html" title="class or interface in java.lang" class="external-link"><code>VirtualMachineError</code></a>,
+ flows to catch-all handlers (e.g. the handlers releasing a monitor of a synchronized block) and
+ handlers of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Error.html" title="class or interface in java.lang" class="external-link"><code>Error</code></a> are always kept.</div>
 <dl class="notes">
 <dt>Author:</dt>
-<dd>Zun Wang
-     <p>description from Soot: A BodyTransformer that shrinks the protected area covered by each
-     Trap in the Body so that it begins at the first of the Body's Units which might throw an
-     exception caught by the Trap and ends just after the last Unit which might throw an exception
-     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
-     exception it catches, the Trap's protected area is left completely empty, which will likely
-     cause the UnreachableCodeEliminator to remove the Trap(handler?) completely (if the
-     traphandler does not cover another range). The TrapTightener is used to reduce the risk of
-     unverifiable code which can result from the use of ExceptionalUnitGraphs from which
-     unrealizable exceptional control flow edges have been removed.</dd>
+<dd>Zun Wang</dd>
 </dl>
 </section>
 <section class="summary">

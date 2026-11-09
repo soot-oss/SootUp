@@ -162,7 +162,11 @@ loadScripts(document, 'script');</script>
  defined before it is used.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TrapTightener.html" title="class in sootup.interceptors">TrapTightener</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Removes exceptional flows that can not be taken at runtime: an exceptional edge of a Stmt to a
+ handler catching <code>T</code> is removed if no exception the Stmt might throw can be caught as
+ <code>T</code>.</div>
+</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="TypeAssigner.html" title="class in sootup.interceptors">TypeAssigner</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">This transformer assigns types to local variables.</div>

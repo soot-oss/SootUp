@@ -364,7 +364,11 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color"><code>class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../interceptors/TrapTightener.html" class="type-name-link" title="class in sootup.interceptors">TrapTightener</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Removes exceptional flows that can not be taken at runtime: an exceptional edge of a Stmt to a
+ handler catching <code>T</code> is removed if no exception the Stmt might throw can be caught as
+ <code>T</code>.</div>
+</div>
 <div class="col-first odd-row-color"><code>class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../interceptors/TypeAssigner.html" class="type-name-link" title="class in sootup.interceptors">TypeAssigner</a></code></div>
 <div class="col-last odd-row-color">
