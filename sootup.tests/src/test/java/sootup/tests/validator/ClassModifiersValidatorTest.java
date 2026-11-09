@@ -1,6 +1,7 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -99,30 +100,30 @@ public class ClassModifiersValidatorTest {
 
   @Test
   public void testClassModifiersValidator_fail1() {
+    // illegal modifier combination: rejected when the class/member is built (JVMS)
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
-
-    JavaSootClass javaSootClass =
-        testClassCreatorWithModifiers(
-            EnumSet.of(
-                ClassModifier.INTERFACE,
-                ClassModifier.ENUM,
-                ClassModifier.FINAL,
-                ClassModifier.SUPER));
-
-    classModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
-
-    assertEquals(4, validationExceptions_fail1.size());
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            classModifiersValidator.validate(
+                testClassCreatorWithModifiers(
+                    EnumSet.of(
+                        ClassModifier.INTERFACE,
+                        ClassModifier.ENUM,
+                        ClassModifier.FINAL,
+                        ClassModifier.SUPER)),
+                validationExceptions_fail1));
   }
 
   @Test
   public void testClassModifiersValidator_fail2() {
+    // illegal modifier combination: rejected when the class/member is built (JVMS)
     List<ValidationException> validationExceptions_fail2 = new ArrayList<>();
-
-    JavaSootClass javaSootClass =
-        testClassCreatorWithModifiers(EnumSet.of(ClassModifier.ANNOTATION));
-
-    classModifiersValidator.validate(javaSootClass, validationExceptions_fail2);
-
-    assertEquals(1, validationExceptions_fail2.size());
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            classModifiersValidator.validate(
+                testClassCreatorWithModifiers(EnumSet.of(ClassModifier.ANNOTATION)),
+                validationExceptions_fail2));
   }
 }
