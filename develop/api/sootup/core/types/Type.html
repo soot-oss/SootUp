@@ -142,7 +142,10 @@ implements <a href="../jimple/visitor/Acceptor.html" title="interface in sootup.
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getValueBitSize(sootup.core.types.Type)" class="member-name-link">getValueBitSize</a><wbr>(<a href="Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the size in bits of a value of the given type: 1 for boolean, 8 for byte, 16 for
+ short/char, 32 for int/float, 64 for long/double and class types, and 0 for every other type.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isBottomType()" class="member-name-link">isBottomType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -253,6 +256,8 @@ implements <a href="../jimple/visitor/Acceptor.html" title="interface in sootup.
 <section class="detail" id="getValueBitSize(sootup.core.types.Type)">
 <h3>getValueBitSize</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getValueBitSize</span><wbr><span class="parameters">(<a href="Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</span></div>
+<div class="block">Returns the size in bits of a value of the given type: 1 for boolean, 8 for byte, 16 for
+ short/char, 32 for int/float, 64 for long/double and class types, and 0 for every other type.</div>
 </section>
 </li>
 <li>
