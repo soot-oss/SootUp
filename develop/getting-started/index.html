@@ -511,6 +511,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-java-generic-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Java Generic Signatures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1560,6 +1571,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-java-generic-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Java Generic Signatures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1889,6 +1911,11 @@ visibility; the existing two-argument constructor defaults to runtime-visible.</
 <code>getEnclosingMethod()</code>), and ordered <code>InnerClasses</code> entries (<code>getInnerClasses()</code>).
 Missing attributes return empty optionals or lists; SMAP text is preserved without
 remapping statement positions.</p>
+<h2 id="reading-java-generic-signatures">Reading Java Generic Signatures</h2>
+<p><code>getGenericSignature()</code> on <code>JavaSootClass</code>, <code>JavaSootField</code>, and <code>JavaSootMethod</code> (via
+<code>HasGenericSignature</code>) returns the raw classfile <code>Signature</code> attribute as an
+<code>Optional&lt;String&gt;</code>, or an empty optional if absent. Generic signatures do not change
+SootUp's erased types.</p>
 <h2 id="retrieving-the-control-flow-graph-of-a-method">Retrieving the Control-Flow Graph of a Method</h2>
 <p>Each <code>SootMethod</code> contains a Control-Flow Graph (CFG) which is represented via the <code>ControlFlowGraph</code>. This structure is usually used for program analysis. You can retrieve the CFG of a <code>SootMethod</code> as follows:</p>
 <div class="admonition example">
