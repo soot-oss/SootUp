@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "gant_groovy1.9-1.9.6.jar",
+  "exception": "Failed to convert <gant.Gant$_dispatch_closure4: java.lang.Object doCall()>",
+  "download_url": "https://repo1.maven.org/maven2/org/codehaus/gant/gant_groovy1.9/1.9.6/gant_groovy1.9-1.9.6.jar",
+  "failedMethodSignature": "<gant.Gant$_dispatch_closure4: java.lang.Object doCall()>"
+}
+]
