@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,58 +22,99 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
-import sootup.core.graph.MutableStmtGraph;
+import org.jspecify.annotations.NonNull;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.MutableBasicBlock;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
  *
- * @author Zun Wang
+ * @author Zun Wang, Sahil Agichani
  */
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
-  // TODO: performance - quite expensive; maybe work on Block level to reduce hash calculations etc?
-
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     // Because there is a case in android, where the statement graph will be empty
-    if (graph.getStmts().isEmpty()) {
+    if (graph.getStmts().isEmpty() && graph.getNodes().isEmpty()) {
       return;
     }
 
-    Deque<Stmt> queue = new ArrayDeque<>();
-    queue.add(graph.getStartingStmt());
+    Collection<? extends BasicBlock<?>> allBlocks = graph.getBlocks();
+    MutableBasicBlock startingStmtBlock = (MutableBasicBlock) graph.getStartingStmtBlock();
+    Set<MutableBasicBlock> reachableNodes = new HashSet<>();
+    Deque<MutableBasicBlock> stack = new ArrayDeque<>();
+    stack.push(startingStmtBlock);
 
-    // calculate all reachable stmts
-    Set<Stmt> reachableStmts = new HashSet<>();
-    while (!queue.isEmpty()) {
-      Stmt stmt = queue.removeFirst();
-      reachableStmts.add(stmt);
-      for (Stmt succ : graph.getAllSuccessors(stmt)) {
-        if (!reachableStmts.contains(succ)) {
-          queue.add(succ);
+    // Traverse the call graph using DFS
+    while (!stack.isEmpty()) {
+      MutableBasicBlock currentBlock = stack.pop();
+      // If the method has already been visited, skip it
+      if (!reachableNodes.add(currentBlock)) {
+        continue;
+      }
+      // Get all the successors (i.e., called methods) of the current method
+      List<MutableBasicBlock> currentBlockExceptionalSuccessors =
+          new ArrayList<>(currentBlock.getExceptionalSuccessors().values());
+      List<MutableBasicBlock> currentBlockSuccessors = currentBlock.getSuccessors();
+      List<MutableBasicBlock> currentBlockAllSuccessors = new ArrayList<>(currentBlockSuccessors);
+      currentBlockAllSuccessors.addAll(currentBlockExceptionalSuccessors);
+
+      // Push the successors into the stack
+      for (MutableBasicBlock successor : currentBlockAllSuccessors) {
+        if (!reachableNodes.contains(successor)) {
+          stack.push(successor);
         }
       }
     }
 
-    // remove unreachable stmts from StmtGraph
-    Queue<Stmt> removeQ = new ArrayDeque<>();
-    for (Stmt stmt : graph.getNodes()) {
-      if (!reachableStmts.contains(stmt)) {
-        removeQ.add(stmt);
+    // locals of removed stmts are candidates for removal
+    Set<Local> unusedLocals = new HashSet<>();
+    Iterator<? extends BasicBlock<?>> iterator = allBlocks.iterator();
+    while (iterator.hasNext()) {
+      BasicBlock<?> basicBlock = iterator.next();
+      if (!reachableNodes.contains(basicBlock)) {
+        for (Stmt stmt : basicBlock.getStmts()) {
+          collectLocals(stmt, unusedLocals);
+        }
+        iterator.remove();
+        graph.removeBlock(basicBlock);
       }
     }
 
-    for (Stmt stmt : removeQ) {
-      graph.removeNode(stmt, false);
-      builder.removeDefLocalsOf(stmt);
+    if (unusedLocals.isEmpty()) {
+      return;
+    }
+    // keep locals which are still used/defined by remaining stmts
+    for (Stmt stmt : graph.getNodes()) {
+      for (Value value : stmt.getUsesAndDefs()) {
+        if (value instanceof Local) {
+          unusedLocals.remove(value);
+        }
+      }
+    }
+    if (!unusedLocals.isEmpty()) {
+      Set<Local> locals = new LinkedHashSet<>(builder.getLocals());
+      locals.removeAll(unusedLocals);
+      builder.setLocals(locals);
+    }
+  }
+
+  private static void collectLocals(@NonNull Stmt stmt, @NonNull Set<Local> locals) {
+    for (Value value : stmt.getUsesAndDefs()) {
+      if (value instanceof Local) {
+        locals.add((Local) value);
+      }
     }
   }
 }

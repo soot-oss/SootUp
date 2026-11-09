@@ -24,38 +24,38 @@ package sootup.core.graph;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
 // FIXME: [ms] IMPLEMENT!
 public class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
 
-  @Nonnull
+  @NonNull
   @Override
   public List<ImmutableBasicBlock> getPredecessors() {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<ImmutableBasicBlock> getSuccessors() {
     throw new UnsupportedOperationException("not implemented");
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Map<ClassType, ImmutableBasicBlock> getExceptionalPredecessors() {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Map<? extends ClassType, ImmutableBasicBlock> getExceptionalSuccessors() {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<Stmt> getStmts() {
     throw new UnsupportedOperationException("not implemented");
@@ -66,13 +66,13 @@ public class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getHead() {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getTail() {
     throw new UnsupportedOperationException("not implemented");

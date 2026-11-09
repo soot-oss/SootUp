@@ -8,7 +8,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
@@ -16,8 +15,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
-@Tag("Java8")
+/**
+ * @author Kaustubh Kelkar
+ */
 public class PublicClassTest extends JimpleTestSuiteBase {
 
   @Test

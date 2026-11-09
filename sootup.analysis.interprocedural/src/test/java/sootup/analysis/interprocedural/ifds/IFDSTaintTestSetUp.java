@@ -28,7 +28,6 @@ import heros.InterproceduralCFG;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,13 +35,11 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class IFDSTaintTestSetUp {
 
   protected JavaView view;
@@ -64,10 +61,11 @@ public class IFDSTaintTestSetUp {
   private void runAnalysis() {
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     IFDSTaintAnalysisProblem problem = new IFDSTaintAnalysisProblem(icfg, entryMethod);
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
-        new JimpleIFDSSolver(problem);
+        new JimpleIFDSSolver<>(problem);
     solver.solve(entryMethod.getDeclaringClassType().getClassName());
     solved = solver;
   }
@@ -78,15 +76,15 @@ public class IFDSTaintTestSetUp {
    */
   private void setupSoot(String targetTestClassName) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/taint/binary", SourceType.Application, Collections.emptyList()));
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType(targetTestClassName);
 
     SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =

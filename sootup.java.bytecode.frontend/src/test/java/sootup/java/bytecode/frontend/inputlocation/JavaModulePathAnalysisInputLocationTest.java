@@ -4,16 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -24,10 +21,9 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModulePathAnalysisInputLocationTest {
 
-  private final String testPath = "../shared-test-resources/jigsaw-examples/";
+  private final String testPath = "src/test/resources/jigsaw-examples/";
 
   @Test
   public void testJarModule() {
@@ -39,7 +35,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
@@ -59,7 +55,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
@@ -79,11 +75,9 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
-    ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modB = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
+    ModulePackageName modC = new JavaModuleIdentifierFactory().getPackageName("pkgc", "modc");
 
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
     assertTrue(moduleInfoMain.isPresent());
@@ -105,11 +99,11 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     final ClassType sig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends SootClassSource> clazzOpt = inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
-    AbstractClassSource scs = clazzOpt.get();
+    SootClassSource scs = clazzOpt.get();
     assertEquals(sig, scs.getClassType());
     assertEquals("modules/java.base/java/lang/String.class", scs.getSourcePath().toString());
     JavaSootClass javaSootClass = (JavaSootClass) scs.buildClass(SourceType.Application);
@@ -125,8 +119,7 @@ public class JavaModulePathAnalysisInputLocationTest {
         Collections.singletonList(inputLocation);
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
-    assertEquals(3, classSources.size());
+    assertEquals(3, inputLocation.getClassSources(view).count());
   }
 
   @Test

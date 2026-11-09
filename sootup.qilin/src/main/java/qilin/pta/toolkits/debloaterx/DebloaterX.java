@@ -5,8 +5,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
@@ -111,13 +111,12 @@ public class DebloaterX {
     Map<SootMethod, Set<AllocNode>> m2o = new HashMap<>();
     for (AllocNode heap : pag.getAllocNodes()) {
       SootMethod method = heap.getMethod();
-      if (method == null || PTAUtils.isStaticInitializer(method)) {
+      if (method == null || JavaTypes.isStaticInitializer(pta.getView(), method)) {
         continue;
       }
       m2o.computeIfAbsent(method, k -> new HashSet<>()).add(heap);
     }
-    m2o.keySet()
-        .parallelStream()
+    m2o.keySet().parallelStream()
         .forEach(
             method -> {
               IntraFlowAnalysis ifa = new IntraFlowAnalysis(utility, method);
@@ -203,7 +202,7 @@ public class DebloaterX {
     }
   }
 
-  public Set<AllocNode> getCtxDepHeaps() {
+  public Set<AllocNode> getContextDepHeaps() {
     return ctxDepHeaps;
   }
 }

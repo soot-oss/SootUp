@@ -22,9 +22,9 @@ package sootup.core.util.printer;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,10 +36,10 @@ import sootup.core.types.Type;
 
 /** Interface for different methods of printing out a Stmt. */
 public abstract class StmtPrinter {
-  protected StmtGraph<?> graph = null;
+  protected ControlFlowGraph<?> graph = null;
 
-  @Nonnull
-  public StmtGraph<?> getGraph() {
+  @NonNull
+  public ControlFlowGraph<?> getGraph() {
     return graph;
   }
 

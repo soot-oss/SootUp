@@ -1,7 +1,6 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
@@ -32,7 +31,7 @@ public abstract class BaseFixJarsTest {
   }
 
   public void assertJar(JavaView javaView) {
-    for (JavaSootClass clazz : javaView.getClasses().collect(Collectors.toList())) {
+    for (JavaSootClass clazz : javaView.getClasses().toList()) {
       for (JavaSootMethod javaSootMethod : clazz.getMethods()) {
         if (javaSootMethod.hasBody()) {
           try {

@@ -23,66 +23,36 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
-public class ReversePostOrderBlockTraversal {
-  private final BasicBlock<?> startNode;
+/** A strategy to traverse a ControlFlowGraph in reverse post-order. */
+public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
 
-  public ReversePostOrderBlockTraversal(StmtGraph<?> cfg) {
-    startNode = cfg.getStartingStmtBlock();
+  private final ControlFlowGraph<?> cfg;
+
+  public ReversePostOrderBlockTraversal(ControlFlowGraph<?> cfg) {
+    this.cfg = cfg;
   }
 
-  public ReversePostOrderBlockTraversal(BasicBlock<?> startNode) {
-    this.startNode = startNode;
-  }
-
-  @Nonnull
+  @NonNull
   public Iterable<BasicBlock<?>> getOrder() {
     return this::iterator;
   }
 
-  @Nonnull
+  @NonNull
+  @Override
   public BlockIterator iterator() {
-    return new BlockIterator(startNode);
+    return new ReversePostOrderBlockIterator(this.cfg.getStartingStmtBlock());
   }
 
-  @Nonnull
-  public static List<BasicBlock<?>> getBlocksSorted(StmtGraph<?> cfg) {
-    return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                new ReversePostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
-            false)
-        .collect(Collectors.toList());
-  }
-
-  public static class BlockIterator implements Iterator<BasicBlock<?>> {
-    private List<BasicBlock<?>> blocks;
-    private int i = 0;
-
-    public BlockIterator(@Nonnull BasicBlock<?> startNode) {
-      blocks =
-          StreamSupport.stream(
-                  Spliterators.spliteratorUnknownSize(
-                      new PostOrderBlockTraversal.BlockIterator(startNode), Spliterator.ORDERED),
-                  false)
-              .collect(Collectors.toList());
-      Collections.reverse(blocks);
-    }
-
-    @Override
-    public boolean hasNext() {
-      return i < blocks.size();
-    }
-
-    @Override
-    public BasicBlock<?> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException("There is no more block.");
-      }
-      i++;
-      return blocks.get(i - 1);
-    }
+  @Override
+  @NonNull
+  public List<BasicBlock<?>> getBlockTraversal() {
+    // sizing this from getStmts() would walk the graph with the validating BlockGraphIterator,
+    // whose complaint about an unconnected graph is built from a DotExporter url that sorts the
+    // blocks again - which lands back here and recurses until the stack is gone
+    List<BasicBlock<?>> blocks = new ArrayList<>(this.cfg.getBlocks().size());
+    new ReversePostOrderBlockTraversal(this.cfg).iterator().forEachRemaining(blocks::add);
+    return blocks;
   }
 }

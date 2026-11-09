@@ -27,7 +27,7 @@ package sootup.core.model;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers
@@ -57,47 +57,47 @@ public enum ClassModifier {
     bytecode = i;
   }
 
-  public static boolean isAbstract(@Nonnull Set<ClassModifier> m) {
+  public static boolean isAbstract(@NonNull Set<ClassModifier> m) {
     return m.contains(ABSTRACT);
   }
 
-  public static boolean isFinal(@Nonnull Set<ClassModifier> m) {
+  public static boolean isFinal(@NonNull Set<ClassModifier> m) {
     return m.contains(FINAL);
   }
 
-  public static boolean isInterface(@Nonnull Set<ClassModifier> m) {
+  public static boolean isInterface(@NonNull Set<ClassModifier> m) {
     return m.contains(INTERFACE);
   }
 
-  public static boolean isPrivate(@Nonnull Set<ClassModifier> m) {
+  public static boolean isPrivate(@NonNull Set<ClassModifier> m) {
     return m.contains(PRIVATE);
   }
 
-  public static boolean isProtected(@Nonnull Set<ClassModifier> m) {
+  public static boolean isProtected(@NonNull Set<ClassModifier> m) {
     return m.contains(PROTECTED);
   }
 
-  public static boolean isPublic(@Nonnull Set<ClassModifier> m) {
+  public static boolean isPublic(@NonNull Set<ClassModifier> m) {
     return m.contains(PUBLIC);
   }
 
-  public static boolean isStatic(@Nonnull Set<ClassModifier> m) {
+  public static boolean isStatic(@NonNull Set<ClassModifier> m) {
     return m.contains(STATIC);
   }
 
-  public static boolean isSuper(@Nonnull Set<ClassModifier> m) {
+  public static boolean isSuper(@NonNull Set<ClassModifier> m) {
     return m.contains(SUPER);
   }
 
-  public static boolean isAnnotation(@Nonnull Set<ClassModifier> m) {
+  public static boolean isAnnotation(@NonNull Set<ClassModifier> m) {
     return m.contains(ANNOTATION);
   }
 
-  public static boolean isEnum(@Nonnull Set<ClassModifier> m) {
+  public static boolean isEnum(@NonNull Set<ClassModifier> m) {
     return m.contains(ENUM);
   }
 
-  public static boolean isSynthetic(@Nonnull Set<ClassModifier> m) {
+  public static boolean isSynthetic(@NonNull Set<ClassModifier> m) {
     return m.contains(SYNTHETIC);
   }
 
@@ -107,8 +107,8 @@ public enum ClassModifier {
    * @param m a modifier set
    * @return a textual representation of the modifiers.
    */
-  @Nonnull
-  public static String toString(@Nonnull Set<ClassModifier> m) {
+  @NonNull
+  public static String toString(@NonNull Set<ClassModifier> m) {
     StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {
@@ -155,13 +155,15 @@ public enum ClassModifier {
     return builder.toString();
   }
 
-  @Nonnull
+  @NonNull
   // depends on the natural order of the Enums!
-  public static String toString(@Nonnull EnumSet<ClassModifier> m) {
+  public static String toString(@NonNull EnumSet<ClassModifier> m) {
     return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
-  /** @return the bytecode of this Modifier. */
+  /**
+   * @return the bytecode of this Modifier.
+   */
   public int getBytecode() {
     return bytecode;
   }

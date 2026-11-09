@@ -31,13 +31,13 @@ import heros.ThreadSafe;
 import heros.solver.IDESolver;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
-import sootup.callgraph.CallGraphAlgorithm;
+import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -56,7 +56,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
-  private final MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls;
 
@@ -64,14 +63,22 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected final CallGraph cg;
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
-      new CacheLoader<Stmt, Collection<SootMethod>>() {
-        @Nonnull
+      new CacheLoader<>() {
+        @NonNull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
-          if (!stmt.isInvokableStmt() && !stmt.asInvokableStmt().containsInvokeExpr()) return res;
+          if (!stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isEmpty()) {
+            return res;
+          }
           MethodSignature methodSignature =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
+
+          if (!cg.containsMethod(methodSignature)) {
+            logger.warn(
+                "Method {} is not reachable in the Call Graph!", methodSignature, new Exception());
+            return res;
+          }
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();
@@ -92,14 +99,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderUnitToCallees);
 
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
-      new CacheLoader<SootMethod, Collection<Stmt>>() {
-        @Nonnull
+      new CacheLoader<>() {
+        @NonNull
         @Override
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
-          Set<Stmt> callerStmts =
-              calls.stream().map(c -> c.getInvokableStmt()).collect(Collectors.toSet());
-          return callerStmts;
+          return calls.stream().map(Call::invokableStmt).collect(Collectors.toSet());
         }
       };
 
@@ -109,60 +114,72 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public JimpleBasedInterproceduralCFG(
       View view,
-      MethodSignature mainMethodSignature,
+      List<MethodSignature> cgEntryPoints,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
+    this(
+        new ClassHierarchyAnalysisAlgorithm(view).initialize(cgEntryPoints),
+        view,
+        enableExceptions,
+        includeReflectiveCalls);
+  }
+
+  public JimpleBasedInterproceduralCFG(
+      CallGraph cg, View view, boolean enableExceptions, boolean includeReflectiveCalls) {
     super(enableExceptions);
     this.includeReflectiveCalls = includeReflectiveCalls;
     this.view = view;
-    this.mainMethodSignature = mainMethodSignature;
-    cg = initCallGraph();
+    this.cg = cg;
     initializeStmtToOwner();
   }
 
+  public CallGraph getCg() {
+    return cg;
+  }
+
   public String buildICFGGraph(CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
-    computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
-    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
+    Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph = new LinkedHashMap<>();
+    computeAllCalls(callGraph.getEntryMethods(), signatureToControlFlowGraph, callGraph);
+    return ICFGDotExporter.buildICFGGraph(signatureToControlFlowGraph, view, callGraph);
   }
 
   public void computeAllCalls(
-      MethodSignature methodSignature,
-      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
+      List<MethodSignature> entryPoints,
+      Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph,
       CallGraph callGraph) {
     ArrayList<MethodSignature> visitedMethods = new ArrayList<>();
-    computeAllCalls(methodSignature, signatureToStmtGraph, callGraph, visitedMethods);
+    computeAllCalls(entryPoints, signatureToControlFlowGraph, callGraph, visitedMethods);
   }
 
   private void computeAllCalls(
-      MethodSignature methodSignature,
-      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
+      List<MethodSignature> entryPoints,
+      Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph,
       CallGraph callGraph,
       List<MethodSignature> visitedMethods) {
-    visitedMethods.add(methodSignature);
-    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-    // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
-    if (signatureToStmtGraph.containsKey(methodSignature)) {
-      return;
-    }
-    if (methodOpt.isPresent()) {
-      SootMethod sootMethod = methodOpt.get();
-      if (sootMethod.hasBody()) {
-        StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
-        signatureToStmtGraph.put(methodSignature, stmtGraph);
+    visitedMethods.addAll(entryPoints);
+    for (MethodSignature methodSignature : entryPoints) {
+      final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+      // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
+      if (signatureToControlFlowGraph.containsKey(methodSignature)) {
+        return;
       }
+      if (methodOpt.isPresent()) {
+        SootMethod sootMethod = methodOpt.get();
+        if (sootMethod.hasBody()) {
+          ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getControlFlowGraph();
+          signatureToControlFlowGraph.put(methodSignature, controlFlowGraph);
+        }
+      }
+      callGraph.callTargetsFrom(methodSignature).stream()
+          .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
+          .forEach(
+              nextMethodSignature ->
+                  computeAllCalls(
+                      Collections.singletonList(nextMethodSignature),
+                      signatureToControlFlowGraph,
+                      callGraph,
+                      visitedMethods));
     }
-    callGraph.callTargetsFrom(methodSignature).stream()
-        .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
-        .forEach(
-            nextMethodSignature ->
-                computeAllCalls(
-                    nextMethodSignature, signatureToStmtGraph, callGraph, visitedMethods));
-  }
-
-  private CallGraph initCallGraph() {
-    CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view);
-    return cga.initialize(Collections.singletonList(mainMethodSignature));
   }
 
   protected void initializeStmtToOwner() {
@@ -173,12 +190,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   @Override
-  public Collection<SootMethod> getCalleesOfCallAt(@Nonnull Stmt u) {
+  public Collection<SootMethod> getCalleesOfCallAt(@NonNull Stmt u) {
     return stmtToCallees.getUnchecked(u);
   }
 
   @Override
-  public Collection<Stmt> getCallersOf(@Nonnull SootMethod m) {
+  public Collection<Stmt> getCallersOf(@NonNull SootMethod m) {
     return methodToCallers.getUnchecked(m);
   }
 }

@@ -22,12 +22,12 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.LValue;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
@@ -36,39 +36,26 @@ public abstract class AbstractStmt implements Stmt {
 
   protected final StmtPositionInfo positionInfo;
 
-  public AbstractStmt(@Nonnull StmtPositionInfo positionInfo) {
+  public AbstractStmt(@NonNull StmtPositionInfo positionInfo) {
     this.positionInfo = positionInfo;
   }
 
-  /**
-   * Returns a list of Values used in this Stmt. Note that they are returned in usual evaluation
-   * order.
-   */
   @Override
-  @Nonnull
-  public Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  public void collectUses(List<Value> collector) {}
 
   /**
    * Returns a list of Values defined in this Stmt. There are languages which allow multiple return
    * types/assignments so we return a List
    */
   @Override
-  @Nonnull
+  @NonNull
   public Optional<LValue> getDef() {
     return Optional.empty();
   }
 
-  /** Returns a list of Values, either used or defined or both in this Stmt. */
-  @Override
-  @Nonnull
-  public Stream<Value> getUsesAndDefs() {
-    Optional<LValue> def = getDef();
-    return def.map(lValue -> Stream.concat(getUses(), Stream.of(lValue))).orElseGet(this::getUses);
-  }
-
-  /** Returns the amount of unexceptional successors the Stmt needs to have in the StmtGraph. */
+  /**
+   * Returns the amount of unexceptional successors the Stmt needs to have in the ControlFlowGraph.
+   */
   @Override
   public int getExpectedSuccessorCount() {
     return 1;
@@ -116,7 +103,7 @@ public abstract class AbstractStmt implements Stmt {
    *     replaced in the Stmt
    */
   @Override
-  public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
+  public Stmt withNewUse(@NonNull Value oldUse, @NonNull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     try {
       accept(visitor);

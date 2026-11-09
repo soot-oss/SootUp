@@ -24,25 +24,21 @@ package sootup.core.graph;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
 public interface BasicBlock<V extends BasicBlock<V>> {
-  @Nonnull
-  List<V> getPredecessors();
+  @NonNull List<V> getPredecessors();
 
-  @Nonnull
-  List<V> getSuccessors();
+  @NonNull List<V> getSuccessors();
 
   Map<ClassType, V> getExceptionalPredecessors();
 
-  @Nonnull
-  Map<? extends ClassType, V> getExceptionalSuccessors();
+  @NonNull Map<? extends ClassType, V> getExceptionalSuccessors();
 
-  @Nonnull
-  List<Stmt> getStmts();
+  @NonNull List<Stmt> getStmts();
 
   int getStmtCount();
 
@@ -50,13 +46,11 @@ public interface BasicBlock<V extends BasicBlock<V>> {
     return getStmtCount() <= 0;
   }
 
-  @Nonnull
-  Stmt getHead();
+  @NonNull Stmt getHead();
 
-  @Nonnull
-  Stmt getTail();
+  @NonNull Stmt getTail();
 
-  default boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  default boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseBlock(this, o);
   }
 }

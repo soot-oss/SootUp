@@ -23,16 +23,16 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -51,7 +51,7 @@ import sootup.core.views.View;
 public class TrapTightener implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
     // #486
@@ -59,7 +59,7 @@ public class TrapTightener implements BodyInterceptor {
       throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
     }
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     // collect stmts
@@ -104,10 +104,10 @@ public class TrapTightener implements BodyInterceptor {
   /**
    * Find out all monitored stmts from a given exceptional graph, collect them into a list
    *
-   * @param graph a given exceptionalStmtGraph
+   * @param graph a given exceptionalControlFlowGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
+  private Set<Stmt> monitoredStmts(@NonNull ControlFlowGraph<?> graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -144,16 +144,17 @@ public class TrapTightener implements BodyInterceptor {
   /**
    * Check whether trap-destinations of the given stmt contain the given trap.
    *
-   * @param graph is a exceptional StmtGraph
+   * @param graph is a exceptional ControlFlowGraph
    * @param stmt is a stmt in the given graph
    * @param trap is a given trap
    * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
    *     return false
    */
 
-  // FIXME: [ms] makes no sense in that Implementation! StmtGraph is not the legacy
+  // FIXME: [ms] makes no sense in that Implementation! ControlFlowGraph is not the legacy
   // ExceptionalUnitGraph
-  private boolean mightThrow(@Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Trap trap) {
+  private boolean mightThrow(
+      @NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
     final BasicBlock<?> block = graph.getBlockOf(stmt);
 
     for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :

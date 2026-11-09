@@ -24,7 +24,6 @@ package sootup.java.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -34,8 +33,9 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JIfStmtTest {
   // TODO: [ms] incorporate Printer i.e. Body+Targets
   @Test

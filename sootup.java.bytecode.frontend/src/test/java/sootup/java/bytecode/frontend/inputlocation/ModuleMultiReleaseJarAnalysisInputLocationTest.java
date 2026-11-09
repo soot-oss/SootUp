@@ -26,26 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.ModuleInfoAnalysisInputLocation;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_9_CATEGORY)
 public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
-  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
+  final Path mmrj = Paths.get("src/test/resources/multi-release-jar-modular/mrjar.jar");
 
   @Test
   @Disabled("// FIXME")
@@ -63,15 +59,14 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
 
     final ModuleJavaClassType utilityModule =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("de.upb.swt.multirelease/de.upb.swt.multirelease.Utility");
 
     final ClassType classType2 =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     ModuleInfoAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation8 =
-        new ModuleMultiReleaseJarAnalysisInputLocation(
-            mmrj, SourceType.Application, new JavaLanguage(8));
+        new ModuleMultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, 8);
 
     final JavaView view_8 =
         new JavaModuleView(
@@ -79,8 +74,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
             Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation8));
 
     ModuleMultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation9 =
-        new ModuleMultiReleaseJarAnalysisInputLocation(
-            mmrj, SourceType.Application, new JavaLanguage(9));
+        new ModuleMultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, 9);
     final JavaModuleView view_9 =
         new JavaModuleView(
             Collections.emptyList(),

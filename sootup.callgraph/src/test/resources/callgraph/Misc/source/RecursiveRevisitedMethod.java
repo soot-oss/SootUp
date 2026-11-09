@@ -14,19 +14,19 @@ class RecursiveRevisitedMethod {
   }
 }
 
-public class A{
+class A{
   public int newTarget(){
     return 8;
   }
 }
 
-public class B extends A {
+class B extends A {
   public int newTarget(){
     return 7;
   }
 }
 
-public class C extends A{
+class C extends A{
   public int newTarget(){
     return 1;
   }

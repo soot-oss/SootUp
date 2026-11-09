@@ -22,42 +22,46 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.util.printer.StmtPrinter;
 
+/** Abstract base class for binary operator expressions. */
 public abstract class AbstractBinopExpr implements Expr {
 
-  @Nonnull private final Immediate op1;
-  @Nonnull private final Immediate op2;
+  @NonNull private final Immediate op1;
+  @NonNull private final Immediate op2;
 
-  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  AbstractBinopExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     this.op1 = op1;
     this.op2 = op2;
   }
 
-  @Nonnull
+  /** Returns the left operand of this binary expression. */
+  @NonNull
   public Immediate getOp1() {
     return op1;
   }
 
-  @Nonnull
+  /** Returns the right operand of this binary expression. */
+  @NonNull
   public Immediate getOp2() {
     return op2;
   }
 
   @Override
-  @Nonnull
-  public final Stream<Value> getUses() {
-    return Stream.concat(
-        Stream.concat(Stream.concat(op1.getUses(), Stream.of(op1)), op2.getUses()), Stream.of(op2));
+  public void collectUses(List<Value> collector) {
+    op1.collectUses(collector);
+    collector.add(op1);
+    op2.collectUses(collector);
+    collector.add(op2);
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseAbstractBinopExpr(this, o);
   }
 
@@ -67,8 +71,12 @@ public abstract class AbstractBinopExpr implements Expr {
     return op1.equivHashCode() * 101 + op2.equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
-  /** Returns the unique symbol for an operator. */
-  @Nonnull
+  /**
+   * Returns the unique symbol for an operator.
+   *
+   * @return the operator symbol string (e.g., "+", "-")
+   */
+  @NonNull
   public abstract String getSymbol();
 
   @Override
@@ -79,15 +87,17 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     op1.toString(up);
     up.literal(getSymbol());
     op2.toString(up);
   }
 
-  @Nonnull
-  public abstract AbstractBinopExpr withOp1(@Nonnull Immediate value);
+  /** Returns a copy of this expression with the left operand replaced. */
+  @NonNull
+  public abstract AbstractBinopExpr withOp1(@NonNull Immediate value);
 
-  @Nonnull
-  public abstract AbstractBinopExpr withOp2(@Nonnull Immediate value);
+  /** Returns a copy of this expression with the right operand replaced. */
+  @NonNull
+  public abstract AbstractBinopExpr withOp2(@NonNull Immediate value);
 }

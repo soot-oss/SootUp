@@ -18,6 +18,6 @@ class AdderA {
   public static void method1(){  /* do something*/ }
 
   public static void main(String[] args){
-    Class.main("Something");
+    Class.main(null);
   }
 }

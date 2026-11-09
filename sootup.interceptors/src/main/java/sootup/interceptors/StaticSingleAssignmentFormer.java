@@ -23,23 +23,22 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JPhiExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
@@ -53,12 +52,12 @@ import sootup.core.views.View;
 public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;
 
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // Keys: all blocks in BlockGraph. Values: a set of locals which defined in the corresponding
     // block
@@ -69,7 +68,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Map<Local, Set<BasicBlock<?>>> localToBlocks = new HashMap<>();
 
     // determine blockToDefs and localToBlocks by iterating all blocks.
-    for (BasicBlock<?> block : stmtGraph.getBlocks()) {
+    for (BasicBlock<?> block : controlFlowGraph.getBlocks()) {
       Set<Local> defs = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         Optional<LValue> defOpt = stmt.getDef();
@@ -88,18 +87,19 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       blockToDefs.put(block, defs);
     }
 
-    DominanceFinder dominanceFinder = new DominanceFinder(stmtGraph);
+    DominanceFinder dominanceFinder = new DominanceFinder(controlFlowGraph);
 
-    // decide which block should be add a phi assignStmt, and store such info in a map
+    // decide which block should be added a phi assignStmt, and store such info in a map
     // key: Block which contains phiStmts. Values : a set of phiStmts which contained by
     // corresponding Block
     Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts =
         decideBlockToPhiStmts(builder, dominanceFinder, blockToDefs, localToBlocks);
 
-    // delete meaningless phiStmts and add other phiStmts into stmtGraph
-    addPhiStmts(blockToPhiStmts, stmtGraph, blockToDefs);
+    // delete meaningless phiStmts and add other phiStmts into controlFlowGraph
+    addPhiStmts(blockToPhiStmts, controlFlowGraph, blockToDefs);
 
-    DominanceTree tree = new DominanceTree(dominanceFinder);
+    // some blocks are modified, so DominanceFinder must be updated for building dominance tree
+    DominanceTree tree = new DominanceTree(new DominanceFinder(controlFlowGraph));
 
     Map<Local, Stack<Local>> localToNameStack = new HashMap<>();
     for (Local local : builder.getLocals()) {
@@ -116,13 +116,13 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       Set<FallsThroughStmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
-        final List<Value> uses = stmt.getUses().collect(Collectors.toList());
-        if (!uses.isEmpty() && !constainsPhiExpr(stmt)) {
+        final List<Value> uses = stmt.getUses();
+        if (!uses.isEmpty() && !containsPhiExpr(stmt)) {
           for (Value use : uses) {
             if (use instanceof Local) {
               Local newUse = localToNameStack.get(use).peek();
               Stmt newStmt = stmt.withNewUse(use, newUse);
-              stmtGraph.replaceNode(stmt, newStmt);
+              controlFlowGraph.replaceNode(stmt, newStmt);
               stmt = newStmt;
             }
           }
@@ -137,8 +137,8 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             nextFreeIdx++;
             localToNameStack.get(def).push(newDef);
             FallsThroughStmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
-            stmtGraph.replaceNode(stmt, newStmt);
-            if (constainsPhiExpr(newStmt)) {
+            controlFlowGraph.replaceNode(stmt, newStmt);
+            if (containsPhiExpr(newStmt)) {
               newPhiStmts.add(newStmt);
             }
           }
@@ -164,7 +164,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
               FallsThroughStmt newPhiStmt = addNewArgToPhi(phiStmt, arg, block);
               newPhiStmts.remove(phiStmt);
               newPhiStmts.add(newPhiStmt);
-              stmtGraph.replaceNode(phiStmt, newPhiStmt);
+              controlFlowGraph.replaceNode(phiStmt, newPhiStmt);
             }
           }
           blockToPhiStmts.put(succ, newPhiStmts);
@@ -199,13 +199,13 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   /**
    * This method is used to decide which block should add phiStmts. Note: some phiStmts maybe
-   * contain just one argument, it should be not added into StmtGraph
+   * contain just one argument, it should be not added into ControlFlowGraph
    *
-   * @param dominanceFinder an object of DomimanceFinder, it should be created by the given
+   * @param dominanceFinder an object of DominanceFinder, it should be created by the given
    *     blockGraph
    * @param blockToDefs maps each block to the set of defs' local in itself
    * @param localToBlocks maps each def local to the set of blocks where it is defined.
-   * @return a map, key: block, value: a set of phiStmts that are added in front of the
+   * @return a map, key: block, value: a set of empty phiStmts that are added in front of the
    *     corresponding block
    */
   private Map<BasicBlock<?>, Set<FallsThroughStmt>> decideBlockToPhiStmts(
@@ -233,17 +233,14 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             JAssignStmt phiStmt = createEmptyPhiStmt(local);
 
             // store phiStmt into map
-            if (blockToPhiStmts.containsKey(df)) {
-              blockToPhiStmts.get(df).add(phiStmt);
-              blockToPhiLocals.get(df).add(local);
-            } else {
+            if (!blockToPhiStmts.containsKey(df)) {
               Set<FallsThroughStmt> phiStmts = new LinkedHashSet<>();
-              phiStmts.add(phiStmt);
               blockToPhiStmts.put(df, phiStmts);
               Set<Local> phiLocals = new HashSet<>();
-              phiLocals.add(local);
               blockToPhiLocals.put(df, phiLocals);
             }
+            blockToPhiStmts.get(df).add(phiStmt);
+            blockToPhiLocals.get(df).add(local);
 
             // if the dominance frontier contains no such local, its dominance frontier should add a
             // phiStmt, so add it into queue
@@ -273,7 +270,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
    */
   private void addPhiStmts(
       Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts,
-      MutableStmtGraph blockGraph,
+      MutableControlFlowGraph blockGraph,
       Map<BasicBlock<?>, Set<Local>> blockToDefs) {
 
     // key: phiStmt  value: size of phiStmt's arguments
@@ -303,16 +300,28 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
     // if the arguments' size of a phiStmt is less than 2, delete it from blockToPhiStmts map
     // add other phiStmts into corresponding block
+    Map<BasicBlock<?>, BasicBlock<?>> old2UpdatedBlock = new HashMap<>();
     for (BasicBlock<?> block : blockToPhiStmts.keySet()) {
       Set<FallsThroughStmt> phis = blockToPhiStmts.get(block);
       Set<FallsThroughStmt> checkedPhis = new HashSet<>(blockToPhiStmts.get(block));
       for (FallsThroughStmt cphi : checkedPhis) {
-        if (phiToNum.get(cphi) < 2) {
+        if (!phiToNum.containsKey(cphi) || phiToNum.get(cphi) < 2) {
           phis.remove(cphi);
         }
       }
       for (FallsThroughStmt phi : phis) {
-        blockGraph.insertBefore(block.getHead(), phi);
+        BasicBlock<?> updatedBlock = blockGraph.insertBefore(block.getHead(), phi);
+        if (!updatedBlock.equals(block)) {
+          old2UpdatedBlock.put(block, updatedBlock);
+        }
+      }
+    }
+    // update new blocks in blockToPhiStmts
+    if (!old2UpdatedBlock.isEmpty()) {
+      for (BasicBlock<?> oldB : old2UpdatedBlock.keySet()) {
+        Set<FallsThroughStmt> phis = blockToPhiStmts.get(oldB);
+        blockToPhiStmts.remove(oldB);
+        blockToPhiStmts.put(old2UpdatedBlock.get(oldB), phis);
       }
     }
   }
@@ -326,7 +335,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     return true;
   }
 
-  private boolean constainsPhiExpr(Stmt stmt) {
+  private boolean containsPhiExpr(Stmt stmt) {
     if (stmt instanceof JAssignStmt) {
       for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
         Value use = iterator.next();

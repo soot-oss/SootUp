@@ -18,9 +18,10 @@
 
 package qilin.core.natives;
 
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
+import qilin.core.pag.PAG;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
@@ -28,8 +29,8 @@ import sootup.core.views.View;
 public class JavaLangThreadStart0Native extends NativeMethod {
   private final LValue currentThread;
 
-  public JavaLangThreadStart0Native(View view, SootMethod method, LValue currentThread) {
-    super(view, method);
+  public JavaLangThreadStart0Native(View view, SootMethod method, LValue currentThread, PAG pag) {
+    super(view, method, pag);
     this.currentThread = currentThread;
   }
 

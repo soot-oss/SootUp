@@ -5,15 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-/** @author Zun Wang */
-@Tag("Java8")
+/**
+ * @author Zun Wang
+ */
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
   /**

@@ -30,9 +30,9 @@ import heros.flowfunc.Gen;
 import heros.flowfunc.Identity;
 import heros.flowfunc.KillAll;
 import java.util.*;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
@@ -60,7 +60,8 @@ public class IFDSTaintAnalysisProblem
   @Override
   public Map<Stmt, Set<Value>> initialSeeds() {
     return DefaultSeeds.make(
-        Collections.singleton(entryMethod.getBody().getStmtGraph().getStartingStmt()), zeroValue());
+        Collections.singleton(entryMethod.getBody().getControlFlowGraph().getStartingStmt()),
+        zeroValue());
   }
 
   @Override
@@ -92,7 +93,7 @@ public class IFDSTaintAnalysisProblem
 
   @Override
   protected Value createZeroValue() {
-    return new Local("<<zero>>", NullType.getInstance());
+    return Jimple.newLocal("<<zero>>", NullType.getInstance());
   }
 
   FlowFunction<Value> getNormalFlow(Stmt curr, Stmt succ) {

@@ -25,7 +25,7 @@ package sootup.java.core;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.ClassType;
 
 /**
@@ -35,25 +35,45 @@ import sootup.core.types.ClassType;
  */
 public class AnnotationUsage {
 
-  @Nonnull private final ClassType annotation;
-  @Nonnull private final Map<String, Object> values;
+  @NonNull private final ClassType annotation;
+  @NonNull private final Map<String, Object> values;
+  private final boolean runtimeVisible;
 
-  public AnnotationUsage(@Nonnull ClassType annotation, @Nonnull Map<String, Object> values) {
+  /**
+   * Creates an annotation usage with runtime visibility, without inferring its retention policy.
+   */
+  public AnnotationUsage(@NonNull ClassType annotation, @NonNull Map<String, Object> values) {
+    this(annotation, values, true);
+  }
+
+  /** Creates an annotation usage with the visibility of its containing classfile attribute. */
+  public AnnotationUsage(
+      @NonNull ClassType annotation, @NonNull Map<String, Object> values, boolean runtimeVisible) {
     this.annotation = annotation;
     this.values = values;
+    this.runtimeVisible = runtimeVisible;
   }
 
   /*
    * Rename to getType?
    */
-  @Nonnull
+  @NonNull
   public ClassType getAnnotation() {
     return annotation;
   }
 
-  @Nonnull
+  @NonNull
   public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
+  }
+
+  /**
+   * Returns whether this usage comes from a RuntimeVisible annotation attribute. Nested annotation
+   * values inherit the visibility of the containing annotation. Usages created without an explicit
+   * visibility, including annotation default values, default to {@code true}.
+   */
+  public boolean isRuntimeVisible() {
+    return runtimeVisible;
   }
 
   public String toString() {
@@ -77,11 +97,13 @@ public class AnnotationUsage {
     }
     AnnotationUsage that = (AnnotationUsage) o;
 
-    return annotation.equals(that.annotation) && this.values.equals(that.values);
+    return runtimeVisible == that.runtimeVisible
+        && annotation.equals(that.annotation)
+        && this.values.equals(that.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(annotation, values);
+    return Objects.hash(annotation, values, runtimeVisible);
   }
 }

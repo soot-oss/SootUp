@@ -25,13 +25,12 @@ package sootup.java.core.jimple.common.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.IgnoreLocalNameComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
@@ -43,8 +42,9 @@ import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JAssignStmtTest {
 
   Comparator<Stmt> c =
@@ -67,8 +67,8 @@ public class JAssignStmtTest {
     Immediate numConst1 = IntConstant.getInstance(42);
     Immediate numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("i0", PrimitiveType.getInt());
-    Local field = new Local("i2", PrimitiveType.getInt());
+    Local local = Jimple.newLocal("i0", PrimitiveType.getInt());
+    Local field = Jimple.newLocal("i2", PrimitiveType.getInt());
 
     Stmt lStmt = new JAssignStmt(local, numConst1, nop);
     Stmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -79,12 +79,14 @@ public class JAssignStmtTest {
     assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
 
     assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getInt()), new JAddExpr(numConst1, numConst2), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getInt()),
+                new JAddExpr(numConst1, numConst2),
+                nop)));
 
     // equivTo: switched operands
     assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -95,13 +97,15 @@ public class JAssignStmtTest {
     assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i100differentname", PrimitiveType.getInt()),
+                Jimple.newLocal("i100differentname", PrimitiveType.getInt()),
                 IntConstant.getInstance(42),
                 nop)));
     assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getLong()), LongConstant.getInstance(42), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getLong()),
+                LongConstant.getInstance(42),
+                nop)));
 
     // equivTo: different depth
     assertFalse(lStmt.equivTo(new JAssignStmt(field, new JAddExpr(numConst1, numConst2), nop)));
@@ -116,21 +120,20 @@ public class JAssignStmtTest {
 
     // test JFieldRef cast for JFieldRef - should not throw an Exception
     Local someLocal =
-        new Local("r42", JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"));
+        Jimple.newLocal("r42", new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"));
     final JStaticFieldRef somefield =
         Jimple.newStaticFieldRef(
-            JavaIdentifierFactory.getInstance()
+            new JavaIdentifierFactory()
                 .getFieldSignature(
                     "somefield",
-                    JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"),
+                    new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"),
                     PrimitiveType.getInt()));
     final JAssignStmt jAssignStmtField =
         Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtField.getFieldRef();
 
     // test JFieldRef cast for ArrayRef - should not throw an Exception
-    final JArrayRef jArrayRef =
-        JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
+    final JArrayRef jArrayRef = JavaJimple.newArrayRef(someLocal, IntConstant.getInstance(2));
     final JAssignStmt jAssignStmtArr =
         Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtArr.getArrayRef();

@@ -1,4 +1,5 @@
 package sootup.core.typehierarchy;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

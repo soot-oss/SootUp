@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -26,11 +27,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
-import javax.annotation.Nonnull;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.constant.NumericConstant;
@@ -41,7 +43,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
@@ -53,13 +54,13 @@ import sootup.core.views.View;
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     List<Stmt> defs = new ArrayList<>();
 
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
@@ -76,7 +77,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         BiConsumer<Constant, Stmt> constantStmtBiConsumer =
             (Constant evaluatedValue, Stmt foldingStmt) -> {
               JAssignStmt assignStmt = ((JAssignStmt) foldingStmt).withRValue(evaluatedValue);
-              stmtGraph.replaceNode(foldingStmt, assignStmt);
+              controlFlowGraph.replaceNode(foldingStmt, assignStmt);
               defs.remove(foldingStmt);
               defs.add(assignStmt);
             };
@@ -100,7 +101,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
               || rhs instanceof StringConstant
               || rhs instanceof NullConstant) {
             JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) rhs);
-            stmtGraph.replaceNode(stmt, returnStmt);
+            controlFlowGraph.replaceNode(stmt, returnStmt);
             stmt = returnStmt;
             defs.add(returnStmt); // [ms]: JReturnStmt seems weird as a def? but Soot had it, too.
           }
@@ -110,7 +111,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         BiConsumer<Constant, Stmt> constantStmtBiConsumer =
             (Constant evaluatedValue, Stmt foldingStmt) -> {
               JReturnStmt returnStmt = ((JReturnStmt) foldingStmt).withReturnValue(evaluatedValue);
-              stmtGraph.replaceNode(foldingStmt, returnStmt);
+              controlFlowGraph.replaceNode(foldingStmt, returnStmt);
             };
 
         fold(stmt, constantStmtBiConsumer);

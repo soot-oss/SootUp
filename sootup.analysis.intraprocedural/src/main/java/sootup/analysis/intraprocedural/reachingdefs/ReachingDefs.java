@@ -24,24 +24,25 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 public class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  public ReachingDefs(ControlFlowGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
 
     for (Stmt stmt : graph.getStmts()) {
-      if (!stmt.getUses().findAny().isPresent()) continue;
+      List<Value> uses = stmt.getUses();
+      if (uses.isEmpty()) continue;
 
       Set<VariableDefinition> inset = analysis.getFlowBefore(stmt);
       reachingDefs.put(stmt, new ArrayList<>());
@@ -50,7 +51,7 @@ public class ReachingDefs {
         Value definedVar = def.getValue();
         Optional<Stmt> definingStmt = def.getStmt();
 
-        stmt.getUses()
+        uses.stream()
             .filter(
                 usedVar ->
                     definedVar.equivTo(usedVar)
@@ -67,13 +68,13 @@ public class ReachingDefs {
 
   static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<VariableDefinition>> {
 
-    /** Construct the analysis from StmtGraph. */
-    <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
+    /** Construct the analysis from ControlFlowGraph. */
+    <B extends BasicBlock<B>> ReachingDefsAnalysis(ControlFlowGraph<B> graph) {
       super(graph);
       execute();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     protected Set<VariableDefinition> newInitialFlow() {
       Set<VariableDefinition> initialValues = new HashSet<>();
@@ -87,9 +88,9 @@ public class ReachingDefs {
 
     @Override
     protected void merge(
-        @Nonnull Set<VariableDefinition> in1,
-        @Nonnull Set<VariableDefinition> in2,
-        @Nonnull Set<VariableDefinition> out) {
+        @NonNull Set<VariableDefinition> in1,
+        @NonNull Set<VariableDefinition> in2,
+        @NonNull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in1);
       out.addAll(in2);
@@ -97,14 +98,14 @@ public class ReachingDefs {
 
     @Override
     protected void copy(
-        @Nonnull Set<VariableDefinition> source, @Nonnull Set<VariableDefinition> dest) {
+        @NonNull Set<VariableDefinition> source, @NonNull Set<VariableDefinition> dest) {
       dest.clear();
       dest.addAll(source);
     }
 
     @Override
     protected void flowThrough(
-        @Nonnull Set<VariableDefinition> in, Stmt d, @Nonnull Set<VariableDefinition> out) {
+        @NonNull Set<VariableDefinition> in, Stmt d, @NonNull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in);
       kill(d).forEach(out::remove);

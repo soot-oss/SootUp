@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
@@ -43,13 +42,12 @@ import sootup.java.core.views.JavaView;
  */
 public abstract class AnalysisInputLocationTest {
 
-  final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
-  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final Path apk = Paths.get("../shared-test-resources/apk/SimpleApk.apk");
-  final Path cls = Paths.get("../shared-test-resources/miniTestSuite/java6/binary/Employee.class");
+  final Path war = Paths.get("src/test/resources/java-warApp/dummyWarApp.war");
+  final Path jar = Paths.get("src/test/resources/java-miniapps/MiniApp.jar");
+  final Path cls = Paths.get("src/test/resources/miniTestSuite/java6/binary/Employee.class");
 
   protected IdentifierFactory getIdentifierFactory() {
-    return JavaIdentifierFactory.getInstance();
+    return new JavaIdentifierFactory();
   }
 
   protected void testClassReceival(
@@ -62,8 +60,6 @@ public abstract class AnalysisInputLocationTest {
       assertTrue(clazzOpt.isPresent());
       assertEquals(classType, clazzOpt.get().getClassType());
     }
-    final Collection<? extends SootClassSource> classSources = ns.getClassSources(view);
-
-    assertEquals(classSources.size(), classesFound);
+    assertEquals(ns.getClassSources(view).count(), classesFound);
   }
 }

@@ -3,17 +3,15 @@ package sootup.core.jimple.common.constant;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.MethodHandle.Kind;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.signatures.SignatureInterner;
+import sootup.core.types.*;
 import sootup.core.types.PrimitiveType.IntType;
-import sootup.core.types.VoidType;
 
-@Tag("Java8")
 public class MethodHandleTest {
 
   @Test
@@ -65,12 +63,13 @@ public class MethodHandleTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("test");
+            return SignatureInterner.getPackageName("test");
           }
         };
     MethodSignature ms =
-        new MethodSignature(classType, "m1", Collections.emptyList(), VoidType.getInstance());
-    FieldSignature fs = new FieldSignature(classType, "f", IntType.getInstance());
+        SignatureInterner.getMethodSignature(
+            classType, "m1", Collections.emptyList(), VoidType.getInstance());
+    FieldSignature fs = SignatureInterner.getFieldSignature(classType, "f", IntType.getInstance());
 
     MethodHandle mhms = new MethodHandle(ms, Kind.REF_INVOKE_VIRTUAL.getValue(), classType);
     MethodHandle mhfs = new MethodHandle(fs, Kind.REF_GET_FIELD, classType);

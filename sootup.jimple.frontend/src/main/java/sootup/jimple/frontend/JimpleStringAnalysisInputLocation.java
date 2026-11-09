@@ -24,19 +24,18 @@ package sootup.jimple.frontend;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.stream.Stream;
 import org.antlr.v4.runtime.CharStreams;
-import sootup.core.frontend.OverridingClassSource;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.InMemoryJavaClassSource;
 
 /**
  * This AnalysisInputLocation encapsulates and represents a single Jimple "file" - the contents of
@@ -46,59 +45,69 @@ import sootup.core.views.View;
  */
 public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation {
 
-  @Nonnull final Path path = Paths.get("only-in-memory.jimple");
-  @Nonnull final List<BodyInterceptor> bodyInterceptors;
-  @Nonnull private final OverridingClassSource classSource;
-  @Nonnull final SourceType sourceType;
+  @NonNull final Path path = Paths.get("only-in-memory.jimple");
+  @NonNull final List<BodyInterceptor> bodyInterceptors;
+  @NonNull final SourceType sourceType;
+  @NonNull private final Map<View, InMemoryJavaClassSource> cache;
+  private final String jimpleFileContents;
 
-  public JimpleStringAnalysisInputLocation(@Nonnull String jimpleFileContents) {
-    this(jimpleFileContents, SourceType.Application, Collections.emptyList());
+  public JimpleStringAnalysisInputLocation(@NonNull String jimpleFileContents) {
+    this(
+        jimpleFileContents,
+        SourceType.Application,
+        BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public JimpleStringAnalysisInputLocation(
-      @Nonnull String jimpleFileContents,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull String jimpleFileContents,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
+    this.jimpleFileContents = jimpleFileContents;
     this.bodyInterceptors = bodyInterceptors;
     this.sourceType = sourceType;
-
-    try {
-      JimpleConverter jimpleConverter = new JimpleConverter();
-      classSource =
-          jimpleConverter.run(
-              CharStreams.fromString(jimpleFileContents), this, path, bodyInterceptors);
-    } catch (Exception e) {
-      throw new IllegalArgumentException("No valid Jimple given.", e);
-    }
+    this.cache = new IdentityHashMap<>();
   }
 
-  @Nonnull
+  private synchronized InMemoryJavaClassSource getOverridingClassSource(@NonNull View view) {
+    return cache.computeIfAbsent(
+        view,
+        (v) -> {
+          try {
+            JimpleConverter jimpleConverter = new JimpleConverter(new LazyClassVisitorFactory());
+            return jimpleConverter.run(
+                CharStreams.fromString(jimpleFileContents), this, path, bodyInterceptors, v);
+          } catch (Exception e) {
+            throw new IllegalArgumentException("No valid Jimple given.", e);
+          }
+        });
+  }
+
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
+    InMemoryJavaClassSource classSource = getOverridingClassSource(view);
+    if (!type.equals(classSource.getClassType())) {
+      return Optional.empty();
+    }
     return Optional.of(classSource);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
-    return Collections.singletonList(classSource);
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
+    return Stream.of(getOverridingClassSource(view));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return sourceType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
-  }
-
-  @Nonnull
-  public ClassType getClassType() {
-    return classSource.getClassType();
   }
 }

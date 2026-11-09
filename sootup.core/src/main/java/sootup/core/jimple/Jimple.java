@@ -23,9 +23,11 @@ package sootup.core.jimple;
  */
 
 import java.util.*;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.*;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
@@ -45,7 +47,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.StringTools;
 
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the
@@ -171,48 +172,6 @@ public abstract class Jimple {
     return l;
   }
 
-  /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
-  public static String escape(String str) {
-    if (str.length() == 0) {
-      return "\"\"";
-    }
-    return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
-  }
-
-  public static String unescape(String str) {
-    StringBuilder sb = new StringBuilder();
-
-    // filter for only \ and not \\ preceeding a possible escapable char
-    boolean lastWasRealEscape = false;
-    int lastAppendedPos = 0;
-    int openHyphenPos = -1;
-    for (int i = 0; i < str.length(); i++) {
-      if ((str.charAt(i) == '"' || str.charAt(i) == '\'') && !lastWasRealEscape) {
-        if (openHyphenPos < 0) {
-          if (lastAppendedPos < i) {
-            sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos, i)));
-          }
-          openHyphenPos = i;
-          lastAppendedPos = i;
-        } else if (str.charAt(i) == str.charAt(openHyphenPos)) {
-          sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
-          openHyphenPos = -1;
-          lastAppendedPos = i + 1;
-        }
-      }
-      lastWasRealEscape = !lastWasRealEscape && str.charAt(i) == '\\';
-    }
-
-    // if there has been nothing with hyphens etc.
-    if (lastAppendedPos < str.length()) {
-      sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos)));
-    }
-
-    return sb.toString();
-  }
-
-  public abstract IdentifierFactory getIdentifierFactory();
-
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
   public static JXorExpr newXorExpr(Immediate op1, Immediate op2) {
     return new JXorExpr(op1, op2);
@@ -334,8 +293,9 @@ public abstract class Jimple {
   }
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
-  public JNewArrayExpr newNewArrayExpr(Type type, Immediate size) {
-    return new JNewArrayExpr(type, size, getIdentifierFactory());
+  public static JNewArrayExpr newNewArrayExpr(
+      Type type, Immediate size, IdentifierFactory identifierFactory) {
+    return new JNewArrayExpr(type, size, identifierFactory);
   }
 
   public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, BasicBlock<?>> argToBlock) {
@@ -518,7 +478,27 @@ public abstract class Jimple {
 
   /** Constructs a Local with the given name and type. */
   public static Local newLocal(String name, Type t) {
-    return new Local(name, t);
+    return new LocalImpl(name, t);
+  }
+
+  /**
+   * Constructs a local from a bytecode slot index, or a generic local for {@code -1}.
+   *
+   * @deprecated Use {@link #newSlotLocal(String, Type, int)} or {@link #newLocal(String, Type)}.
+   */
+  @Deprecated
+  public static Local newLocal(String name, Type t, int slotIndex) {
+    return slotIndex == -1 ? newLocal(name, t) : newSlotLocal(name, t, slotIndex);
+  }
+
+  /** Constructs a temporary originating from the JVM operand stack. */
+  public static StackLocal newStackLocal(String name, Type t) {
+    return new StackLocalImpl(name, t);
+  }
+
+  /** Constructs a local originating from the given nonnegative JVM local variable slot. */
+  public static SlotLocal newSlotLocal(String name, Type t, int slotIndex) {
+    return new SlotLocalImpl(name, t, slotIndex);
   }
 
   /** Constructs a JStaticFieldRef(FieldSignature) grammar chunk. */
@@ -542,12 +522,9 @@ public abstract class Jimple {
   }
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
-  public JArrayRef newArrayRef(Local base, Immediate index) {
+  public static JArrayRef newArrayRef(Local base, Immediate index) {
     return new JArrayRef(base, index);
   }
-
-  /** Constructs a CaughtExceptionRef() grammar chunk. */
-  public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
   /** Constructs a NewExpr(RefType) grammar chunk. */
   public static JNewExpr newNewExpr(ClassType type) {
@@ -560,5 +537,72 @@ public abstract class Jimple {
 
   public static Trap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     return new Trap(exception, beginStmt, endStmt, handlerStmt);
+  }
+
+  /** Generic local without JVM slot or operand stack provenance. */
+  private static class LocalImpl extends AbstractLocal {
+    private LocalImpl(@NonNull String name, @NonNull Type type) {
+      super(name, type);
+    }
+
+    @Override
+    public @NonNull Local withName(@NonNull String name) {
+      return new LocalImpl(name, getType());
+    }
+
+    @Override
+    public @NonNull Local withType(@NonNull Type type) {
+      return new LocalImpl(getName(), type);
+    }
+  }
+
+  /** Temporary materialized from the JVM operand stack. */
+  private static final class StackLocalImpl extends LocalImpl implements StackLocal {
+    private StackLocalImpl(@NonNull String name, @NonNull Type type) {
+      super(name, type);
+    }
+
+    @Override
+    public @NonNull StackLocal withName(@NonNull String name) {
+      return new StackLocalImpl(name, getType());
+    }
+
+    @Override
+    public @NonNull StackLocal withType(@NonNull Type type) {
+      return new StackLocalImpl(getName(), type);
+    }
+  }
+
+  /** Local preserving its original JVM local variable slot index. */
+  private static final class SlotLocalImpl extends LocalImpl implements SlotLocal {
+    private final int slotIndex;
+
+    private SlotLocalImpl(@NonNull String name, @NonNull Type type, int slotIndex) {
+      super(name, type);
+      if (slotIndex < 0) {
+        throw new IllegalArgumentException("Slot index must be nonnegative");
+      }
+      this.slotIndex = slotIndex;
+    }
+
+    @Override
+    public int getSlotIndex() {
+      return slotIndex;
+    }
+
+    @Override
+    public @NonNull SlotLocal withName(@NonNull String name) {
+      return new SlotLocalImpl(name, getType(), slotIndex);
+    }
+
+    @Override
+    public @NonNull SlotLocal withType(@NonNull Type type) {
+      return new SlotLocalImpl(getName(), type, slotIndex);
+    }
+
+    @Override
+    public @NonNull SlotLocal withSlotIndex(int slotIndex) {
+      return new SlotLocalImpl(getName(), getType(), slotIndex);
+    }
   }
 }

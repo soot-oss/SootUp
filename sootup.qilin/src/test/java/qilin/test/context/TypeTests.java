@@ -18,17 +18,20 @@
 
 package qilin.test.context;
 
-import org.junit.Test;
-import qilin.test.util.JunitTests;
+import org.junit.jupiter.api.Test;
+import qilin.core.config.ContextSensitivity;
+import qilin.test.util.QilinFrameworkTests;
 
-public class TypeTests extends JunitTests {
+public class TypeTests extends QilinFrameworkTests {
   @Test
   public void testType1k0() {
-    checkAssertions(run("qilin.microben.context.type.Type1k0", "1t"));
+    checkAssertions(
+        run("qilin.microben.context.type.Type1k0", ContextSensitivity.typeSensitive(1, 0)));
   }
 
   @Test
   public void testType2k0() {
-    checkAssertions(run("qilin.microben.context.type.Type2k0", "2t"));
+    checkAssertions(
+        run("qilin.microben.context.type.Type2k0", ContextSensitivity.typeSensitive(2, 1)));
   }
 }

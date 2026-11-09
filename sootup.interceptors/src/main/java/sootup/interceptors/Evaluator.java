@@ -22,10 +22,12 @@ package sootup.interceptors;
  * #L%
  */
 
-import javax.annotation.Nullable;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
 
 /**
  * Evaluates, whether a value is constant and computes its constant value, if possible.
@@ -76,9 +78,46 @@ public class Evaluator {
           return false;
         }
       }
-      return isOp1Constant && isOp2Constant;
+      return isOp1Constant
+          && isOp2Constant
+          && haveFoldableTypes(binExpr, getConstantValueOf(op1), getConstantValueOf(op2));
     }
+    if (op instanceof JCastExpr) {
+      final Value innerOp = ((JCastExpr) op).getOp();
+
+      return isConstantValue(innerOp);
+    }
+
     return false;
+  }
+
+  /**
+   * Checks whether the operation of the given expression is defined for the given constant
+   * operands. The operands of an arithmetic, logical or comparing operation have the same type,
+   * except for the shift distance, which is an int. Before the types are assigned, e.g., in dex
+   * code, where constants are untyped, the operands can have different types, e.g., an int and a
+   * float.
+   */
+  private static boolean haveFoldableTypes(AbstractBinopExpr op, Constant c1, Constant c2) {
+    if (c1 == null || c2 == null) {
+      return false;
+    }
+    if (op instanceof JShlExpr || op instanceof JShrExpr || op instanceof JUshrExpr) {
+      return c1 instanceof ShiftableConstant && c2 instanceof IntConstant;
+    }
+    if (op instanceof JEqExpr || op instanceof JNeExpr) {
+      // numbers are only compared with numbers of the same type, other constants with anything
+      return !(c1 instanceof NumericConstant) || c1.getClass() == c2.getClass();
+    }
+    if (op instanceof JCmpExpr) {
+      // cmp compares longs
+      return c1 instanceof LongConstant && c2 instanceof LongConstant;
+    }
+    if (op instanceof JCmplExpr || op instanceof JCmpgExpr) {
+      // cmpl and cmpg compare floats or doubles
+      return c1 instanceof RealConstant && c1.getClass() == c2.getClass();
+    }
+    return c1.getClass() == c2.getClass();
   }
 
   /**
@@ -178,6 +217,47 @@ public class Evaluator {
       } else {
         // throw new RuntimeException("Unknown binary operator: " + op);
         return null;
+      }
+    } else if (op instanceof JCastExpr) {
+      final Value inner = ((JCastExpr) op).getOp();
+      assert inner instanceof Constant;
+      final Constant cst = (Constant) inner;
+
+      final Type castType = op.getType();
+
+      // Identity is always allowed.
+      if (inner.getType() == castType) {
+        return cst;
+      }
+
+      Number number;
+      if (cst instanceof BooleanConstant) {
+        if (((BooleanConstant) cst).getValue()) number = 1;
+        else number = 0;
+      } else if (cst instanceof IntConstant) {
+        number = ((IntConstant) cst).getValue();
+      } else if (cst instanceof FloatConstant) {
+        number = ((FloatConstant) cst).getValue();
+      } else if (cst instanceof DoubleConstant) {
+        number = ((DoubleConstant) cst).getValue();
+      } else {
+        return null;
+      }
+
+      if (castType == PrimitiveType.getByte()) {
+        return IntConstant.getInstance(number.byteValue());
+      } else if (castType == PrimitiveType.getChar()) {
+        return IntConstant.getInstance((char) number.longValue());
+      } else if (castType == PrimitiveType.getShort()) {
+        return IntConstant.getInstance(number.shortValue());
+      } else if (castType == PrimitiveType.getInt()) {
+        return IntConstant.getInstance(number.intValue());
+      } else if (castType == PrimitiveType.getLong()) {
+        return LongConstant.getInstance(number.longValue());
+      } else if (castType == PrimitiveType.getFloat()) {
+        return FloatConstant.getInstance(number.floatValue());
+      } else if (castType == PrimitiveType.getDouble()) {
+        return DoubleConstant.getInstance(number.doubleValue());
       }
     }
 

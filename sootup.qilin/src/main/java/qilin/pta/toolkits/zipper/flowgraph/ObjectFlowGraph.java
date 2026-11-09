@@ -5,7 +5,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.pta.toolkits.zipper.Global;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -13,7 +13,7 @@ import sootup.core.model.SootMethod;
 
 public class ObjectFlowGraph implements IObjectFlowGraph {
   private final PTA pta;
-  private Map<Node, Set<Edge>> outEdges;
+  private Map<PagNode, Set<Edge>> outEdges;
 
   public ObjectFlowGraph(PTA pta) {
     this.pta = pta;
@@ -21,12 +21,12 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
   }
 
   @Override
-  public Set<Edge> outEdgesOf(Node node) {
+  public Set<Edge> outEdgesOf(PagNode node) {
     return outEdges.getOrDefault(node, Collections.emptySet());
   }
 
   @Override
-  public Set<Node> allNodes() {
+  public Set<PagNode> allNodes() {
     return outEdges.keySet();
   }
 

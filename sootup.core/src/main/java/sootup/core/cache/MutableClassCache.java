@@ -22,7 +22,7 @@ package sootup.core.cache;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -31,7 +31,7 @@ public interface MutableClassCache extends ClassCache {
   SootClass removeClass(ClassType classType);
 
   default SootClass replaceClass(
-      @Nonnull ClassType oldType, @Nonnull ClassType newType, @Nonnull SootClass newClass) {
+      @NonNull ClassType oldType, @NonNull ClassType newType, @NonNull SootClass newClass) {
     SootClass oldClass = removeClass(oldType);
     putClass(newType, newClass);
     return oldClass;

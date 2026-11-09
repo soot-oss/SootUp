@@ -26,38 +26,45 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
-/** @author Markus Schmidt */
-public class JimpleClassProvider implements ClassProvider {
+/**
+ * @author Markus Schmidt
+ */
+public class JimpleClassProvider implements PathbasedClassProvider {
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final View view;
 
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(JimpleClassProvider.class);
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(JimpleClassProvider.class);
 
-  public JimpleClassProvider(List<BodyInterceptor> bodyInterceptors) {
+  public JimpleClassProvider(List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     this.bodyInterceptors = bodyInterceptors;
+    this.view = view;
   }
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();
       return Optional.of(
           jimpleConverter.run(
-              CharStreams.fromPath(sourcePath), inputlocation, sourcePath, bodyInterceptors));
+              CharStreams.fromPath(sourcePath), inputlocation, sourcePath, bodyInterceptors, view));
     } catch (IOException | ResolveException e) {
       logger.warn(
           "The jimple file of "

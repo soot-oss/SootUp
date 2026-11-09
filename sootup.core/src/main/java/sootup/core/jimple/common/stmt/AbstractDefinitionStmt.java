@@ -22,44 +22,48 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.types.Type;
 
+/** Abstract base class for definition statements (assignments). */
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
-  AbstractDefinitionStmt(@Nonnull StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
-  @Nonnull
+  /** Returns the left-hand side (defined value) of this definition. */
+  @NonNull
   public abstract LValue getLeftOp();
 
-  @Nonnull
+  /** Returns the right-hand side (value being assigned) of this definition. */
+  @NonNull
   public abstract Value getRightOp();
 
-  @Nonnull
+  /** Returns the type of the defined value. */
+  @NonNull
   public Type getType() {
     return getLeftOp().getType();
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Optional<LValue> getDef() {
     return Optional.of(getLeftOp());
   }
 
   @Override
-  @Nonnull
-  public final Stream<Value> getUses() {
+  public final void collectUses(List<Value> collector) {
     Value rightOp = getRightOp();
-    return Stream.concat(
-        Stream.concat(getLeftOp().getUses(), Stream.of(rightOp)), rightOp.getUses());
+    getLeftOp().collectUses(collector);
+    collector.add(rightOp);
+    rightOp.collectUses(collector);
   }
 
   @Override
@@ -72,6 +76,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     return false;
   }
 
-  @Nonnull
-  public abstract FallsThroughStmt withNewDef(@Nonnull Local newLocal);
+  /** Returns a copy of this statement with the defined local replaced by newLocal. */
+  @NonNull
+  public abstract FallsThroughStmt withNewDef(@NonNull Local newLocal);
 }

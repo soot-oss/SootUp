@@ -23,11 +23,12 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.util.printer.StmtPrinter;
@@ -36,12 +37,12 @@ import sootup.core.util.printer.StmtPrinter;
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   public JSpecialInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+      @NonNull Local base, @NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[0]));
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseSpecialInvokeExpr(this, o);
   }
 
@@ -51,7 +52,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     builder
         .append(Jimple.SPECIALINVOKE + " ")
-        .append(getBase().toString())
+        .append(getBase())
         .append(".")
         .append(getMethodSignature())
         .append("(");
@@ -63,7 +64,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
     getBase().toString(up);
@@ -75,26 +76,41 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseSpecialInvokeExpr(this);
     return v;
   }
 
   @Override
-  @Nonnull
-  public JSpecialInvokeExpr withBase(@Nonnull Local base) {
+  @NonNull
+  public JSpecialInvokeExpr withBase(@NonNull Local base) {
     return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Override
-  @Nonnull
-  public JSpecialInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  @NonNull
+  public JSpecialInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature) {
     return new JSpecialInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
   @Override
-  @Nonnull
-  public JSpecialInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  @NonNull
+  public JSpecialInvokeExpr withArgs(@NonNull List<Immediate> args) {
     return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
+  }
+
+  @Override
+  public boolean isJSpecialInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JSpecialInvokeExpr asJSpecialInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSpecialInvokeExpr> toJSpecialInvokeExpr() {
+    return Optional.of(this);
   }
 }

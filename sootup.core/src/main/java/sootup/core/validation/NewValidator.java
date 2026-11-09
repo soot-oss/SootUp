@@ -23,9 +23,9 @@ package sootup.core.validation;
  */
 
 import java.util.*;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -50,10 +50,9 @@ public class NewValidator implements BodyValidator {
 
     List<ValidationException> exceptions = new ArrayList<>();
 
-    StmtGraph<?> g = body.getStmtGraph();
+    ControlFlowGraph<?> g = body.getControlFlowGraph();
     for (Stmt u : body.getStmts()) {
-      if (u instanceof JAssignStmt) {
-        JAssignStmt assign = (JAssignStmt) u;
+      if (u instanceof JAssignStmt assign) {
 
         // First seek for a JNewExpr.
         if (assign.getRightOp() instanceof JNewExpr) {
@@ -82,7 +81,7 @@ public class NewValidator implements BodyValidator {
   }
 
   private boolean checkForInitializerOnPath(
-      StmtGraph<?> g, JAssignStmt newStmt, List<ValidationException> exception) {
+      ControlFlowGraph<?> g, JAssignStmt newStmt, List<ValidationException> exception) {
     List<Stmt> workList = new ArrayList<>();
     Set<Stmt> doneSet = new HashSet<>();
     workList.add(newStmt);
@@ -96,9 +95,9 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().containsInvokeExpr()) {
+        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr expr = curStmt.asInvokableStmt().getInvokeExpr().get();
-          if (!(expr instanceof JSpecialInvokeExpr)) {
+          if (!(expr instanceof JSpecialInvokeExpr invoke)) {
             exception.add(
                 new ValidationException(
                     expr,
@@ -115,7 +114,6 @@ public class NewValidator implements BodyValidator {
             return true;
           }
 
-          JSpecialInvokeExpr invoke = (JSpecialInvokeExpr) expr;
           if (aliasingLocals.contains(invoke.getBase())) {
             // We are happy now,continue the loop and check other paths
             continue;
@@ -124,8 +122,7 @@ public class NewValidator implements BodyValidator {
 
         // We are still in the loop, so this was not the constructor call we were looking for
         boolean creatingAlias = false;
-        if (curStmt instanceof JAssignStmt) {
-          JAssignStmt assignCheck = (JAssignStmt) curStmt;
+        if (curStmt instanceof JAssignStmt assignCheck) {
           if (assignCheck.getLeftOp() instanceof Local) {
             if (aliasingLocals.contains(assignCheck.getRightOp())) {
               // A new alias is created.
@@ -151,7 +148,7 @@ public class NewValidator implements BodyValidator {
 
         if (!creatingAlias) {
           for (Iterator<Value> iterator =
-                  curStmt.getUses().filter(use -> use instanceof Local).iterator();
+                  curStmt.getUses().stream().filter(use -> use instanceof Local).iterator();
               iterator.hasNext(); ) {
             Value box = iterator.next();
             if (aliasingLocals.contains(box)) {

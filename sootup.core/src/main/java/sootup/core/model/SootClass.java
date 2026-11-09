@@ -22,101 +22,76 @@ package sootup.core.model;
  * #L%
  */
 
-import com.google.common.base.Suppliers;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import sootup.core.frontend.ResolveException;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.signatures.FieldSubSignature;
+import sootup.core.signatures.MethodSubSignature;
+import sootup.core.signatures.Signature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.JimplePrinter;
+import sootup.core.types.Type;
+import sootup.core.views.View;
 
 /**
  * Soot's counterpart of the source languages class concept. Soot representation of a Java class.
  * They are usually created by a Scene, but can also be constructed manually through the given
  * constructors.
  *
+ * <p>SootClass represents a class/module lives in {@link View}. It may have different
+ * implementations, since we want to support multiple languages. A SootClass must be uniquely
+ * identified by its {@link Signature}
+ *
  * @author Manuel Benz
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass implements HasPosition {
+public interface SootClass extends HasPosition {
 
-  @Nonnull protected final SourceType sourceType;
-  @Nonnull protected final ClassType classSignature;
+  @NonNull SootClassSource getClassSource();
 
-  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
-    super(classSource);
-    this.sourceType = sourceType;
-    this.classSignature = classSource.getClassType();
-  }
+  @NonNull String getName();
 
-  @Nonnull
-  private Set<? extends SootField> lazyFieldInitializer() {
-    Set<SootField> fields;
+  ClassType getType();
 
-    try {
-      fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
-    } catch (ResolveException e) {
-      // TODO: [JMP] Exception handling
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
+  @NonNull Set<? extends SootField> getFields();
 
-    return fields;
-  }
+  @NonNull Set<? extends SootMethod> getMethods();
 
-  @Nonnull
-  private Set<? extends SootMethod> lazyMethodInitializer() {
-    Set<SootMethod> methods;
+  /**
+   * Attempts to retrieve the method with the given subSignature. This method may throw an
+   * AmbiguousStateException if there are more than one method with the given subSignature. If no
+   * method with the given is found, null is returned.
+   */
+  @NonNull Optional<? extends SootMethod> getMethod(@NonNull MethodSubSignature subSignature);
 
-    try {
-      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
-    } catch (ResolveException e) {
-      // TODO: [JMP] Exception handling
-      e.printStackTrace();
-      throw new IllegalStateException(e);
-    }
+  /** Attemtps to retrieve the field with the given FieldSubSignature. */
+  @NonNull Optional<? extends SootField> getField(@NonNull FieldSubSignature subSignature);
 
-    return methods;
-  }
+  /**
+   * Returns the field of this class with the given name. Throws a ResolveException if there is more
+   * than one field with the given name. Returns null if no field with the given name exists.
+   */
+  @NonNull Optional<? extends SootField> getField(@NonNull String name);
 
-  @Nonnull
-  private final Supplier<Set<? extends SootMethod>> _lazyMethods =
-      Suppliers.memoize(this::lazyMethodInitializer);
+  /**
+   * Attempts to retrieve the method with the given name and parameters. This method may throw an
+   * ResolveException if there is more than one method with the given name and parameter.
+   */
+  @NonNull Optional<? extends SootMethod> getMethod(
+      @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes);
 
-  /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
-  @Nonnull
-  public Set<? extends SootMethod> getMethods() {
-    return this._lazyMethods.get();
-  }
-
-  @Nonnull
-  private final Supplier<Set<? extends SootField>> _lazyFields =
-      Suppliers.memoize(this::lazyFieldInitializer);
-
-  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
-  @Override
-  @Nonnull
-  public Set<? extends SootField> getFields() {
-    return this._lazyFields.get();
-  }
-
-  private final Supplier<Set<ClassModifier>> lazyModifiers =
-      Suppliers.memoize(classSource::resolveModifiers);
+  /**
+   * Attempts to retrieve the method with the given name. This method will return an empty Set if
+   * there is no method with the given name.
+   *
+   * @param name the name of the method
+   * @return a set of methods that have the given name
+   */
+  @NonNull Set<? extends SootMethod> getMethodsByName(@NonNull String name);
 
   /** Returns the modifiers of this class in an immutable set. */
-  @Nonnull
-  public Set<ClassModifier> getModifiers() {
-    return lazyModifiers.get();
-  }
-
-  private final Supplier<Set<? extends ClassType>> lazyInterfaces =
-      Suppliers.memoize(classSource::resolveInterfaces);
+  Set<ClassModifier> getModifiers();
 
   /**
    * Returns a backed Chain of the interfaces that are directly implemented by this class. Note that
@@ -124,171 +99,50 @@ public class SootClass extends AbstractClass implements HasPosition {
    * this class may still be implementing additional interfaces in the usual sense by being a
    * subclass of a class which directly implements some interfaces.
    */
-  public Set<? extends ClassType> getInterfaces() {
-    return lazyInterfaces.get();
-  }
+  Set<? extends ClassType> getInterfaces();
 
-  /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(@Nonnull ClassType classSignature) {
-    for (ClassType sc : getInterfaces()) {
-      if (sc.equals(classSignature)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private final Supplier<Optional<? extends ClassType>> lazySuperclass =
-      Suppliers.memoize(classSource::resolveSuperclass);
-
-  /**
-   * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
-   * superclass? False implies that this is the java.lang.Object class. Note that interfaces are
-   * subclasses of the java.lang.Object class.
-   */
-  public boolean hasSuperclass() {
-    return lazySuperclass.get().isPresent();
-  }
+  /** This method returns the outer class. */
+  Optional<? extends ClassType> getOuterClass();
 
   /**
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<? extends ClassType> getSuperclass() {
-    return lazySuperclass.get();
-  }
+  Optional<? extends ClassType> getSuperclass();
 
-  private final Supplier<Optional<? extends ClassType>> lazyOuterClass =
-      Suppliers.memoize(classSource::resolveOuterClass);
+  boolean isInterface();
 
-  public boolean hasOuterClass() {
-    return lazyOuterClass.get().isPresent();
-  }
+  boolean isEnum();
 
-  /** This method returns the outer class. */
-  @Nonnull
-  public Optional<? extends ClassType> getOuterClass() {
-    return lazyOuterClass.get();
-  }
+  boolean isSuper();
 
-  public boolean isInnerClass() {
-    return hasOuterClass();
-  }
+  boolean isConcrete();
 
-  /** Returns the ClassSignature of this class. */
-  @Nonnull
-  @Override
-  public ClassType getType() {
-    return classSignature;
-  }
+  boolean isPublic();
 
-  /** Convenience method; returns true if this class is an interface. */
-  public boolean isInterface() {
-    return ClassModifier.isInterface(this.getModifiers());
-  }
+  boolean isApplicationClass();
 
-  /** Convenience method; returns true if this class is an enumeration. */
-  public boolean isEnum() {
-    return ClassModifier.isEnum(this.getModifiers());
-  }
+  boolean isLibraryClass();
 
-  /** Convenience method; returns true if this class is synchronized. */
-  public boolean isSuper() {
-    return ClassModifier.isSuper(this.getModifiers());
-  }
+  boolean isPrivate();
 
-  /** Returns true if this class is not an interface and not abstract. */
-  public boolean isConcrete() {
-    return !isInterface() && !isAbstract();
-  }
+  boolean isProtected();
 
-  /** Convenience method; returns true if this class is public. */
-  public boolean isPublic() {
-    return ClassModifier.isPublic(this.getModifiers());
-  }
+  boolean isAbstract();
 
-  /** Returns the name of this class. */
-  @Override
-  @Nonnull
-  public String toString() {
-    return classSignature.toString();
-  }
+  boolean isFinal();
 
-  /** Returns the serialized Jimple of this SootClass as String */
-  @Nonnull
-  public String print() {
-    StringWriter output = new StringWriter();
-    JimplePrinter p = new JimplePrinter();
-    p.printTo(this, new PrintWriter(output));
-    return output.toString();
-  }
+  boolean isStatic();
 
-  /** Returns true if this class is an application class. */
-  public boolean isApplicationClass() {
-    return sourceType == SourceType.Application;
-  }
+  boolean isAnnotation();
 
-  /** Returns true if this class is a library class. */
-  public boolean isLibraryClass() {
-    return sourceType == SourceType.Library;
-  }
+  boolean isInnerClass();
 
-  /** Convenience method returning true if this class is private. */
-  public boolean isPrivate() {
-    return ClassModifier.isPrivate(this.getModifiers());
-  }
+  boolean hasSuperclass();
 
-  /** Convenience method returning true if this class is protected. */
-  public boolean isProtected() {
-    return ClassModifier.isProtected(this.getModifiers());
-  }
+  boolean hasOuterClass();
 
-  /** Convenience method returning true if this class is abstract. */
-  public boolean isAbstract() {
-    return ClassModifier.isAbstract(this.getModifiers());
-  }
+  Position getPosition();
 
-  /** Convenience method returning true if this class is final. */
-  public boolean isFinal() {
-    return ClassModifier.isFinal(this.getModifiers());
-  }
-
-  /** Convenience method returning true if this class is static. */
-  public boolean isStatic() {
-    return ClassModifier.isStatic(this.getModifiers());
-  }
-
-  public boolean isAnnotation() {
-    return ClassModifier.isAnnotation(this.getModifiers());
-  }
-
-  private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
-
-  @Nonnull
-  @Override
-  public Position getPosition() {
-    return lazyPosition.get();
-  }
-
-  @Nonnull
-  @Override
-  public SootClassSource getClassSource() {
-    return classSource;
-  }
-
-  @Override
-  @Nonnull
-  public String getName() {
-    return this.classSignature.getFullyQualifiedName();
-  }
-
-  @Nonnull
-  public SootClass withClassSource(@Nonnull SootClassSource classSource) {
-    return new SootClass(classSource, sourceType);
-  }
-
-  @Nonnull
-  public SootClass withSourceType(@Nonnull SourceType sourceType) {
-    return new SootClass(classSource, sourceType);
-  }
+  String print();
 }

@@ -22,9 +22,10 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 import sootup.interceptors.LocalSplitter;
 import sootup.interceptors.TypeAssigner;
 
@@ -39,9 +40,9 @@ import sootup.interceptors.TypeAssigner;
  * Java source code).
  */
 public class TopType extends Type {
-  @Nonnull private static final TopType INSTANCE = new TopType();
+  @NonNull private static final TopType INSTANCE = new TopType();
 
-  @Nonnull
+  @NonNull
   public static TopType getInstance() {
     return INSTANCE;
   }
@@ -49,15 +50,28 @@ public class TopType extends Type {
   private TopType() {}
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V typeVisitor) {
-    /*typeVisitor.defaultCaseType();
+  public <V extends TypeVisitor> V accept(@NonNull V typeVisitor) {
+    typeVisitor.defaultCaseType();
     return typeVisitor;
-    */
-    throw new UnsupportedOperationException();
   }
 
   @Override
   public String toString() {
     return "TopType";
+  }
+
+  @Override
+  protected boolean isTopType() {
+    return true;
+  }
+
+  @Override
+  protected Type asTopType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<Type> toTopType() {
+    return Optional.of(this);
   }
 }

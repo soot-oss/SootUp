@@ -1,4 +1,5 @@
 package sootup.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,15 +22,11 @@ package sootup.core.model;
  * #L%
  */
 
-import com.google.common.collect.ImmutableSet;
-import java.util.EnumSet;
-import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.NoPositionInformation;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.ImmutableUtils;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
@@ -38,158 +35,27 @@ import sootup.core.util.ImmutableUtils;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootField extends SootClassMember<FieldSignature> implements Field {
+public interface SootField extends Field {
 
-  @Nonnull private final ImmutableSet<FieldModifier> modifiers;
-  /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(
-      @Nonnull FieldSignature signature,
-      @Nonnull Iterable<FieldModifier> modifiers,
-      @Nonnull Position position) {
-    super(signature, position);
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
-  }
+  boolean isProtected();
 
-  @Override
-  public boolean isProtected() {
-    return FieldModifier.isProtected(this.getModifiers());
-  }
+  boolean isPrivate();
 
-  @Override
-  public boolean isPrivate() {
-    return FieldModifier.isPrivate(this.getModifiers());
-  }
+  boolean isPublic();
 
-  @Override
-  public boolean isPublic() {
-    return FieldModifier.isPublic(this.getModifiers());
-  }
+  boolean isStatic();
 
-  @Override
-  public boolean isStatic() {
-    return FieldModifier.isStatic(this.getModifiers());
-  }
+  boolean isFinal();
 
-  @Override
-  public boolean isFinal() {
-    return FieldModifier.isFinal(this.getModifiers());
-  }
+  Set<FieldModifier> getModifiers();
 
-  /**
-   * Gets the modifiers of this class member in an immutable set.
-   *
-   * @see FieldModifier
-   */
-  @Nonnull
-  public Set<FieldModifier> getModifiers() {
-    return modifiers;
-  }
+  Type getType();
 
-  @Override
-  public int equivHashCode() {
-    return Objects.hash(modifiers, getSignature());
-  }
+  SootField withSignature(@NonNull FieldSignature signature);
 
-  @Nonnull
-  public Type getType() {
-    return this.getSignature().getType();
-  }
+  SootField withModifiers(@NonNull Iterable<FieldModifier> modifiers);
 
-  @Nonnull
-  public SootField withSignature(@Nonnull FieldSignature signature) {
-    return new SootField(signature, getModifiers(), getPosition());
-  }
+  ClassType getDeclaringClassType();
 
-  @Nonnull
-  public SootField withModifiers(@Nonnull Iterable<FieldModifier> modifiers) {
-    return new SootField(getSignature(), modifiers, getPosition());
-  }
-
-  /**
-   * Creates a {@link SootField}
-   *
-   * @return A {@link SootField}
-   */
-  @Nonnull
-  public static SignatureStep builder() {
-    return new SootFieldBuilder();
-  }
-
-  public interface SignatureStep {
-    @Nonnull
-    ModifierStep withSignature(@Nonnull FieldSignature value);
-  }
-
-  public interface ModifierStep {
-    @Nonnull
-    BuildStep withModifier(@Nonnull Iterable<FieldModifier> modifier);
-
-    @Nonnull
-    default BuildStep withModifiers(@Nonnull FieldModifier first, @Nonnull FieldModifier... rest) {
-      return withModifier(EnumSet.of(first, rest));
-    }
-  }
-
-  public interface BuildStep {
-    BuildStep withPosition(@Nonnull Position pos);
-
-    @Nonnull
-    SootField build();
-  }
-
-  /**
-   * Defines a {@link SootField} builder to provide a fluent API.
-   *
-   * @author Jan Martin Persch
-   */
-  public static class SootFieldBuilder
-      implements SignatureStep, ModifierStep, BuildStep, HasPosition {
-
-    private FieldSignature signature;
-    private Iterable<FieldModifier> modifiers;
-    private Position position = NoPositionInformation.getInstance();
-
-    @Nonnull
-    protected FieldSignature getSignature() {
-      return signature;
-    }
-
-    @Nonnull
-    protected Iterable<FieldModifier> getModifiers() {
-      return modifiers;
-    }
-
-    @Nonnull
-    @Override
-    public Position getPosition() {
-      return position;
-    }
-
-    @Override
-    @Nonnull
-    public ModifierStep withSignature(@Nonnull FieldSignature signature) {
-      this.signature = signature;
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public BuildStep withModifier(@Nonnull Iterable<FieldModifier> modifiers) {
-      this.modifiers = modifiers;
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public BuildStep withPosition(@Nonnull Position position) {
-      this.position = position;
-      return this;
-    }
-
-    @Override
-    @Nonnull
-    public SootField build() {
-      return new SootField(getSignature(), getModifiers(), getPosition());
-    }
-  }
+  public String getName();
 }

@@ -23,18 +23,23 @@ package sootup.callgraph;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
+import org.jspecify.annotations.NonNull;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.CallResolver;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
-import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -46,24 +51,151 @@ import sootup.core.views.View;
 public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   /**
+   * Caches the result of virtual/interface dispatch resolution (everything in {@link #resolveCall}
+   * from the point a call is established to be neither static nor a special invoke onward), keyed
+   * by the target {@link MethodSignature}. That portion of {@link #resolveCall} is (unlike RTA's) a
+   * pure function of the target signature and the current hierarchy state - it does not depend on
+   * the source method, the invoke statement, or any other call-site-specific or
+   * incrementally-mutable state. Many call sites across an app routinely target the same method
+   * (e.g. a common interface method), so this avoids repeating the subclass/method resolution work
+   * for each one.
+   */
+  private final Map<MethodSignature, List<MethodSignature>> virtualDispatchTargetsCache =
+      new HashMap<>();
+
+  /** The {@link TypeHierarchy#getModificationCount()} value as of the last cache population. */
+  private long virtualDispatchTargetsCacheModCount = -1;
+
+  /**
    * The constructor of the CHA algorithm.
    *
    * @param view it contains the data of the classes and methods
    */
-  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view) {
+  public ClassHierarchyAnalysisAlgorithm(@NonNull View view) {
     super(view);
   }
 
-  @Nonnull
-  @Override
-  public CallGraph initialize() {
-    return constructCompleteCallGraph(view, Collections.singletonList(findMainMethod(view)));
+  /**
+   * The constructor of the CHA algorithm that allows restricting which statements' calls are
+   * resolved during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   */
+  public ClassHierarchyAnalysisAlgorithm(@NonNull View view, @NonNull CallResolver callResolver) {
+    super(view, callResolver);
   }
 
-  @Nonnull
+  /**
+   * The constructor of the CHA algorithm that allows restricting which resolved dynamic-dispatch
+   * candidates are admitted/expanded during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view, @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, virtualCallResolver);
+  }
+
+  /**
+   * The constructor of the CHA algorithm that allows restricting which calls are expanded during
+   * call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, callResolver, virtualCallResolver);
+  }
+
+  /**
+   * The constructor of the CHA algorithm that allows restricting which calls are expanded during
+   * call graph construction, and whether entry points' declaring-class {@code <clinit>}s are
+   * eagerly seeded as roots. See {@link AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(View,
+   * CallResolver, VirtualCallResolver, boolean)} for the four classic static-initializer handling
+   * modes this enables.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   * @param seedEntryPointClinits whether entry points' declaring-class {@code <clinit>}s are
+   *     eagerly seeded as roots before traversal starts
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
+  }
+
+  /**
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link ReflectionModel} that turns resolved reflective calls into plain call
+   * edges.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, reflectionModel);
+  }
+
+  /**
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic call
+   * sites.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest CHA constructor: additionally takes a {@link ReflectionModel} that turns resolved
+   * reflective calls into plain call edges and a {@link DynamicInvokeResolver} deciding the targets
+   * of invokedynamic call sites.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver);
+  }
+
+  @NonNull
   @Override
-  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    return constructCompleteCallGraph(view, entryPoints);
+  public CallGraph initialize() {
+    return constructCompleteCallGraph(Collections.singletonList(findMainMethod()));
+  }
+
+  @NonNull
+  @Override
+  public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
+    return constructCompleteCallGraph(entryPoints);
   }
 
   /**
@@ -77,104 +209,146 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    *     algorithm
    */
   @Override
-  @Nonnull
+  @NonNull
   protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()) {
+    if (optInvokeExpr.isEmpty()) {
       return Stream.empty();
     }
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
-      return Stream.empty();
+      return resolveDynamicInvokeTargets((JDynamicInvokeExpr) invokeExpr);
     }
 
-    SootMethod targetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
+    SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);
+    if (actualTargetMethod == null) {
+      // method not implemented, search for implementation in super classes or ínterfaces
+      actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
+      // method implementation isn't contained in the view. return the called method as target
+      if (actualTargetMethod == null) {
+        return Stream.of(targetMethodSignature);
+      }
+    }
 
-    if (targetMethod == null
-        || MethodModifier.isStatic(targetMethod.getModifiers())
+    // special invokes and static invokes can only have one specific target
+    if (MethodModifier.isStatic(actualTargetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return Stream.of(targetMethodSignature);
-    } else {
-      ArrayList<ClassType> noImplementedMethod = new ArrayList<>();
-      List<MethodSignature> targets =
-          resolveAllCallTargets(targetMethodSignature, noImplementedMethod);
-      if (!targetMethod.isAbstract()) {
-        targets.add(targetMethod.getSignature());
-      }
-      if (invokeExpr instanceof JInterfaceInvokeExpr) {
-        IdentifierFactory factory = view.getIdentifierFactory();
-        noImplementedMethod.stream()
-            .map(
-                classType ->
-                    resolveConcreteDispatch(
-                        view,
-                        factory.getMethodSignature(
-                            classType, targetMethodSignature.getSubSignature())))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(targets::add);
-      }
-      return targets.stream();
+      return Stream.of(actualTargetMethod.getSignature());
     }
+
+    return resolveVirtualDispatchTargets(targetMethodSignature, actualTargetMethod).stream();
   }
 
-  private List<MethodSignature> resolveAllCallTargets(
-      MethodSignature targetMethodSignature, ArrayList<ClassType> noImplementedMethod) {
-    ArrayList<MethodSignature> targets = new ArrayList<>();
-    view.getTypeHierarchy()
-        .subtypesOf(targetMethodSignature.getDeclClassType())
-        .forEach(
-            classType -> {
-              SootClass clazz = view.getClass(classType).orElse(null);
-              if (clazz == null) {
-                return;
-              }
-              // check if method is implemented
-              SootMethod method =
-                  clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
-              if (method != null && !method.isAbstract()) {
-                targets.add(method.getSignature());
-              }
-              // save classes with no implementation of the searched method
-              if (method == null && !clazz.isInterface()) {
-                noImplementedMethod.add(classType);
-              }
-              // collect all default methods
-              clazz
-                  .getInterfaces()
-                  .forEach(
-                      interfaceType -> {
-                        SootMethod defaultMethod =
-                            view.getMethod(
-                                    view.getIdentifierFactory()
-                                        .getMethodSignature(
-                                            interfaceType, targetMethodSignature.getSubSignature()))
-                                .orElse(null);
-                        // contains an implemented default method
-                        if (defaultMethod != null && !defaultMethod.isAbstract()) {
-                          targets.add(defaultMethod.getSignature());
-                        }
-                      });
-            });
-    return targets;
+  /**
+   * Resolves the targets of a virtual/interface dispatch for {@code targetMethodSignature}, caching
+   * the result. Safe to cache purely by {@code targetMethodSignature} because - unlike RTA - none
+   * of this computation depends on the source method, the invoke statement, or any other state that
+   * changes independently of the type hierarchy.
+   */
+  @NonNull
+  private List<MethodSignature> resolveVirtualDispatchTargets(
+      @NonNull MethodSignature targetMethodSignature, @NonNull SootMethod actualTargetMethod) {
+    long currentModCount = typeHierarchy.getModificationCount();
+    if (currentModCount != virtualDispatchTargetsCacheModCount) {
+      virtualDispatchTargetsCache.clear();
+      virtualDispatchTargetsCacheModCount = currentModCount;
+    }
+
+    List<MethodSignature> cached = virtualDispatchTargetsCache.get(targetMethodSignature);
+    if (cached != null) {
+      return cached;
+    }
+
+    // get all subclasses
+    // the target method is used since this is the type of the invoke
+    List<? extends SootClass> subclasses =
+        typeHierarchy.subtypeClassesOf(targetMethodSignature.getDeclClassType()).toList();
+
+    // get all targets of these subtypes
+    Stream<MethodSignature> targets = resolveAllCallTargets(subclasses, targetMethodSignature);
+
+    // if the current implementation of the method is a default method the algorithm changes
+    // because superclasses can overwrite default methods which are not subtypes of the interface
+    if (isInterface(actualTargetMethod.getDeclaringClassType())) {
+      // get all default methods of sub-interfaces of the interface
+      // which are interfaces of the subtypes
+      targets =
+          Stream.concat(
+              targets,
+              resolveAllDefaultTargets(
+                  subclasses,
+                  actualTargetMethod.getDeclClassType(),
+                  targetMethodSignature.getSubSignature()));
+      // all subtypes that do not have an implementation of the method
+      // can have an implementation in the supertype
+      targets =
+          Stream.concat(targets, resolveAllOverwrittenTargets(subclasses, targetMethodSignature));
+    }
+
+    // if the actual base method is abstract it cannot be called by the invoke
+    List<MethodSignature> computed =
+        actualTargetMethod.isAbstract()
+            ? targets.toList()
+            : Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets).toList();
+
+    virtualDispatchTargetsCache.put(targetMethodSignature, computed);
+    return computed;
+  }
+
+  private Stream<MethodSignature> resolveAllCallTargets(
+      List<? extends SootClass> subclasses, MethodSignature targetMethodSignature) {
+    return subclasses.stream()
+        .flatMap(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).stream())
+        .filter(sootMethod -> !sootMethod.isAbstract())
+        .map(SootMethod::getSignature);
+  }
+
+  private Stream<MethodSignature> resolveAllDefaultTargets(
+      List<? extends SootClass> subclasses,
+      ClassType interfaceClassType,
+      MethodSubSignature targetSubSignature) {
+    Set<? extends ClassType> interfaces =
+        subclasses.stream()
+            .flatMap(sootClass -> sootClass.getInterfaces().stream())
+            .collect(Collectors.toSet());
+    return typeHierarchy
+        .subinterfacesOf(interfaceClassType)
+        .flatMap(
+            classType ->
+                view
+                    .getMethod(
+                        view.getIdentifierFactory()
+                            .getMethodSignature(classType, targetSubSignature))
+                    .stream())
+        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclClassType()))
+        .map(SootMethod::getSignature);
+  }
+
+  private Stream<MethodSignature> resolveAllOverwrittenTargets(
+      List<? extends SootClass> subclasses, MethodSignature targetMethodSignature) {
+    return subclasses.stream()
+        .filter(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).isEmpty())
+        .flatMap(
+            sootClass ->
+                findMethodInHierarchy(view, sootClass, targetMethodSignature.getSubSignature())
+                    .stream())
+        .map(SootMethod::getSignature);
   }
 
   @Override
   protected void postProcessingMethod(
-      View view,
-      MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull MethodSignature sourceMethod,
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     // do nothing
   }
 
   @Override
   protected void preProcessingMethod(
-      View view,
-      MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull MethodSignature sourceMethod,
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     // do nothing
   }
 }

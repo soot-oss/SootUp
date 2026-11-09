@@ -23,7 +23,7 @@ package sootup.analysis.intraprocedural;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +49,9 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
   int min = Integer.MAX_VALUE;
 
   UniverseSortedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
-    // TODO: [ms] we should index the ordinalMap ourselves? Or for intended reuse just wrap it
+    // TODO: [ms] should we index the ordinalMap ourselves? Or for intended reuse just wrap it
     // together with the universe? and use an IdentityHashMap..
-    assert ordinalMap.size() == universe.size();
+    assert ordinalMap.isEmpty() || ordinalMap.size() == universe.size();
     this.universe = universe;
     this.ordinalMap = ordinalMap;
   }
@@ -97,7 +97,7 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
     }
   }
 
-  int getOrdinal(@Nonnull Object o) {
+  int getOrdinal(@NonNull Object o) {
     Integer i = ordinalMap.get(o);
     if (i == null) {
       throw new NoSuchElementException();
@@ -219,6 +219,34 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
   }
 
   /**
+   * Creates a new full priority queue from a list of {@link FlowAnalysis.Entry} objects. Uses
+   * {@link FlowAnalysis.Entry#ordinal} directly — no HashMap is built.
+   *
+   * @param <F> the flow type
+   * @param entries the universe entries (must have {@code ordinal} already assigned by Orderer)
+   * @return a full priority queue ordered by entry ordinal
+   */
+  public static <F> UniverseSortedPriorityQueue<FlowAnalysis.Entry<F>> ofEntries(
+      List<FlowAnalysis.Entry<F>> entries) {
+    return new EntryBackedPriorityQueue<>(entries);
+  }
+
+  /** Priority queue backed by {@link FlowAnalysis.Entry#ordinal} — eliminates the ordinalMap. */
+  private static final class EntryBackedPriorityQueue<F>
+      extends LargeUniverseSortedPriorityQueue<FlowAnalysis.Entry<F>> {
+
+    EntryBackedPriorityQueue(List<FlowAnalysis.Entry<F>> entries) {
+      super(entries, Collections.emptyMap());
+      addAll();
+    }
+
+    @Override
+    int getOrdinal(@NonNull Object o) {
+      return ((FlowAnalysis.Entry<?>) o).ordinal;
+    }
+  }
+
+  /**
    * Creates a new empty priority queue
    *
    * @param <E>
@@ -298,7 +326,7 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
       return queue.get(ordinal);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<E> iterator() {
       return new Itr() {

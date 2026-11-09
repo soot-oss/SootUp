@@ -19,16 +19,14 @@
 package qilin.stat;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextMethod;
-import qilin.util.PTAUtils;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import qilin.util.JavaTypes;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -76,16 +74,16 @@ public class TypeClientStat implements AbstractStat {
     for (SootMethod sm : reachableMethods) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(sm.getDeclaringClassType());
-      if (!osc.isPresent()) {
+      if (osc.isEmpty()) {
         continue;
       }
       SootClass sc = osc.get();
       boolean app = sc.isApplicationClass();
 
       // All the statements in the method
-      for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
+      for (Stmt st : pta.getPag().getMethodBody(sm).getStmts()) {
         // virtual calls
-        if (st.isInvokableStmt() && st.asInvokableStmt().containsInvokeExpr()) {
+        if (st.isInvokableStmt() && st.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
           if (ie instanceof JStaticInvokeExpr) {
             totalStaticCalls++;
@@ -100,7 +98,7 @@ public class TypeClientStat implements AbstractStat {
 
             for (Iterator<Edge> it = callGraph.edgesOutOf(st); it.hasNext(); )
               targets.add(it.next().tgt());
-            if (targets.size() == 0) {
+            if (targets.isEmpty()) {
               unreachable++;
             }
             if (targets.size() > 1) {
@@ -112,8 +110,7 @@ public class TypeClientStat implements AbstractStat {
               }
             }
           }
-        } else if (st instanceof JAssignStmt) {
-          JAssignStmt assignStmt = (JAssignStmt) st;
+        } else if (st instanceof JAssignStmt assignStmt) {
           Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
@@ -132,7 +129,7 @@ public class TypeClientStat implements AbstractStat {
               if (fails) {
                 break;
               }
-              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
+              fails = !JavaTypes.castNeverFails(pta.getView(), n.getType(), targetType);
             }
 
             if (fails) {
@@ -156,7 +153,8 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric("#May Fail Cast (AppOnly):", String.valueOf(appCastsMayFail));
     exporter.collectMetric(
         "#Static Call Site(Total):",
-        String.valueOf(totalStaticCalls - FakeMainFactory.implicitCallEdges));
+        String.valueOf(
+            totalStaticCalls - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("#Virtual Call Site(Total):", String.valueOf(totalVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(AppOnly):", String.valueOf(appVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(Polymorphic):", String.valueOf(totalPolyCalls));
@@ -166,7 +164,7 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric(
         "#Avg Poly Call Targets:", String.valueOf(1.0 * totalPolyCallTargets / totalPolyCalls));
 
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpPolyCalls(polyCalls);
       exporter.dumpMayFailCasts(mayFailCasts);
     }

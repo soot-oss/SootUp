@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,26 +23,28 @@ package sootup.interceptors;
  */
 import com.google.common.collect.Lists;
 import java.util.*;
-import javax.annotation.Nonnull;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-/** @author Zun Wang * */
+/**
+ * @author Zun Wang *
+ */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local
@@ -86,12 +89,15 @@ public class LocalPacker implements BodyInterceptor {
     // store all new locals with reasonable name, if a local is not in newLoals, means that it
     // doesn't has reasonable name
     Set<Local> newLocals = new LinkedHashSet<>();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       Stmt newStmt = stmt;
       for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
         Value use = iterator.next();
         if (use instanceof Local) {
           Local newLocal = localToNewLocal.get(use);
+          if (newLocal == null) {
+            continue;
+          }
           // assign a reasonable name
           if (!newLocals.contains(newLocal)) {
             int starPos = newLocal.getName().indexOf('*');
@@ -110,21 +116,23 @@ public class LocalPacker implements BodyInterceptor {
       if (defOpt.isPresent() && defOpt.get() instanceof Local) {
         Local def = (Local) defOpt.get();
         Local newLocal = localToNewLocal.get(def);
-        // assign a reasonable name
-        if (!newLocals.contains(newLocal)) {
-          int starPos = newLocal.getName().indexOf('*');
-          String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
-          List<Local> oriLocals = newLocalToLocals.get(newLocal);
-          newLocal = newLocal.withName(reasonableName);
-          newLocals.add(newLocal);
-          for (Local ori : oriLocals) {
-            localToNewLocal.put(ori, newLocal);
+        if (newLocal != null) {
+          // assign a reasonable name
+          if (!newLocals.contains(newLocal)) {
+            int starPos = newLocal.getName().indexOf('*');
+            String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
+            List<Local> oriLocals = newLocalToLocals.get(newLocal);
+            newLocal = newLocal.withName(reasonableName);
+            newLocals.add(newLocal);
+            for (Local ori : oriLocals) {
+              localToNewLocal.put(ori, newLocal);
+            }
           }
+          newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
         }
-        newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
       }
       if (!stmt.equals(newStmt)) {
-        stmtGraph.replaceNode(stmt, newStmt);
+        controlFlowGraph.replaceNode(stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
@@ -194,8 +202,8 @@ public class LocalPacker implements BodyInterceptor {
           }
         }
         if (assignedColor < 0) {
-          colorCount++;
           assignedColor = colorCount;
+          colorCount++;
           typeToColorCount.put(type, colorCount);
         }
         localToColor.put(local, assignedColor);
@@ -215,7 +223,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    StmtGraph<?> graph = builder.getStmtGraph();
+    ControlFlowGraph<?> graph = builder.getControlFlowGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     // TODO: check if sorted Stmts are necessary

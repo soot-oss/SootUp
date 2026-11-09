@@ -22,22 +22,23 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that throws an Exception */
 public final class JThrowStmt extends AbstractStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
-  public JThrowStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+  public JThrowStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
@@ -48,14 +49,29 @@ public final class JThrowStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
     op.toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJThrowStmt() {
+    return true;
+  }
+
+  @Override
+  public JThrowStmt asJThrowStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JThrowStmt> toJThrowStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseThrowStmt(this);
     return v;
   }
@@ -80,25 +96,25 @@ public final class JThrowStmt extends AbstractStmt {
     return comparator.caseThrowStmt(this, o);
   }
 
-  @Nonnull
-  public JThrowStmt withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JThrowStmt withOp(@NonNull Immediate op) {
     return new JThrowStmt(op, getPositionInfo());
   }
 
-  @Nonnull
-  public JThrowStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JThrowStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JThrowStmt(getOp(), positionInfo);
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
-  public Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 
   @Override

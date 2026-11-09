@@ -22,26 +22,26 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 /** A 64-bit integer constant */
-public class LongConstant implements ShiftableConstant<LongConstant> {
+public final class LongConstant implements ShiftableConstant<LongConstant> {
 
   private final long value;
 
-  private LongConstant(@Nonnull long value) {
+  private LongConstant(final long value) {
     this.value = value;
   }
 
-  public static LongConstant getInstance(@Nonnull long value) {
+  public static LongConstant getInstance(final long value) {
     return new LongConstant(value);
   }
 
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return c instanceof LongConstant && ((LongConstant) c).value == value;
   }
 
@@ -52,74 +52,74 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
   }
 
   // PTC 1999/06/28
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant add(@Nonnull LongConstant c) {
+  public LongConstant add(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value + c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant subtract(@Nonnull LongConstant c) {
+  public LongConstant subtract(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value - c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant multiply(@Nonnull LongConstant c) {
+  public LongConstant multiply(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value * c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant divide(@Nonnull LongConstant c) {
+  public LongConstant divide(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value / c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant remainder(@Nonnull LongConstant c) {
+  public LongConstant remainder(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value % c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull LongConstant c) {
+  public BooleanConstant equalEqual(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value == c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull LongConstant c) {
+  public BooleanConstant notEqual(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value != c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThan(@Nonnull LongConstant c) {
+  public BooleanConstant lessThan(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value < c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@Nonnull LongConstant c) {
+  public BooleanConstant lessThanOrEqual(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value <= c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThan(@Nonnull LongConstant c) {
+  public BooleanConstant greaterThan(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value > c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@Nonnull LongConstant c) {
+  public BooleanConstant greaterThanOrEqual(@NonNull final LongConstant c) {
     return BooleanConstant.getInstance(value >= c.value);
   }
 
   /** Compares the value of LongConstant. */
-  public IntConstant cmp(LongConstant c) {
+  public IntConstant cmp(final LongConstant c) {
     if (value > c.value) {
       return IntConstant.getInstance(1);
     } else if (value == c.value) {
@@ -129,46 +129,46 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public LongConstant negate() {
     return LongConstant.getInstance(-(value));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant and(@Nonnull LongConstant c) {
+  public LongConstant and(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value & c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant or(@Nonnull LongConstant c) {
+  public LongConstant or(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value | c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant xor(@Nonnull LongConstant c) {
+  public LongConstant xor(@NonNull final LongConstant c) {
     return LongConstant.getInstance(value ^ c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant shiftLeft(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(value << c.getValue());
+  public LongConstant shiftLeft(@NonNull final ShiftableConstant<?> c) {
+    return LongConstant.getInstance(value << c.getValue().intValue());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant shiftRight(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(value >> c.getValue());
+  public LongConstant shiftRight(@NonNull final ShiftableConstant<?> c) {
+    return LongConstant.getInstance(value >> c.getValue().intValue());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public LongConstant unsignedShiftRight(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(value >>> c.getValue());
+  public LongConstant unsignedShiftRight(@NonNull final ShiftableConstant<?> c) {
+    return LongConstant.getInstance(value >>> c.getValue().intValue());
   }
 
   @Override
@@ -176,19 +176,25 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
     return value + "L";
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getLong();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseLongConstant(this);
     return v;
   }
 
-  public long getValue() {
+  @NonNull
+  @Override
+  public Long getValue() {
+    return value;
+  }
+
+  public long longValue() {
     return value;
   }
 }

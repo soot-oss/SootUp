@@ -1,46 +1,68 @@
 package sootup.analysis.intraprocedural;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Local;
 
 /** simple dataflow fact for interprocedural dataflow analysis adaptable with a state enum * */
 public class Fact<S> {
 
   /** The aliases that point to the same object. */
-  @Nonnull private final Set<Local> aliases;
+  @NonNull private final Set<Local> aliases;
 
   /** The state of the object. */
-  @Nonnull private S state;
+  @NonNull private S state;
 
-  public Fact(@Nonnull S initialState) {
+  public Fact(@NonNull S initialState) {
     this(new HashSet<>(), initialState);
   }
 
-  public Fact(@Nonnull Fact<S> originFact) {
+  public Fact(@NonNull Fact<S> originFact) {
     this(new HashSet<>(originFact.aliases), originFact.state);
   }
 
-  protected Fact(@Nonnull Set<Local> aliases, @Nonnull S initialState) {
+  protected Fact(@NonNull Set<Local> aliases, @NonNull S initialState) {
     this.aliases = aliases;
     this.state = initialState;
   }
 
-  public void updateState(@Nonnull S state) {
+  public void updateState(@NonNull S state) {
     this.state = state;
   }
 
-  public void addAlias(@Nonnull Local alias) {
+  public void addAlias(@NonNull Local alias) {
     this.aliases.add(alias);
   }
 
-  public boolean containsAlias(@Nonnull Local value) {
+  public boolean containsAlias(@NonNull Local value) {
     return aliases.contains(value);
   }
 
-  @Nonnull
+  @NonNull
   public S getState() {
     return state;
   }

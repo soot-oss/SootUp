@@ -26,8 +26,8 @@ import heros.InterproceduralCFG;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.AbstractStmt;
 
 /**
@@ -63,7 +63,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
   Set<N> allNonCallEndNodes();
 
   // also exposed to some clients who need it
-  StmtGraph getOrCreateStmtGraph(M body);
+  ControlFlowGraph getOrCreateControlFlowGraph(M body);
 
   List<Value> getParameterRefs(M m);
 

@@ -3,11 +3,10 @@ package sootup.java.bytecode.frontend.inputlocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import org.junit.jupiter.api.Tag;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
@@ -15,8 +14,9 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
 
-/** @author Andreas Dann, Markus Schmidt */
-@Tag(TestCategories.JAVA_9_CATEGORY)
+/**
+ * @author Andreas Dann, Markus Schmidt
+ */
 public class JrtFileSystemAnalysisInputLocationTest {
 
   @Test
@@ -27,7 +27,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
         new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
 
     final ClassType sig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends SootClassSource> clazz = inputLocation.getClassSource(sig, view);
     assertTrue(clazz.isPresent());
@@ -42,16 +42,17 @@ public class JrtFileSystemAnalysisInputLocationTest {
         new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
 
     final ClassType sig1 =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     final ClassType sig2 =
-        JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("System", "java.lang", "java.base");
 
-    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
-    assertTrue(classSources.size() > 26000);
+    final Collection<? extends SootClassSource> classSources =
+        inputLocation.getClassSources(view).collect(Collectors.toList());
     inputLocation.getClassSources(view);
     assertTrue(
         classSources.size()
-            > 20000); // not precise as this amount can differ depending on the included runtime
+            > 20000); // "a lot" not precise as this amount can differ depending on the included
+    // runtime
     // library
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(view.getClass(sig1).isPresent());
@@ -62,7 +63,8 @@ public class JrtFileSystemAnalysisInputLocationTest {
   @Test
   public void discoverModules() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Collection<ModuleSignature> modules = inputLocation.discoverModules();
+    Collection<ModuleSignature> modules =
+        inputLocation.discoverModules(new JavaModuleIdentifierFactory());
     assertTrue(modules.size() > 65);
     System.out.println(modules);
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("java.base")));

@@ -1,10 +1,11 @@
 package sootup.core;
 
 import java.util.Collections;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -19,7 +20,8 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.signatures.SignatureInterner;
+import sootup.core.types.*;
 import sootup.core.types.PrimitiveType.IntType;
 
 public class TestUtil {
@@ -40,7 +42,7 @@ public class TestUtil {
    * @return a dummy method signature
    */
   public static MethodSignature createDummyMethodSignature() {
-    return new MethodSignature(
+    return SignatureInterner.getMethodSignature(
         TestUtil.createDummyClassType(), TestUtil.createDummyMethodSubSignature());
   }
 
@@ -50,7 +52,8 @@ public class TestUtil {
    * @return a dummy method sub signature
    */
   public static MethodSubSignature createDummyMethodSubSignature() {
-    return new MethodSubSignature("test", Collections.emptyList(), IntType.getInstance());
+    return SignatureInterner.getMethodSubSignature(
+        "test", IntType.getInstance(), Collections.emptyList());
   }
 
   /**
@@ -60,7 +63,7 @@ public class TestUtil {
    * @return a dummy field signature
    */
   public static FieldSignature createDummyFieldSignature() {
-    return new FieldSignature(
+    return SignatureInterner.getFieldSignature(
         TestUtil.createDummyClassType(), TestUtil.createDummyFieldSubSignature());
   }
 
@@ -70,7 +73,7 @@ public class TestUtil {
    * @return a dummy field sub signature
    */
   public static FieldSubSignature createDummyFieldSubSignature() {
-    return new FieldSubSignature("test", IntType.getInstance());
+    return SignatureInterner.getFieldSubSignature("test", IntType.getInstance());
   }
 
   /**
@@ -79,7 +82,7 @@ public class TestUtil {
    * @return a dummy Local for an Object
    */
   public static Local createDummyLocalForObject() {
-    return new Local("a", TestUtil.createDummyClassType());
+    return Jimple.newLocal("a", TestUtil.createDummyClassType());
   }
 
   /**
@@ -88,7 +91,7 @@ public class TestUtil {
    * @return a dummy Local for a int value
    */
   public static Local createDummyLocalForInt() {
-    return new Local("b", IntType.getInstance());
+    return Jimple.newLocal("b", IntType.getInstance());
   }
 
   /**
@@ -169,7 +172,7 @@ public class TestUtil {
 
       @Override
       public PackageName getPackageName() {
-        return new PackageName("test");
+        return SignatureInterner.getPackageName("test");
       }
     };
   }

@@ -26,13 +26,18 @@ import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
@@ -50,13 +55,13 @@ public class Body implements HasPosition {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final StmtGraph<?> graph;
+  @NonNull private final ControlFlowGraph<?> graph;
 
   /** The Position Information in the Source for this Body. */
-  @Nonnull private final Position position;
+  @NonNull private final Position position;
 
   /** The MethodSignature associated with this Body. */
-  @Nonnull private final MethodSignature methodSignature;
+  @NonNull private final MethodSignature methodSignature;
 
   /**
    * Creates an body which is not associated to any method.
@@ -64,13 +69,13 @@ public class Body implements HasPosition {
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
   private Body(
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Set<Local> locals,
-      @Nonnull StmtGraph<?> stmtGraph,
-      @Nonnull Position position) {
+      @NonNull MethodSignature methodSignature,
+      @NonNull Set<Local> locals,
+      @NonNull ControlFlowGraph<?> controlFlowGraph,
+      @NonNull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.graph = MutableBlockStmtGraph.createUnmodifiableStmtGraph(stmtGraph);
+    this.graph = MutableBlockControlFlowGraph.createUnmodifiableControlFlowGraph(controlFlowGraph);
     this.position = position;
   }
 
@@ -79,8 +84,8 @@ public class Body implements HasPosition {
    *
    * @return The this local
    */
-  public static Local getThisLocal(StmtGraph<?> stmtGraph) {
-    for (Stmt stmt : stmtGraph.getNodes()) {
+  public static Local getThisLocal(ControlFlowGraph<?> controlFlowGraph) {
+    for (Stmt stmt : controlFlowGraph.getNodes()) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
         return ((JIdentityStmt) stmt).getLeftOp();
@@ -94,7 +99,7 @@ public class Body implements HasPosition {
    *
    * @return the method that owns this body.
    */
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature() {
     return methodSignature;
   }
@@ -107,17 +112,6 @@ public class Body implements HasPosition {
   /** Returns a backed chain of the locals declared in this Body. */
   public Set<Local> getLocals() {
     return locals;
-  }
-
-  /**
-   * Returns an unmodifiable view of the traps found in this Body. @Deprecated the exceptional flow
-   * information is already integrated into the StmtGraphs BasicBlocks.getExceptionalFlows() -
-   * exists to make porting tools from Soot easier
-   */
-  @Nonnull
-  @Deprecated()
-  public List<Trap> getTraps() {
-    return graph.buildTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -149,7 +143,7 @@ public class Body implements HasPosition {
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
-  @Nonnull
+  @NonNull
   public Local getParameterLocal(int i) {
     for (Stmt stmt : graph) {
       // TODO: possible optimisation see getParameterLocals()
@@ -173,7 +167,7 @@ public class Body implements HasPosition {
    *     ordered as per the parameter index.
    * @throws RuntimeException if a JParameterRef is missing
    */
-  @Nonnull
+  @NonNull
   public Collection<Local> getParameterLocals() {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
@@ -199,22 +193,18 @@ public class Body implements HasPosition {
   /**
    * returns the control flow graph that represents this body into a linear List of statements. for
    * more detailed information of the underlying CFG - or just parts of it - have a look at
-   * getStmtGraph()
+   * getControlFlowGraph()
    *
    * @return the statements in this Body
    */
-  @Nonnull
+  @NonNull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
-    }
-    return stmts;
+    return graph.getStmts();
   }
 
-  @Nonnull
-  // TODO: [ms] should be an ImmutableStmtGraph!
-  public StmtGraph<?> getStmtGraph() {
+  @NonNull
+  // TODO: [ms] should be an ImmutableControlFlowGraph!
+  public ControlFlowGraph<?> getControlFlowGraph() {
     return graph;
   }
 
@@ -228,24 +218,24 @@ public class Body implements HasPosition {
     return writer.toString();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Position getPosition() {
     return position;
   }
 
   /** returns a List of Branch targets of Branching Stmts */
-  @Nonnull
-  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    return getStmtGraph().getBranchTargetsOf(fromStmt);
+  @NonNull
+  public List<Stmt> getBranchTargetsOf(@NonNull BranchingStmt fromStmt) {
+    return getControlFlowGraph().getBranchTargetsOf(fromStmt);
   }
 
-  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    return getStmtGraph().isStmtBranchTarget(targetStmt);
+  public boolean isStmtBranchTarget(@NonNull Stmt targetStmt) {
+    return getControlFlowGraph().isStmtBranchTarget(targetStmt);
   }
 
   /** Returns the first non-identity stmt in this body. */
-  @Nonnull
+  @NonNull
   public Stmt getFirstNonIdentityStmt() {
     Iterator<Stmt> it = getStmts().iterator();
     Stmt o = null;
@@ -267,7 +257,7 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Stream<Value> getUses() {
-    return graph.getNodes().stream().flatMap(Stmt::getUses);
+    return graph.getNodes().stream().flatMap(stmt -> stmt.getUses().stream());
   }
 
   /**
@@ -280,7 +270,7 @@ public class Body implements HasPosition {
     return getDefs(graph);
   }
 
-  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
+  public static Collection<LValue> getDefs(ControlFlowGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -289,105 +279,168 @@ public class Body implements HasPosition {
     return defList;
   }
 
-  @Nonnull
-  public Body withLocals(@Nonnull Set<Local> locals) {
-    return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
+  @NonNull
+  public Body withLocals(@NonNull Set<Local> locals) {
+    return new Body(getMethodSignature(), locals, getControlFlowGraph(), getPosition());
   }
 
   public static BodyBuilder builder() {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(@Nonnull MutableStmtGraph graph) {
+  public static BodyBuilder builder(@NonNull MutableControlFlowGraph graph) {
     return new BodyBuilder(graph);
   }
 
-  public static BodyBuilder builder(@Nonnull Body body, Set<MethodModifier> modifiers) {
+  public static BodyBuilder builder(@NonNull Body body, Set<MethodModifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
 
   /** The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern) */
   public static class BodyBuilder implements HasPosition {
-    @Nonnull private Set<Local> locals = new LinkedHashSet<>();
-    @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
+    @NonNull private Set<Local> locals = new LinkedHashSet<>();
+    @NonNull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
-    @Nonnull private final MutableStmtGraph graph;
+    @NonNull private final MutableControlFlowGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
-      graph = new MutableBlockStmtGraph();
+      graph = new MutableBlockControlFlowGraph();
     }
 
-    BodyBuilder(@Nonnull MutableStmtGraph graph) {
+    BodyBuilder(@NonNull MutableControlFlowGraph graph) {
       this.graph = graph;
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Set<MethodModifier> modifiers) {
+    BodyBuilder(@NonNull Body body, @NonNull Set<MethodModifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(new LinkedHashSet<>(body.getLocals()));
       setPosition(body.getPosition());
-      graph = new MutableBlockStmtGraph(body.getStmtGraph());
+      graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     }
 
-    @Nonnull
-    public MutableStmtGraph getStmtGraph() {
+    @NonNull
+    public MutableControlFlowGraph getControlFlowGraph() {
       return graph;
     }
 
-    /* Gets an ordered copy of the Stmts in the StmtGraph */
-    @Nonnull
+    /* Gets an ordered copy of the Stmts in the ControlFlowGraph */
+    @NonNull
     public List<Stmt> getStmts() {
       return graph.getStmts();
     }
 
-    @Nonnull
+    @NonNull
     public Set<Local> getLocals() {
       return locals;
     }
 
-    @Nonnull
-    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
+    @NonNull
+    public BodyBuilder setLocals(@NonNull Set<Local> locals) {
       this.locals = locals;
       return this;
     }
 
-    @Nonnull
-    public BodyBuilder addLocal(@Nonnull Local local) {
+    @NonNull
+    public BodyBuilder addLocal(@NonNull Local local) {
       locals.add(local);
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+    public void replaceLocal(@NonNull Local existingLocal, @NonNull Local newLocal) {
       if (!locals.contains(existingLocal)) {
         throw new IllegalArgumentException(
             "The given existing Local '" + existingLocal + "' is not in the body!");
       }
 
-      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+      for (Stmt currStmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
         final Stmt stmt = currStmt;
-        if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
+        if (currStmt.getUses().stream().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
         }
         Optional<LValue> defOpt = currStmt.getDef();
         if (defOpt.isPresent()) {
           LValue def = defOpt.get();
-          if (def == existingLocal || def.getUses().anyMatch(v -> v == existingLocal)) {
+          if (def == existingLocal || def.getUses().stream().anyMatch(v -> v == existingLocal)) {
             if (currStmt instanceof AbstractDefinitionStmt) {
               currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
         }
         if (stmt != currStmt) {
-          getStmtGraph().replaceNode(stmt, currStmt);
+          getControlFlowGraph().replaceNode(stmt, currStmt);
         }
       }
       locals.remove(existingLocal);
       locals.add(newLocal);
     }
 
-    public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
+    /**
+     * Replaces each key of the map by its value, like {@link #replaceLocal(Local, Local)} for every
+     * entry, but in a single pass over the statements: a statement is only rewritten for the locals
+     * it uses or defines. Calling {@link #replaceLocal(Local, Local)} for many locals scans the
+     * whole body for each of them.
+     *
+     * @param replacements the locals to replace (compared by identity) and their replacements
+     */
+    public void replaceLocals(@NonNull Map<Local, Local> replacements) {
+      if (replacements.isEmpty()) {
+        return;
+      }
+      Map<Local, Local> byIdentity = new IdentityHashMap<>(replacements);
+      for (Local existingLocal : byIdentity.keySet()) {
+        if (!locals.contains(existingLocal)) {
+          throw new IllegalArgumentException(
+              "The given existing Local '" + existingLocal + "' is not in the body!");
+        }
+      }
+
+      for (Stmt stmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
+        Stmt currStmt = stmt;
+        for (Local existingLocal : localsOf(stmt, byIdentity)) {
+          Local newLocal = byIdentity.get(existingLocal);
+          if (currStmt.getUses().stream().anyMatch(v -> v == existingLocal)) {
+            currStmt = currStmt.withNewUse(existingLocal, newLocal);
+          }
+          Optional<LValue> defOpt = currStmt.getDef();
+          if (defOpt.isPresent()) {
+            LValue def = defOpt.get();
+            if (def == existingLocal || def.getUses().stream().anyMatch(v -> v == existingLocal)) {
+              if (currStmt instanceof AbstractDefinitionStmt) {
+                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
+              }
+            }
+          }
+        }
+        if (stmt != currStmt) {
+          getControlFlowGraph().replaceNode(stmt, currStmt);
+        }
+      }
+      for (Map.Entry<Local, Local> replacement : byIdentity.entrySet()) {
+        locals.remove(replacement.getKey());
+        locals.add(replacement.getValue());
+      }
+    }
+
+    /** The locals of the map that the statement uses or defines, in the order they occur */
+    private static Collection<Local> localsOf(Stmt stmt, Map<Local, Local> byIdentity) {
+      Set<Local> found = Collections.newSetFromMap(new IdentityHashMap<>());
+      List<Local> ordered = new ArrayList<>();
+      stmt.getUsesAndDefs()
+          .forEach(
+              value -> {
+                if (value instanceof Local
+                    && byIdentity.containsKey(value)
+                    && found.add((Local) value)) {
+                  ordered.add((Local) value);
+                }
+              });
+      return ordered;
+    }
+
+    public BodyBuilder setModifiers(@NonNull Set<MethodModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
@@ -398,8 +451,8 @@ public class Body implements HasPosition {
       return position;
     }
 
-    @Nonnull
-    public BodyBuilder setPosition(@Nonnull Position position) {
+    @NonNull
+    public BodyBuilder setPosition(@NonNull Position position) {
       this.position = position;
       return this;
     }
@@ -408,12 +461,12 @@ public class Body implements HasPosition {
       return methodSig;
     }
 
-    public BodyBuilder setMethodSignature(@Nonnull MethodSignature methodSig) {
+    public BodyBuilder setMethodSignature(@NonNull MethodSignature methodSig) {
       this.methodSig = methodSig;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Body build() {
 
       if (methodSig == null) {
@@ -427,25 +480,26 @@ public class Body implements HasPosition {
       final Stmt startingStmt = graph.getStartingStmt();
       final Collection<Stmt> nodes = graph.getNodes();
       if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
-        // TODO: already handled in MutableBlockStmtGraph.. check the others as well
+        // TODO: already handled in MutableBlockControlFlowGraph.. check the others as well
         throw new IllegalStateException(
             methodSig
                 + ": The given startingStmt '"
                 + startingStmt
-                + "' does not exist in the StmtGraph.");
+                + "' does not exist in the ControlFlowGraph.");
       }
       // validate statements
       try {
         graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
-        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
-        //        System.out.println("StmtGraph of " + methodSig + " is invalid." + e.getCause());
+        throw new RuntimeException("ControlFlowGraph of " + methodSig + " is invalid.", e);
+        //        System.out.println("ControlFlowGraph of " + methodSig + " is invalid." +
+        // e.getCause());
       }
 
       return new Body(methodSig, locals, graph, position);
     }
 
-    @Nonnull
+    @NonNull
     public Set<MethodModifier> getModifiers() {
       return modifiers;
     }
@@ -459,12 +513,18 @@ public class Body implements HasPosition {
       }
     }
 
-    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+    public void removeDefLocalsOf(@NonNull Stmt stmt) {
       stmt.getDef()
           .ifPresent(
               def -> {
                 if (def instanceof Local) {
-                  locals.remove(def);
+                  List<Stmt> localOccurrences =
+                      ((Local) def).getStmtsUsingOrDefiningthisLocal(this.graph.getStmts(), stmt);
+                  // after removing stmt, if the local variable doesn't occur anywhere else then
+                  // safely remove
+                  if (localOccurrences.isEmpty()) {
+                    locals.remove(def);
+                  }
                 }
               });
     }
@@ -491,21 +551,16 @@ public class Body implements HasPosition {
   }
 
   /**
-   * Collects all using statements of a Local from a list of statements
+   * Collects all using statements of a Values from a list of statements
    *
    * @param stmts The searched list of statements
-   * @return A map of Locals and their using statements
+   * @return A map of Values and their using statements
    */
-  public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
-    Map<Value, Collection<Stmt>> allUses = new HashMap<>();
-    for (Stmt stmt : stmts) {
-      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
-        Value value = iterator.next();
-        Collection<Stmt> localUses = allUses.computeIfAbsent(value, key -> new ArrayList<>());
-        localUses.add(stmt);
-        allUses.put(value, localUses);
-      }
-    }
-    return allUses;
+  public static Map<Value, List<Stmt>> collectUses(Collection<Stmt> stmts) {
+    return stmts.stream()
+        .flatMap(stmt -> stmt.getUses().stream().map(value -> (Pair.of(value, stmt))))
+        .collect(
+            Collectors.groupingBy(
+                Pair::getLeft, Collectors.mapping(Pair::getRight, Collectors.toList())));
   }
 }

@@ -1,19 +1,19 @@
 package sootup.tests.typehierarchy;
 
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-/** @author: Hasitha Rajapakse * */
+/**
+ * @author: Hasitha Rajapakse *
+ */
 public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
 
   private String className = "";
-  private AnalysisInputLocation srcCode;
   private JavaView view;
 
   @BeforeEach
@@ -23,10 +23,9 @@ public abstract class JavaTypeHierarchyTestBase {
     setClassName(extractClassName(this.getClass().getSimpleName()));
 
     if (!prevClassName.equals(getClassName())) {
-      srcCode =
-          new JavaSourcePathAnalysisInputLocation(
-              Collections.singleton(baseDir + "/" + getClassName()));
-      JavaView view = new JavaView(this.srcCode);
+      AnalysisInputLocation srcCode =
+          new JavaClassPathAnalysisInputLocation(baseDir + "/" + getClassName() + "/binary");
+      JavaView view = new JavaView(srcCode);
       setView(view);
     }
   }

@@ -1,5 +1,27 @@
 package sootup.apk.frontend.instruction;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,8 +35,8 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -45,14 +67,13 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
 
     Stmt firstAssign = null;
     for (int i = 0; i < numElements; i++) {
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
+      JArrayRef arrayRef = JavaJimple.newArrayRef(arrayReference, IntConstant.getInstance(i));
       NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
       if (element == null) {
         break;
       }
       JAssignStmt assign =
-          Jimple.newAssignStmt(arrayRef, element, StmtPositionInfo.getNoStmtPositionInfo());
+          Jimple.newAssignStmt(arrayRef, element, new SimpleStmtPositionInfo(lineNumber));
       body.add(assign);
       if (i == 0) {
         firstAssign = assign;
@@ -60,7 +81,7 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
     }
     if (firstAssign == null) { // if numElements == 0. Is it possible?
       logger.warn("Number of elements in the array is 0.. Weird case...");
-      firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+      firstAssign = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
       body.add(firstAssign);
     }
     setStmt(firstAssign);
@@ -88,7 +109,9 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
             ArrayType arrayType =
                 (ArrayType)
                     DexUtil.toSootType(
-                        ((TypeReference) instruction22c.getReference()).getType(), 0);
+                        ((TypeReference) instruction22c.getReference()).getType(),
+                        0,
+                        dexBody.getIdentifierFactory());
             elementType = arrayType.getElementType();
             break Outer;
           }

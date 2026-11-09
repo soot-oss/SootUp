@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -33,12 +34,13 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.conversion.AsmModuleSource;
@@ -58,16 +60,16 @@ import sootup.java.core.signatures.ModuleSignature;
 public class ModuleFinder {
 
   // associate a module name with the input location, that represents the module
-  @Nonnull
+  @NonNull
   private final Map<ModuleSignature, AnalysisInputLocation> moduleInputLocation = new HashMap<>();
 
-  @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  @NonNull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   private int next = 0;
 
-  @Nonnull private final List<Path> modulePathEntries;
-  @Nonnull private final SourceType sourceType;
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<Path> modulePathEntries;
+  @NonNull private final SourceType sourceType;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();
@@ -80,10 +82,10 @@ public class ModuleFinder {
    * @param sourceType
    */
   public ModuleFinder(
-      @Nonnull Path modulePath,
-      @Nonnull FileSystem fileSystem,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path modulePath,
+      @NonNull FileSystem fileSystem,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
     this.bodyInterceptors = bodyInterceptors;
     this.modulePathEntries =
@@ -102,13 +104,13 @@ public class ModuleFinder {
   }
 
   public ModuleFinder(
-      @Nonnull Path modulePath,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path modulePath,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this(modulePath, FileSystems.getDefault(), sourceType, bodyInterceptors);
   }
 
-  public ModuleFinder(@Nonnull Path modulePath) {
+  public ModuleFinder(@NonNull Path modulePath) {
     this(
         modulePath,
         FileSystems.getDefault(),
@@ -116,18 +118,19 @@ public class ModuleFinder {
         BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
-  @Nonnull
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  @NonNull
+  public Optional<JavaModuleInfo> getModuleInfo(
+      ModuleSignature sig, @NonNull IdentifierFactory identifierFactory) {
     if (hasMoreToResolve()) {
-      getAllModules();
+      getAllModules(identifierFactory);
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
-  @Nonnull
-  public Set<ModuleSignature> getModules() {
+  @NonNull
+  public Set<ModuleSignature> getModules(@NonNull IdentifierFactory identifierFactory) {
     if (hasMoreToResolve()) {
-      getAllModules();
+      getAllModules(identifierFactory);
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
@@ -136,10 +139,12 @@ public class ModuleFinder {
    * Returns the input location that manages the module.
    *
    * @param moduleName the module name
+   * @param identifierFactory the factory that creates the signatures of discovered modules
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation getModule(@Nonnull ModuleSignature moduleName) {
+  public AnalysisInputLocation getModule(
+      @NonNull ModuleSignature moduleName, @NonNull IdentifierFactory identifierFactory) {
 
     // check if module is cached
     AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
@@ -149,7 +154,7 @@ public class ModuleFinder {
 
     // search iterative on the remaining entries of the modulePath for the module
     while (hasMoreToResolve()) {
-      discoverModulesIn(modulePathEntries.get(next++));
+      discoverModulesIn(modulePathEntries.get(next++), identifierFactory);
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
         return inputLocationForModule;
@@ -161,13 +166,14 @@ public class ModuleFinder {
   /**
    * Discover all modules in the module path.
    *
+   * @param identifierFactory the factory that creates the signatures of discovered modules
    * @return the names of all modules found
    */
-  @Nonnull
-  public Collection<ModuleSignature> getAllModules() {
+  @NonNull
+  public Collection<ModuleSignature> getAllModules(@NonNull IdentifierFactory identifierFactory) {
 
     while (hasMoreToResolve()) {
-      discoverModulesIn(modulePathEntries.get(next++));
+      discoverModulesIn(modulePathEntries.get(next++), identifierFactory);
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());
   }
@@ -181,7 +187,7 @@ public class ModuleFinder {
    *
    * @param path the directory
    */
-  private void discoverModulesIn(@Nonnull Path path) {
+  private void discoverModulesIn(@NonNull Path path, @NonNull IdentifierFactory identifierFactory) {
     BasicFileAttributes attrs;
     try {
       attrs = Files.readAttributes(path, BasicFileAttributes.class);
@@ -190,11 +196,11 @@ public class ModuleFinder {
     }
 
     if (PathUtils.isArchive(path)) {
-      buildModuleForJar(path);
+      buildModuleForJar(path, identifierFactory);
     } else if (attrs.isDirectory()) {
       Path mi = path.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
       if (Files.exists(mi)) {
-        buildModuleForExplodedModule(path);
+        buildModuleForExplodedModule(path, identifierFactory);
       }
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
@@ -208,10 +214,10 @@ public class ModuleFinder {
           if (attrs.isDirectory()) {
             mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
-              buildModuleForExplodedModule(entry);
+              buildModuleForExplodedModule(entry, identifierFactory);
             }
           } else if (PathUtils.isArchive(entry)) {
-            buildModuleForJar(entry);
+            buildModuleForJar(entry, identifierFactory);
           }
         }
       } catch (Exception e) {
@@ -220,7 +226,8 @@ public class ModuleFinder {
     }
   }
 
-  private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
+  private void buildModuleForExplodedModule(
+      @NonNull Path dir, @NonNull IdentifierFactory identifierFactory) throws ResolveException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(dir, sourceType, bodyInterceptors);
@@ -230,7 +237,7 @@ public class ModuleFinder {
       return;
     }
 
-    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile);
+    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile, identifierFactory);
     JavaModuleInfo oldValue = moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
     moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
     if (oldValue != null) {
@@ -244,7 +251,7 @@ public class ModuleFinder {
    *
    * @param jar the jar file
    */
-  private void buildModuleForJar(@Nonnull Path jar) {
+  private void buildModuleForJar(@NonNull Path jar, @NonNull IdentifierFactory identifierFactory) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(jar, sourceType, bodyInterceptors);
     Path mi;
@@ -253,7 +260,7 @@ public class ModuleFinder {
       mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
 
       if (Files.exists(mi)) {
-        JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+        JavaModuleInfo moduleInfo = new AsmModuleSource(mi, identifierFactory);
         moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
         moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
       } else {
@@ -277,8 +284,8 @@ public class ModuleFinder {
    * @param path to the jar file
    * @return the name of the automatic module
    */
-  @Nonnull
-  public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
+  @NonNull
+  public static String createModuleNameForAutomaticModule(@NonNull Path path) {
     // check if Automatic-Module-Name header exists in manifest file and use it if exists
     try (JarFile jar = new JarFile(path.toFile())) {
       final String file = "META-INF/MANIFEST.MF";

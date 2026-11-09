@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -20,13 +19,12 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 import sootup.core.validation.TypesValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
-@Tag("Java8")
 public class TypesValidatorTest {
   static MutableJavaView view;
   static TypesValidator typesValidator;
@@ -68,20 +66,12 @@ public class TypesValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
 
     return mainClass;

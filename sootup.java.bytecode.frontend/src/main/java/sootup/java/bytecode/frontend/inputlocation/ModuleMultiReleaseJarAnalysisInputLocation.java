@@ -23,16 +23,15 @@ package sootup.java.bytecode.frontend.inputlocation;
  */
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
-import sootup.core.Language;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.ModuleInfoAnalysisInputLocation;
@@ -45,8 +44,8 @@ import sootup.java.core.signatures.ModuleSignature;
 public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarAnalysisInputLocation
     implements ModuleInfoAnalysisInputLocation {
   public ModuleMultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    super(path, srcType, language);
+      @NonNull Path path, @NonNull SourceType srcType, int version) {
+    super(path, srcType, version);
 
     /*
 
@@ -100,7 +99,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
 
   @Override
   protected ModuleInfoAnalysisInputLocation createAnalysisInputLocation(
-      @Nonnull Path path, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path path, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
     try {
       return new JavaModulePathAnalysisInputLocation(
           path, fileSystemCache.get(this.path), sourceType, bodyInterceptors);
@@ -110,25 +109,25 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
   }
 
   @Override
-  public Collection<? extends SootClassSource> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
+  public Stream<? extends SootClassSource> getModulesClassSources(
+      @NonNull ModuleSignature moduleSignature, @NonNull View view) {
     // TODO: check if we need to combine modules as well or if only versioned .class files are
     return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
         .getModulesClassSources(moduleSignature, view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Optional<JavaModuleInfo> getModuleInfo(@Nonnull ModuleSignature sig, @Nonnull View view) {
+  public Optional<JavaModuleInfo> getModuleInfo(@NonNull ModuleSignature sig, @NonNull View view) {
     // TODO: check if we need to combine modules as well or if only versioned .class files are
     // allowed
     return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
         .getModuleInfo(sig, view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<ModuleSignature> getModules(@Nonnull View view) {
+  public Set<ModuleSignature> getModules(@NonNull View view) {
     // TODO: check if we need to combine modules as well or if only versioned .class files are
     // allowed
     return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))

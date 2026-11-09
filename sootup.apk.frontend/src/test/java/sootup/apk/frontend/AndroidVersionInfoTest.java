@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +14,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 
-@Tag("Java8")
 @ExtendWith(MockitoExtension.class)
 public class AndroidVersionInfoTest {
 
@@ -35,7 +33,8 @@ public class AndroidVersionInfoTest {
 
     // Initialize the class with mock data
     androidVersionInfo =
-        new AndroidVersionInfo(Paths.get("resources/FlowSensitivity1.apk"), "mock/jar/path");
+        new AndroidVersionInfo(
+            Paths.get("src/test/resources/FlowSensitivity1.apk"), "mock/jar/path");
   }
 
   @Test

@@ -94,6 +94,27 @@ Lets have a look at the following Jimple code representing Java code of a `Hello
     }
     ```
 
+## Why not work directly on source or bytecode?
+
+This is a natural question. Each representation has a fundamental problem for analysis:
+
+**Source code** is readable, but it is not always available — you often only have a
+compiled `.jar`. Even when you do have source, nested expressions like
+`a.foo(b.bar() + c)` require you to invent temporary variables mentally before you can
+reason about intermediate values.
+
+**Bytecode** is always derivable from the `.class` file, but the JVM is a *stack machine*:
+instructions push and pop an implicit operand stack. There are no named variables between
+instructions. Tracking "what value is currently at position 2 on the stack after this
+branch?" is surprisingly painful to reason about automatically.
+
+**Jimple** is the best of both worlds. It is derived from bytecode (no source needed),
+but expressed as a *register machine*: every value is held in a named `Local`, every
+operation touches at most three operands (three-address code), and there are no nested
+expressions. What the JVM handles implicitly, Jimple makes explicit. The result is a
+representation where "which local variables flow into this assignment?" has a direct,
+mechanical answer.
+
 The Java Sourcecode is the easiest representation - So why all the fuzz and just use that?
 Sometimes we have no access to the sourcecode but have a binary with the bytecode.
 For most People reading bytecode is not that intuitive. So SootUp generates Jimple from the bytecode.

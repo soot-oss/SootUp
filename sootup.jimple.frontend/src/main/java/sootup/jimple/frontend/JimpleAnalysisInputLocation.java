@@ -27,43 +27,45 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
+
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
-  public JimpleAnalysisInputLocation(@Nonnull Path path) {
+  public JimpleAnalysisInputLocation(@NonNull Path path) {
     this(path, SourceType.Application, Collections.emptyList());
   }
 
-  public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  public JimpleAnalysisInputLocation(@NonNull Path path, @Nullable SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   public JimpleAnalysisInputLocation(
-      @Nonnull Path path,
+      @NonNull Path path,
       @Nullable SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     if (!Files.exists(path)) {
       throw new IllegalArgumentException(
           "The configured path '"
@@ -77,26 +79,29 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     this.srcType = srcType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return srcType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
 
-  @Nonnull
-  List<SootClassSource> walkDirectory(
-      @Nonnull Path dirPath,
-      @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider classProvider) {
+  /**
+   * @return Autoclosable needs to be closed!
+   */
+  @NonNull Stream<SootClassSource> walkDirectory(
+      @NonNull Path dirPath,
+      @NonNull IdentifierFactory factory,
+      @NonNull PathbasedClassProvider classProvider) {
 
-    try (final Stream<Path> walk = Files.walk(path)) {
-      return walk.filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
+    try {
+      return Files.walk(path)
+          .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
           .flatMap(
               p -> {
                 String fullyQualifiedName =
@@ -108,25 +113,24 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
                 return StreamUtils.optionalToStream(
                     classProvider.createClassSource(
                         this, p, factory.getClassType(fullyQualifiedName)));
-              })
-          .collect(Collectors.toList());
-
+              });
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
   }
 
   @Override
-  @Nonnull
-  public Collection<SootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<SootClassSource> getClassSources(@NonNull View view) {
+    // TODO: dont create a new CLassProvider every time
     return walkDirectory(
-        path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors));
+        path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors, view));
   }
 
   @Override
-  @Nonnull
-  public Optional<SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
-    final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors);
+  @NonNull
+  public Optional<SootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
+    final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors, view);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

@@ -22,7 +22,8 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.AbstractTypeVisitor;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.TypeVisitor;
@@ -54,7 +55,7 @@ public abstract class Type implements Acceptor<TypeVisitor> {
    * This method is used to make an array type for the given type. If the given type is an array
    * type, then increase its dimension with given dim
    */
-  public static ArrayType createArrayType(@Nonnull Type type, int dim) {
+  public static ArrayType createArrayType(@NonNull Type type, int dim) {
     if (type instanceof ArrayType) {
       return new ArrayType(
           ((ArrayType) type).getBaseType(), ((ArrayType) type).getDimension() + dim);
@@ -63,61 +64,135 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     }
   }
 
+  /**
+   * Returns the size in bits of a value of the given type: 1 for boolean, 8 for byte, 16 for
+   * short/char, 32 for int/float, 64 for long/double and class types, and 0 for every other type.
+   */
   public static int getValueBitSize(Type type) {
     BitSizeVisitor visitor = new BitSizeVisitor();
     type.accept(visitor);
-    return visitor.getResult().intValue();
+    return visitor.bitSize;
   }
 
-  private static class BitSizeVisitor extends AbstractTypeVisitor<Integer> {
+  /** Computes the bit size of a type via dispatch instead of an instanceof chain. */
+  private static final class BitSizeVisitor extends AbstractTypeVisitor {
+    private int bitSize = 0;
+
     @Override
     public void caseBooleanType() {
-      setResult(Integer.valueOf(1));
+      bitSize = 1;
     }
 
     @Override
     public void caseByteType() {
-      setResult(Integer.valueOf(8));
+      bitSize = 8;
     }
 
     @Override
     public void caseShortType() {
-      setResult(Integer.valueOf(16));
+      bitSize = 16;
     }
 
     @Override
     public void caseCharType() {
-      setResult(Integer.valueOf(16));
+      bitSize = 16;
     }
 
     @Override
     public void caseIntType() {
-      setResult(Integer.valueOf(32));
+      bitSize = 32;
     }
 
     @Override
     public void caseFloatType() {
-      setResult(Integer.valueOf(32));
+      bitSize = 32;
     }
 
     @Override
     public void caseLongType() {
-      setResult(Integer.valueOf(64));
+      bitSize = 64;
     }
 
     @Override
     public void caseDoubleType() {
-      setResult(Integer.valueOf(64));
+      bitSize = 64;
     }
 
     @Override
-    public void caseClassType(@Nonnull ClassType classType) {
-      setResult(Integer.valueOf(64));
+    public void caseClassType(@NonNull ClassType classType) {
+      bitSize = 64;
     }
+  }
 
-    @Override
-    public void defaultCaseType() {
-      setResult(Integer.valueOf(0));
-    }
+  protected boolean isPrimitiveType() {
+    return false;
+  }
+
+  protected boolean isReferenceType() {
+    return false;
+  }
+
+  protected boolean isBottomType() {
+    return false;
+  }
+
+  protected boolean isTopType() {
+    return false;
+  }
+
+  protected boolean isUnknownType() {
+    return false;
+  }
+
+  protected boolean isVoidType() {
+    return false;
+  }
+
+  protected PrimitiveType asPrimitiveType() {
+    return null;
+  }
+
+  protected ReferenceType asReferenceType() {
+    return null;
+  }
+
+  protected Type asBottomType() {
+    return null;
+  }
+
+  protected Type asTopType() {
+    return null;
+  }
+
+  protected UnknownType asUnknownType() {
+    return null;
+  }
+
+  protected VoidType asVoidType() {
+    return null;
+  }
+
+  protected Optional<PrimitiveType> toPrimitiveType() {
+    return Optional.empty();
+  }
+
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toBottomType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toTopType() {
+    return Optional.empty();
+  }
+
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.empty();
+  }
+
+  protected Optional<VoidType> toVoidType() {
+    return Optional.empty();
   }
 }

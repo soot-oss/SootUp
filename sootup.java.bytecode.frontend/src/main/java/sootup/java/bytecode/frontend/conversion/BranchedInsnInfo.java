@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,40 +22,37 @@ package sootup.java.bytecode.frontend.conversion;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 
 // FIXME: [AD] is it reasonable to get rid of it?
 class BranchedInsnInfo {
   /* edge endpoint */
-  @Nonnull private final AbstractInsnNode insn;
+  @NonNull private final AbstractInsnNode insn;
   /* previous stacks at edge */
-  @Nonnull private final LinkedList<Operand[]> prevStacks;
+  @NonNull private final LinkedList<Operand[]> prevStacks;
   /* current stack at edge */
   @Nullable private final List<List<Operand>> operandStacks = new ArrayList<>();
-  private final int lineNumber;
   private final Set<TryCatchBlockNode> activeTrapHandlers;
 
   BranchedInsnInfo(
-      @Nonnull AbstractInsnNode insn,
-      @Nonnull List<Operand> operands,
-      int lineNumber,
+      @NonNull AbstractInsnNode insn,
+      @NonNull List<Operand> operands,
       Set<TryCatchBlockNode> activeTrapHandlers) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
     this.operandStacks.add(operands);
-    this.lineNumber = lineNumber;
     this.activeTrapHandlers = new HashSet<>(activeTrapHandlers);
   }
 
-  @Nonnull
+  @NonNull
   public AbstractInsnNode getInsn() {
     return insn;
   }
 
-  @Nonnull
+  @NonNull
   public List<List<Operand>> getOperandStacks() {
     return operandStacks;
   }
@@ -63,17 +61,13 @@ class BranchedInsnInfo {
     operandStacks.add(operandStack);
   }
 
-  @Nonnull
+  @NonNull
   public LinkedList<Operand[]> getPrevStacks() {
     return prevStacks;
   }
 
-  public void addToPrevStack(@Nonnull Operand[] stacksOperands) {
+  public void addToPrevStack(@NonNull Operand[] stacksOperands) {
     prevStacks.add(stacksOperands);
-  }
-
-  public int getLineNumber() {
-    return this.lineNumber;
   }
 
   public Set<TryCatchBlockNode> getActiveTrapHandlers() {

@@ -22,9 +22,10 @@ package sootup.core;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -34,6 +35,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 
 /**
  * A factory used for creating language-specific objects representing entities of the language, for
@@ -101,9 +103,8 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the method signature
    */
-  @Nonnull
-  MethodSignature getMethodSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature);
+  @NonNull MethodSignature getMethodSignature(
+      @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature);
 
   /**
    * Parses the method signature.
@@ -111,8 +112,7 @@ public interface IdentifierFactory {
    * @param methodSignature the method signature
    * @return the method signature
    */
-  @Nonnull
-  MethodSignature parseMethodSignature(@Nonnull String methodSignature);
+  @NonNull MethodSignature parseMethodSignature(@NonNull String methodSignature);
 
   /**
    * Gets the method sub signature.
@@ -122,11 +122,10 @@ public interface IdentifierFactory {
    * @param returnType the return type
    * @return the method sub signature
    */
-  @Nonnull
-  MethodSubSignature getMethodSubSignature(
-      @Nonnull String name,
-      @Nonnull Type returnType,
-      @Nonnull Iterable<? extends Type> parameterSignatures);
+  @NonNull MethodSubSignature getMethodSubSignature(
+      @NonNull String name,
+      @NonNull Type returnType,
+      @NonNull Iterable<? extends Type> parameterSignatures);
 
   /**
    * Parses the method sub signature.
@@ -134,8 +133,7 @@ public interface IdentifierFactory {
    * @param methodSubSignature the method sub signature
    * @return the method sub signature
    */
-  @Nonnull
-  MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature);
+  @NonNull MethodSubSignature parseMethodSubSignature(@NonNull String methodSubSignature);
 
   /**
    * Parses the field signature.
@@ -143,8 +141,7 @@ public interface IdentifierFactory {
    * @param fieldSignature the field signature
    * @return the field signature
    */
-  @Nonnull
-  FieldSignature parseFieldSignature(@Nonnull String fieldSignature);
+  @NonNull FieldSignature parseFieldSignature(@NonNull String fieldSignature);
 
   /**
    * Gets the field signature.
@@ -175,9 +172,8 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the field signature
    */
-  @Nonnull
-  FieldSignature getFieldSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature);
+  @NonNull FieldSignature getFieldSignature(
+      @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature);
 
   /**
    * Gets the field sub signature.
@@ -186,8 +182,7 @@ public interface IdentifierFactory {
    * @param type the type
    * @return the field sub signature
    */
-  @Nonnull
-  FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type);
+  @NonNull FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type);
 
   /**
    * Parses the field sub signature.
@@ -195,8 +190,7 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the field sub signature
    */
-  @Nonnull
-  FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
+  @NonNull FieldSubSignature parseFieldSubSignature(@NonNull String subSignature);
 
   /**
    * Gets the class type.
@@ -229,11 +223,100 @@ public interface IdentifierFactory {
    * @param typeName the type name
    * @return the primitive type
    */
-  @Nonnull
-  Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
+  @NonNull Optional<PrimitiveType> getPrimitiveType(@NonNull String typeName);
 
-  @Nonnull
-  ClassType getBoxedType(@Nonnull PrimitiveType primitiveType);
+  /**
+   * Get the {@code boolean} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code boolean}
+   */
+  @NonNull PrimitiveType getBooleanPrimitiveType();
+
+  /**
+   * Get the {@code boolean} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code boolean}
+   */
+  @NonNull PrimitiveType getBytePrimitiveType();
+
+  /**
+   * Get the {@code short} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code short}
+   */
+  @NonNull PrimitiveType getShortPrimitiveType();
+
+  /**
+   * Get the {@code char} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code char}
+   */
+  @NonNull PrimitiveType getCharPrimitiveType();
+
+  /**
+   * Get the {@code int} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code int}
+   */
+  @NonNull PrimitiveType getIntPrimitiveType();
+
+  /**
+   * Get the {@code long} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code long}
+   */
+  @NonNull PrimitiveType getLongPrimitiveType();
+
+  /**
+   * Get the {@code float} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code float}
+   */
+  @NonNull PrimitiveType getFloatPrimitiveType();
+
+  /**
+   * Get the {@code double} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code double}
+   */
+  @NonNull PrimitiveType getDoublePrimitiveType();
+
+  /**
+   * Get the ClassType for the boxed primitiveType.
+   *
+   * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.7">5.1.7.
+   *     Boxing Conversion</a>
+   * @param primitiveType
+   * @return a ClassType for the boxed type
+   */
+  @NonNull ClassType getBoxedType(@NonNull PrimitiveType primitiveType);
+
+  /**
+   * Get the PrimitiveType of a boxed type, if it is defined.
+   *
+   * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.8">5.1.8.
+   *     Unboxing Conversion</a>
+   * @param boxedType any type
+   * @return the PrimitiveType instance corresponding to the boxedType, or empty if such is not
+   *     defined.
+   */
+  @NonNull Optional<PrimitiveType> getUnboxedType(@NonNull ClassType boxedType);
 
   /**
    * Gets the array type.
@@ -252,11 +335,45 @@ public interface IdentifierFactory {
    */
   MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature);
 
-  boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  /**
+   * Checks whether the given method sub signature is a static initializer
+   *
+   * @param methodSubSignature
+   * @return
+   */
+  boolean isStaticInitializerSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
-  boolean isConstructorSignature(@Nonnull MethodSignature methodSignature);
+  /**
+   * Checks whether the given method signature is a constructor
+   *
+   * @param methodSignature
+   * @return
+   */
+  boolean isConstructorSignature(@NonNull MethodSignature methodSignature);
 
-  boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  /**
+   * Checks whether the given method sub signature is a constructor
+   *
+   * @param methodSubSignature
+   * @return
+   */
+  boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
-  boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  /**
+   * Checks whether the given method sub signature is the main method signature
+   *
+   * @param methodSubSignature
+   * @return
+   */
+  boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
+
+  /**
+   * Returns the main method sub signature
+   *
+   * @return
+   */
+  default MethodSubSignature getMainSubSignature() {
+    return getMethodSubSignature(
+        "main", VoidType.getInstance(), Collections.singletonList(getType("java.lang.String[]")));
+  }
 }

@@ -23,12 +23,12 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 */
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
@@ -56,8 +56,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseAssignStmt(@NonNull JAssignStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     PropertyGraphNode leftOpNode = createOperandNode(stmt.getLeftOp());
@@ -88,8 +88,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     Optional<AbstractInvokeExpr> invokeStmtOpt = stmt.getInvokeExpr();
@@ -103,8 +103,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseReturnStmt(@NonNull JReturnStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
@@ -112,8 +112,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseIfStmt(@NonNull JIfStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     AbstractConditionExpr condition = stmt.getCondition();
@@ -123,14 +123,14 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseNopStmt(@Nonnull JNopStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseNopStmt(@NonNull JNopStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }
 
   @Override
-  public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseThrowStmt(@NonNull JThrowStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
@@ -138,8 +138,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     ImmediateGraphNode leftOpNode = new ImmediateGraphNode(stmt.getLeftOp());
@@ -150,23 +150,14 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseGotoStmt(@Nonnull JGotoStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseGotoStmt(@NonNull JGotoStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }
 
   @Override
-  public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
-    graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-
-    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
-    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
-  }
-
-  @Override
-  public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
@@ -174,8 +165,17 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
+    graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
+  }
+
+  @Override
+  public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
     ImmediateGraphNode switchKeyNode = new ImmediateGraphNode(stmt.getKey());
@@ -183,8 +183,8 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void defaultCaseStmt(@Nonnull Stmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+  public void defaultCaseStmt(@NonNull Stmt stmt) {
+    ControlFlowGraphNode stmtNode = new ControlFlowGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }
 }

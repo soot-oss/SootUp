@@ -22,7 +22,7 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Position;
 
 /**
@@ -32,7 +32,7 @@ import sootup.core.model.Position;
  * @author Linghui Luo, Markus Schmidt
  */
 public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
-  @Nonnull protected final Position[] operandPositions;
+  @NonNull protected final Position[] operandPositions;
 
   /**
    * Create an instance from given statement position and operand positions.
@@ -41,7 +41,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
    * @param operandPositions the operand positions
    */
   public FullStmtPositionInfo(
-      @Nonnull Position stmtPosition, @Nonnull Position[] operandPositions) {
+      @NonNull Position stmtPosition, @NonNull Position[] operandPositions) {
     super(stmtPosition);
     this.operandPositions = operandPositions;
   }
@@ -51,7 +51,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
    *
    * @return the position of the statement
    */
-  @Nonnull
+  @NonNull
   public Position getStmtPosition() {
     return this.stmtPosition;
   }
@@ -81,13 +81,13 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
     return s.toString();
   }
 
-  @Nonnull
-  public StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition) {
+  @NonNull
+  public StmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 
-  @Nonnull
-  public StmtPositionInfo withOperandPositions(@Nonnull Position[] operandPositions) {
+  @NonNull
+  public StmtPositionInfo withOperandPositions(@NonNull Position[] operandPositions) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 }

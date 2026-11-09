@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -34,7 +34,7 @@ import sootup.core.types.Type;
  *
  * @author Linghui Luo
  */
-public class BooleanConstant
+public final class BooleanConstant
     implements LogicalConstant<BooleanConstant>, ComparableConstant<BooleanConstant> {
 
   private static final BooleanConstant FALSE = new BooleanConstant(false);
@@ -42,21 +42,20 @@ public class BooleanConstant
 
   private final boolean value;
 
-  private BooleanConstant(boolean value) {
+  private BooleanConstant(final boolean value) {
     this.value = value;
   }
 
-  public static BooleanConstant getInstance(boolean value) {
+  public static final BooleanConstant getInstance(final boolean value) {
     return value ? TRUE : FALSE;
   }
 
-  public static BooleanConstant getInstance(int value) {
-    if (value == 1) {
-      return TRUE;
-    } else if (value == 0) {
-      return FALSE;
-    }
-    throw new RuntimeException("The value of boolean constant can only be 1 or 0");
+  public static BooleanConstant getInstance(final int value) {
+    return switch (value) {
+      case 0 -> FALSE;
+      case 1 -> TRUE;
+      default -> throw new RuntimeException("The value of boolean constant can only be 1 or 0");
+    };
   }
 
   public static BooleanConstant getTrue() {
@@ -67,45 +66,56 @@ public class BooleanConstant
     return FALSE;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseBooleanConstant(this);
     return v;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
+  public BooleanConstant equalEqual(@NonNull final BooleanConstant c) {
     return BooleanConstant.getInstance(value == c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
+  public BooleanConstant notEqual(@NonNull final BooleanConstant c) {
     return BooleanConstant.getInstance(value != c.value);
   }
 
-  @Nonnull
-  public BooleanConstant and(@Nonnull BooleanConstant c) {
+  @Override
+  @NonNull
+  public BooleanConstant and(@NonNull final BooleanConstant c) {
     return BooleanConstant.getInstance(value & c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant or(@Nonnull BooleanConstant c) {
+  public BooleanConstant or(@NonNull final BooleanConstant c) {
     return BooleanConstant.getInstance(value | c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant xor(@Nonnull BooleanConstant c) {
+  public BooleanConstant xor(@NonNull final BooleanConstant c) {
     return BooleanConstant.getInstance(value ^ c.value);
+  }
+
+  @NonNull
+  @Override
+  public Boolean getValue() {
+    return value;
+  }
+
+  public boolean booleanValue() {
+    return value;
   }
 
   @Override

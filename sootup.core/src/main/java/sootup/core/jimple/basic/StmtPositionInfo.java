@@ -22,8 +22,8 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.model.Position;
 
 /**
@@ -35,7 +35,7 @@ public abstract class StmtPositionInfo {
 
   protected static final StmtPositionInfo NOPOSITION =
       new StmtPositionInfo() {
-        @Nonnull
+        @NonNull
         @Override
         public Position getStmtPosition() {
           return NoPositionInformation.getInstance();
@@ -57,7 +57,7 @@ public abstract class StmtPositionInfo {
    *
    * @return an instance with no position information.
    */
-  @Nonnull
+  @NonNull
   public static StmtPositionInfo getNoStmtPositionInfo() {
     return NOPOSITION;
   }
@@ -67,7 +67,7 @@ public abstract class StmtPositionInfo {
    *
    * @return the position of the statement
    */
-  @Nonnull
+  @NonNull
   public abstract Position getStmtPosition();
 
   /**

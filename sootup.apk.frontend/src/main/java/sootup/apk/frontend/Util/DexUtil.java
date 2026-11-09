@@ -1,22 +1,44 @@
 package sootup.apk.frontend.Util;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.*;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
+import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
-import sootup.core.signatures.PackageName;
+import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
 
   private static AndroidVersionInfo androidVersionInfo;
 
-  public static Type toSootType(String typeDescriptor, int pos) {
+  public static Type toSootType(
+      String typeDescriptor, int pos, @NonNull IdentifierFactory identifierFactory) {
     Type type = null;
     char typeDesignator = typeDescriptor.charAt(pos);
     switch (typeDesignator) {
@@ -48,13 +70,13 @@ public class DexUtil {
         if (isByteCodeClassName(typeDescriptor)) {
           typeDescriptor = dottedClassName(typeDescriptor);
         }
-        type = getClassTypeFromClassName(typeDescriptor);
+        type = getClassTypeFromClassName(typeDescriptor, identifierFactory);
         break;
       case 'V': // void
         type = VoidType.getInstance();
         break;
       case '[': // array
-        Type sootType = toSootType(typeDescriptor, pos + 1);
+        Type sootType = toSootType(typeDescriptor, pos + 1, identifierFactory);
         if (sootType != null) {
           type = Type.createArrayType(sootType, 1);
         }
@@ -65,7 +87,7 @@ public class DexUtil {
     return type;
   }
 
-  public static String toQualifiedName(@Nonnull String str) {
+  public static String toQualifiedName(@NonNull String str) {
     final int endpos = str.length() - 1;
     if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
       str = str.substring(1, endpos);
@@ -113,20 +135,16 @@ public class DexUtil {
         && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
-  public static ClassType getClassTypeFromClassName(String name) {
+  public static ClassType getClassTypeFromClassName(
+      String name, @NonNull IdentifierFactory identifierFactory) {
     if (name.startsWith("[")) {
       name = "java.lang.Object";
     } else if (isByteCodeClassName(name)) {
       name = dottedClassName(name);
     }
-    JavaClassType javaClassType;
-    int lastIndex = name.lastIndexOf(".");
-    lastIndex = (lastIndex == -1) ? 0 : lastIndex;
+    ClassType javaClassType;
     try {
-      javaClassType =
-          new JavaClassType(
-              name.substring(name.lastIndexOf(".") + 1),
-              new PackageName(name.substring(0, lastIndex)));
+      javaClassType = identifierFactory.getClassType(name);
     } catch (Exception exception) {
       System.out.println("Exception when substring with className " + name);
       throw new RuntimeException();

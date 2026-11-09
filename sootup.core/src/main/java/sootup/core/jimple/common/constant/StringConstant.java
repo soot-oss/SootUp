@@ -22,24 +22,24 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.Jimple;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
-public class StringConstant implements Constant {
+public final class StringConstant implements Constant {
 
   private final String value;
   private final Type type;
 
-  public StringConstant(@Nonnull String str, @Nonnull Type type) {
+  public StringConstant(@NonNull final String str, @NonNull final Type type) {
     this.type = type;
     this.value = str;
   }
 
   // In this case, equals should be structural equality.
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return (c instanceof StringConstant && ((StringConstant) c).value.equals(value));
   }
 
@@ -49,27 +49,28 @@ public class StringConstant implements Constant {
     return value.hashCode();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseStringConstant(this);
     return v;
   }
 
   @Override
   public String toString() {
-    final String escape = Jimple.escape(value);
+    final String escape = JimpleUtils.escape(value);
     if (escape.charAt(0) != '\"') {
       return "\"" + value + "\"";
     }
     return escape;
   }
 
+  @Override
   public String getValue() {
     return value;
   }

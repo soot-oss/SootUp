@@ -3,17 +3,15 @@ package sootup.java.bytecode.frontend.interceptors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -24,15 +22,14 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.interceptors.Aggregator;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AggregatorTest {
 
   /**
@@ -87,7 +84,8 @@ public class AggregatorTest {
 
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
+    JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
+    JavaClassType fileType = identifierFactory.getClassType("File");
 
     Local a = JavaJimple.newLocal("a", fileType);
     Local b = JavaJimple.newLocal("b", fileType);
@@ -98,21 +96,19 @@ public class AggregatorTest {
     FallsThroughStmt useA =
         JavaJimple.newInvokeStmt(
             Jimple.newSpecialInvokeExpr(
-                a,
-                JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")),
+                a, identifierFactory.parseMethodSignature("<File: void <init>()>")),
             noPositionInfo);
     FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
-    stmtGraph.setStartingStmt(assignA);
-    stmtGraph.putEdge(assignA, useA);
-    stmtGraph.putEdge(useA, assignB);
-    stmtGraph.putEdge(assignB, ret);
+    controlFlowGraph.setStartingStmt(assignA);
+    controlFlowGraph.putEdge(assignA, useA);
+    controlFlowGraph.putEdge(useA, assignB);
+    controlFlowGraph.putEdge(assignB, ret);
 
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
@@ -141,12 +137,12 @@ public class AggregatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(intToA);
-    stmtGraph.putEdge(intToA, intToB);
-    stmtGraph.putEdge(intToB, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(intToA);
+    controlFlowGraph.putEdge(intToA, intToB);
+    controlFlowGraph.putEdge(intToB, ret);
 
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());
@@ -183,8 +179,8 @@ public class AggregatorTest {
   public void testIssue739() {
 
     AnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
+        new ClassFileBasedAnalysisInputLocation(
+            Paths.get("src/test/resources/bugfixes/Issue739_Aggregator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new Aggregator()));
@@ -203,8 +199,8 @@ public class AggregatorTest {
   public void testIssue911() {
 
     AnalysisInputLocation inputLocationB =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/Issue911_Aggregator.class"),
+        new ClassFileBasedAnalysisInputLocation(
+            Paths.get("src/test/resources/bugfixes/Issue911_Aggregator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new Aggregator()));

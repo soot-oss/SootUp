@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,12 +22,11 @@ package sootup.interceptors;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.interceptors.typeresolving.TypeResolver;
-import sootup.java.core.views.JavaView;
 
 /**
  * This transformer assigns types to local variables.
@@ -38,7 +38,7 @@ public class TypeAssigner implements BodyInterceptor {
   public TypeAssigner() {}
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
-    new TypeResolver((JavaView) view).resolve(builder);
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    new TypeResolver(view).resolve(builder);
   }
 }

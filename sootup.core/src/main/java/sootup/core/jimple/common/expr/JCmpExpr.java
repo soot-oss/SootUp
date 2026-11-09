@@ -22,36 +22,52 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 public final class JCmpExpr extends AbstractIntBinopExpr {
 
-  public JCmpExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JCmpExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " " + Jimple.CMP + " ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseCmpExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JCmpExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JCmpExpr withOp1(@NonNull Immediate op1) {
     return new JCmpExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JCmpExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JCmpExpr withOp2(@NonNull Immediate op2) {
     return new JCmpExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJCmpExpr() {
+    return true;
+  }
+
+  @Override
+  public JCmpExpr asJCmpExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JCmpExpr> toJCmpExpr() {
+    return Optional.of(this);
   }
 }

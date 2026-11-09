@@ -25,20 +25,19 @@ package sootup.core.jimple.common.expr;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
-  @Nonnull private final MethodSignature methodSignature;
-  @Nonnull private final Immediate[] args;
+  @NonNull private final MethodSignature methodSignature;
+  @NonNull private final Immediate[] args;
 
-  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Immediate[] args) {
+  protected AbstractInvokeExpr(@NonNull MethodSignature method, @NonNull Immediate[] args) {
     this.methodSignature = method;
     for (Immediate arg : args) {
       if (arg == null) {
@@ -48,7 +47,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     this.args = args;
   }
 
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature() {
     return this.methodSignature;
   }
@@ -66,30 +65,32 @@ public abstract class AbstractInvokeExpr implements Expr {
     return args.length;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return methodSignature.getType();
   }
 
   @Override
-  @Nonnull
-  public Stream<Value> getUses() {
-    return Stream.concat(Stream.of(args), Stream.of(args).flatMap(Value::getUses));
+  public void collectUses(List<Value> collector) {
+    collector.addAll(Arrays.asList(args));
+    for (Immediate arg : args) {
+      arg.collectUses(collector);
+    }
   }
 
-  protected void argsToString(@Nonnull StringBuilder builder) {
+  protected void argsToString(@NonNull StringBuilder builder) {
     final int len = getArgCount();
     if (0 < len) {
-      builder.append(args[0].toString());
+      builder.append(args[0]);
       for (int i = 1; i < len; i++) {
         builder.append(", ");
-        builder.append(args[i].toString());
+        builder.append(args[i]);
       }
     }
   }
 
-  protected void argsToPrinter(@Nonnull StmtPrinter up) {
+  protected void argsToPrinter(@NonNull StmtPrinter up) {
     final int len = getArgCount();
     if (0 < len) {
       args[0].toString(up);

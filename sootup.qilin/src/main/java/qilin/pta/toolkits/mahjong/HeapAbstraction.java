@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import qilin.core.pag.AllocNode;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.pta.toolkits.common.FieldPointstoGraph;
 import qilin.pta.toolkits.mahjong.automata.DFA;
 import qilin.pta.toolkits.mahjong.automata.DFAEquivalenceChecker;
@@ -47,10 +47,8 @@ public class HeapAbstraction {
     UnionFindSet<AllocNode> uf = new UnionFindSet<>(allObjs);
     // group the objects by their types
     Map<Type, Set<AllocNode>> groupedObjs =
-        allObjs.stream().collect(Collectors.groupingBy(Node::getType, Collectors.toSet()));
-    groupedObjs
-        .entrySet()
-        .parallelStream()
+        allObjs.stream().collect(Collectors.groupingBy(PagNode::getType, Collectors.toSet()));
+    groupedObjs.entrySet().parallelStream()
         .forEach(
             entry -> {
               DFAMap dfaMap = new DFAMap();

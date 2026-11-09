@@ -28,9 +28,11 @@ import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
-import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import org.jspecify.annotations.NonNull;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -46,12 +48,12 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
-  protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
+  protected LoadingCache<Body, ControlFlowGraph<?>> bodyToControlFlowGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<Body, StmtGraph<?>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public StmtGraph<?> load(@Nonnull Body body) {
+            public ControlFlowGraph<?> load(@NonNull Body body) {
               return makeGraph(body);
             }
           });
@@ -59,10 +61,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, List<Value>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public List<Value> load(@Nonnull SootMethod m) {
+            public List<Value> load(@NonNull SootMethod m) {
               return new ArrayList<>(m.getBody().getParameterLocals());
             }
           });
@@ -70,10 +72,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, Set<Stmt>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public Set<Stmt> load(@Nonnull SootMethod m) {
+            public Set<Stmt> load(@NonNull SootMethod m) {
               return getCallsFromWithinMethod(m);
             }
           });
@@ -82,8 +84,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     this(true);
   }
 
+  /**
+   * Data flow solvers query the ICFG concurrently, while statements may be registered with {@link
+   * #setOwnerStatement(Stmt, Body)}. Statements are compared by identity, so a concurrent hash map
+   * keeps the identity semantics.
+   */
   protected Map<Stmt, Body> createStmtToOwnerMap() {
-    return new LinkedHashMap<>();
+    return new ConcurrentHashMap<>();
   }
 
   protected AbstractJimpleBasedICFG(boolean enableExceptions) {
@@ -91,14 +98,18 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   public Body getBodyOf(Stmt stmt) {
-    assert stmtToOwner.containsKey(stmt) : "Statement " + stmt + " not in Stmt-to-owner mapping";
-    return stmtToOwner.get(stmt);
+    Body body = stmtToOwner.get(stmt);
+    assert body != null : "Statement " + stmt + " not in Stmt-to-owner mapping";
+    return body;
   }
 
   @Override
   public SootMethod getMethodOf(Stmt stmt) {
     Body b = getBodyOf(stmt);
-    return b == null ? null : view.getMethod(b.getMethodSignature()).orElse(null);
+    if (b == null) {
+      return null;
+    }
+    return view.getMethod(b.getMethodSignature()).orElse(null);
   }
 
   @Override
@@ -107,48 +118,41 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.successors(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.successors(stmt);
   }
 
   @Override
-  public StmtGraph<?> getOrCreateStmtGraph(SootMethod method) {
-    return getOrCreateStmtGraph(method.getBody());
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod method) {
+    return getOrCreateControlFlowGraph(method.getBody());
   }
 
-  public StmtGraph<?> getOrCreateStmtGraph(Body body) {
-    return bodyToStmtGraph.getUnchecked(body);
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(Body body) {
+    return bodyToControlFlowGraph.getUnchecked(body);
   }
 
-  protected StmtGraph<?> makeGraph(Body body) {
-    return body.getStmtGraph();
+  protected ControlFlowGraph<?> makeGraph(Body body) {
+    return body.getControlFlowGraph();
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
-    Set<Stmt> res = null;
-    for (Stmt u : method.getBody().getStmts()) {
-      if (isCallStmt(u)) {
-        if (res == null) {
-          res = new LinkedHashSet<>();
-        }
-        res.add(u);
-      }
-    }
-    return res == null ? Collections.emptySet() : res;
+    return method.getBody().getStmts().stream()
+        .filter(this::isCallStmt)
+        .collect(Collectors.toSet());
   }
 
   @Override
   public boolean isExitStmt(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.getTails().contains(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getTails().contains(stmt);
   }
 
   @Override
   public boolean isStartPoint(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.getEntrypoints().contains(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getEntrypoints().contains(stmt);
   }
 
   @Override
@@ -158,7 +162,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return false;
     }
     Body body = getBodyOf(stmt);
-    return body.getStmtGraph().successors(stmt).get(0) == successorCandidate;
+    return body.getControlFlowGraph().successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
@@ -174,12 +178,12 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Collection<Stmt> getStartPointsOf(SootMethod m) {
-    if (m.hasBody()) {
-      Body body = m.getBody();
-      StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-      return unitGraph.getEntrypoints();
+    if (!m.hasBody()) {
+      return Collections.emptySet();
     }
-    return Collections.emptySet();
+    Body body = m.getBody();
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getEntrypoints();
   }
 
   public boolean setOwnerStatement(Stmt u, Body b) {
@@ -188,21 +192,21 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr();
+    return stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent();
   }
 
   @Override
   public Set<Stmt> allNonCallStartNodes() {
-    Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
-    res.removeIf(u -> isStartPoint(u) || isCallStmt(u));
-    return res;
+    return stmtToOwner.keySet().stream()
+        .filter(u -> !(isStartPoint(u) || isCallStmt(u)))
+        .collect(Collectors.toSet());
   }
 
   @Override
   public Set<Stmt> allNonCallEndNodes() {
-    Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
-    res.removeIf(u -> isExitStmt(u) || isCallStmt(u));
-    return res;
+    return stmtToOwner.keySet().stream()
+        .filter(u -> !(isExitStmt(u) || isCallStmt(u)))
+        .collect(Collectors.toSet());
   }
 
   @Override
@@ -216,12 +220,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   public void initializeStmtToOwner(SootMethod m) {
-    if (m.hasBody()) {
-      Body b = m.getBody();
-      for (Stmt node : b.getStmtGraph().getNodes()) {
-        stmtToOwner.put(node, b);
-      }
+    if (!m.hasBody()) {
+      return;
     }
+    Body b = m.getBody();
+    b.getControlFlowGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
   }
 
   @Override
@@ -231,18 +234,18 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.predecessors(u);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.predecessors(u);
   }
 
   @Override
   public Collection<Stmt> getEndPointsOf(SootMethod m) {
-    if (m.hasBody()) {
-      Body body = m.getBody();
-      StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
-      return unitGraph.getTails();
+    if (!m.hasBody()) {
+      return Collections.emptySet();
     }
-    return Collections.emptySet();
+    Body body = m.getBody();
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getTails();
   }
 
   @Override
@@ -252,12 +255,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isReturnSite(Stmt n) {
-    for (Stmt pred : getPredsOf(n)) {
-      if (isCallStmt(pred)) {
-        return true;
-      }
-    }
-    return false;
+    return getPredsOf(n).stream().anyMatch(this::isCallStmt);
   }
 
   @Override

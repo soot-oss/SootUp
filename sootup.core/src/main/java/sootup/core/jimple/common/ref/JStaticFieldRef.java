@@ -22,18 +22,18 @@ package sootup.core.jimple.common.ref;
  * #L%
  */
 
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.util.printer.StmtPrinter;
 
 public final class JStaticFieldRef extends JFieldRef implements LValue {
 
-  public JStaticFieldRef(@Nonnull FieldSignature fieldSig) {
+  public JStaticFieldRef(@NonNull FieldSignature fieldSig) {
     super(fieldSig);
   }
 
@@ -43,18 +43,15 @@ public final class JStaticFieldRef extends JFieldRef implements LValue {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.fieldSignature(getFieldSignature());
   }
 
   @Override
-  @Nonnull
-  public Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  public void collectUses(List<Value> collector) {}
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseStaticFieldRef(this, o);
   }
 
@@ -64,14 +61,14 @@ public final class JStaticFieldRef extends JFieldRef implements LValue {
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseStaticFieldRef(this);
     return v;
   }
 
-  @Nonnull
-  public JStaticFieldRef withFieldSignature(@Nonnull FieldSignature fieldSig) {
+  @NonNull
+  public JStaticFieldRef withFieldSignature(@NonNull FieldSignature fieldSig) {
     return new JStaticFieldRef(fieldSig);
   }
 }

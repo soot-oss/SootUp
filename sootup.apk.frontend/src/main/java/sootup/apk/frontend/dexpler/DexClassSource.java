@@ -1,25 +1,50 @@
 package sootup.apk.frontend.dexpler;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.dexbacked.raw.EncodedValue;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.value.MethodEncodedValue;
+import org.jf.dexlib2.iface.value.TypeEncodedValue;
+import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
@@ -29,19 +54,26 @@ import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
 
+  private static final Logger logger = LoggerFactory.getLogger(DexClassSource.class);
+
   DexLibWrapper wrapper;
 
   DexLibWrapper.ClassInformation classInformation;
 
   List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull private final View view;
+  @NonNull private final View view;
+
+  @NonNull
+  public View getView() {
+    return view;
+  }
 
   public DexClassSource(
-      @Nonnull View view,
-      @Nonnull AnalysisInputLocation analysisInputLocation,
-      @Nonnull ClassType classSignature,
-      @Nonnull Path sourcePath) {
+      @NonNull View view,
+      @NonNull AnalysisInputLocation analysisInputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath) {
     super(analysisInputLocation, classSignature, sourcePath);
     // Initialize only for the first time.
     this.view = view;
@@ -52,45 +84,45 @@ public class DexClassSource extends JavaSootClassSource {
     this.classInformation = wrapper.getClassInformation(classSignature);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<? extends JavaSootMethod> resolveMethods() throws ResolveException {
     if (classInformation != null) {
-      Iterable<? extends Method> methodIterable = classInformation.classDefinition.getMethods();
       DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
-      // Convert the Iterable to a Stream
-      Stream<? extends Method> methodStream =
-          StreamSupport.stream(methodIterable.spliterator(), false);
-      Iterable<? extends Method> virtualMethodIterable =
-          classInformation.classDefinition.getVirtualMethods();
-      Stream<? extends Method> virtualMethodStream =
-          StreamSupport.stream(virtualMethodIterable.spliterator(), false);
-      return Stream.concat(methodStream, virtualMethodStream)
+      return StreamSupport.stream(
+              classInformation.classDefinition.getMethods().spliterator(), false)
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      return Collections.emptySet();
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return resolveFields(
-        classInformation.classDefinition.getFields(),
-        JavaIdentifierFactory.getInstance(),
-        classSignature);
+        classInformation.classDefinition.getFields(), view.getIdentifierFactory(), classSignature);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<ClassModifier> resolveModifiers() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return Modifiers.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<? extends ClassType> resolveInterfaces() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     List<String> interfaces = classInformation.classDefinition.getInterfaces();
     if (interfaces.isEmpty()) {
       return new HashSet<>();
@@ -100,7 +132,7 @@ public class DexClassSource extends JavaSootClassSource {
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends ClassType> resolveSuperclass() {
     if (classInformation != null) {
@@ -111,20 +143,94 @@ public class DexClassSource extends JavaSootClassSource {
         return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      return Optional.empty();
     }
   }
 
-  @Nonnull
+  /**
+   * Resolves the outer class from the system annotations of the dex file, like Soot's dex frontend:
+   * <code>EnclosingClass</code> names the outer class of a member class, <code>EnclosingMethod
+   * </code> the method that declares a local or anonymous class. If only an <code>InnerClass
+   * </code> annotation exists, the outer class is derived from the name of the class.
+   */
+  @NonNull
   @Override
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.empty();
+    if (classInformation == null) {
+      return Optional.empty();
+    }
+    String className = classInformation.classDefinition.getType();
+    String outerClass = null;
+    boolean isInnerClass = false;
+    for (Annotation annotation : classInformation.classDefinition.getAnnotations()) {
+      switch (annotation.getType()) {
+        case "Ldalvik/annotation/EnclosingClass;":
+          for (AnnotationElement element : annotation.getElements()) {
+            if (element.getValue() instanceof TypeEncodedValue) {
+              outerClass = ((TypeEncodedValue) element.getValue()).getValue();
+            }
+          }
+          break;
+        case "Ldalvik/annotation/EnclosingMethod;":
+          for (AnnotationElement element : annotation.getElements()) {
+            if (element.getValue() instanceof MethodEncodedValue) {
+              outerClass = ((MethodEncodedValue) element.getValue()).getValue().getDefiningClass();
+            }
+          }
+          break;
+        case "Ldalvik/annotation/InnerClass;":
+          isInnerClass = true;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // An invalid outer class that names the class itself is repaired from the name, as is a
+    // missing outer class of an inner class
+    if (className.equals(outerClass) || (outerClass == null && isInnerClass)) {
+      outerClass = getOuterClassFromName(className);
+    }
+    if (outerClass == null || outerClass.equals(className)) {
+      return Optional.empty();
+    }
+    return Optional.of(DexUtil.stringToJimpleType(view, outerClass));
   }
 
-  @Nonnull
+  /**
+   * Derives the outer class from the name of an inner class
+   *
+   * @param className The name of the inner class, e.g., <code>La/b/C$D;</code>
+   * @return The name of the outer class, e.g., <code>La/b/C;</code>, or null if the name does not
+   *     denote an inner class
+   */
+  private static String getOuterClassFromName(String className) {
+    // Lambda classes of the Jack and Jill compiler contain a '$' followed by '-' in the name of
+    // the inner class, which may contain further '$' characters
+    int idx = className.indexOf("$-");
+    if (idx < 0) {
+      idx = className.lastIndexOf('$');
+    }
+    if (idx <= 0) {
+      return null;
+    }
+    return className.substring(0, idx) + ";";
+  }
+
+  @NonNull
   @Override
   public Position resolvePosition() {
     return NoPositionInformation.getInstance();
+  }
+
+  /**
+   * @return The source file for this class as specified in the dex file.
+   */
+  public Optional<String> getSourceFile() {
+    if (classInformation == null) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
   }
 
   @Override
@@ -144,7 +250,7 @@ public class DexClassSource extends JavaSootClassSource {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 
-  protected static List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
+  protected List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
     if (annotations.isEmpty()) {
       return Collections.emptyList();
     }
@@ -158,23 +264,28 @@ public class DexClassSource extends JavaSootClassSource {
     for (Annotation annotation : annotations) {
       for (AnnotationElement element : annotation.getElements()) {
         String name = element.getName();
-        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
+        paramMap.put(
+            name,
+            convertAnnotationValue(
+                element.getValue().getValueType(), getView().getIdentifierFactory()));
       }
       ClassType at =
-          JavaIdentifierFactory.getInstance()
+          getView()
+              .getIdentifierFactory()
               .getClassType(DexUtil.toQualifiedName(annotation.getType()));
       annotationUsage.add(new AnnotationUsage(at, paramMap));
     }
     return annotationUsage;
   }
 
-  private static Object convertAnnotationValue(Object annotationValue) {
+  private static Object convertAnnotationValue(
+      Object annotationValue, IdentifierFactory identifierFactory) {
     if (annotationValue instanceof EncodedValue) {
       ClassConstant classConstant =
-          JavaJimple.getInstance().newClassConstant(annotationValue.toString());
-      return ConstantUtil.fromObject(classConstant);
+          JavaJimple.newClassConstant(annotationValue.toString(), identifierFactory);
+      return ConstantUtil.fromObject(classConstant, identifierFactory);
     }
-    return ConstantUtil.fromObject(annotationValue);
+    return ConstantUtil.fromObject(annotationValue, identifierFactory);
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -185,7 +296,7 @@ public class DexClassSource extends JavaSootClassSource {
         .map(
             field -> {
               String fieldName = field.getName();
-              Type fieldType = DexUtil.toSootType(field.getType(), 0);
+              Type fieldType = DexUtil.toSootType(field.getType(), 0, signatureFactory);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers =

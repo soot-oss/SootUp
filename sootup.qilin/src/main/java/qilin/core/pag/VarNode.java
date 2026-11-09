@@ -20,9 +20,10 @@ package qilin.core.pag;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import qilin.core.context.Context;
-import qilin.util.DataFactory;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
@@ -67,9 +68,34 @@ public abstract class VarNode extends ValNode {
     return fields == null ? null : fields.get(field);
   }
 
-  /** Returns the underlying variable that this node represents. */
+  /**
+   * Returns the underlying variable that this node represents. Depending on what kind of synthetic
+   * variable this node models, this can be a real Jimple {@link Local}, a {@link MethodParameter}
+   * (this/return/throw/param-N), a {@link sootup.core.signatures.FieldSignature} (static field), a
+   * {@link sootup.core.jimple.common.constant.StringConstant}/{@link
+   * sootup.core.jimple.common.constant.ClassConstant}, or another Jimple {@link
+   * sootup.core.jimple.common.expr.Expr} used as a synthetic key (e.g. a cast expression). Use
+   * {@link #getLocal()} if you only care about the common "this is a real local" case.
+   */
   public Object getVariable() {
     return variable;
+  }
+
+  /**
+   * Returns the underlying variable as a real Jimple {@link Local}, or {@code null} if this node
+   * does not represent one (e.g. it represents a {@link MethodParameter}, a field, or a constant —
+   * see {@link #getVariable()}).
+   */
+  public Local getLocal() {
+    return variable instanceof Local ? (Local) variable : null;
+  }
+
+  /**
+   * Returns the underlying variable as a {@link MethodParameter} (this/return/throw/ordinary
+   * parameter), or {@code null} if this node does not represent one — see {@link #getVariable()}.
+   */
+  public MethodParameter getMethodParameter() {
+    return variable instanceof MethodParameter ? (MethodParameter) variable : null;
   }
 
   /**
@@ -113,7 +139,7 @@ public abstract class VarNode extends ValNode {
     if (fields == null) {
       synchronized (this) {
         if (fields == null) {
-          fields = DataFactory.createMap();
+          fields = new HashMap<>();
         }
       }
     }

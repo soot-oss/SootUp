@@ -1,9 +1,10 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
+ * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,6 +21,8 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import static org.objectweb.asm.Opcodes.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -29,10 +32,9 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -40,40 +42,27 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.ConstantUtil;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.ModuleModifier;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 public final class AsmUtil {
 
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmUtil.class);
+
   private AsmUtil() {}
 
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
-
-  /**
-   * Initializes a class node.
-   *
-   * @param classSource The source.
-   * @param classNode The node to initialize
-   * @return the actual class signature found in the compilation unit
-   */
-  protected static String initAsmClassSource(
-      @Nonnull Path classSource, @Nonnull ClassVisitor classNode) throws IOException {
-    try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-      ClassReader clsr = new ClassReader(sourceFileInputStream);
-      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
-      return clsr.getClassName();
-    }
-  }
 
   /**
    * Determines if a type is a dword type.
@@ -81,7 +70,7 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  public static boolean isDWord(@Nonnull Type type) {
+  public static boolean isDWord(@NonNull Type type) {
     return type == PrimitiveType.getLong() || type == PrimitiveType.getDouble();
   }
 
@@ -91,7 +80,7 @@ public final class AsmUtil {
    * @param str str name.
    * @return fully qualified name.
    */
-  public static String toQualifiedName(@Nonnull String str) {
+  public static String toQualifiedName(@NonNull String str) {
     final int endpos = str.length() - 1;
     if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
       str = str.substring(1, endpos);
@@ -111,37 +100,27 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
-    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ModuleModifier modifier : ModuleModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
-  }
-
-  @Nonnull
-  public static Collection<JavaClassType> asmIdToSignature(
-      @Nullable Iterable<String> asmClassNames) {
+  @NonNull
+  public static Collection<JavaClassType> asmIdToSignatures(
+      @Nullable Iterable<String> asmClassNames, @NonNull IdentifierFactory identifierFactory) {
     if (asmClassNames == null) {
       return Collections.emptyList();
     }
 
     return StreamSupport.stream(asmClassNames.spliterator(), false)
-        .map(AsmUtil::toJimpleClassType)
+        .map(name -> toJimpleClassType(name, identifierFactory))
         .collect(Collectors.toList());
   }
 
-  @Nonnull
-  public static JavaClassType toJimpleClassType(@Nonnull String asmClassName) {
-    return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+  @NonNull
+  public static JavaClassType toJimpleClassType(
+      @NonNull String asmClassName, @NonNull IdentifierFactory identifierFactory) {
+    return (JavaClassType) identifierFactory.getClassType(toQualifiedName(asmClassName));
   }
 
-  @Nonnull
-  public static Type toJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type toJimpleType(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
       desc = desc.substring(nrDims);
@@ -156,26 +135,25 @@ public final class AsmUtil {
         throw new AssertionError("Invalid reference descriptor: " + desc);
       }
       String name = desc.substring(1, desc.length() - 1);
-      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
+      baseType = identifierFactory.getType(toQualifiedName(name));
     }
     if ((baseType instanceof PrimitiveType || baseType instanceof VoidType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0
-        ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
-        : baseType;
+    return nrDims > 0 ? identifierFactory.getArrayType(baseType, nrDims) : baseType;
   }
 
-  @Nonnull
-  public static Type arrayTypetoJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type arrayTypetoJimpleType(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     if (desc.charAt(0) == '[') {
-      return toJimpleType(desc);
+      return toJimpleType(desc, identifierFactory);
     }
-    return toJimpleClassType(desc);
+    return toJimpleClassType(desc, identifierFactory);
   }
 
   /** returns the amount of dimensions of a description. */
-  private static int countArrayDim(@Nonnull String desc) {
+  private static int countArrayDim(@NonNull String desc) {
     int nrDims = desc.lastIndexOf('[') + 1;
     for (int index = 0; index < nrDims; index++) {
       if (desc.charAt(index) != '[') {
@@ -189,37 +167,34 @@ public final class AsmUtil {
    * Converts a description to a primitive type or the void type. If the description does not match
    * it will return an empty Optional
    */
-  private static Optional<Type> toPrimitiveOrVoidType(@Nonnull String desc) {
+  private static Optional<Type> toPrimitiveOrVoidType(@NonNull String desc) {
     if (desc.length() > 1) {
       return Optional.empty();
     }
-    switch (desc.charAt(0)) {
-      case 'Z':
-        return Optional.of(PrimitiveType.getBoolean());
-      case 'B':
-        return Optional.of(PrimitiveType.getByte());
-      case 'C':
-        return Optional.of(PrimitiveType.getChar());
-      case 'S':
-        return Optional.of(PrimitiveType.getShort());
-      case 'I':
-        return Optional.of(PrimitiveType.getInt());
-      case 'F':
-        return Optional.of(PrimitiveType.getFloat());
-      case 'J':
-        return Optional.of(PrimitiveType.getLong());
-      case 'D':
-        return Optional.of(PrimitiveType.getDouble());
-      case 'V':
-        return Optional.of(VoidType.getInstance());
-      default:
-    }
-    return Optional.empty();
+    return switch (desc.charAt(0)) {
+      case 'Z' -> Optional.of(PrimitiveType.getBoolean());
+      case 'B' -> Optional.of(PrimitiveType.getByte());
+      case 'C' -> Optional.of(PrimitiveType.getChar());
+      case 'S' -> Optional.of(PrimitiveType.getShort());
+      case 'I' -> Optional.of(PrimitiveType.getInt());
+      case 'F' -> Optional.of(PrimitiveType.getFloat());
+      case 'J' -> Optional.of(PrimitiveType.getLong());
+      case 'D' -> Optional.of(PrimitiveType.getDouble());
+      case 'V' -> Optional.of(VoidType.getInstance());
+      default -> Optional.empty();
+    };
   }
 
-  /** Converts n types contained in desc to a list of Jimple Types */
-  @Nonnull
-  public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+  /**
+   * Converts n types contained in desc to a list of Jimple Types
+   *
+   * @param desc the bytecode descriptor holding the types
+   * @param identifierFactory the factory that creates the reference types
+   * @return the converted types in the order they occur in {@code desc}
+   */
+  @NonNull
+  public static List<Type> toJimpleSignatureDesc(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     // [ms] more types are possibly needed for method type which is ( arg-type* ) ret-type
     List<Type> types = new ArrayList<>(1);
     int len = desc.length();
@@ -269,7 +244,7 @@ public final class AsmUtil {
             int begin = idx;
             idx = desc.indexOf(';', begin);
             String cls = desc.substring(begin, idx++);
-            baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(cls));
+            baseType = identifierFactory.getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: '" + c + "' in '" + desc + "'.");
@@ -277,7 +252,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
+        types.add(identifierFactory.getArrayType(baseType, nrDims));
       } else {
         types.add(baseType);
       }
@@ -297,21 +272,41 @@ public final class AsmUtil {
         .reduce("", String::concat);
   }
 
-  public static AnnotationUsage createAnnotationUsage(AnnotationNode annotationNode) {
+  public static AnnotationUsage createAnnotationUsage(
+      AnnotationNode annotationNode, @NonNull IdentifierFactory identifierFactory) {
+    return createAnnotationUsage(annotationNode, identifierFactory, true);
+  }
+
+  public static AnnotationUsage createAnnotationUsage(
+      AnnotationNode annotationNode,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     /* actually, we could move the inner loop's code (see below) here */
-    return createAnnotationUsage(Collections.singletonList(annotationNode)).iterator().next();
+    return createAnnotationUsage(
+            Collections.singletonList(annotationNode), identifierFactory, runtimeVisible)
+        .iterator()
+        .next();
   }
 
   public static Iterable<AnnotationUsage> createAnnotationUsage(
-      List<AnnotationNode> invisibleParameterAnnotation) {
-    if (invisibleParameterAnnotation == null) {
+      List<? extends AnnotationNode> annotationNodes,
+      @NonNull IdentifierFactory identifierFactory) {
+    return createAnnotationUsage(annotationNodes, identifierFactory, true);
+  }
+
+  /** Converts annotations, propagating the containing attribute's visibility to nested values. */
+  public static Iterable<AnnotationUsage> createAnnotationUsage(
+      List<? extends AnnotationNode> annotationNodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    if (annotationNodes == null) {
       return Collections.emptyList();
     }
 
     List<AnnotationUsage> annotationUsages = new ArrayList<>();
-    for (AnnotationNode e : invisibleParameterAnnotation) {
+    for (AnnotationNode e : annotationNodes) {
 
-      Map<String, Object> paramMap = new HashMap<>();
+      Map<String, Object> paramMap = new LinkedHashMap<>();
 
       if (e.values != null) {
         for (int j = 0; j < e.values.size(); j++) {
@@ -322,34 +317,43 @@ public final class AsmUtil {
           if (annotationValue instanceof ArrayList
               && !((ArrayList<?>) annotationValue).isEmpty()
               && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
-            final ArrayList<AnnotationNode> annotationValueList =
-                (ArrayList<AnnotationNode>) annotationValue;
+            final List<AnnotationNode> annotationValueList =
+                ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
-            paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(annotationValueList, identifierFactory, runtimeVisible));
           } else if (annotationValue instanceof AnnotationNode) {
-            paramMap.put(annotationName, createAnnotationUsage((AnnotationNode) annotationValue));
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(
+                    (AnnotationNode) annotationValue, identifierFactory, runtimeVisible));
           } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(
                   annotationName,
                   ((ArrayList<?>) annotationValue)
-                      .stream().map(AsmUtil::convertAnnotationValue).collect(Collectors.toList()));
+                      .stream()
+                          .map(av -> convertAnnotationValue(av, identifierFactory))
+                          .collect(Collectors.toList()));
             } else {
-              paramMap.put(annotationName, convertAnnotationValue(annotationValue));
+              paramMap.put(
+                  annotationName, convertAnnotationValue(annotationValue, identifierFactory));
             }
           }
         }
       }
 
       JavaClassType at =
-          JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(e.desc));
-      annotationUsages.add(new AnnotationUsage(at, paramMap));
+          (JavaClassType) identifierFactory.getClassType(AsmUtil.toQualifiedName(e.desc));
+      annotationUsages.add(new AnnotationUsage(at, paramMap, runtimeVisible));
     }
 
     return annotationUsages;
   }
 
-  public static Object convertAnnotationValue(Object annotationValue) {
+  public static Object convertAnnotationValue(
+      Object annotationValue, @NonNull IdentifierFactory identifierFactory) {
     if (annotationValue instanceof String[]) {
       // is an enum
       // [0] is the type of the enum
@@ -357,21 +361,21 @@ public final class AsmUtil {
       // transform the enum type to a fully qualified name
       String[] enumData = (String[]) annotationValue;
       enumData[0] = AsmUtil.toQualifiedName(enumData[0]);
-      return ConstantUtil.fromObject(enumData);
+      return ConstantUtil.fromObject(enumData, identifierFactory);
     } else {
       if (annotationValue instanceof org.objectweb.asm.Type) {
         // is a class constant
         // transform asm Type to ClassConstant
         ClassConstant classConstant =
-            JavaJimple.getInstance()
-                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
-        return ConstantUtil.fromObject(classConstant);
+            JavaJimple.newClassConstant(
+                ((org.objectweb.asm.Type) annotationValue).toString(), identifierFactory);
+        return ConstantUtil.fromObject(classConstant, identifierFactory);
       }
     }
-    return ConstantUtil.fromObject(annotationValue);
+    return ConstantUtil.fromObject(annotationValue, identifierFactory);
   }
 
-  @Nonnull
+  @NonNull
   public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
     ClassNode moduleDescriptor;
     try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {
@@ -382,5 +386,56 @@ public final class AsmUtil {
       throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
     }
     return moduleDescriptor;
+  }
+
+  /**
+   * Returns the primitive result type implied by a bytecode opcode, or {@link UnknownType} when the
+   * opcode does not carry type information (e.g. ALOAD, AALOAD, ASTORE).
+   *
+   * <p>Covers:
+   *
+   * <ul>
+   *   <li>var insns: ILOAD/ISTORE → int, LLOAD/LSTORE → long, FLOAD/FSTORE → float, DLOAD/DSTORE →
+   *       double
+   *   <li>arithmetic + negate (IADD–DNEG, opcodes 96–119): I/L/F/D in groups-of-4
+   *   <li>shift + bitwise (ISHL–LXOR, opcodes 120–131): even → int, odd → long
+   *   <li>comparison results (LCMP, FCMPL/G, DCMPL/G) → int
+   *   <li>ARRAYLENGTH → int
+   *   <li>primitive array loads: IALOAD → int, LALOAD → long, FALOAD → float, DALOAD → double,
+   *       BALOAD → byte, CALOAD → char, SALOAD → short
+   * </ul>
+   */
+  public static Type primitiveTypeFromOpcode(int op) {
+    if (op == ILOAD || op == ISTORE) return PrimitiveType.getInt();
+    if (op == LLOAD || op == LSTORE) return PrimitiveType.getLong();
+    if (op == FLOAD || op == FSTORE) return PrimitiveType.getFloat();
+    if (op == DLOAD || op == DSTORE) return PrimitiveType.getDouble();
+    // arithmetic and negate: opcodes 96–119, repeating I/L/F/D pattern every 4
+    if (op >= IADD && op <= DNEG) {
+      return switch ((op - IADD) % 4) {
+        case 0 -> PrimitiveType.getInt();
+        case 1 -> PrimitiveType.getLong();
+        case 2 -> PrimitiveType.getFloat();
+        default -> PrimitiveType.getDouble();
+      };
+    }
+    // shift and bitwise: opcodes 120–131, even → int, odd → long
+    if (op >= ISHL && op <= LXOR) {
+      return (op % 2 == 0) ? PrimitiveType.getInt() : PrimitiveType.getLong();
+    }
+    if (op == LCMP || op == FCMPL || op == FCMPG || op == DCMPL || op == DCMPG) {
+      return PrimitiveType.getInt();
+    }
+    if (op == ARRAYLENGTH) return PrimitiveType.getInt();
+    return switch (op) {
+      case IALOAD -> PrimitiveType.getInt();
+      case LALOAD -> PrimitiveType.getLong();
+      case FALOAD -> PrimitiveType.getFloat();
+      case DALOAD -> PrimitiveType.getDouble();
+      case BALOAD -> PrimitiveType.getByte();
+      case CALOAD -> PrimitiveType.getChar();
+      case SALOAD -> PrimitiveType.getShort();
+      default -> UnknownType.getInstance();
+    };
   }
 }

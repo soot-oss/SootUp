@@ -15,7 +15,7 @@ class SuperClass {
 
 }
 
-class Interface {
+interface Interface {
 
   default void target(){ }
 

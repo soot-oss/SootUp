@@ -22,27 +22,27 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 /** Floating point constant with single precision. */
-public class FloatConstant implements RealConstant<FloatConstant> {
+public final class FloatConstant implements RealConstant<FloatConstant> {
 
   private final float value;
 
-  private FloatConstant(@Nonnull float value) {
+  private FloatConstant(final float value) {
     this.value = value;
   }
 
-  public static FloatConstant getInstance(@Nonnull float value) {
+  public static FloatConstant getInstance(final float value) {
     return new FloatConstant(value);
   }
 
   @Override
-  public boolean equals(Object c) {
-    return c instanceof FloatConstant && Float.compare(((FloatConstant) c).value, value) == 0;
+  public boolean equals(final Object c) {
+    return c instanceof final FloatConstant other && value == other.value;
   }
 
   /** Returns a hash code for this FloatConstant object. */
@@ -52,75 +52,75 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   }
 
   // PTC 1999/06/28
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant add(@Nonnull FloatConstant c) {
+  public FloatConstant add(@NonNull final FloatConstant c) {
     return FloatConstant.getInstance(value + c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant subtract(@Nonnull FloatConstant c) {
+  public FloatConstant subtract(@NonNull final FloatConstant c) {
     return FloatConstant.getInstance(value - c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant multiply(@Nonnull FloatConstant c) {
+  public FloatConstant multiply(@NonNull final FloatConstant c) {
     return FloatConstant.getInstance(value * c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant divide(@Nonnull FloatConstant c) {
+  public FloatConstant divide(@NonNull final FloatConstant c) {
     return FloatConstant.getInstance(value / c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant remainder(@Nonnull FloatConstant c) {
+  public FloatConstant remainder(@NonNull final FloatConstant c) {
     return FloatConstant.getInstance(value % c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) == 0);
+  public BooleanConstant equalEqual(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value == c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) != 0);
+  public BooleanConstant notEqual(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value != c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThan(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) < 0);
+  public BooleanConstant lessThan(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value < c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) <= 0);
+  public BooleanConstant lessThanOrEqual(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value <= c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThan(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) > 0);
+  public BooleanConstant greaterThan(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value > c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(value, c.value) >= 0);
+  public BooleanConstant greaterThanOrEqual(@NonNull final FloatConstant c) {
+    return BooleanConstant.getInstance(value >= c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpg(@Nonnull FloatConstant constant) {
+  public IntConstant cmpg(@NonNull final FloatConstant constant) {
     final float cValue = constant.value;
     if (value < cValue) {
       return IntConstant.getInstance(-1);
@@ -131,9 +131,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpl(@Nonnull FloatConstant constant) {
+  public IntConstant cmpl(@NonNull final FloatConstant constant) {
     final float cValue = constant.value;
     if (value > cValue) {
       return IntConstant.getInstance(1);
@@ -144,7 +144,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public FloatConstant negate() {
     return FloatConstant.getInstance(-value);
@@ -152,7 +152,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
 
   @Override
   public String toString() {
-    String floatString = Float.toString(value);
+    final String floatString = Float.toString(value);
 
     if (floatString.equals("NaN")
         || floatString.equals("Infinity")
@@ -163,19 +163,25 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getFloat();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseFloatConstant(this);
     return v;
   }
 
-  public float getValue() {
+  @NonNull
+  @Override
+  public Float getValue() {
+    return value;
+  }
+
+  public float floatValue() {
     return value;
   }
 }

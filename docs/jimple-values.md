@@ -131,7 +131,7 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
 
 #### Constant
-represents an actual value itself like `42` or `"This is a String"`.
+Represents an actual value itself like `42` or `"This is a String"`.
 Constants are usually assigned to `Local`s or `Ref`s.
 There exists a constant entity for every [Primitive Type](jimple-types.md).
 
@@ -203,7 +203,7 @@ Just subclass the methods to the respective `Value`s you need to handle. This is
         AbstractValueVisitor visitor = new AbstractValueVisitor<Integer>() {
             private int intConstantCounter = 0;
             @Override
-            public void caseConstant(@Nonnull Constant c) {
+            public void caseConstant(@NonNull  Constant c) {
                 intConstantCounter++;
                 setResult(intConstantCounter);
             }

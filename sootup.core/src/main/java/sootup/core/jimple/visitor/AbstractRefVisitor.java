@@ -22,41 +22,41 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.ref.*;
 
 public abstract class AbstractRefVisitor implements RefVisitor, Visitor {
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
+  public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+  public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef ref) {
+  public void caseArrayRef(@NonNull JArrayRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseParameterRef(@Nonnull JParameterRef ref) {
+  public void caseParameterRef(@NonNull JParameterRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
+  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseThisRef(@Nonnull JThisRef ref) {
+  public void caseThisRef(@NonNull JThisRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void defaultCaseRef(@Nonnull Ref ref) {}
+  public void defaultCaseRef(@NonNull Ref ref) {}
 }

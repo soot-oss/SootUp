@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Base type for floating point constants.
@@ -40,8 +40,7 @@ public interface RealConstant<R extends RealConstant<R>> extends NumericConstant
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
    *     value greater. When any of the values is {@code NaN} returns {@code -1}.
    */
-  @Nonnull
-  IntConstant cmpl(@Nonnull R constant);
+  @NonNull IntConstant cmpl(@NonNull R constant);
 
   /**
    * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code 1} is
@@ -51,6 +50,5 @@ public interface RealConstant<R extends RealConstant<R>> extends NumericConstant
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
    *     value greater. When any of the values is {@code NaN} returns {@code 1}.
    */
-  @Nonnull
-  IntConstant cmpg(@Nonnull R constant);
+  @NonNull IntConstant cmpg(@NonNull R constant);
 }

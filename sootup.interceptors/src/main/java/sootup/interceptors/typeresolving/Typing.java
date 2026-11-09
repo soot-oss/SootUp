@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,17 +22,17 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.common.Local;
 import sootup.core.types.Type;
 import sootup.interceptors.typeresolving.types.BottomType;
 
 public class Typing {
-  @Nonnull private final Map<Local, Type> local2Type;
-  @Nonnull private BitSet stmtsIDList;
+  @NonNull private final Map<Local, Type> local2Type;
+  @NonNull private BitSet stmtsIDList;
 
-  public Typing(@Nonnull Collection<Local> locals) {
+  public Typing(@NonNull Collection<Local> locals) {
     // initialize
     local2Type = new HashMap<>(locals.size());
     for (Local local : locals) {
@@ -40,17 +41,17 @@ public class Typing {
     stmtsIDList = new BitSet();
   }
 
-  public Typing(@Nonnull Typing typing, @Nonnull BitSet stmtsIDList) {
+  public Typing(@NonNull Typing typing, @NonNull BitSet stmtsIDList) {
     this.local2Type = new HashMap<>(typing.local2Type);
     this.stmtsIDList = stmtsIDList;
   }
 
   @Nullable
-  public Type getType(@Nonnull Local local) {
+  public Type getType(@NonNull Local local) {
     return local2Type.get(local);
   }
 
-  public void set(@Nonnull Local local, @Nonnull Type type) {
+  public void set(@NonNull Local local, @NonNull Type type) {
     this.local2Type.put(local, type);
   }
 
@@ -62,11 +63,11 @@ public class Typing {
     return this.local2Type;
   }
 
-  public void setStmtsIDList(@Nonnull BitSet bitSet) {
+  public void setStmtsIDList(@NonNull BitSet bitSet) {
     this.stmtsIDList = bitSet;
   }
 
-  @Nonnull
+  @NonNull
   public BitSet getStmtsIDList() {
     return this.stmtsIDList;
   }
@@ -83,9 +84,9 @@ public class Typing {
    *     given typing.
    */
   public int compare(
-      @Nonnull Typing typing,
-      @Nonnull BytecodeHierarchy hierarchy,
-      @Nonnull Collection<Local> localsToIgnore) {
+      @NonNull Typing typing,
+      @NonNull BytecodeHierarchy hierarchy,
+      @NonNull Collection<Local> localsToIgnore) {
 
     if (!typing.getLocals().equals(this.getLocals())) { // TODO: ms: check isnt it even == then?
       throw new RuntimeException("The compared typings should have the same locals' set!");

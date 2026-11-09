@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.BenchmarkTestSuiteBase;
 import sootup.codepropertygraph.ast.AstCreator;
@@ -16,7 +15,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
-@Tag("Java8")
 public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType IfElseStatement = getClassType("IfElseStatement");
   private final ClassType TryCatchFinally = getClassType("TryCatchFinally");

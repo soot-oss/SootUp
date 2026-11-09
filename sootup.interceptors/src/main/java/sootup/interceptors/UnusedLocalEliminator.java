@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,11 +24,11 @@ package sootup.interceptors;
  */
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
@@ -40,7 +41,7 @@ import sootup.core.views.View;
 public class UnusedLocalEliminator implements BodyInterceptor {
 
   /**
-   * Collects all used Locals.
+   * Removes unused locals while retaining the builder's local-chain order.
    *
    * <p>Removes unused local variables from the List of Stmts of the given {@link Body}. Complexity
    * is linear with respect to the statements.
@@ -48,22 +49,32 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    // recreate Set of Locals from Stmts
-    Set<Local> locals = new LinkedHashSet<>();
-
-    // traverse statements copying all used uses and defs
-    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
-      stmt.getUsesAndDefs()
+    // - Traverse builder.getStmts() rather than getControlFlowGraph().getNodes() to maintain
+    // deterministic
+    //   linear statement evaluation order instead of unpredictable CFG graph node iteration order.
+    // - Filter builder.getLocals() to retain existing local variable chain ordering. Rebuilding the
+    // local set
+    //    from scratch based on statement uses.
+    // - Append newly referenced but undeclared locals at the end deterministically.
+    Set<Local> referencedLocals = new LinkedHashSet<>();
+    for (Stmt stmt : builder.getStmts()) {
+      stmt.getUsesAndDefs().stream()
           .filter(value -> value instanceof Local)
-          .forEach(
-              value -> {
-                Local local = (Local) value;
-                locals.add(local);
-              });
+          .map(value -> (Local) value)
+          .forEach(referencedLocals::add);
     }
 
-    builder.setLocals(locals);
+    Set<Local> retainedLocals = new LinkedHashSet<>();
+    for (Local local : builder.getLocals()) {
+      if (referencedLocals.remove(local)) {
+        retainedLocals.add(local);
+      }
+    }
+    // Interceptors may introduce a referenced local through a statement before registering it on
+    // the builder. Keep such locals deterministically after the established chain.
+    retainedLocals.addAll(referencedLocals);
+    builder.setLocals(retainedLocals);
   }
 }

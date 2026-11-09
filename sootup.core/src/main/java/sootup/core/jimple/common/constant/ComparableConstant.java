@@ -22,12 +22,10 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public interface ComparableConstant<C extends ComparableConstant<C>> extends Constant {
-  @Nonnull
-  BooleanConstant equalEqual(@Nonnull C c);
+  @NonNull BooleanConstant equalEqual(@NonNull C c);
 
-  @Nonnull
-  BooleanConstant notEqual(@Nonnull C c);
+  @NonNull BooleanConstant notEqual(@NonNull C c);
 }

@@ -22,7 +22,7 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 
 // FIXME: ms: refactor to Pair<Stmt, Local>
@@ -46,5 +46,18 @@ public class StmtLocalPair {
   @Override
   public String toString() {
     return "(" + stmt + "," + local + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof StmtLocalPair other) {
+      return stmt.equals(other.stmt) && local.equals(other.local);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return stmt.hashCode() + local.hashCode();
   }
 }

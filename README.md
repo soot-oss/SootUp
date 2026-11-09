@@ -1,8 +1,11 @@
-<p align="center">
-<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
+<p>
+<img width="350px" alt="Logo of SootUp" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
-# SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soot-oss/sootup.core/badge.svg)](https://central.sonatype.com/artifact/org.soot-oss/sootup)
+# SootUp library
+[![Unit & Integration Tests with Maven](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml/badge.svg)](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central Version](https://img.shields.io/maven-central/v/org.soot-oss/sootup)](https://central.sonatype.com/artifact/org.soot-oss/sootup) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/soot-oss/SootUp/badge)](https://scorecard.dev/viewer/?uri=github.com/soot-oss/SootUp)[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11242/badge)](https://www.bestpractices.dev/projects/11242)
+
+
 
 This is the home of the **SootUp** project.
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
@@ -27,7 +30,6 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - Fully-Parallelizable Architecture
 - Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
 - Fail early strategy - input validation while constructing/building objects
-- Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
 - Full Java 21 Support for Bytecode
 - Multiple Views (no single static Scene anymore)
 - Immutable Jimple IR Objects and Graphs
@@ -38,9 +40,13 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 For feedback and feature requests, best create appropriate [issues](../../issues).  
 For questions and clarification, please use the [discussions](../../discussions).
 
+## Who Uses SootUp? 
+- **Team Atlanta**, [the winner of DARPA's AI Cyber Challenge (AIxCC)](https://aicyberchallenge.com/finals-winners-announcement/) uses **SootUp** to improve their [reachability analysis](https://arxiv.org/pdf/2509.14589).
+
+Let us know how you are using SootUp by filling out [this form](https://forms.gle/Cr6noNjM6XYLXiTZ7).
 
 ## Publications
-[the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
+[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
 [Preprint](/docs/assets/SootUp-paper.pdf) is also available.
 
 If you use SootUp in your research work, feel free to cite it as follows:
@@ -70,10 +76,10 @@ isbn="978-3-031-57246-3"
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
-<table border="0">
+<table>
 <tr>
-<td><img src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
-<td><img src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
+<td><img alt="Logo of DFG" src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
+<td><img alt="Logo of HNI" src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
 </tr>
 </table>
 

@@ -19,22 +19,23 @@
 package qilin.core.pag;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.util.FakeMainMethods;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 
 /**
  * Part of a pointer assignment graph for a single method.
@@ -42,32 +43,48 @@ import sootup.core.model.SootMethod;
  * @author Ondrej Lhotak
  */
 public class MethodPAG {
-  private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
-  private final QueueReader<Node> internalReader = internalEdges.reader();
-  private final Set<SootMethod> clinits = DataFactory.createSet();
-  private final Collection<InvokableStmt> invokeStmts = DataFactory.createSet();
+  private final ChunkedQueue<PagNode> internalEdges = new ChunkedQueue<>();
+  private final QueueReader<PagNode> internalReader = internalEdges.reader();
+  private final Set<SootMethod> clinits;
+  private final Collection<InvokableStmt> invokeStmts;
+
+  {
+    clinits = new HashSet<>();
+    invokeStmts = new HashSet<>();
+  }
+
   public Body body;
 
   /**
    * Since now the exception analysis is handled on-the-fly, we should record the exception edges
    * explicitly for Eagle and Turner.
    */
-  private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
+  private final Map<PagNode, Set<PagNode>> exceptionEdges;
 
   protected MethodNodeFactory nodeFactory;
   protected final PTAScene ptaScene;
+  protected final PointerAnalysisConfig config;
   SootMethod method;
-  /*
-   * List[i-1] is wrappered in List[i].
-   * We have to extend the following structure from Map<Node, List<Trap>> to
-   * Map<Node, Map<Stmt, List<Trap>>> because there exists cases where the same
-   * node are thrown more than once and lies in different catch blocks.
-   * */
-  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps = DataFactory.createMap();
-  public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
+
+  /**
+   * Every statement of this method that may raise an exception which the pointer analysis tracks
+   * (an explicit {@code throw}, or a call whose callee may let one escape), mapped to the handlers
+   * that are in scope for it: caught exception type -&gt; the handler's first statement. A
+   * statement with no enclosing {@code try} is still registered, with an empty map - membership in
+   * this map is what makes a statement a throw site for {@code Solver.recordThrowStmts}, and an
+   * uncaught throw still has to reach {@code MethodNodeFactory.caseMethodThrow()}. Only filled when
+   * {@link PointerAnalysisConfig#isPreciseExceptions()} is set; see {@link #buildException()}.
+   */
+  public final Map<Stmt, Map<ClassType, Stmt>> stmt2Handlers;
+
+  {
+    exceptionEdges = new HashMap<>();
+    stmt2Handlers = new HashMap<>();
+  }
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
     this.ptaScene = pag.getPta().getScene();
+    this.config = pag.getPta().getConfig();
     this.method = m;
     this.nodeFactory = new MethodNodeFactory(pag, this);
     this.body = body;
@@ -106,7 +123,7 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      if (!PTAUtils.isFakeMainMethod(method)) {
+      if (!FakeMainMethods.isFakeMainMethod(method)) {
         SootClass sc = ptaScene.getView().getClass(method.getDeclaringClassType()).get();
         nodeFactory.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }
@@ -120,22 +137,43 @@ public class MethodPAG {
     }
   }
 
+  /**
+   * Collects this method's throw sites and the catch handlers in scope for each of them into {@link
+   * #stmt2Handlers}, from which {@code Solver.recordThrowStmts()} creates the throw sites and
+   * {@code ExceptionHandler.dispatch()} routes each thrown object to a handler.
+   *
+   * <p>We use the same logic as doop (library/exceptions/precise.logic): only explicit {@code
+   * throw}s and exceptions propagated out of callees are modelled, never implicit ones (NPE,
+   * ArrayIndexOutOfBounds, ...).
+   *
+   * <p>Unlike Soot, SootUp has no ordered exception table to read back: traps are stored in the
+   * block graph as {@link ControlFlowGraph#exceptionalSuccessors(Stmt)}, an unordered map keyed by
+   * caught type. Handler priority is therefore re-derived at dispatch time by preferring the most
+   * specific matching type, which reproduces the bytecode order for handlers of one {@code try}
+   * (Java rejects catching a subtype after its supertype there).
+   */
   protected void buildException() {
-    // we use the same logic as doop (library/exceptions/precise.logic).
-    if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+    if (!config.isPreciseExceptions()) {
       return;
     }
-    // List<Trap> traps = body.getTraps();
-    // //    List<Stmt> units = body.getStmts();
-    // Set<Stmt> inTraps = DataFactory.createSet();
-  }
-
-  private void addStmtTrap(Node src, Stmt stmt, Trap trap) {
-    Map<Stmt, List<Trap>> stmt2Traps =
-        node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());
-    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> DataFactory.createList());
-    trapList.add(trap);
-    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> DataFactory.createList()).add(trap);
+    ControlFlowGraph<?> cfg = body.getControlFlowGraph();
+    for (Stmt stmt : body.getStmts()) {
+      PagNode src;
+      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
+        // note, method.getExceptions() does not return implicit exceptions.
+        src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
+      } else if (stmt instanceof JThrowStmt) {
+        src = nodeFactory.getNode(((JThrowStmt) stmt).getOp());
+      } else {
+        continue;
+      }
+      if (src == null) {
+        // `throw null`: no node can carry objects here, and registering it would make the Solver
+        // cast a null node to VarNode.
+        continue;
+      }
+      stmt2Handlers.put(stmt, new HashMap<>(cfg.exceptionalSuccessors(stmt)));
+    }
   }
 
   protected void addMiscEdges() {
@@ -145,15 +183,21 @@ public class MethodPAG {
         .equals(
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop
-      // (library/reference.logic).
-      SootClass sootClass = ptaScene.getSootClass("java.lang.ref.Reference");
-      SootField sf = sootClass.getField("pending").get();
-      JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
-      addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      // (library/reference.logic). "pending" is a JRE6/8-era Reference internal field - later
+      // JDKs' reference-processing rewrite dropped/renamed it, so skip this modeling if absent
+      // instead of crashing.
+      SootClass sootClass =
+          ptaScene.getSootClass(
+              ptaScene.getView().getIdentifierFactory().getClassType("java.lang.ref.Reference"));
+      Optional<? extends SootField> osf = sootClass.getField("pending");
+      if (osf.isPresent()) {
+        JStaticFieldRef sfr = Jimple.newStaticFieldRef(osf.get().getSignature());
+        addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      }
     }
   }
 
-  public void addInternalEdge(Node src, Node dst) {
+  public void addInternalEdge(PagNode src, PagNode dst) {
     if (src == null) {
       return;
     }
@@ -161,7 +205,7 @@ public class MethodPAG {
     internalEdges.add(dst);
   }
 
-  public QueueReader<Node> getInternalReader() {
+  public QueueReader<PagNode> getInternalReader() {
     return internalReader;
   }
 
@@ -173,11 +217,11 @@ public class MethodPAG {
     return clinits.iterator();
   }
 
-  public void addExceptionEdge(Node from, Node to) {
-    this.exceptionEdges.computeIfAbsent(from, k -> DataFactory.createSet()).add(to);
+  public void addExceptionEdge(PagNode from, PagNode to) {
+    this.exceptionEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
   }
 
-  public Map<Node, Set<Node>> getExceptionEdges() {
+  public Map<PagNode, Set<PagNode>> getExceptionEdges() {
     return this.exceptionEdges;
   }
 }

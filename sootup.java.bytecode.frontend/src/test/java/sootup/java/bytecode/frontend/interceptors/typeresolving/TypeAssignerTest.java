@@ -1,24 +1,26 @@
 package sootup.java.bytecode.frontend.interceptors.typeresolving;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
-import categories.TestCategories;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
 import sootup.interceptors.TypeAssigner;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @BeforeEach
   public void setup() {
-    String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
+    String baseDir = "src/test/resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
     buildView(baseDir, className);
   }
@@ -72,5 +74,33 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
                 "return")
             .collect(Collectors.toList()),
         actualStmts);
+  }
+
+  /**
+   * The retyped locals are replaced in one pass over the body: replacing them one at a time scans
+   * the whole body for each local, which is quadratic in large bodies
+   */
+  @Test
+  public void testReplacesRetypedLocalsInOnePass() {
+    Body.BodyBuilder builder = Mockito.spy(createMethodsBuilder("assignStmt", "void"));
+    new TypeAssigner().interceptBody(builder, view);
+    Mockito.verify(builder, Mockito.times(1)).replaceLocals(any());
+    Mockito.verify(builder, Mockito.never()).replaceLocal(any(), any());
+  }
+
+  /** Replacing locals in one pass gives the body that replacing them one at a time gives */
+  @Test
+  public void testReplaceLocalsLikeReplaceLocal() {
+    Body.BodyBuilder oneByOne = createMethodsBuilder("assignStmt", "void");
+    Body.BodyBuilder batched = createMethodsBuilder("assignStmt", "void");
+    Map<Local, Local> renamed = new IdentityHashMap<>();
+    for (Local local : batched.getLocals()) {
+      renamed.put(local, local.withName(local.getName() + "_renamed"));
+    }
+    for (Local local : List.copyOf(oneByOne.getLocals())) {
+      oneByOne.replaceLocal(local, local.withName(local.getName() + "_renamed"));
+    }
+    batched.replaceLocals(renamed);
+    assertEquals(oneByOne.build().toString(), batched.build().toString());
   }
 }

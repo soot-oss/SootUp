@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,9 +24,9 @@ package sootup.java.bytecode.frontend.inputlocation;
 
 import java.nio.file.Paths;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 
 /**
  * Refers to the rt.jar from &lt;=Java8 as an AnalysisInputLocation requires: JAVA_HOME to be set
@@ -35,18 +36,18 @@ import sootup.core.transform.BodyInterceptor;
  * <p>Info: This only works if you are running java 8 or older. Otherwise use {@link
  * JrtFileSystemAnalysisInputLocation}.
  */
-public class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
+class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
   public DefaultRTJarAnalysisInputLocation() {
     this(SourceType.Library);
   }
 
-  public DefaultRTJarAnalysisInputLocation(@Nonnull SourceType srcType) {
+  public DefaultRTJarAnalysisInputLocation(@NonNull SourceType srcType) {
     super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType);
   }
 
   public DefaultRTJarAnalysisInputLocation(
-      @Nonnull SourceType srcType, @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull SourceType srcType, @NonNull List<BodyInterceptor> bodyInterceptors) {
     super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType, bodyInterceptors);
   }
 }

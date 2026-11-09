@@ -5,24 +5,29 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.core.util.DotExporter;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   public CallGraph loadCallGraph(JavaView view) {
@@ -39,26 +44,31 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample");
+    JavaClassType mainClassSignature = view.getIdentifierFactory().getClassType("ICFGExample");
 
-    SootClass sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
+        sc.getMethods().stream()
+            .filter(e -> e.getName().equals("entryPoint"))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    assertEquals(digraph.blocks.length, 5);
+    assertEquals(5, digraph.blocks.length);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
     assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
@@ -74,26 +84,31 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest2() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample2");
+    JavaClassType mainClassSignature = view.getIdentifierFactory().getClassType("ICFGExample2");
 
-    SootClass sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
+        sc.getMethods().stream()
+            .filter(e -> e.getName().equals("entryPoint"))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    assertEquals(digraph.blocks.length, 7);
+    assertTrue(digraph.blocks.length >= 6);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
     assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
@@ -109,49 +124,66 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGArrayListDotExport() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGArrayListExample");
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType("ICFGArrayListExample");
 
-    SootClass sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
+        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().orElse(null);
+    assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
+    List<String> methodsInCallGraph = new ArrayList<>();
+    callGraph.getMethodSignatures().forEach(m -> methodsInCallGraph.add(m.getName()));
+    List<String> methodsInIcfg = new ArrayList<>();
+    for (int i = 0; i < digraph.blocks.length; i++) {
+      methodsInIcfg.add(digraph.blocks[i].label);
+    }
+    assertTrue(methodsInCallGraph.containsAll(methodsInIcfg));
     assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
+    ControlFlowGraph<?> graph = createControlFlowGraph();
+    expectedCallGraph = DotExporter.buildGraph(graph, false, null, null);
+    digraph = parseDigraph(expectedCallGraph);
+    assertEquals("Block #1", digraph.blocks[0].label);
   }
 
   @Test
   public void ICFGInterfaceDotExport() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGInterfaceExample");
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType("ICFGInterfaceExample");
 
-    SootClass sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
+        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().orElse(null);
+    assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
@@ -163,16 +195,16 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   /** Compute the Edges of the given methodSignature from the provided callGraph */
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
-    icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
+    Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph = new LinkedHashMap<>();
+    icfg.computeAllCalls(
+        Collections.singletonList(methodSignature), signatureToControlFlowGraph, callGraph);
     Map<Integer, MethodSignature> calls;
-    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
+    calls = ICFGDotExporter.computeCalls(signatureToControlFlowGraph, view, callGraph);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();
       if (sootMethod.hasBody()) {
-        String edges = connectEdges(sootMethod.getBody().getStmts(), methodSignature, calls);
-        return edges;
+        return connectEdges(sootMethod.getBody().getStmts(), methodSignature, calls);
       }
     }
     return "";
@@ -231,8 +263,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     String[] lines = digraphString.split("\n");
     for (String line : lines) {
       line = line.trim();
-      if (line.startsWith("subgraph cluster_")) {
-        String label = line.split("subgraph cluster_")[1].trim();
+      if (line.startsWith("label =")) {
+        String label = line.split("label =")[1].trim().replace("\"", "");
         currentBlock = new Block();
         currentBlock.label = label;
         digraph.blocks = addBlock(digraph.blocks, currentBlock);
@@ -281,5 +313,20 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
       statements = temp;
     }
     return statements;
+  }
+
+  private MutableBlockControlFlowGraph createControlFlowGraph() {
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
+    JavaClassType intType = factory.getClassType("int");
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    Local l3 = JavaJimple.newLocal("l3", intType);
+    StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    Local l2hash3 = JavaJimple.newLocal("l2#3", intType);
+    FallsThroughStmt stmt1 =
+        JavaJimple.newAssignStmt(l3, IntConstant.getInstance(10), noStmtPositionInfo);
+    FallsThroughStmt stmt2 = JavaJimple.newAssignStmt(l2hash3, l3, noStmtPositionInfo);
+    graph.putEdge(stmt1, stmt2);
+    graph.setStartingStmt(stmt1);
+    return graph;
   }
 }

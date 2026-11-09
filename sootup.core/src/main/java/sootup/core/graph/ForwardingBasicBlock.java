@@ -2,7 +2,7 @@ package sootup.core.graph;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -30,37 +30,37 @@ import sootup.core.types.ClassType;
  */
 
 public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock<V> {
-  @Nonnull private final V backingBlock;
+  @NonNull private final V backingBlock;
 
-  ForwardingBasicBlock(@Nonnull V block) {
+  ForwardingBasicBlock(@NonNull V block) {
     backingBlock = block;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<V> getPredecessors() {
     return backingBlock.getPredecessors();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<V> getSuccessors() {
     return backingBlock.getSuccessors();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Map<ClassType, V> getExceptionalPredecessors() {
     return backingBlock.getExceptionalPredecessors();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Map<? extends ClassType, V> getExceptionalSuccessors() {
     return backingBlock.getExceptionalSuccessors();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<Stmt> getStmts() {
     return backingBlock.getStmts();
@@ -71,20 +71,20 @@ public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock
     return backingBlock.getStmtCount();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getHead() {
     return backingBlock.getHead();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getTail() {
     return backingBlock.getTail();
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return backingBlock.equivTo(o, comparator);
   }
 

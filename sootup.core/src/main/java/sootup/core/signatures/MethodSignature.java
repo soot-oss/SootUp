@@ -23,7 +23,7 @@ package sootup.core.signatures;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -31,12 +31,14 @@ import sootup.core.types.Type;
 /** Represents the fully qualified signature of a method. */
 public class MethodSignature extends SootClassMemberSignature<MethodSubSignature> {
 
-  public MethodSignature(
-      @Nonnull ClassType declaringClassSignature,
-      @Nonnull String methodName,
-      @Nonnull Iterable<Type> parameters,
-      @Nonnull Type fqReturnType) {
-    this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
+  MethodSignature(
+      @NonNull ClassType declaringClassSignature,
+      @NonNull String methodName,
+      @NonNull Iterable<Type> parameters,
+      @NonNull Type fqReturnType) {
+    this(
+        declaringClassSignature,
+        SignatureInterner.getMethodSubSignature(methodName, fqReturnType, parameters));
   }
 
   /**
@@ -46,14 +48,23 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
    * @param declaringClass the declaring class signature
    * @param subSignature the sub-signature
    */
-  public MethodSignature(
-      @Nonnull ClassType declaringClass, @Nonnull MethodSubSignature subSignature) {
+  MethodSignature(@NonNull ClassType declaringClass, @NonNull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
   }
 
   /** The method's parameters' signatures. */
-  @Nonnull
+  @NonNull
   public List<Type> getParameterTypes() {
     return this.getSubSignature().getParameterTypes();
+  }
+
+  /** Returns the number of parameters. */
+  public int getParameterCount() {
+    return this.getSubSignature().getParameterTypes().size();
+  }
+
+  @NonNull
+  public Type getParameterType(int n) {
+    return getParameterTypes().get(n);
   }
 }

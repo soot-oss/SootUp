@@ -22,7 +22,7 @@ package sootup.core.cache;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -33,8 +33,8 @@ import sootup.core.types.ClassType;
 public class MutableFullCache extends FullCache implements MutableClassCache {
 
   @Override
-  public SootClass removeClass(@Nonnull ClassType classType) {
-    if (this.hasClass(classType)) {
+  public SootClass removeClass(@NonNull ClassType classType) {
+    if (hasClass(classType)) {
       return cache.remove(classType);
     }
     return null;

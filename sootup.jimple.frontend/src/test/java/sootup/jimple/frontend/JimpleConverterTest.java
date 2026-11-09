@@ -10,34 +10,179 @@ import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.model.*;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
+import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.InMemoryJavaClassSource;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
-@Tag("Java8")
 public class JimpleConverterTest {
 
-  private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
+  private JavaSootClass parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
-    final OverridingClassSource scs =
-        jimpleVisitor.run(cs, new EagerInputLocation(), Paths.get(""));
-    return new SootClass(scs, SourceType.Application);
+    EagerInputLocation eagerInputLocation = new EagerInputLocation();
+    final InMemoryJavaClassSource scs =
+        jimpleVisitor.run(
+            cs,
+            eagerInputLocation,
+            Paths.get(""),
+            Collections.emptyList(),
+            new JavaView(eagerInputLocation));
+    return new JavaSootClass(scs, SourceType.Application);
+  }
+
+  /** the JimplePrinter appends a labeled nop to denote the end of a Trap covering the last Stmt */
+  private static final String trapUntilEndOfBodyClass =
+      "class DummyClass extends java.lang.Object {\n"
+          + "  java.lang.Object foo() {\n"
+          + "    DummyClass this;\n"
+          + "    java.lang.Throwable e;\n"
+          + "    this := @this: DummyClass;\n"
+          + "  label1:\n"
+          + "    return this;\n"
+          + "  label2:\n"
+          + "    e := @caughtexception;\n"
+          + "    throw e;\n"
+          + "  label3:\n"
+          + "    nop;\n"
+          + "  catch java.lang.Exception from label1 to label2 with label2;\n"
+          + "  catch java.lang.Throwable from label2 to label3 with label2;\n"
+          + "  }\n"
+          + "}";
+
+  @Test
+  public void parseTrapUntilEndOfBody() {
+    JavaSootClass clazz = parseJimpleClass(CharStreams.fromString(trapUntilEndOfBodyClass));
+    Body body = clazz.getMethodsByName("foo").iterator().next().getBody();
+
+    // the artificial nop is no part of the control flow
+    assertEquals(4, body.getStmts().size());
+    assertTrue(body.getStmts().stream().noneMatch(s -> s instanceof JNopStmt));
+
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(2, traps.size());
+    // the Trap covering the last Stmt ends with an (again artificial) nop
+    assertTrue(
+        traps.stream()
+            .anyMatch(
+                t ->
+                    t.getEndStmt() instanceof JNopStmt
+                        && !body.getControlFlowGraph().containsNode(t.getEndStmt())));
+
+    // print -> parse -> print is stable
+    String printed = body.toString();
+    JavaSootClass reparsedClass =
+        parseJimpleClass(
+            CharStreams.fromString(
+                "class DummyClass extends java.lang.Object {\n java.lang.Object foo()\n"
+                    + printed
+                    + "}"));
+    assertEquals(
+        printed, reparsedClass.getMethodsByName("foo").iterator().next().getBody().toString());
+  }
+
+  @Test
+  public void parseUnreachableTrailingBlocks() {
+    // unlabeled Stmts after a non-fallsthrough Stmt and a trailing fallsthrough sequence of Blocks
+    // that is not entered via fallthrough are unreachable
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  int foo() {\n"
+                + "    DummyClass this;\n"
+                + "    java.lang.Throwable e;\n"
+                + "    int i;\n"
+                + "    this := @this: DummyClass;\n"
+                + "  label1:\n"
+                + "    i = 1;\n"
+                + "    return i;\n"
+                + "  label2:\n"
+                + "    e := @caughtexception;\n"
+                + "    throw e;\n"
+                + "    i = 5;\n"
+                + "    goto label1;\n"
+                + "  label3:\n"
+                + "    i = 2;\n"
+                + "  label4:\n"
+                + "    if i == 0 goto label3;\n"
+                + "  label5:\n"
+                + "    i = 3;\n"
+                + "  catch java.lang.Exception from label1 to label3 with label2;\n"
+                + "  catch java.lang.Error from label4 to label5 with label2;\n"
+                + "  }\n"
+                + "}");
+    Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
+    assertEquals(5, body.getStmts().size());
+
+    // the Exception Trap reaches the end of the body, the Error Trap covers only unreachable Stmts
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(1, traps.size());
+    assertEquals("java.lang.Exception", traps.get(0).getExceptionType().toString());
+  }
+
+  @Test
+  public void parseUnreachableStmtsInTheMiddle() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  int foo() {\n"
+                + "    DummyClass this;\n"
+                + "    java.lang.Throwable e;\n"
+                + "    int i;\n"
+                + "    this := @this: DummyClass;\n"
+                + "  label1:\n"
+                + "    i = 1;\n"
+                + "    goto label2;\n"
+                + "    i = 7;\n"
+                + "    return i;\n"
+                + "  label3:\n"
+                + "    e := @caughtexception;\n"
+                + "    throw e;\n"
+                + "  label2:\n"
+                + "    return i;\n"
+                + "  catch java.lang.Exception from label1 to label3 with label3;\n"
+                + "  }\n"
+                + "}");
+    Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
+    assertEquals(6, body.getStmts().size());
+    assertTrue(body.getStmts().stream().noneMatch(stmt -> stmt.toString().equals("i = 7")));
+
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(1, traps.size());
+    assertEquals("i = 1", traps.get(0).getBeginStmt().toString());
+  }
+
+  @Test
+  public void parseReachableTrailingNop() {
+    // a reachable nop at the end has no successor
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  void foo() {\n"
+                + "    goto label1;\n"
+                + "  label1:\n"
+                + "    nop;\n"
+                + "  }\n"
+                + "}");
+    assertThrows(
+        ResolveException.class,
+        () -> parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody());
   }
 
   @Test
   public void parseMinimalClass() {
-
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
     parseJimpleClass(cs);
   }
@@ -277,7 +422,9 @@ public class JimpleConverterTest {
     SootClass sc = parseJimpleClass(cs);
     assertTrue(
         sc.getMethod(
-                new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "another", VoidType.getInstance(), Collections.emptyList()))
             .isPresent());
   }
 
@@ -499,34 +646,39 @@ public class JimpleConverterTest {
 
   @Test
   public void testEscaping() {
-    assertEquals("αρετη", Jimple.unescape("\\u03b1\\u03c1\\u03b5\\u03c4\\u03b7"));
+    assertEquals("αρετη", JimpleUtils.unescape("\\u03b1\\u03c1\\u03b5\\u03c4\\u03b7"));
 
-    assertEquals("a", Jimple.escape("a"));
-    assertEquals("name$morename", Jimple.escape("name$morename"));
-    assertEquals("i0", Jimple.escape("i0"));
+    assertEquals("a", JimpleUtils.escape("a"));
+    assertEquals("name$morename", JimpleUtils.escape("name$morename"));
+    assertEquals("i0", JimpleUtils.escape("i0"));
 
     // keywords
-    assertEquals("\"class\"", Jimple.escape("class"));
-    assertEquals("\"throws\"", Jimple.escape("throws"));
+    assertEquals("\"class\"", JimpleUtils.escape("class"));
+    assertEquals("\"throws\"", JimpleUtils.escape("throws"));
 
     // unescape from old soot too (escaped package names partially)
-    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
-    assertEquals("java.annotation.something", Jimple.unescape("\"java\".\"annotation\".something"));
-    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("java.\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("\"java\".\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("java.\"annotation\".something"));
 
     // "normal" escaping / unescaping of a single item
     assertEquals(
-        "stringWithEscaped\"something", Jimple.unescape("\"stringWithEscaped\\\"something\""));
-    assertEquals("java.annotation.something", Jimple.unescape("\"java.\"annotation\".something\""));
+        "stringWithEscaped\"something", JimpleUtils.unescape("\"stringWithEscaped\\\"something\""));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("\"java.\"annotation\".something\""));
 
     assertNotEquals(
-        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something\""));
+        "stringWithEscaped\\\"something", JimpleUtils.unescape("\"stringWithEscaped\"something\""));
     assertNotEquals(
-        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something"));
-    assertEquals("stringWithEscaped\"something", Jimple.unescape("stringWithEscaped\\\"something"));
+        "stringWithEscaped\\\"something", JimpleUtils.unescape("\"stringWithEscaped\"something"));
+    assertEquals(
+        "stringWithEscaped\"something", JimpleUtils.unescape("stringWithEscaped\\\"something"));
 
     // from: usual string constant assignment
-    assertEquals("usual string", Jimple.unescape("\"usual string\""));
+    assertEquals("usual string", JimpleUtils.unescape("\"usual string\""));
   }
 
   @Test
@@ -610,7 +762,7 @@ public class JimpleConverterTest {
     }
 
     {
-      assertEquals("'class'", Jimple.unescape("\"'class'\""));
+      assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
       CharStream cs =
           CharStreams.fromString(
               "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
@@ -628,7 +780,7 @@ public class JimpleConverterTest {
           CharStreams.fromString("public class \\'class\\' extends java.lang.Object \n {}");
       SootClass sc = parseJimpleClass(cs);
 
-      assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+      assertEquals("'class'", JimpleUtils.unescape("\\'class\\'"));
       assertEquals("'class'", sc.getClassSource().getClassType().toString());
     }
 
@@ -648,14 +800,14 @@ public class JimpleConverterTest {
     assertEquals("'", StringTools.getUnEscapedStringOf("\\'"));
     assertEquals("\"'", StringTools.getUnEscapedStringOf("\"\\'"));
 
-    assertEquals("'class'", Jimple.unescape("\"'class'\""));
-    assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
-    assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+    assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\"\\'class\\'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\\'class\\'"));
 
     // necessary inner escaping
-    assertEquals("\"class\"", Jimple.unescape("\"\\\"class\\\"\""));
+    assertEquals("\"class\"", JimpleUtils.unescape("\"\\\"class\\\"\""));
     // unnecessary inner escaping
-    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
   }
 
   @Test
@@ -824,7 +976,10 @@ public class JimpleConverterTest {
             CharStreams.fromFileName("src/test/java/resources/jimple/RedundantTrapHandler.jimple"));
     Set<? extends SootMethod> methods = clazz.getMethods();
     SootMethod method = methods.iterator().next();
-    List<Trap> traps = method.getBody().getTraps();
+
+    BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
+    stmtPrinter.buildTraps(method.getBody().getControlFlowGraph());
+    List<Trap> traps = stmtPrinter.getTraps();
     assertEquals(0, traps.size());
   }
 }

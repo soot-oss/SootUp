@@ -22,36 +22,52 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that adds two numbers. */
 public final class JAddExpr extends AbstractFloatBinopExpr {
 
-  public JAddExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JAddExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " + ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseAddExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JAddExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JAddExpr withOp1(@NonNull Immediate op1) {
     return new JAddExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JAddExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JAddExpr withOp2(@NonNull Immediate op2) {
     return new JAddExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJAddExpr() {
+    return true;
+  }
+
+  @Override
+  public JAddExpr asJAddExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JAddExpr> toJAddExpr() {
+    return Optional.of(this);
   }
 }

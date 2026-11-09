@@ -1,4 +1,5 @@
 package sootup.core.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,14 +22,14 @@ package sootup.core.inputlocation;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -45,23 +46,22 @@ import sootup.core.views.View;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation {
+public interface AnalysisInputLocation extends AutoCloseable {
   /**
    * Create or find a class source for a given type.
    *
    * @param type The type of the class to be found.
    * @return The source entry for that class.
    */
-  @Nonnull
-  Optional<? extends SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view);
+  @NonNull Optional<? extends SootClassSource> getClassSource(
+      @NonNull ClassType type, @NonNull View view);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    *
-   * @return The source entries.
+   * @return an Autocloseable resource that must be closed!
    */
-  @Nonnull
-  Collection<? extends SootClassSource> getClassSources(@Nonnull View view);
+  @NonNull Stream<? extends SootClassSource> getClassSources(@NonNull View view);
 
   /**
    * If the AnalysisInputLocation is initialized with the SourceType then this method should return
@@ -70,9 +70,10 @@ public interface AnalysisInputLocation {
    *
    * @return returns null as source type
    */
-  @Nonnull
-  SourceType getSourceType();
+  @NonNull SourceType getSourceType();
 
-  @Nonnull
-  List<BodyInterceptor> getBodyInterceptors();
+  @NonNull List<BodyInterceptor> getBodyInterceptors();
+
+  /** Release any file-system resources held by this input location (e.g. open ZipFileSystems). */
+  default void close() throws Exception {}
 }

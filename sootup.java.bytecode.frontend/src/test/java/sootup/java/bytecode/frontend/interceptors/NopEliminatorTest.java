@@ -2,15 +2,13 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Local;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
@@ -20,8 +18,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Marcus Nachtigall
+ */
 public class NopEliminatorTest {
 
   /**
@@ -43,10 +42,10 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
-    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> inputControlFlowGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
-    assertEquals(inputStmtGraph.getNodes().size() - 1, actualGraph.getNodes().size());
+    assertEquals(inputControlFlowGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
 
   /**
@@ -63,7 +62,8 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
+    assertEquals(
+        testBody.getControlFlowGraph().getNodes(), processedBody.getControlFlowGraph().getNodes());
   }
 
   /**
@@ -73,8 +73,7 @@ public class NopEliminatorTest {
    * @return the generated {@link Body}
    */
   private static Body.BodyBuilder createBody(boolean withNop) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -84,7 +83,7 @@ public class NopEliminatorTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -94,20 +93,20 @@ public class NopEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
     if (withNop) {
       // strToA, jump, bToA, nop, ret;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      stmtGraph.removeEdge(bToA, ret);
-      stmtGraph.putEdge(bToA, nop);
-      stmtGraph.putEdge(nop, ret);
+      controlFlowGraph.removeEdge(bToA, ret);
+      controlFlowGraph.putEdge(bToA, nop);
+      controlFlowGraph.putEdge(nop, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

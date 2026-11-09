@@ -30,11 +30,13 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -45,9 +47,8 @@ import sootup.java.core.types.JavaClassType;
 public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
   // We cache the FileSystem instances as their creation is expensive.
-  // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
-  // cache can be safely shared in a static variable.
-  protected static final LoadingCache<Path, FileSystem> fileSystemCache =
+  // The Guava Cache is thread-safe (see JavaDoc of LoadingCache).
+  protected final LoadingCache<Path, FileSystem> fileSystemCache =
       CacheBuilder.newBuilder()
           .weakValues()
           .removalListener(
@@ -74,15 +75,15 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                     }
                   }));
 
-  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+  public ArchiveBasedAnalysisInputLocation(@NonNull Path path, @NonNull SourceType srcType) {
     this(path, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public ArchiveBasedAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    this(path, srcType, bodyInterceptors, Collections.emptyList());
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
+    this(path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
   public ArchiveBasedAnalysisInputLocation(
@@ -94,11 +95,12 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
+      // TODO: dont create a new AsmJavaClassProvider all the time!
       return getClassSourceInternal(
           (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
@@ -106,16 +108,24 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
     }
   }
 
+  /** returns a Autocloseable resource that must be closed! */
   @Override
-  @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
+      // TODO: dont create a new AsmJavaClassProvider all the time!
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     }
+  }
+
+  @Override
+  public void close() {
+    // Evicting all entries triggers the removalListener which calls fileSystem.close() on each.
+    fileSystemCache.invalidateAll();
   }
 }

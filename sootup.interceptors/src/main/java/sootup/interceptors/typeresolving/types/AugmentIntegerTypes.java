@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving.types;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,23 +22,23 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.visitor.TypeVisitor;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.PrimitiveType;
 
 public abstract class AugmentIntegerTypes {
 
-  @Nonnull
+  @NonNull
   public static Integer1Type getInteger1() {
     return Integer1Type.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static Integer127Type getInteger127() {
     return Integer127Type.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static Integer32767Type getInteger32767() {
     return Integer32767Type.getInstance();
   }
@@ -59,8 +60,18 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
-      throw new UnsupportedOperationException();
+    protected boolean isInteger1Type() {
+      return true;
+    }
+
+    @Override
+    protected BooleanType asInteger1Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<BooleanType> toInteger1Type() {
+      return Optional.of(this);
     }
   }
 
@@ -78,8 +89,18 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
-      throw new UnsupportedOperationException();
+    protected boolean isInteger127Type() {
+      return true;
+    }
+
+    @Override
+    protected IntType asInteger127Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<IntType> toInteger127Type() {
+      return Optional.of(this);
     }
   }
 
@@ -97,8 +118,18 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
-      throw new UnsupportedOperationException();
+    protected boolean isInteger3276Type() {
+      return true;
+    }
+
+    @Override
+    protected IntType asInteger3276Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<IntType> toInteger3276Type() {
+      return Optional.of(this);
     }
   }
 }

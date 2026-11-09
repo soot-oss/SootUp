@@ -23,7 +23,7 @@ package sootup.java.core;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -75,7 +75,7 @@ public abstract class JavaModuleInfo {
   }
 
   /** Represents the automatic module (e.g. a jar without a module-descriptor on the module path) */
-  public static JavaModuleInfo createAutomaticModuleInfo(@Nonnull ModuleSignature moduleName) {
+  public static JavaModuleInfo createAutomaticModuleInfo(@NonNull ModuleSignature moduleName) {
 
     return new JavaModuleInfo() {
       @Override
@@ -175,21 +175,21 @@ public abstract class JavaModuleInfo {
 
   public static class ModuleReference {
 
-    @Nonnull private final ModuleSignature moduleInfo;
-    @Nonnull private final EnumSet<ModuleModifier> modifiers;
+    @NonNull private final ModuleSignature moduleInfo;
+    @NonNull private final EnumSet<ModuleModifier> modifiers;
 
     public ModuleReference(
-        @Nonnull ModuleSignature moduleInfo, @Nonnull EnumSet<ModuleModifier> accessModifier) {
+        @NonNull ModuleSignature moduleInfo, @NonNull EnumSet<ModuleModifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
     }
 
-    @Nonnull
+    @NonNull
     public EnumSet<ModuleModifier> getModifiers() {
       return modifiers;
     }
 
-    @Nonnull
+    @NonNull
     public ModuleSignature getModuleSignature() {
       return moduleInfo;
     }
@@ -201,21 +201,21 @@ public abstract class JavaModuleInfo {
   }
 
   public static class InterfaceReference {
-    @Nonnull private final JavaClassType interfaceType;
-    @Nonnull private final JavaClassType interfaceImplementation;
+    @NonNull private final JavaClassType interfaceType;
+    @NonNull private final JavaClassType interfaceImplementation;
 
     public InterfaceReference(
-        @Nonnull JavaClassType interfaceType, @Nonnull JavaClassType interfaceImplementation) {
+        @NonNull JavaClassType interfaceType, @NonNull JavaClassType interfaceImplementation) {
       this.interfaceType = interfaceType;
       this.interfaceImplementation = interfaceImplementation;
     }
 
-    @Nonnull
+    @NonNull
     public JavaClassType getInterfaceType() {
       return interfaceType;
     }
 
-    @Nonnull
+    @NonNull
     public JavaClassType getInterfaceImplementation() {
       return interfaceImplementation;
     }
@@ -227,14 +227,14 @@ public abstract class JavaModuleInfo {
   }
 
   public static class PackageReference {
-    @Nonnull private final ModulePackageName packageName;
-    @Nonnull private final EnumSet<ModuleModifier> modifers;
-    @Nonnull private final Set<ModuleSignature> targetModules;
+    @NonNull private final ModulePackageName packageName;
+    @NonNull private final EnumSet<ModuleModifier> modifers;
+    @NonNull private final Set<ModuleSignature> targetModules;
 
     public PackageReference(
-        @Nonnull ModulePackageName packageName,
-        @Nonnull EnumSet<ModuleModifier> modifier,
-        @Nonnull Collection<ModuleSignature> targetModules) {
+        @NonNull ModulePackageName packageName,
+        @NonNull EnumSet<ModuleModifier> modifier,
+        @NonNull Collection<ModuleSignature> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
       this.targetModules =
@@ -242,7 +242,7 @@ public abstract class JavaModuleInfo {
     }
 
     /** does not return true in case of self reference (which is usually implicitly allowed). */
-    public boolean appliesTo(@Nonnull ModuleSignature moduleSignature) {
+    public boolean appliesTo(@NonNull ModuleSignature moduleSignature) {
 
       if (targetModules.isEmpty()) {
         // no specific list of modules is given so this package is exported|opened|.. to all
@@ -253,12 +253,12 @@ public abstract class JavaModuleInfo {
       return targetModules.contains(moduleSignature);
     }
 
-    @Nonnull
+    @NonNull
     public ModulePackageName getPackageName() {
       return packageName;
     }
 
-    @Nonnull
+    @NonNull
     public EnumSet<ModuleModifier> getModifiers() {
       return modifers;
     }

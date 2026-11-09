@@ -22,19 +22,46 @@ package sootup.java.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.types.Type;
 import sootup.java.core.signatures.ModulePackageName;
 
 public class ModuleJavaClassType extends JavaClassType {
 
-  public ModuleJavaClassType(
-      @Nonnull final String className, @Nonnull final ModulePackageName packageName) {
+  protected ModuleJavaClassType(
+      @NonNull final String className, @NonNull final ModulePackageName packageName) {
     super(className, packageName);
   }
 
-  @Nonnull
+  /**
+   * Returns the unique {@link ModuleJavaClassType} for the given class and module-scoped package,
+   * so that equal class types are the same instance and may be compared with {@code ==}.
+   */
+  @NonNull
+  public static ModuleJavaClassType of(
+      @NonNull final String className, @NonNull final ModulePackageName packageName) {
+    return intern(new ModuleJavaClassType(className, packageName));
+  }
+
+  @NonNull
   @Override
   public ModulePackageName getPackageName() {
     return (ModulePackageName) super.getPackageName();
+  }
+
+  @Override
+  protected boolean isModuleJavaClassType() {
+    return true;
+  }
+
+  @Override
+  protected Type asModuleJavaClassType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<Type> toModuleJavaClassType() {
+    return Optional.of(this);
   }
 }

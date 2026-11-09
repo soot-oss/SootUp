@@ -22,32 +22,45 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.*;
 
+/** Visitor interface for constant values in Jimple IR. */
 public interface ConstantVisitor extends Visitor {
 
-  void caseBooleanConstant(@Nonnull BooleanConstant constant);
+  /** Visits a boolean constant. */
+  void caseBooleanConstant(@NonNull BooleanConstant constant);
 
-  void caseDoubleConstant(@Nonnull DoubleConstant constant);
+  /** Visits a double constant. */
+  void caseDoubleConstant(@NonNull DoubleConstant constant);
 
-  void caseFloatConstant(@Nonnull FloatConstant constant);
+  /** Visits a float constant. */
+  void caseFloatConstant(@NonNull FloatConstant constant);
 
-  void caseIntConstant(@Nonnull IntConstant constant);
+  /** Visits an int constant. */
+  void caseIntConstant(@NonNull IntConstant constant);
 
-  void caseLongConstant(@Nonnull LongConstant constant);
+  /** Visits a long constant. */
+  void caseLongConstant(@NonNull LongConstant constant);
 
-  void caseNullConstant(@Nonnull NullConstant constant);
+  /** Visits a null constant. */
+  void caseNullConstant(@NonNull NullConstant constant);
 
-  void caseStringConstant(@Nonnull StringConstant constant);
+  /** Visits a string constant. */
+  void caseStringConstant(@NonNull StringConstant constant);
 
-  void caseEnumConstant(@Nonnull EnumConstant constant);
+  /** Visits an enum constant. */
+  void caseEnumConstant(@NonNull EnumConstant constant);
 
-  void caseClassConstant(@Nonnull ClassConstant constant);
+  /** Visits a class constant. */
+  void caseClassConstant(@NonNull ClassConstant constant);
 
-  void caseMethodHandle(@Nonnull MethodHandle handle);
+  /** Visits a method handle constant. */
+  void caseMethodHandle(@NonNull MethodHandle handle);
 
-  void caseMethodType(@Nonnull MethodType methodType);
+  /** Visits a method type constant. */
+  void caseMethodType(@NonNull MethodType methodType);
 
-  void defaultCaseConstant(@Nonnull Constant constant);
+  /** Called for any constant not handled by a more specific case method. */
+  void defaultCaseConstant(@NonNull Constant constant);
 }

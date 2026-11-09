@@ -26,12 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -52,14 +52,34 @@ import sootup.java.core.views.JavaView;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
+
+  @Test
+  void testResourceLeaks() throws IOException {
+    Path path = Paths.get("src/test/resources/multi-release-jar/mrjar.jar");
+    try (FileSystem fileSystem =
+        FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
+
+      assertTrue(fileSystem.isOpen());
+
+      try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
+        stream
+            .filter(
+                p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar"))
+            .map(p -> p)
+            .forEach(
+                p -> {
+                  System.out.println(p);
+                });
+      }
+      assertTrue(fileSystem.isOpen());
+    }
+  }
 
   @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-            cls, "", SourceType.Application);
+        new ClassFileBasedAnalysisInputLocation(cls, "", SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
@@ -77,8 +97,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testSingleClassWPackageName() {
     AnalysisInputLocation pathBasedNamespace =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+        new ClassFileBasedAnalysisInputLocation(
+            Paths.get("src/test/resources/single-file/ClassWithPackageName.class"),
             "ClassesPackageName",
             SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
@@ -107,7 +127,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testClassInWar() {
 
-    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
+    String warFile = "src/test/resources/java-warApp/dummyWarApp.war";
 
     assertTrue(new File(warFile).exists(), "File " + warFile + " not found.");
 
@@ -117,14 +137,15 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals(19, view.getClasses().count());
 
     // Create java class signature
-    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    ClassType utilsClassSignature = identifierFactory.getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
     JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
+        identifierFactory.parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
     JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
@@ -139,15 +160,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
-        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
+        identifierFactory.parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = identifierFactory.getClassType("Employee", "ds");
 
     JavaSootField field =
         new JavaSootField(
-            JavaIdentifierFactory.getInstance()
-                .getFieldSignature(classSignature, nameFieldSubSignature),
+            identifierFactory.getFieldSignature(classSignature, nameFieldSubSignature),
             Collections.singleton(FieldModifier.PUBLIC),
             null,
             NoPositionInformation.getInstance());
@@ -155,20 +175,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Build a soot class
     JavaSootClass c =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                classSignature,
-                null,
-                null,
-                null,
-                Collections.singleton(field),
-                Collections.emptySet(),
-                null,
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(classSignature)
+                .withFields(Collections.singleton(field))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
 
     assertEquals("java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());
@@ -182,7 +194,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace = new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation pathBasedNamespace = new DefaultRuntimeAnalysisInputLocation();
 
     JavaView v = new JavaView(pathBasedNamespace);
 
@@ -202,7 +214,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
    */
   @Test
   public void testInputLocationLibraryMode() {
-    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
+    JavaView view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
 
     Collection<SootClass> classes = new HashSet<>(); // Set to track the classes to check
 

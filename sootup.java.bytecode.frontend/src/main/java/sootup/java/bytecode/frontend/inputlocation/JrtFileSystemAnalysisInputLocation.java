@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -25,16 +26,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
@@ -53,36 +54,37 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
-  // FIXME: handle closing the filesystem resource
+  // jrt:/ is the JVM's built-in module filesystem; getFileSystem() returns the existing instance
+  // (does not open a new one) so it must not be closed — it is owned and managed by the JVM.
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;
 
-  @Nonnull private final SourceType sourceType;
+  @NonNull private final SourceType sourceType;
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
   public JrtFileSystemAnalysisInputLocation() {
     this(SourceType.Library);
   }
 
-  public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
+  public JrtFileSystemAnalysisInputLocation(@NonNull SourceType sourceType) {
     this(sourceType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public JrtFileSystemAnalysisInputLocation(
-      @Nonnull SourceType sourceType, @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull SourceType sourceType, @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
     this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Optional<JavaSootClassSource> getClassSource(
-      @Nonnull ClassType classType, @Nonnull View view) {
+      @NonNull ClassType classType, @NonNull View view) {
     JavaClassType klassType = (JavaClassType) classType;
 
-    ClassProvider classProvider = new AsmJavaClassProvider(view);
+    PathbasedClassProvider classProvider = getClassProvider(view);
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -129,62 +131,72 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   /** Retreive CLassSources of a module specified by methodSignature */
   @Override
-  @Nonnull
-  public Collection<JavaSootClassSource> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
-        .collect(Collectors.toList());
+  @NonNull
+  public Stream<JavaSootClassSource> getModulesClassSources(
+      @NonNull ModuleSignature moduleSignature, @NonNull View view) {
+    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view);
   }
 
-  @Nonnull
+  @NonNull
   protected Stream<JavaSootClassSource> getClassSourcesInternal(
-      @Nonnull ModuleSignature moduleSignature,
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View view) {
+      @NonNull ModuleSignature moduleSignature,
+      @NonNull IdentifierFactory identifierFactory,
+      @NonNull View view) {
 
-    ClassProvider classProvider = new AsmJavaClassProvider(view);
+    PathbasedClassProvider classProvider = getClassProvider(view);
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
             + classProvider.getHandledFileType().getExtensionWithDot();
 
     final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
-    try {
-
-      return Files.walk(archiveRoot)
-          .filter(
-              filePath ->
-                  !Files.isDirectory(filePath)
-                      && filePath
-                          .toString()
-                          .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
-                      && !filePath.toString().endsWith(moduleInfoFilename))
-          .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
-          .map(src -> (JavaSootClassSource) src);
+    try (Stream<Path> paths = Files.walk(archiveRoot)) {
+      // collect into a list and then return a stream, so we do not leak the Stream returned by
+      // Files.walk
+      List<JavaSootClassSource> javaSootClassSources =
+          paths
+              .filter(
+                  filePath -> {
+                    if (!Files.isDirectory(filePath)) {
+                      String pathStr = filePath.toString();
+                      return pathStr.endsWith(
+                              classProvider.getHandledFileType().getExtensionWithDot())
+                          && !pathStr.endsWith(moduleInfoFilename);
+                    }
+                    return false;
+                  })
+              .<SootClassSource>flatMap(
+                  p ->
+                      StreamUtils.optionalToStream(
+                          classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
+              .map(src -> (JavaSootClassSource) src)
+              .toList();
+      return javaSootClassSources.stream();
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
   }
 
-  @Override
-  public @Nonnull Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  protected PathbasedClassProvider getClassProvider(@NonNull View view) {
+    return new AsmJavaClassProvider(view);
+  }
 
-    Collection<ModuleSignature> moduleSignatures = discoverModules();
+  @Override
+  public @NonNull Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
+
+    Collection<ModuleSignature> moduleSignatures = discoverModules(view.getIdentifierFactory());
     return moduleSignatures.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view))
-        .collect(Collectors.toList());
+        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view));
   }
 
   /**
    * Discover and return all modules contained in the jrt filesystem.
    *
+   * @param identifierFactory the factory that creates the module signatures
    * @return Collection of found module names.
    */
-  @Nonnull
-  public Collection<ModuleSignature> discoverModules() {
+  @NonNull
+  public Collection<ModuleSignature> discoverModules(@NonNull IdentifierFactory identifierFactory) {
     if (!isResolved) {
       final Path moduleRoot = theFileSystem.getPath("modules");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
@@ -196,7 +208,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                   JavaModuleIdentifierFactory.getModuleSignature(entry.subpath(1, 2).toString());
               Path moduleInfo = entry.resolve(moduleInfoFilename);
               if (Files.exists(moduleInfo)) {
-                moduleInfoMap.put(moduleSignature, new AsmModuleSource(moduleInfo));
+                moduleInfoMap.put(
+                    moduleSignature, new AsmModuleSource(moduleInfo, identifierFactory));
               } else {
                 moduleInfoMap.put(
                     moduleSignature, JavaModuleInfo.createAutomaticModuleInfo(moduleSignature));
@@ -212,9 +225,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     return moduleInfoMap.keySet();
   }
 
-  @Nonnull
+  @NonNull
   private JavaClassType fromPath(
-      @Nonnull Path p, @Nonnull final IdentifierFactory identifierFactory) {
+      @NonNull Path p, @NonNull final IdentifierFactory identifierFactory) {
 
     final Path moduleDir = p.subpath(1, 2);
     final Path filename = p.subpath(2, p.getNameCount());
@@ -235,32 +248,32 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     return sig;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view) {
     if (!isResolved) {
-      discoverModules();
+      discoverModules(view.getIdentifierFactory());
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<ModuleSignature> getModules(View view) {
     if (!isResolved) {
-      discoverModules();
+      discoverModules(view.getIdentifierFactory());
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return sourceType;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }

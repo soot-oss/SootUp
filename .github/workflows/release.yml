@@ -1,31 +1,28 @@
-name: Create Release Draft
+name: Prepare Release
+run-name: Release ${{ inputs.release_type }} triggered by ${{ github.actor }}
 
 on:
-  push:
-    tags:
-      # Push events to matching
-      - ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    name: Create Release Draft
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            **TODO:** update changes in this Release
-            - First Change
-            - Second Change
-            - ...
-            [Documentation](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.ref }}/
-          draft: true
-          prerelease: false
+  prepare-release:
+    name: Open release PR against develop
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-prepare.yml@c98577761faae44108ba0ec2de7ebd67ddd4b40b # develop
+    with:
+      release_type: ${{ inputs.release_type }}
+      head_branch: develop
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection / can't trigger downstream workflows

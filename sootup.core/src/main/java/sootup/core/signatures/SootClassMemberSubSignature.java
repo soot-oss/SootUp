@@ -25,9 +25,9 @@ package sootup.core.signatures;
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import sootup.core.jimple.Jimple;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -40,11 +40,11 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public abstract class SootClassMemberSubSignature {
 
-  @Nonnull private final String name;
-  @Nonnull private final Type type;
+  @NonNull private final String name;
+  @NonNull private final Type type;
 
   /** Creates a new instance of the {@link SootClassMemberSubSignature} class. */
-  protected SootClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
+  protected SootClassMemberSubSignature(@NonNull String name, @NonNull Type type) {
     this.name = name;
     this.type = type;
   }
@@ -54,7 +54,7 @@ public abstract class SootClassMemberSubSignature {
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public String getName() {
     return name;
   }
@@ -64,7 +64,7 @@ public abstract class SootClassMemberSubSignature {
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public Type getType() {
     return type;
   }
@@ -83,12 +83,15 @@ public abstract class SootClassMemberSubSignature {
     return Objects.equal(getName(), that.getName()) && Objects.equal(getType(), that.getType());
   }
 
+  private final Supplier<Integer> _cachedHashCode =
+      Suppliers.memoize(() -> Objects.hashCode(getName(), getType()));
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName(), getType());
+    return _cachedHashCode.get();
   }
 
-  protected int compareTo(@Nonnull SootClassMemberSubSignature o) {
+  protected int compareTo(@NonNull SootClassMemberSubSignature o) {
     int r = this.getName().compareTo(o.getName());
 
     if (r != 0) {
@@ -100,12 +103,10 @@ public abstract class SootClassMemberSubSignature {
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
-          () ->
-              String.format(
-                  "%s %s", Jimple.escape(getType().toString()), Jimple.escape(getName())));
+          () -> String.format("%s %s", getType(), JimpleUtils.quotedNameOf(getName())));
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return _cachedToString.get();
   }

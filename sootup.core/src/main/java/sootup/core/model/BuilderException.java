@@ -1,4 +1,5 @@
 package sootup.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,8 +22,8 @@ package sootup.core.model;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents a build error.
@@ -37,7 +38,7 @@ public class BuilderException extends IllegalStateException {
    * @param builderClass The builder class.
    * @param buildableClass The class to build.
    */
-  public BuilderException(@Nonnull Class<?> builderClass, @Nonnull Class<?> buildableClass) {
+  public BuilderException(@NonNull Class<?> builderClass, @NonNull Class<?> buildableClass) {
     this(builderClass, buildableClass, null);
   }
 
@@ -49,40 +50,40 @@ public class BuilderException extends IllegalStateException {
    * @param cause The cause.
    */
   public BuilderException(
-      @Nonnull Class<?> builderClass, @Nonnull Class<?> buildableClass, @Nullable Throwable cause) {
+      @NonNull Class<?> builderClass, @NonNull Class<?> buildableClass, @Nullable Throwable cause) {
     super(makeMessage(builderClass, buildableClass, cause), cause);
 
     this._builderClass = builderClass;
     this._buildableClass = buildableClass;
   }
 
-  @Nonnull private final Class<?> _builderClass;
+  @NonNull private final Class<?> _builderClass;
 
   /**
    * Gets the builder class.
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public Class<?> getBuilderClass() {
     return this._builderClass;
   }
 
-  @Nonnull private final Class<?> _buildableClass;
+  @NonNull private final Class<?> _buildableClass;
 
   /**
    * Gets the buildable class.
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public Class<?> getBuildableClass() {
     return this._buildableClass;
   }
 
-  @Nonnull
+  @NonNull
   private static String makeMessage(
-      @Nonnull Class<?> builderClass, @Nonnull Class<?> buildableClass, @Nullable Throwable cause) {
+      @NonNull Class<?> builderClass, @NonNull Class<?> buildableClass, @Nullable Throwable cause) {
     return "A builder exception occurred"
         + (cause != null ? ":\n\n" + cause.getMessage() : ".")
         + "\n\n"
