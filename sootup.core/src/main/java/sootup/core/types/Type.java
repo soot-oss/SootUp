@@ -24,6 +24,7 @@ package sootup.core.types;
 
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.visitor.AbstractTypeVisitor;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -63,26 +64,64 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     }
   }
 
+  /**
+   * Returns the size in bits of a value of the given type: 1 for boolean, 8 for byte, 16 for
+   * short/char, 32 for int/float, 64 for long/double and class types, and 0 for every other type.
+   */
   public static int getValueBitSize(Type type) {
-    // TODO: ms: make use of the typevisitor to get O(1)
-    if (type instanceof PrimitiveType.BooleanType) {
-      return 1;
+    BitSizeVisitor visitor = new BitSizeVisitor();
+    type.accept(visitor);
+    return visitor.bitSize;
+  }
+
+  /** Computes the bit size of a type via dispatch instead of an instanceof chain. */
+  private static final class BitSizeVisitor extends AbstractTypeVisitor {
+    private int bitSize = 0;
+
+    @Override
+    public void caseBooleanType() {
+      bitSize = 1;
     }
-    if (type instanceof PrimitiveType.ByteType) {
-      return 8;
+
+    @Override
+    public void caseByteType() {
+      bitSize = 8;
     }
-    if (type instanceof PrimitiveType.ShortType || type instanceof PrimitiveType.CharType) {
-      return 16;
+
+    @Override
+    public void caseShortType() {
+      bitSize = 16;
     }
-    if (type instanceof PrimitiveType.IntType || type instanceof PrimitiveType.FloatType) {
-      return 32;
+
+    @Override
+    public void caseCharType() {
+      bitSize = 16;
     }
-    if (type instanceof PrimitiveType.LongType
-        || type instanceof PrimitiveType.DoubleType
-        || type instanceof ClassType) {
-      return 64;
+
+    @Override
+    public void caseIntType() {
+      bitSize = 32;
     }
-    return 0;
+
+    @Override
+    public void caseFloatType() {
+      bitSize = 32;
+    }
+
+    @Override
+    public void caseLongType() {
+      bitSize = 64;
+    }
+
+    @Override
+    public void caseDoubleType() {
+      bitSize = 64;
+    }
+
+    @Override
+    public void caseClassType(@NonNull ClassType classType) {
+      bitSize = 64;
+    }
   }
 
   protected boolean isPrimitiveType() {
