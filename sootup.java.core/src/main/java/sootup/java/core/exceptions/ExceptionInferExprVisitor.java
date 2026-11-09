@@ -22,8 +22,8 @@ package sootup.java.core.exceptions;
  * #L%
  */
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.visitor.AbstractExprVisitor;
@@ -223,9 +223,11 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
-    if (expr.getBaseType() instanceof ReferenceType) {
-      result = new ExceptionInferResult(ExceptionInferResult.ErrorType.RESOLVE_CLASS_ERROR);
-    }
+    // only a reference base type has to be resolved, a primitive one cannot cause a LinkageError
+    result =
+        expr.getBaseType() instanceof ReferenceType
+            ? new ExceptionInferResult(ExceptionInferResult.ErrorType.RESOLVE_CLASS_ERROR)
+            : ExceptionInferResult.createEmptyException();
     Value count = expr.getSize();
     if (count instanceof Local) {
       result =

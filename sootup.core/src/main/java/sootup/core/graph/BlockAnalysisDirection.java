@@ -36,27 +36,27 @@ public enum BlockAnalysisDirection {
   POSTORDERBACKWARD {
     @Override
     @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return (List<BasicBlock<?>>) block.getSuccessors();
+      return Collections.unmodifiableList(block.getSuccessors());
     }
 
     @NonNull
     @Override
-    List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
+    List<BasicBlock<?>> getSortedBlocks(ControlFlowGraph<?> blockGraph) {
       PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(blockGraph);
-      return Collections.unmodifiableList(traversal.getBlocksSorted());
+      return Collections.unmodifiableList(traversal.getBlockTraversal());
     }
   },
   REVERSEPOSTORDERFORWARD {
     @Override
     @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return (List<BasicBlock<?>>) block.getPredecessors();
+      return Collections.unmodifiableList(block.getPredecessors());
     }
 
     @NonNull
     @Override
-    List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
+    List<BasicBlock<?>> getSortedBlocks(ControlFlowGraph<?> blockGraph) {
       ReversePostOrderBlockTraversal traversal = new ReversePostOrderBlockTraversal(blockGraph);
-      return Collections.unmodifiableList(traversal.getBlocksSorted());
+      return Collections.unmodifiableList(traversal.getBlockTraversal());
     }
   };
 
@@ -64,5 +64,5 @@ public enum BlockAnalysisDirection {
   abstract List<BasicBlock<?>> getPredecessors(BasicBlock<?> block);
 
   @NonNull
-  abstract List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph);
+  abstract List<BasicBlock<?>> getSortedBlocks(ControlFlowGraph<?> blockGraph);
 }

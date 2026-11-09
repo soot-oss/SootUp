@@ -13,7 +13,7 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.views.JavaView;
 
 public class Soot1580Test {
-  final String jar = "../shared-test-resources/soot-1580/jpush-android_v3.0.5.jar";
+  final String jar = "src/test/resources/soot-1580/jpush-android_v3.0.5.jar";
 
   @Test
   @Disabled("Localsplitter fails; bytecode itself is somehow strange")

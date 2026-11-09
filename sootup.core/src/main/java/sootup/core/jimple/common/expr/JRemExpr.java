@@ -22,8 +22,9 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that computes a % b. */
@@ -53,5 +54,20 @@ public final class JRemExpr extends AbstractFloatBinopExpr {
   @NonNull
   public JRemExpr withOp2(@NonNull Immediate op2) {
     return new JRemExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJRemExpr() {
+    return true;
+  }
+
+  @Override
+  public JRemExpr asJRemExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JRemExpr> toJRemExpr() {
+    return Optional.of(this);
   }
 }

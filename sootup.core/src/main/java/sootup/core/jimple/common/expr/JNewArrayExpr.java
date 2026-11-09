@@ -22,13 +22,14 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -100,15 +101,10 @@ public final class JNewArrayExpr implements Expr {
     return size;
   }
 
-  /**
-   * Returns a list of type Value, contains a list of values with size
-   *
-   * @return
-   */
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(size.getUses(), Stream.of(size));
+  public void collectUses(List<Value> collector) {
+    size.collectUses(collector);
+    collector.add(size);
   }
 
   /** Returns an instance of ArrayType(). */
@@ -142,5 +138,20 @@ public final class JNewArrayExpr implements Expr {
       return ((ArrayType) baseType).isArrayTypeOfPrimitives();
     }
     return false;
+  }
+
+  @Override
+  public boolean isJNewArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewArrayExpr asJNewArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewArrayExpr> toJNewArrayExpr() {
+    return Optional.of(this);
   }
 }

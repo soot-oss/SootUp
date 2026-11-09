@@ -6,7 +6,7 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -51,9 +51,9 @@ public class ClassModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(firstStmt);
-    stmtGraph.putEdge(firstStmt, returnVoidStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(firstStmt);
+    controlFlowGraph.putEdge(firstStmt, returnVoidStmt);
 
     Body body =
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
@@ -68,25 +68,19 @@ public class ClassModifiersValidatorTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
+    InMemoryJavaClassSource overridingJavaClassSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+            .withMethods(Collections.singleton(dummyMainMethod))
+            .withModifiers(modifierEnumSet)
+            .build();
     JavaSootClass mainClass =
-        new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                modifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
-            SourceType.Application);
-    assertEquals(mainClass.getMethods().size(), 1);
-
+        JavaSootClass.JavaSootClassBuilder.builder()
+            .withClassSource(overridingJavaClassSource)
+            .withSourceType(SourceType.Application)
+            .build();
+    assertEquals(1, mainClass.getMethods().size());
     return mainClass;
   }
 

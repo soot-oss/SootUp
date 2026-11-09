@@ -24,7 +24,7 @@ package sootup.interceptors.typeresolving;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.types.Type;
 import sootup.interceptors.typeresolving.types.BottomType;
 

@@ -22,20 +22,83 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.base.Objects;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 
-public abstract class JavaSootClassSource extends SootClassSource {
+public abstract class JavaSootClassSource implements SootClassSource, HasGenericSignature {
 
+  // holds information about the class
+  protected final AnalysisInputLocation analysisInputLocation;
+  // the classType that identifies the containing class information
+  protected ClassType classSignature;
+  // holds information about the specific data unit where the information about a class is stored
+  protected final Path sourcePath;
+
+  @NonNull private final JavaClassFileMetadata classFileMetadata;
+
+  /**
+   * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
+   * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}.
+   * Implementations should use {@link java.nio.file.Files#newInputStream(Path, OpenOption...)}
+   * (Path, OpenOption...)} to access the file.
+   *
+   * @param inputLocation The {@link AnalysisInputLocation} that holds the given file
+   * @param sourcePath Path to the source file of the to-be-created {@link SootClassSource}. The
+   *     given path has to exist and requires to be handled by this {@link PathbasedClassProvider}.
+   *     Implementations might double check this if wanted.
+   * @param classSignature the signature that has been used to resolve this class
+   */
   public JavaSootClassSource(
-      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull AnalysisInputLocation inputLocation,
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
+    this(inputLocation, classSignature, sourcePath, JavaClassFileMetadata.empty());
+  }
+
+  /** Creates a class source with immutable source and nesting attributes. */
+  public JavaSootClassSource(
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
+    this.analysisInputLocation = inputLocation;
+    this.classSignature = classSignature;
+    this.sourcePath = sourcePath;
+    this.classFileMetadata = classFileMetadata;
+  }
+
+  public JavaSootClassSource(SootClassSource delegate) {
+    this(
+        delegate.getAnalysisInputLocation(),
+        delegate.getClassType(),
+        delegate.getSourcePath(),
+        delegate instanceof JavaSootClassSource
+            ? ((JavaSootClassSource) delegate).getClassFileMetadata()
+            : JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Returns immutable source and nesting attributes, empty for sources that do not provide them.
+   */
+  @NonNull
+  public JavaClassFileMetadata getClassFileMetadata() {
+    return classFileMetadata;
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return classFileMetadata.getGenericSignature();
   }
 
   protected abstract Iterable<AnnotationUsage> resolveAnnotations();
@@ -46,7 +109,41 @@ public abstract class JavaSootClassSource extends SootClassSource {
     return new JavaSootClass(this, sourceType);
   }
 
-  protected JavaSootClassSource(SootClassSource delegate) {
-    super(delegate);
+  @Override
+  public ClassType getClassType() {
+    return classSignature;
+  }
+
+  public AnalysisInputLocation getAnalysisInputLocation() {
+    return analysisInputLocation;
+  }
+
+  public Path getSourcePath() {
+    return sourcePath;
+  }
+
+  /**
+   * Even if a the signature changes, the classource remains the same, e.g., if it is associated to
+   * an automatic module s
+   *
+   * @param o the object to compare with
+   * @return both objects are logically equal
+   */
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    JavaSootClassSource that = (JavaSootClassSource) o;
+    return Objects.equal(analysisInputLocation, that.analysisInputLocation)
+        && Objects.equal(sourcePath, that.sourcePath);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(analysisInputLocation, sourcePath);
   }
 }

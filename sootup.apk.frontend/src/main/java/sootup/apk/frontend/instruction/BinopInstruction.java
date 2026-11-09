@@ -27,9 +27,9 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class BinopInstruction extends DexLibAbstractInstruction {
@@ -48,7 +48,7 @@ public class BinopInstruction extends DexLibAbstractInstruction {
     Value expr = getExpression(source1, source2);
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), expr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(assign);
     body.add(assign);
   }

@@ -22,13 +22,14 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -52,6 +53,21 @@ public final class JThrowStmt extends AbstractStmt {
     up.literal(Jimple.THROW);
     up.literal(" ");
     op.toString(up);
+  }
+
+  @Override
+  public boolean isJThrowStmt() {
+    return true;
+  }
+
+  @Override
+  public JThrowStmt asJThrowStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JThrowStmt> toJThrowStmt() {
+    return Optional.of(this);
   }
 
   @Override
@@ -96,9 +112,9 @@ public final class JThrowStmt extends AbstractStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 
   @Override

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -50,7 +50,7 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local is not in the StmtGraph : "
+                        "Local is not in the ControlFlowGraph : "
                             + value
                             + " in "
                             + body.getMethodSignature())));
@@ -62,7 +62,7 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local is not in the StmtGraph : "
+                        "Local is not in the ControlFlowGraph : "
                             + value
                             + " in "
                             + body.getMethodSignature())));

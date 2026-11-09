@@ -48,7 +48,7 @@ package sootup.core.jimple.common.constant;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
@@ -56,7 +56,7 @@ public class ClassConstant implements Constant {
   private final String value;
   private final Type type;
 
-  public ClassConstant(@NonNull String str, @NonNull Type type) {
+  public ClassConstant(@NonNull final String str, @NonNull final Type type) {
     if (str.contains(".")) {
       throw new IllegalArgumentException(
           "ClassConstants must use class names separated by '/', not '.'!");
@@ -158,7 +158,7 @@ public class ClassConstant implements Constant {
 
   // In this case, equals should be structural equality.
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(value));
   }
 
@@ -168,6 +168,7 @@ public class ClassConstant implements Constant {
     return value.hashCode();
   }
 
+  @Override
   public String getValue() {
     return value;
   }
@@ -179,13 +180,13 @@ public class ClassConstant implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseClassConstant(this);
     return v;
   }
 
   @Override
   public String toString() {
-    return "class " + Jimple.escape(value);
+    return "class " + JimpleUtils.escape(value);
   }
 }

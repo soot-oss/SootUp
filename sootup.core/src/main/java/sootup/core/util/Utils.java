@@ -35,13 +35,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.tools.*;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.printer.JimplePrinter;
 
 /**

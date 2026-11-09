@@ -27,11 +27,11 @@ package sootup.core.jimple.common.ref;
  * @version 1.0
  */
 
-import java.util.stream.Stream;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.util.printer.StmtPrinter;
@@ -68,9 +68,19 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(base.getUses(), Stream.of(base));
+  public boolean equals(Object o) {
+    return super.equals(o) && base.equals(((JInstanceFieldRef) o).base);
+  }
+
+  @Override
+  public int hashCode() {
+    return 31 * super.hashCode() + base.hashCode();
+  }
+
+  @Override
+  public void collectUses(List<Value> collector) {
+    base.collectUses(collector);
+    collector.add(base);
   }
 
   @Override

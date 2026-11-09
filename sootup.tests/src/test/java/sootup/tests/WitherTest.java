@@ -2,19 +2,16 @@ package sootup.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.frontend.SootClassSource;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
@@ -25,7 +22,6 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -56,7 +52,7 @@ public class WitherTest {
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     JavaSootClass clazz = loader.getClass(declareClassSig).orElse(null);
     assertNotNull(clazz);
-    JavaSootClassSource classSource = clazz.getClassSource();
+    SootClassSource classSource = clazz.getClassSource();
     JavaSootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     MethodSignature methodSignature =
@@ -77,9 +73,9 @@ public class WitherTest {
             DoubleConstant.getInstance(12.34), StmtPositionInfo.getNoStmtPositionInfo());
     // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(firstStmt);
-    stmtGraph.putEdge(firstStmt, jReturnStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(firstStmt);
+    controlFlowGraph.putEdge(firstStmt, jReturnStmt);
     Body body =
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertNotNull(body);

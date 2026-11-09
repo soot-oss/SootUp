@@ -22,14 +22,14 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -58,15 +58,30 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
     stmtAddress.toString(up);
   }
 
+  @Override
+  public boolean isJRetStmt() {
+    return true;
+  }
+
+  @Override
+  public JRetStmt asJRetStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JRetStmt> toJRetStmt() {
+    return Optional.of(this);
+  }
+
   @NonNull
   public Value getStmtAddress() {
     return stmtAddress;
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(stmtAddress.getUses(), Stream.of(stmtAddress));
+  public void collectUses(List<Value> collector) {
+    stmtAddress.collectUses(collector);
+    collector.add(stmtAddress);
   }
 
   @Override

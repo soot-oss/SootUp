@@ -48,6 +48,6 @@ public class JimpleSerializationTest {
 
     assertTrue(nestedTrap.isPresent());
     JavaSootMethod nestedTrapMethod = nestedTrap.get();
-    nestedTrapMethod.getBody().getStmtGraph().toString();
+    nestedTrapMethod.getBody().getControlFlowGraph().toString();
   }
 }

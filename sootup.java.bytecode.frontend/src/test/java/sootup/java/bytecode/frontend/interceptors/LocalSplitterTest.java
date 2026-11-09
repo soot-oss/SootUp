@@ -7,15 +7,24 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.VoidType;
 import sootup.interceptors.LocalSplitter;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JrtFileSystemAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -33,7 +42,7 @@ public class LocalSplitterTest {
   }
 
   private Body getBody(String methodName) {
-    ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+    ClassType type = view.getIdentifierFactory().getClassType("LocalSplitterTarget");
     SootMethod sootMethod =
         view.getClass(type).get().getMethods().stream()
             .filter(method -> method.getName().equals(methodName))
@@ -86,7 +95,7 @@ public class LocalSplitterTest {
             + "\n"
             + "return;";
 
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -112,7 +121,7 @@ public class LocalSplitterTest {
             + "\n"
             + "return;";
 
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -143,7 +152,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1#1;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -180,7 +189,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1#3;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -227,7 +236,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label4:\n"
             + "return l1#5;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -268,7 +277,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label3:\n"
             + "return l1#2;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -299,7 +308,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -343,9 +352,14 @@ public class LocalSplitterTest {
             + "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.Object)>(l1#1);\n"
             + "\n"
             + "return;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
+  /**
+   * The first try block only covers {@code a = 2}: its handler can only be entered before that
+   * assignment completes (asynchronously, as a catch of Throwable allows), so it returns the 1
+   * assigned before the try, l1#0.
+   */
   @Test
   public void testTraps() {
     Body.BodyBuilder builder = Body.builder(getBody("traps"), Collections.emptySet());
@@ -379,7 +393,7 @@ public class LocalSplitterTest {
             + "label3:\n"
             + "$stack7 := @caughtexception;\n"
             + "l2#0 = $stack7;\n"
-            + "$stack8 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1#1);\n"
+            + "$stack8 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1#0);\n"
             + "\n"
             + "return $stack8;\n"
             + "\n"
@@ -406,6 +420,335 @@ public class LocalSplitterTest {
             + "\n"
             + " catch java.lang.Throwable from label1 to label2 with label3;\n"
             + " catch java.lang.Throwable from label5 to label6 with label7;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  private Body getExceptionsBody(String methodName) {
+    ClassType type = view.getIdentifierFactory().getClassType("LocalSplitterExceptionsTarget");
+    return view.getClass(type).get().getMethods().stream()
+        .filter(method -> method.getName().equals(methodName))
+        .findFirst()
+        .get()
+        .getBody();
+  }
+
+  /**
+   * {@code n = n.next} reads and redefines n, and throws a NullPointerException before it assigns
+   * anything: the handler returns the n passed in (l1#0), the normal path the field read (l1#1).
+   */
+  @Test
+  public void testRedefinitionThatThrowsLeavesTheOldValueToItsHandler() {
+    Body.BodyBuilder builder = Body.builder(getExceptionsBody("fieldRead"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1#0 := @parameter0: LocalSplitterExceptionsTarget$Node;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = l1#0.<LocalSplitterExceptionsTarget$Node: LocalSplitterExceptionsTarget$Node next>;\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1#0;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#1;\n"
+            + "\n"
+            + " catch java.lang.NullPointerException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * As above, but work() can throw after n was overwritten: the handler may see either value, so
+   * both definitions must stay one local.
+   */
+  @Test
+  public void testRedefinitionThatThrowsFollowedByACall() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("fieldReadThenCall"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1 := @parameter0: LocalSplitterExceptionsTarget$Node;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1 = l1.<LocalSplitterExceptionsTarget$Node: LocalSplitterExceptionsTarget$Node next>;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * {@code a = 2} cannot throw, and a RuntimeException is never thrown asynchronously: the handler
+   * is only entered from work(), after a = 2, so it returns l1#1.
+   */
+  @Test
+  public void testHandlerOnlyEnteredByStmtsThatCanThrow() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("narrowHandler"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1#0 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = 2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * Floating-point division cannot throw, and the constant divisor shows that {@code a / 2.0f} is
+   * one: the handler is only entered from work(), after the division, so it returns l1#1.
+   */
+  @Test
+  public void testFloatDivisionByAConstantCannotThrow() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("floatDivisionByConstant"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1#0 := @parameter0: float;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = l1#0 / 2.0F;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * {@code a / b} divides two locals. Their types say float, but a local's type cannot be trusted
+   * before typing, so the division counts as one that can throw: the handler may see either a, and
+   * l1 is not split.
+   */
+  @Test
+  public void testDivisionOfLocalsCanThrow() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("floatDivisionByLocal"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1 := @parameter0: float;\n"
+            + "l2 := @parameter1: float;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1 = l1 / l2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack4 := @caughtexception;\n"
+            + "l3 = $stack4;\n"
+            + "\n"
+            + "return l1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * The same with catch (Error): a VirtualMachineError can be thrown asynchronously before a = 2
+   * completes (JLS 11.1.3), so the handler may see 1 or 2, and l1 is not split.
+   */
+  @Test
+  public void testErrorHandlerCanBeEnteredAsynchronously() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("errorHandler"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1 = 2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1;\n"
+            + "\n"
+            + " catch java.lang.Error from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /** Without asynchronous exceptions, as on ART, the Error handler is entered from work() only. */
+  @Test
+  public void testErrorHandlerWithSynchronousExceptionsOnly() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("errorHandler"), Collections.emptySet());
+    new LocalSplitter(LocalSplitter.ExceptionalFlow.SYNCHRONOUS).interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1#0 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = 2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#1;\n"
+            + "\n"
+            + " catch java.lang.Error from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * When any exception can be thrown at any point, e.g. injected by a debugger, even the
+   * RuntimeException handler can be entered before a = 2, and l1 is not split.
+   */
+  @Test
+  public void testAnyStmtEntersAnyHandler() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("narrowHandler"), Collections.emptySet());
+    new LocalSplitter(LocalSplitter.ExceptionalFlow.ANY).interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1 = 2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * Dex code can keep dead code, e.g. the handlers javac generates for try-with-resources: no
+   * statement and no handler leads to {@code l2 = l1}, so no definition of l1 reaches its use,
+   * which gets a local of its own.
+   */
+  @Test
+  public void testUseInDeadCode() {
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
+    JavaClassType classType = factory.getClassType("Test");
+    StmtPositionInfo noPosition = StmtPositionInfo.getNoStmtPositionInfo();
+    Local l0 = JavaJimple.newLocal("l0", classType);
+    Local l1 = JavaJimple.newLocal("l1", PrimitiveType.getInt());
+    Local l2 = JavaJimple.newLocal("l2", PrimitiveType.getInt());
+
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(
+        factory.getMethodSignature(
+            classType, "test", VoidType.getInstance(), Collections.emptyList()));
+    builder.setLocals(new LinkedHashSet<>(Arrays.asList(l0, l1, l2)));
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    FallsThroughStmt start =
+        JavaJimple.newIdentityStmt(l0, JavaJimple.newThisRef(classType), noPosition);
+    FallsThroughStmt first = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noPosition);
+    FallsThroughStmt second = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(2), noPosition);
+    Stmt ret = JavaJimple.newReturnStmt(l1, noPosition);
+    FallsThroughStmt deadUse = JavaJimple.newAssignStmt(l2, l1, noPosition);
+    Stmt deadRet = JavaJimple.newReturnVoidStmt(noPosition);
+
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
+    graph.putEdge(start, first);
+    graph.putEdge(first, second);
+    graph.putEdge(second, ret);
+    graph.putEdge(deadUse, deadRet);
+    graph.setStartingStmt(start);
+
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "l0 := @this: Test;\n"
+            + "l1#0 = 1;\n"
+            + "l1#1 = 2;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "l2 = l1#2;\n"
+            + "\n"
+            + "return;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 }

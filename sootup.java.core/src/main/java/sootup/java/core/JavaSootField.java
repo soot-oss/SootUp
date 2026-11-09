@@ -22,16 +22,37 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.FieldModifier;
-import sootup.core.model.Position;
-import sootup.core.model.SootField;
+import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.common.constant.Constant;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
+import sootup.core.util.ImmutableUtils;
 
-public class JavaSootField extends SootField implements HasAnnotation {
+public class JavaSootField extends SootClassMember<FieldSignature>
+    implements SootField, HasAnnotation, HasGenericSignature {
 
+  @NonNull private final ImmutableSet<FieldModifier> modifiers;
   @NonNull private final Iterable<AnnotationUsage> annotations;
+  @Nullable private final Constant constantValue;
+  @Nullable private final String genericSignature;
+
+  /** Constructs a Soot field with the given name, type and modifiers. */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Position position) {
+    this(signature, modifiers, ImmutableUtils.emptyImmutableList(), position, null, null);
+  }
 
   /**
    * Constructs a Soot field with the given name, type and modifiers.
@@ -45,9 +66,158 @@ public class JavaSootField extends SootField implements HasAnnotation {
       @NonNull FieldSignature signature,
       @NonNull Iterable<FieldModifier> modifiers,
       @NonNull Iterable<AnnotationUsage> annotations,
-      Position position) {
-    super(signature, modifiers, position);
+      @NonNull Position position) {
+    this(signature, modifiers, annotations, position, null, null);
+  }
+
+  /**
+   * Constructs a field with an optional classfile ConstantValue attribute.
+   *
+   * @param signature the erased field signature
+   * @param modifiers the field modifiers
+   * @param annotations the field annotations
+   * @param position the source position
+   * @param constantValue the ConstantValue attribute, or {@code null} if absent
+   */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @Nullable Constant constantValue) {
+    this(signature, modifiers, annotations, position, constantValue, null);
+  }
+
+  /**
+   * Constructs a field with an optional classfile Signature attribute.
+   *
+   * @param signature the erased field signature
+   * @param modifiers the field modifiers
+   * @param annotations the field annotations
+   * @param position the source position
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @Nullable String genericSignature) {
+    this(signature, modifiers, annotations, position, null, genericSignature);
+  }
+
+  /**
+   * Constructs a field with optional classfile ConstantValue and Signature attributes.
+   *
+   * @param signature the erased field signature
+   * @param modifiers the field modifiers
+   * @param annotations the field annotations
+   * @param position the source position
+   * @param constantValue the ConstantValue attribute, or {@code null} if absent
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @Nullable Constant constantValue,
+      @Nullable String genericSignature) {
+    super(signature, position);
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.annotations = annotations;
+    this.constantValue = constantValue;
+    this.genericSignature = genericSignature;
+  }
+
+  /**
+   * Returns the classfile ConstantValue attribute, or an empty optional if absent. This does not
+   * infer values from field initializers. Boolean, byte, char and short attributes are represented
+   * as integer constants, matching their classfile representation.
+   */
+  @NonNull
+  public Optional<Constant> getConstantValue() {
+    return Optional.ofNullable(constantValue);
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
+  }
+
+  @Override
+  public boolean isProtected() {
+    return FieldModifier.isProtected(this.getModifiers());
+  }
+
+  @Override
+  public boolean isPrivate() {
+    return FieldModifier.isPrivate(this.getModifiers());
+  }
+
+  @Override
+  public boolean isPublic() {
+    return FieldModifier.isPublic(this.getModifiers());
+  }
+
+  @Override
+  public boolean isStatic() {
+    return FieldModifier.isStatic(this.getModifiers());
+  }
+
+  @Override
+  public boolean isFinal() {
+    return FieldModifier.isFinal(this.getModifiers());
+  }
+
+  /**
+   * Gets the modifiers of this class member in an immutable set.
+   *
+   * @see FieldModifier
+   */
+  @NonNull
+  public Set<FieldModifier> getModifiers() {
+    return modifiers;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return Objects.hash(modifiers, getSignature());
+  }
+
+  @NonNull
+  public Type getType() {
+    return this.getSignature().getType();
+  }
+
+  @NonNull
+  public JavaSootField withSignature(@NonNull FieldSignature signature) {
+    return new JavaSootField(
+        signature,
+        getModifiers(),
+        getAnnotations(),
+        getPosition(),
+        constantValue,
+        genericSignature);
+  }
+
+  @NonNull
+  public JavaSootField withModifiers(@NonNull Iterable<FieldModifier> modifiers) {
+    return new JavaSootField(
+        getSignature(),
+        modifiers,
+        getAnnotations(),
+        getPosition(),
+        constantValue,
+        genericSignature);
+  }
+
+  /** Returns the SootClass declaring this one. */
+  @NonNull
+  public ClassType getDeclaringClassType() {
+    return super.getDeclaringClassType();
   }
 
   @NonNull
@@ -57,44 +227,146 @@ public class JavaSootField extends SootField implements HasAnnotation {
 
   @NonNull
   public JavaSootField withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
-    return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
+    return new JavaSootField(
+        getSignature(),
+        getModifiers(),
+        annotations,
+        getPosition(),
+        constantValue,
+        genericSignature);
   }
 
   @NonNull
-  public static AnnotationOrSignatureStep builder() {
-    return new JavaSootFieldBuilder();
+  public JavaSootField withConstantValue(@Nullable Constant constantValue) {
+    return new JavaSootField(
+        getSignature(),
+        getModifiers(),
+        getAnnotations(),
+        getPosition(),
+        constantValue,
+        genericSignature);
   }
 
-  public interface AnnotationOrSignatureStep extends SignatureStep {
-    BuildStep withAnnotation(Iterable<AnnotationUsage> annotations);
+  @NonNull
+  public JavaSootField withGenericSignature(@Nullable String genericSignature) {
+    return new JavaSootField(
+        getSignature(),
+        getModifiers(),
+        getAnnotations(),
+        getPosition(),
+        constantValue,
+        genericSignature);
   }
 
-  /**
-   * Defines a {@link JavaSootFieldBuilder} to provide a fluent API.
-   *
-   * @author Markus Schmidt
-   */
-  public static class JavaSootFieldBuilder extends SootFieldBuilder
-      implements AnnotationOrSignatureStep {
+  /** Defines a {@link SootField} builder to provide a fluent API. */
+  public static class JavaSootFieldBuilder {
 
-    private Iterable<AnnotationUsage> annotations = null;
+    private FieldSignature signature;
+    private Iterable<FieldModifier> modifiers;
+    private Position position = NoPositionInformation.getInstance();
+    private Iterable<AnnotationUsage> annotations = Collections.emptyList();
+    @Nullable private Constant constantValue;
+    @Nullable private String genericSignature;
 
-    @NonNull
-    public Iterable<AnnotationUsage> getAnnotations() {
-      return annotations != null ? annotations : Collections.emptyList();
+    private JavaSootFieldBuilder() {}
+
+    public static CompleteStep builder() {
+      return new JavaSootFieldBuilder.Steps();
     }
 
-    @Override
-    @NonNull
-    public BuildStep withAnnotation(Iterable<AnnotationUsage> annotations) {
-      this.annotations = annotations;
-      return this;
+    public interface SignatureStep {
+      CompleteStep withSignature(@NonNull FieldSignature value);
     }
 
-    @Override
-    @NonNull
-    public JavaSootField build() {
-      return new JavaSootField(getSignature(), getModifiers(), getAnnotations(), getPosition());
+    public interface ModifierStep {
+      CompleteStep withModifier(@NonNull Iterable<FieldModifier> modifier);
+
+      default CompleteStep withModifiers(
+          @NonNull FieldModifier first, @NonNull FieldModifier... rest) {
+        return withModifier(EnumSet.of(first, rest));
+      }
+    }
+
+    public interface AnnotationsStep {
+      CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations);
+    }
+
+    public interface PositionStep {
+      CompleteStep withPosition(@NonNull Position position);
+    }
+
+    public interface ConstantValueStep {
+      /** Sets the ConstantValue attribute; {@code null} clears it. */
+      CompleteStep withConstantValue(@Nullable Constant constantValue);
+    }
+
+    public interface GenericSignatureStep {
+      /** Sets the unparsed Signature attribute; {@code null} clears it. */
+      CompleteStep withGenericSignature(@Nullable String genericSignature);
+    }
+
+    public interface BuildStep {
+      JavaSootField build();
+    }
+
+    public interface CompleteStep
+        extends SignatureStep,
+            ModifierStep,
+            AnnotationsStep,
+            PositionStep,
+            ConstantValueStep,
+            GenericSignatureStep,
+            BuildStep {}
+
+    private static class Steps implements CompleteStep {
+      private final JavaSootFieldBuilder instance = new JavaSootFieldBuilder();
+
+      @Override
+      public CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations) {
+        instance.annotations = annotations;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifier(@NonNull Iterable<FieldModifier> modifier) {
+        instance.modifiers = modifier;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withPosition(@NonNull Position position) {
+        instance.position = position;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSignature(@NonNull FieldSignature value) {
+        instance.signature = value;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withConstantValue(@Nullable Constant constantValue) {
+        instance.constantValue = constantValue;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withGenericSignature(@Nullable String genericSignature) {
+        instance.genericSignature = genericSignature;
+        return this;
+      }
+
+      @Override
+      public JavaSootField build() {
+        return new JavaSootField(
+            instance.signature,
+            instance.modifiers,
+            instance.annotations != null ? instance.annotations : Collections.emptyList(),
+            instance.position,
+            instance.constantValue,
+            instance.genericSignature);
+      }
     }
   }
 }

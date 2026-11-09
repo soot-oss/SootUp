@@ -1,7 +1,8 @@
 package sootup.core.graph;
 
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.expr.JEqExpr;
@@ -14,12 +15,12 @@ public class TestGraphGenerator {
 
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-  public MutableBlockStmtGraph createStmtGraph() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  public MutableBlockControlFlowGraph createControlFlowGraph() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
-    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
-    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = Jimple.newLocal("l2", PrimitiveType.IntType.getInstance());
+    Local l3 = Jimple.newLocal("l3", PrimitiveType.IntType.getInstance());
 
     JAssignStmt assign01 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
     JAssignStmt assign02 = new JAssignStmt(l2, IntConstant.getInstance(2), noPosInfo);
@@ -70,12 +71,12 @@ public class TestGraphGenerator {
 
   // a control flow graph without returnStmt, because simulate the situation in the paper
   // if it doesn't pass the validation, please add a return stmt after ifl2l50
-  public MutableBlockStmtGraph createStmtGraph2() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  public MutableBlockControlFlowGraph createControlFlowGraph2() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
-    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
-    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = Jimple.newLocal("l2", PrimitiveType.IntType.getInstance());
+    Local l3 = Jimple.newLocal("l3", PrimitiveType.IntType.getInstance());
 
     JAssignStmt assignl1e1 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
     JAssignStmt assignl2e1 = new JAssignStmt(l2, IntConstant.getInstance(1), noPosInfo);
@@ -128,12 +129,12 @@ public class TestGraphGenerator {
   }
 
   // a graph with two end blocks
-  public MutableBlockStmtGraph createStmtGraph3() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  public MutableBlockControlFlowGraph createControlFlowGraph3() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
-    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
-    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = Jimple.newLocal("l2", PrimitiveType.IntType.getInstance());
+    Local l3 = Jimple.newLocal("l3", PrimitiveType.IntType.getInstance());
 
     JAssignStmt assignl1e1 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
     JAssignStmt assignl2e1 = new JAssignStmt(l2, IntConstant.getInstance(2), noPosInfo);

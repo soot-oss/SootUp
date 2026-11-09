@@ -21,14 +21,12 @@ package qilin.pta.tools;
 import java.util.HashMap;
 import java.util.Map;
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisComponents;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
 import qilin.parm.select.BeanSelector;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
+import qilin.parm.select.ContextSelector;
 import qilin.pta.toolkits.bean.Bean;
 import qilin.util.Stopwatch;
 
@@ -38,23 +36,17 @@ import qilin.util.Stopwatch;
 public class BeanPTA extends StagedPTA {
   // currently, we only support k = 2 and hk = 1;
   // [current heap, [allocator heap, [heap ctx, new ctx]]] only for B-2obj;
-  Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap = new HashMap<>();
+  Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap = new HashMap<>();
 
-  public BeanPTA(PTAScene scene, CtxConstructor ctxCons) {
+  public BeanPTA(PTAScene scene, ContextConstructor contextConstructor) {
     super(scene);
-    this.ctxCons = ctxCons;
-    CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
-    prePTA = new Spark(scene);
+    ContextSelector us = new BeanSelector(pag, beanNexContextMap);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
+    prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     System.out.println("bean ...");
   }
 
@@ -65,7 +57,7 @@ public class BeanPTA extends StagedPTA {
     sparkTimer.stop();
     System.out.println(sparkTimer);
     Stopwatch beanTimer = Stopwatch.newAndStart("Bean");
-    Bean.run(prePTA, beanNexCtxMap);
+    Bean.run(prePTA, beanNexContextMap);
     beanTimer.stop();
     System.out.println(beanTimer);
   }

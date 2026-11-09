@@ -21,12 +21,12 @@ package sootup.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
@@ -41,11 +41,6 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
       @NonNull AbstractInvokeExpr invokeExpr, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExpr = invokeExpr;
-  }
-
-  @Override
-  public boolean containsInvokeExpr() {
-    return true;
   }
 
   @Override
@@ -64,15 +59,30 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
+  public boolean isJInvokeStmt() {
+    return true;
+  }
+
+  @Override
+  public JInvokeStmt asJInvokeStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JInvokeStmt> toJInvokeStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
   @NonNull
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
     return Optional.of(invokeExpr);
   }
 
-  @NonNull
   @Override
-  public Stream<Value> getUses() {
-    return Stream.concat(invokeExpr.getUses(), Stream.of(invokeExpr));
+  public void collectUses(List<Value> collector) {
+    invokeExpr.collectUses(collector);
+    collector.add(invokeExpr);
   }
 
   @Override

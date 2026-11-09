@@ -24,8 +24,10 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.apk.frontend.main.DexCastExpr;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -33,6 +35,7 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
@@ -55,8 +58,17 @@ public class DexNumberTranformer extends DexTransformer {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    // The fields hold the state of one body. The interceptors of an input location are shared by
+    // its bodies, which may be resolved concurrently, so each body gets its own instance.
+    new DexNumberTranformer().transform(builder, view);
+  }
+
+  private void transform(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    // original statement -> its current version
+    final Map<Stmt, Stmt> replacements = new LinkedHashMap<>();
+    final Set<Local> floatingPointLocals = floatingPointLocals(builder);
 
     for (Local local : getNumCandidates(builder)) {
       usedAsFloatingPoint = false;
@@ -164,12 +176,14 @@ public class DexNumberTranformer extends DexTransformer {
                       usedAsFloatingPoint = examineInvokeExpr((AbstractInvokeExpr) r, l);
                       doBreak = true;
                     } else if (r instanceof AbstractBinopExpr) {
-                      //                                usedAsFloatingPoint =
-                      // examineBinopExpr(stmt);
+                      // Soot's dexpler tags the operations of float and double instructions;
+                      // without tags the operand types follow from the arithmetic
+                      usedAsFloatingPoint = floatingPointLocals.contains(l);
                       doBreak = true;
                     } else if (r instanceof JCastExpr) {
-                      //                                usedAsFloatingPoint =
-                      // stmt.hasTag(FloatOpTag.NAME) || stmt.hasTag(DoubleOpTag.NAME);
+                      // Soot's dexpler: stmt.hasTag(FloatOpTag.NAME) ||
+                      // stmt.hasTag(DoubleOpTag.NAME)
+                      usedAsFloatingPoint = floatingPointLocals.contains(l);
                       doBreak = true;
                     } else if (r instanceof Local && r == l) {
                       if (left instanceof JFieldRef) {
@@ -200,31 +214,149 @@ public class DexNumberTranformer extends DexTransformer {
         }
       }
 
-      if (usedAsFloatingPoint) {
+      if (usedAsFloatingPoint || floatingPointLocals.contains(local)) {
         for (Stmt defStmt : defs) {
-          replaceWithFloatingPoint(defStmt);
+          Stmt current = replacements.getOrDefault(defStmt, defStmt);
+          Stmt changed = withFloatingPoint(current);
+          if (changed != current) {
+            replacements.put(defStmt, changed);
+          }
         }
       }
+    }
+
+    // Statements are immutable: put the changed ones into the body. The analysis above refers to
+    // the original statements, so they are replaced at the end.
+    for (Map.Entry<Stmt, Stmt> replacement : replacements.entrySet()) {
+      builder.getControlFlowGraph().replaceNode(replacement.getKey(), replacement.getValue());
     }
   }
 
   /**
-   * Replace 0 with null in the given unit.
-   *
-   * @param stmt the stmt where 0 will be replaced with null.
+   * Returns the statement with its int or long constant replaced by the float or double with the
+   * same bits, or the statement itself if it assigns no such constant.
    */
-  private void replaceWithFloatingPoint(Stmt stmt) {
+  private static Stmt withFloatingPoint(Stmt stmt) {
     if (stmt instanceof JAssignStmt) {
       JAssignStmt s = (JAssignStmt) stmt;
       Value v = s.getRightOp();
       if ((v instanceof IntConstant)) {
         int vVal = ((IntConstant) v).getValue();
-        s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
+        return s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
       } else if (v instanceof LongConstant) {
         long vVal = ((LongConstant) v).getValue();
-        s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
+        return s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
       }
     }
+    return stmt;
+  }
+
+  /**
+   * The locals that hold floats or doubles as far as arithmetic shows. The operands of {@code cmpl}
+   * and {@code cmpg} are floats or doubles, and so are locals that a statement uses or defines as
+   * one: a field, a parameter of the method or of a call, a return value or a cast of such a type,
+   * and the operand of a dex conversion from float or double ({@link DexCastExpr}). The operands
+   * and the result of {@code + - * / %}, negation and copies have one type, so they are floating
+   * point together.
+   */
+  private Set<Local> floatingPointLocals(Body.BodyBuilder bodyBuilder) {
+    Map<Local, List<Local>> sameType = new HashMap<>();
+    Deque<Local> work = new ArrayDeque<>();
+    for (Stmt stmt : bodyBuilder.getStmts()) {
+      Optional<AbstractInvokeExpr> invokeExpr =
+          stmt instanceof InvokableStmt ? ((InvokableStmt) stmt).getInvokeExpr() : Optional.empty();
+      if (invokeExpr.isPresent()) {
+        AbstractInvokeExpr invoke = invokeExpr.get();
+        List<Immediate> args = invoke.getArgs();
+        List<Type> parameterTypes = invoke.getMethodSignature().getParameterTypes();
+        for (int i = 0; i < args.size() && i < parameterTypes.size(); i++) {
+          if (args.get(i) instanceof Local && isFloatingPointLike(parameterTypes.get(i))) {
+            work.add((Local) args.get(i));
+          }
+        }
+      }
+      if (stmt instanceof JReturnStmt) {
+        Value op = ((JReturnStmt) stmt).getOp();
+        if (op instanceof Local
+            && isFloatingPointLike(
+                Objects.requireNonNull(bodyBuilder.getMethodSignature()).getType())) {
+          work.add((Local) op);
+        }
+      }
+      if (stmt instanceof JIdentityStmt) {
+        JIdentityStmt identity = (JIdentityStmt) stmt;
+        if (identity.getRightOp() instanceof JParameterRef
+            && isFloatingPointLike(identity.getRightOp().getType())) {
+          work.add(identity.getLeftOp());
+        }
+        continue;
+      }
+      if (!(stmt instanceof JAssignStmt)) {
+        continue;
+      }
+      JAssignStmt assign = (JAssignStmt) stmt;
+      Value left = assign.getLeftOp();
+      Value right = assign.getRightOp();
+      if (left instanceof JFieldRef
+          && right instanceof Local
+          && isFloatingPointLike(left.getType())) {
+        work.add((Local) right);
+      }
+      if (!(left instanceof Local)) {
+        continue;
+      }
+      Local result = (Local) left;
+      if (right instanceof DexCastExpr
+          && ((DexCastExpr) right).getOp() instanceof Local
+          && isFloatingPointLike(((DexCastExpr) right).getSourceType())) {
+        // A conversion from float or double, e.g. float-to-int: its operand is floating point
+        work.add((Local) ((DexCastExpr) right).getOp());
+      }
+      if (right instanceof JCmplExpr || right instanceof JCmpgExpr) {
+        for (Value op :
+            List.of(((AbstractBinopExpr) right).getOp1(), ((AbstractBinopExpr) right).getOp2())) {
+          if (op instanceof Local) {
+            work.add((Local) op);
+          }
+        }
+      } else if (right instanceof JAddExpr
+          || right instanceof JSubExpr
+          || right instanceof JMulExpr
+          || right instanceof JDivExpr
+          || right instanceof JRemExpr) {
+        AbstractBinopExpr binop = (AbstractBinopExpr) right;
+        for (Value op : List.of(binop.getOp1(), binop.getOp2())) {
+          if (op instanceof Local) {
+            link(sameType, result, (Local) op);
+          }
+        }
+      } else if (right instanceof JNegExpr) {
+        if (((JNegExpr) right).getOp() instanceof Local) {
+          link(sameType, result, (Local) ((JNegExpr) right).getOp());
+        }
+      } else if (right instanceof Local) {
+        link(sameType, result, (Local) right);
+      } else if ((right instanceof JFieldRef
+              || right instanceof JCastExpr
+              || right instanceof AbstractInvokeExpr)
+          && isFloatingPointLike(right.getType())) {
+        work.add(result);
+      }
+    }
+
+    Set<Local> floatingPoint = new HashSet<>();
+    while (!work.isEmpty()) {
+      Local local = work.poll();
+      if (floatingPoint.add(local)) {
+        work.addAll(sameType.getOrDefault(local, Collections.emptyList()));
+      }
+    }
+    return floatingPoint;
+  }
+
+  private static void link(Map<Local, List<Local>> sameType, Local a, Local b) {
+    sameType.computeIfAbsent(a, k -> new ArrayList<>()).add(b);
+    sameType.computeIfAbsent(b, k -> new ArrayList<>()).add(a);
   }
 
   /**
@@ -234,7 +366,7 @@ public class DexNumberTranformer extends DexTransformer {
    * @param bodyBuilder the bodyBuilder to analyze
    */
   private Set<Local> getNumCandidates(Body.BodyBuilder bodyBuilder) {
-    Set<Local> candidates = new HashSet<>();
+    Set<Local> candidates = new LinkedHashSet<>();
     for (Stmt u : bodyBuilder.getStmts()) {
       if (u instanceof JAssignStmt) {
         JAssignStmt a = (JAssignStmt) u;

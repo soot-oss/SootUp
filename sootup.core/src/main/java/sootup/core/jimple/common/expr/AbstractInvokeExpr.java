@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
@@ -73,9 +72,11 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(Stream.of(args), Stream.of(args).flatMap(Value::getUses));
+  public void collectUses(List<Value> collector) {
+    collector.addAll(Arrays.asList(args));
+    for (Immediate arg : args) {
+      arg.collectUses(collector);
+    }
   }
 
   protected void argsToString(@NonNull StringBuilder builder) {

@@ -21,7 +21,7 @@ public class DeclareEnumWithConstructorTest extends JimpleTestSuiteBase {
                 getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sc.isEnum());
 
-    final Set<SootMethod> methods = (Set<SootMethod>) sc.getMethods();
+    final Set<? extends SootMethod> methods = sc.getMethods();
     assertTrue(methods.stream().anyMatch(m -> m.getSignature().getName().equals("getValue")));
   }
 }

@@ -25,6 +25,7 @@ package sootup.java.core;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 
 /*
  * Actually, we could get rid of this class but removing it potentially breaks
@@ -38,7 +39,16 @@ public class JavaPackageName extends PackageName {
    *
    * @param packageName the package's name
    */
-  public JavaPackageName(@NonNull String packageName) {
+  protected JavaPackageName(@NonNull String packageName) {
     super(packageName);
+  }
+
+  /**
+   * Returns the unique {@link JavaPackageName} for the given package name, so that equal package
+   * names are the same instance and may be compared with {@code ==}.
+   */
+  @NonNull
+  public static JavaPackageName of(@NonNull String packageName) {
+    return SignatureInterner.internPackageName(new JavaPackageName(packageName));
   }
 }

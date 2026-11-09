@@ -21,24 +21,17 @@ package qilin.core.builder.callgraph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import qilin.core.pag.ContextMethod;
-import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphDifference;
+import sootup.callgraph.CallSequenceComparator;
 import sootup.callgraph.MutableCallGraph;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -53,8 +46,8 @@ import sootup.core.signatures.MethodSignature;
  * @author Ondrej Lhotak
  */
 public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
-  protected Set<MethodSignature> methods = DataFactory.createSet();
-  protected Map<MethodSignature, Set<Call>> calls = DataFactory.createMap();
+  protected Set<MethodSignature> methods = new HashSet<>();
+  protected Map<MethodSignature, Set<Call>> calls = new HashMap<>();
   protected int callCnt = 0;
 
   protected Set<Edge> edges = new LinkedHashSet<>();
@@ -438,7 +431,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt stmt) {
-    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
+    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> new HashSet<>());
     if (targets.add(new Call(sourceMethod, targetMethod, stmt))) {
       ++callCnt;
     }
@@ -446,8 +439,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public void addCall(@NonNull Call call) {
-    addCall(
-        call.getSourceMethodSignature(), call.getTargetMethodSignature(), call.getInvokableStmt());
+    addCall(call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt());
   }
 
   @NonNull
@@ -458,8 +450,27 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @NonNull
   @Override
+  public Set<Call> getCalls() {
+    return calls.entrySet().stream()
+        .flatMap(e -> e.getValue().stream())
+        .collect(Collectors.toSet());
+  }
+
+  @NonNull
+  @Override
   public MutableCallGraph copy() {
     throw new UnsupportedOperationException();
+  }
+
+  @NonNull
+  @Override
+  public Set<Call> sortedCallsFrom(@NonNull MethodSignature sourceMethod) {
+    Set<Call> edges = callsFrom(sourceMethod);
+    if (edges.isEmpty()) return edges;
+
+    List<Call> sorted = new ArrayList<>(edges);
+    sorted.sort(new CallSequenceComparator());
+    return new LinkedHashSet<>(sorted);
   }
 
   @NonNull
@@ -483,20 +494,16 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    if (this.calls.containsKey(call.getSourceMethodSignature())) {
-      return this.calls.get(call.getSourceMethodSignature()).contains(call);
+    Set<Call> c = this.calls.get(call.sourceMethodSignature());
+    if (c == null || c.isEmpty()) {
+      return false;
     }
-    return false;
+    return c.contains(call);
   }
 
   @Override
   public int callCount() {
     return callCnt;
-  }
-
-  @Override
-  public String exportAsDot() {
-    throw new UnsupportedOperationException();
   }
 
   @NonNull
@@ -515,7 +522,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod) {
     return callsFrom(sourceMethod).stream()
-        .map(Call::getTargetMethodSignature)
+        .map(Call::targetMethodSignature)
         .collect(Collectors.toSet());
   }
 
@@ -523,7 +530,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callSourcesTo(@NonNull MethodSignature targetMethod) {
     return callsTo(targetMethod).stream()
-        .map(Call::getSourceMethodSignature)
+        .map(Call::sourceMethodSignature)
         .collect(Collectors.toSet());
   }
 

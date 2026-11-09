@@ -21,10 +21,13 @@ package qilin.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -102,7 +105,7 @@ public abstract class ArtificialMethod {
   }
 
   protected Local getNewArray(ClassType type) {
-    Value newExpr = JavaJimple.getInstance().newNewArrayExpr(type, IntConstant.getInstance(1));
+    Value newExpr = JavaJimple.newNewArrayExpr(type, IntConstant.getInstance(1), identifierFactory);
     Local local = getNextLocal(new ArrayType(type, 1));
     addAssign(local, newExpr);
     return local;
@@ -124,21 +127,21 @@ public abstract class ArtificialMethod {
   }
 
   protected JStaticFieldRef getStaticFieldRef(String className, String name) {
-    ClassType classType = PTAUtils.getClassType(className);
-    SootClass sc = (SootClass) view.getClass(classType).get();
-    SootField field = (SootField) sc.getField(name).get();
+    ClassType classType = identifierFactory.getClassType(className);
+    SootClass sc = view.getClass(classType).get();
+    SootField field = sc.getField(name).get();
     return Jimple.newStaticFieldRef(field.getSignature());
   }
 
   protected JArrayRef getArrayRef(Value base) {
-    return JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
+    return JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
   }
 
   /** add an instance invocation receiver.sig(args) */
   protected void addInvoke(Local receiver, String sig, Immediate... args) {
     MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
-    SootMethod method = (SootMethod) view.getMethod(methodSig).get();
-    SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
+    SootMethod method = view.getMethod(methodSig).get();
+    SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
     AbstractInvokeExpr invoke =
         clazz.isInterface()
@@ -155,8 +158,8 @@ public abstract class ArtificialMethod {
    */
   protected Local getInvoke(Local receiver, String sig, Immediate... args) {
     MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
-    SootMethod method = (SootMethod) view.getMethod(methodSig).get();
-    SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
+    SootMethod method = view.getMethod(methodSig).get();
+    SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
     Value invoke =
         clazz.isInterface()

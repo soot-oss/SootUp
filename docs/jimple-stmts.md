@@ -2,7 +2,7 @@
 [Stmts]{formerly known as Units} represent instructions of the JVM.
 Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.
 
-Stmts can be roughly grouped by the amount of successors (in the `StmtGraph` of a `Body` of a `Method`).
+Stmts can be roughly grouped by the amount of successors (in the `ControlFlowGraph` of a `Body` of a `Method`).
 
 - A `FallsThroughStmt` has always one successor - it basically represents `program counter++`.
 - A `BranchingStmt` can have one, two or even n successors.
@@ -667,7 +667,7 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
 
 
 ### JIdentityStmt
-is similar to the `JAssignStmt` and but handles assignments of `IdentityRef`s to make implicit assignments explicit into the `StmtGraph`.
+is similar to the `JAssignStmt` and but handles assignments of `IdentityRef`s to make implicit assignments explicit into the `ControlFlowGraph`.
 
 - Assigns parameters to a `Local` via `JParameterRef` like `@parameter0: int` refering to the first argument of the method (which is of Type int in this case).
 - Assigns exceptions to a `Local` via `JCaughtExceptionRef` like `@caughtexception: java.lang.NullpointerException`

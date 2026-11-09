@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -55,7 +55,7 @@ public class JimpleTrapValidator implements BodyValidator {
 
     Set<Stmt> caughtStmts = new HashSet<Stmt>();
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(body.getStmtGraph());
+    stmtPrinter.buildTraps(body.getControlFlowGraph());
     Iterable<Trap> traps = stmtPrinter.getTraps();
     for (Trap trap : traps) {
       caughtStmts.add(trap.getHandlerStmt());

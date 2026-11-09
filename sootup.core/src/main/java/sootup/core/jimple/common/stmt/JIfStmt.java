@@ -23,12 +23,12 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
@@ -69,6 +69,21 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
     stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 
+  @Override
+  public boolean isJIfStmt() {
+    return true;
+  }
+
+  @Override
+  public JIfStmt asJIfStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JIfStmt> toJIfStmt() {
+    return Optional.of(this);
+  }
+
   @NonNull
   public AbstractConditionExpr getCondition() {
     return condition;
@@ -86,9 +101,9 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(getCondition().getUses(), Stream.of(getCondition()));
+  public void collectUses(List<Value> collector) {
+    getCondition().collectUses(collector);
+    collector.add(getCondition());
   }
 
   @Override

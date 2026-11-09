@@ -6,11 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.Ref;
@@ -25,8 +24,7 @@ import sootup.java.core.types.JavaClassType;
  * @author Zun Wang
  */
 public class ReplaceUseStmtVisitorTest {
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
@@ -39,7 +37,8 @@ public class ReplaceUseStmtVisitorTest {
   Local base = JavaJimple.newLocal("base", testClass);
 
   MethodSignature methodeWithOutParas =
-      new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
+      new JavaIdentifierFactory()
+          .getMethodSignature(testClass, "invokeExpr", voidType, Collections.emptyList());
 
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
@@ -62,7 +61,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.add(op2);
 
     boolean isExpected = false;
-    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
+    List<Value> collect = newStmt.getUses();
     for (int i = 0; i < 3; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -72,16 +71,16 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(isExpected);
 
     // rValue is a Ref
-    Ref ref = javaJimple.newArrayRef(op1, op2);
+    Ref ref = JavaJimple.newArrayRef(op1, op2);
     stmt = JavaJimple.newAssignStmt(var, ref, noStmtPositionInfo);
     stmt.accept(visitor);
     newStmt = visitor.getResult();
 
-    expectedUses.set(0, javaJimple.newArrayRef(newOp, op2));
+    expectedUses.set(0, JavaJimple.newArrayRef(newOp, op2));
     expectedUses.set(1, newOp);
 
     isExpected = false;
-    collect = newStmt.getUses().collect(Collectors.toList());
+    collect = newStmt.getUses();
     for (int i = 0; i < 3; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -98,7 +97,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.clear();
     expectedUses.add(newOp);
 
-    assertEquals(expectedUses, stmt.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, stmt.getUses());
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -120,7 +119,7 @@ public class ReplaceUseStmtVisitorTest {
         JavaJimple.newSpecialInvokeExpr(newOp, methodeWithOutParas, Collections.emptyList()));
 
     boolean isExpected = false;
-    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
+    List<Value> collect = newStmt.getUses();
     for (int i = 0; i < 2; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -140,6 +139,6 @@ public class ReplaceUseStmtVisitorTest {
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-    assertEquals(expectedUses, newStmt.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newStmt.getUses());
   }
 }

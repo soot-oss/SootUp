@@ -7,8 +7,8 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.interceptors.NopEliminator;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class FixJars extends BaseFixJarsTest {
 
@@ -23,7 +23,7 @@ public class FixJars extends BaseFixJarsTest {
             Paths.get("./src/test/resources/"),
             SourceType.Application,
             Collections.singletonList(new NopEliminator()));
-    JimpleView jimpleView = new JimpleView(inputLocation);
+    JavaView jimpleView = new JavaView(inputLocation);
     jimpleView
         .getClasses()
         .forEach(

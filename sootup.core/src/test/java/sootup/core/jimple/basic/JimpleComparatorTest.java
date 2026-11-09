@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.PrimitiveType;

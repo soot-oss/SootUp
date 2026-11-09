@@ -19,7 +19,7 @@ public class SimpleSootClientTest {
 
   @Disabled
   public void test2() {
-    String srcDir = "../shared-test-resources/java-target/";
+    String srcDir = "src/test/resources/java-target/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
     // FIXME need to check later why WALA crashed

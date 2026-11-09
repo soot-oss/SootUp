@@ -58,7 +58,11 @@ public class JavaModuleView extends JavaView {
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    super(inputLocations, cacheProvider, JavaModuleIdentifierFactory.getInstance());
+    super(
+        inputLocations,
+        cacheProvider,
+        LoadingStrategy.onDemand(),
+        new JavaModuleIdentifierFactory());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
@@ -351,7 +355,7 @@ public class JavaModuleView extends JavaView {
               return Collections.emptyList();
           }
 
-          Stream<? extends AbstractClassSource<JavaSootClass>> stream;
+          Stream<? extends SootClassSource<JavaSootClass>> stream;
           JavaModuleInfo moduleInfo = startOpt.get();
           if (moduleInfo.isUnnamedModule()) {
               // unnamed module -> access to all (non)modules

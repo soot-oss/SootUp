@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -100,7 +100,7 @@ public class CastCounter extends TypeChecker {
       return;
     }
 
-    if (stmt.getUses().noneMatch(v -> v == value)) {
+    if (stmt.getUses().stream().noneMatch(v -> v == value)) {
       return;
     }
 
@@ -113,7 +113,11 @@ public class CastCounter extends TypeChecker {
 
     JCastExpr cast = Jimple.newCastExpr((Immediate) value, stdType);
 
-    Stmt newStmt = currentStmt.withNewUse(value, cast);
+    // Jimple allows a cast expression only as the whole right-hand side of an assignment to a local
+    // (`l = (T) v`). Anywhere else, e.g. the stored value of a field or array store, the cast goes
+    // into a fresh temp local instead (`#l0 = (T) v; x.f = #l0`).
+    Stmt newStmt =
+        isCastableInPlace(currentStmt, value) ? currentStmt.withNewUse(value, cast) : null;
 
     // This happens when the use of `value` in currentStatement can't be replaced with a cast.
     if (newStmt == null || newStmt == currentStmt) {
@@ -134,6 +138,12 @@ public class CastCounter extends TypeChecker {
     castCount++;
 
     stmt2NewStmt.put(stmt, newStmt);
+  }
+
+  private static boolean isCastableInPlace(@NonNull Stmt stmt, @NonNull Value value) {
+    return stmt instanceof JAssignStmt
+        && ((JAssignStmt) stmt).getLeftOp() instanceof Local
+        && ((JAssignStmt) stmt).getRightOp() == value;
   }
 
   private Local generateTempLocal(@NonNull Type type) {

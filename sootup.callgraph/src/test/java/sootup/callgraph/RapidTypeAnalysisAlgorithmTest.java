@@ -3,18 +3,22 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
 
 /**
  * @author Kadiray Karakaya, Jonas Klauke
  */
-public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
+public class RapidTypeAnalysisAlgorithmTest extends CallGraphAlgorithmTest {
+
+  private Set<ClassType> preInstantiatedClasses = Collections.emptySet();
 
   @Override
   protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view) {
-    return new RapidTypeAnalysisAlgorithm(view);
+    return new RapidTypeAnalysisAlgorithm(view, preInstantiatedClasses);
   }
 
   /**
@@ -329,5 +333,28 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             mainMethodSignature,
             instantiatedClassMethod,
             getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
+  }
+
+  @Test
+  public void testDefinedInstantiatedClass() {
+    String classPath = "src/test/resources/callgraph/RTA/binary";
+    view = createViewForClassPath(classPath);
+    identifierFactory = view.getIdentifierFactory();
+    ClassType classBType = identifierFactory.getClassType("dic.ClassB");
+    preInstantiatedClasses = Set.of(classBType);
+    CallGraph cg = loadCallGraph("RTA", "dic.DefinedInstantiatedClass");
+    MethodSignature instantiatedClassMethod =
+        identifierFactory.getMethodSignature(classBType, "sound", "void", Collections.emptyList());
+    assertFalse(cg.callsTo(instantiatedClassMethod).isEmpty());
+  }
+
+  @Test
+  public void testDefinedInstantiatedClass2() {
+    CallGraph cg = loadCallGraph("RTA", "dic.DefinedInstantiatedClass");
+    preInstantiatedClasses = Collections.emptySet();
+    MethodSignature instantiatedClassMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("dic.ClassB"), "sound", "void", Collections.emptyList());
+    assertFalse(cg.containsMethod(instantiatedClassMethod));
   }
 }

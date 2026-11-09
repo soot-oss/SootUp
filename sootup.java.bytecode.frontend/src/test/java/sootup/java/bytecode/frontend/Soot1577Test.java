@@ -11,13 +11,12 @@ import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLo
 import sootup.java.core.views.JavaView;
 
 public class Soot1577Test {
-  final String directory = "../shared-test-resources/soot-1577/";
 
   @Test
   public void test() {
     AnalysisInputLocation inputLocation =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/soot-1577/g.class"),
+            Paths.get("src/test/resources/soot-1577/g.class"),
             "cn.com.chinatelecom.account.api.c",
             SourceType.Application);
 

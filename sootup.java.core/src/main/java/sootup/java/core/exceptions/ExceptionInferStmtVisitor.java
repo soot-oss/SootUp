@@ -23,7 +23,7 @@ package sootup.java.core.exceptions;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.Ref;

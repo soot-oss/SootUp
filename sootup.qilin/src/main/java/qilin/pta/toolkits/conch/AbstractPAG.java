@@ -29,11 +29,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -48,8 +47,8 @@ public abstract class AbstractPAG {
    * A symbolic object is introduced to abstract all the possible objects returned from a callsite.
    * */
   protected final Map<SootMethod, Map<Stmt, AllocNode>> symbolicHeaps = new ConcurrentHashMap<>();
-  protected final Map<Node, Set<TranEdge>> outEdges = new ConcurrentHashMap<>();
-  protected final Map<Node, Set<TranEdge>> sumEdges = new ConcurrentHashMap<>();
+  protected final Map<PagNode, Set<TranEdge>> outEdges = new ConcurrentHashMap<>();
+  protected final Map<PagNode, Set<TranEdge>> sumEdges = new ConcurrentHashMap<>();
 
   protected CountingThreadPoolExecutor executor;
 
@@ -69,7 +68,7 @@ public abstract class AbstractPAG {
 
   protected void build() {
     prePTA.getNakedReachableMethods().parallelStream()
-        .filter(PTAUtils::hasBody)
+        .filter(prePAG::hasBody)
         .forEach(this::buildFG);
   }
 
@@ -77,9 +76,9 @@ public abstract class AbstractPAG {
     MethodPAG srcmpag = prePAG.getMethodPAG(method);
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         else if (to instanceof FieldRefNode) {
@@ -111,11 +110,8 @@ public abstract class AbstractPAG {
       LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
       addReturnEdge(mret);
     }
-    Node throwNode =
-        prePAG.findLocalVarNode(
-            method,
-            new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Throwable"));
+    PagNode throwNode =
+        prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), JavaTypes.THROWABLE);
     if (throwNode != null) {
       addThrowEdge(throwNode);
     }
@@ -125,7 +121,7 @@ public abstract class AbstractPAG {
     outEdges.computeIfAbsent(edge.getSource(), k -> ConcurrentHashMap.newKeySet()).add(edge);
   }
 
-  protected void addThrowEdge(Node throwNode) {
+  protected void addThrowEdge(PagNode throwNode) {
     addNormalEdge(new TranEdge(throwNode, throwNode, DFA.TranCond.THROW));
     addNormalEdge(new TranEdge(throwNode, throwNode, DFA.TranCond.I_THROW));
   }
@@ -181,7 +177,7 @@ public abstract class AbstractPAG {
     awaitCompletionComputeValuesAndShutdown();
   }
 
-  protected Collection<TranEdge> outAndSummaryEdges(Node node) {
+  protected Collection<TranEdge> outAndSummaryEdges(PagNode node) {
     return Streams.concat(
             outEdges.getOrDefault(node, Collections.emptySet()).stream(),
             sumEdges.getOrDefault(node, Collections.emptySet()).stream())

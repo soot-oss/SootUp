@@ -23,17 +23,14 @@ package sootup.core.jimple.javabytecode.stmt;
  */
 
 import java.util.*;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.util.printer.StmtPrinter;
@@ -92,9 +89,9 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(getKey().getUses(), Stream.of(getKey()));
+  public void collectUses(List<Value> collector) {
+    getKey().collectUses(collector);
+    collector.add(getKey());
   }
 
   @Override
@@ -212,8 +209,28 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.literal("}");
   }
 
+  @Override
+  public boolean isJSwitchStmt() {
+    return true;
+  }
+
+  @Override
+  public JSwitchStmt asJSwitchStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSwitchStmt> toJSwitchStmt() {
+    return Optional.of(this);
+  }
+
   @NonNull
   public JSwitchStmt withKey(@NonNull Immediate key) {
+    // Preserve tableswitch type when cloning with a new key.
+    // The List<IntConstant> constructor unconditionally marks isTableSwitch = false (lookupswitch).
+    if (isTableSwitch()) {
+      return new JSwitchStmt(key, getValue(0), getValue(getValues().size() - 1), getPositionInfo());
+    }
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 
@@ -224,6 +241,10 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @NonNull
   public JSwitchStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
+    // Preserve tableswitch type when cloning with updated position information.
+    if (isTableSwitch()) {
+      return new JSwitchStmt(getKey(), getValue(0), getValue(getValues().size() - 1), positionInfo);
+    }
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
   }
 
@@ -275,11 +296,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull T[] ts) {
-      T[] intConstants = (T[]) new Object[to - from + 1];
+      List<IntConstant> intConstants = new ArrayList<>(to - from + 1);
       for (int i = 0; i < size(); i++) {
-        intConstants[i] = (T) IntConstant.getInstance(from + i);
+        intConstants.add(IntConstant.getInstance(from + i));
       }
-      return intConstants;
+      return intConstants.toArray(ts);
     }
 
     @Override

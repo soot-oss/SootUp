@@ -22,8 +22,9 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that adds two numbers. */
@@ -53,5 +54,20 @@ public final class JAddExpr extends AbstractFloatBinopExpr {
   @NonNull
   public JAddExpr withOp2(@NonNull Immediate op2) {
     return new JAddExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJAddExpr() {
+    return true;
+  }
+
+  @Override
+  public JAddExpr asJAddExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JAddExpr> toJAddExpr() {
+    return Optional.of(this);
   }
 }

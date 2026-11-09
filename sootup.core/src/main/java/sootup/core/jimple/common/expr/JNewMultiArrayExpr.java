@@ -23,12 +23,12 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
@@ -118,9 +118,11 @@ public final class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(sizes.stream(), sizes.stream().flatMap(Value::getUses));
+  public void collectUses(List<Value> collector) {
+    collector.addAll(sizes);
+    for (Immediate size : sizes) {
+      size.collectUses(collector);
+    }
   }
 
   @NonNull
@@ -147,5 +149,20 @@ public final class JNewMultiArrayExpr implements Expr {
 
   public boolean isArrayOfPrimitives() {
     return baseType.isArrayTypeOfPrimitives();
+  }
+
+  @Override
+  public boolean isJNewMultiArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewMultiArrayExpr asJNewMultiArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr() {
+    return Optional.of(this);
   }
 }

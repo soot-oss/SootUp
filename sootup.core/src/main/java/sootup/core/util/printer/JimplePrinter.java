@@ -27,9 +27,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import sootup.core.graph.*;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -214,8 +214,7 @@ public class JimplePrinter {
   }
 
   private void printFields(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootField> fieldIt =
-        getIterator(cl.getFields(), SootClassMember::getSignature);
+    Iterator<? extends SootField> fieldIt = getIterator(cl.getFields(), SootField::getSignature);
 
     if (fieldIt.hasNext()) {
       printer.incIndent();
@@ -228,7 +227,7 @@ public class JimplePrinter {
           printer.literal(" ");
         }
         printer.typeSignature(f.getType());
-        printer.literal(" " + Jimple.escape(f.getName()) + ";");
+        printer.literal(" " + JimpleUtils.escape(f.getName()) + ";");
         printer.newline();
         if (addJimpleLn()) {
           setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
@@ -241,7 +240,7 @@ public class JimplePrinter {
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
     Iterator<? extends SootMethod> methodIt =
-        getIterator(cl.getMethods(), SootClassMember::getSignature);
+        getIterator(cl.getMethods(), SootMethod::getSignature);
 
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -288,11 +287,11 @@ public class JimplePrinter {
     out.print(printer);
   }
 
-  public void printTo(StmtGraph<?> graph, PrintWriter out) {
+  public void printTo(ControlFlowGraph<?> graph, PrintWriter out) {
     printTo(graph, out, determinePrinter());
   }
 
-  public void printTo(StmtGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
+  public void printTo(ControlFlowGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
     printStmts(graph, printer);
     out.print(printer);
   }
@@ -331,17 +330,17 @@ public class JimplePrinter {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    final StmtGraph<?> stmtGraph = body.getStmtGraph();
-    printStmts(stmtGraph, printer);
+    final ControlFlowGraph<?> controlFlowGraph = body.getControlFlowGraph();
+    printStmts(controlFlowGraph, printer);
   }
 
-  private void printStmts(StmtGraph<?> stmtGraph, LabeledStmtPrinter printer) {
-    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(stmtGraph);
+  private void printStmts(ControlFlowGraph<?> controlFlowGraph, LabeledStmtPrinter printer) {
+    Iterable<Stmt> linearizedControlFlowGraph = printer.initializeSootMethod(controlFlowGraph);
 
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Stmt currentStmt : linearizedStmtGraph) {
+    for (Stmt currentStmt : linearizedControlFlowGraph) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -356,7 +355,7 @@ public class JimplePrinter {
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
         if (currentStmtHasLabel
             || previousStmt.branches()
-            || stmtGraph.predecessors(currentStmt).size() != 1
+            || controlFlowGraph.predecessors(currentStmt).size() != 1
             || previousStmt.getExpectedSuccessorCount() == 0) {
           printer.newline();
         }

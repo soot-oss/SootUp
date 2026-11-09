@@ -47,6 +47,10 @@ package sootup.core.jimple.common.stmt;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
@@ -98,16 +102,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#containsInvokeExpr()
-   */
-  @Override
-  public boolean containsInvokeExpr() {
-    return getRightOp() instanceof AbstractInvokeExpr;
-  }
-
   @Override
   public boolean invokesStaticInitializer() {
     if (getInvokeExpr().isPresent() && getInvokeExpr().get() instanceof JStaticInvokeExpr) {
@@ -136,10 +130,10 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    */
   @Override
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
-    if (!containsInvokeExpr()) {
-      return Optional.empty();
+    if (getRightOp() instanceof AbstractInvokeExpr) {
+      return Optional.of((AbstractInvokeExpr) getRightOp());
     }
-    return Optional.of((AbstractInvokeExpr) getRightOp());
+    return Optional.empty();
   }
 
   /*
@@ -195,6 +189,21 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     } else {
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
+  }
+
+  @Override
+  public boolean isJAssignStmt() {
+    return true;
+  }
+
+  @Override
+  public JAssignStmt asJAssignStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JAssignStmt> toJAssignStmt() {
+    return Optional.of(this);
   }
 
   /*

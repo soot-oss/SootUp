@@ -22,9 +22,10 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 import sootup.interceptors.LocalSplitter;
 import sootup.interceptors.TypeAssigner;
 
@@ -59,5 +60,20 @@ public class TopType extends Type {
   @Override
   public String toString() {
     return "TopType";
+  }
+
+  @Override
+  protected boolean isTopType() {
+    return true;
+  }
+
+  @Override
+  protected Type asTopType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<Type> toTopType() {
+    return Optional.of(this);
   }
 }

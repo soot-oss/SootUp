@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.TypeVisitor;
@@ -82,5 +83,77 @@ public abstract class Type implements Acceptor<TypeVisitor> {
       return 64;
     }
     return 0;
+  }
+
+  protected boolean isPrimitiveType() {
+    return false;
+  }
+
+  protected boolean isReferenceType() {
+    return false;
+  }
+
+  protected boolean isBottomType() {
+    return false;
+  }
+
+  protected boolean isTopType() {
+    return false;
+  }
+
+  protected boolean isUnknownType() {
+    return false;
+  }
+
+  protected boolean isVoidType() {
+    return false;
+  }
+
+  protected PrimitiveType asPrimitiveType() {
+    return null;
+  }
+
+  protected ReferenceType asReferenceType() {
+    return null;
+  }
+
+  protected Type asBottomType() {
+    return null;
+  }
+
+  protected Type asTopType() {
+    return null;
+  }
+
+  protected UnknownType asUnknownType() {
+    return null;
+  }
+
+  protected VoidType asVoidType() {
+    return null;
+  }
+
+  protected Optional<PrimitiveType> toPrimitiveType() {
+    return Optional.empty();
+  }
+
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toBottomType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toTopType() {
+    return Optional.empty();
+  }
+
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.empty();
+  }
+
+  protected Optional<VoidType> toVoidType() {
+    return Optional.empty();
   }
 }

@@ -22,10 +22,11 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.printer.StmtPrinter;
@@ -75,5 +76,20 @@ public final class JLengthExpr extends AbstractUnopExpr {
   @NonNull
   public JLengthExpr withOp(@NonNull Immediate op) {
     return new JLengthExpr(op);
+  }
+
+  @Override
+  public boolean isJLengthExpr() {
+    return true;
+  }
+
+  @Override
+  public JLengthExpr asJLengthExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JLengthExpr> toJLengthExpr() {
+    return Optional.of(this);
   }
 }

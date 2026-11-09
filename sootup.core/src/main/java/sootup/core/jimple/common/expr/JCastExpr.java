@@ -22,17 +22,22 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
-/** An expression that casts a value to a certain type. */
-public final class JCastExpr implements Expr {
+/**
+ * An expression that casts a value to a certain type. Frontends may subclass it to keep what they
+ * know about the cast beyond Jimple's operand and type; such a subclass overrides {@link #withOp}
+ * and {@link #withType} so that rebuilding the expression keeps it.
+ */
+public class JCastExpr implements Expr {
 
   private final Immediate op;
   private final Type type;
@@ -71,9 +76,9 @@ public final class JCastExpr implements Expr {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 
   @NonNull
@@ -96,5 +101,20 @@ public final class JCastExpr implements Expr {
   @NonNull
   public JCastExpr withType(@NonNull Type type) {
     return new JCastExpr(getOp(), type);
+  }
+
+  @Override
+  public boolean isJCastExpr() {
+    return true;
+  }
+
+  @Override
+  public JCastExpr asJCastExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JCastExpr> toJCastExpr() {
+    return Optional.of(this);
   }
 }

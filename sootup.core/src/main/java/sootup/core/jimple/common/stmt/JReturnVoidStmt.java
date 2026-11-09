@@ -22,6 +22,7 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -30,7 +31,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning no value. */
-public final class JReturnVoidStmt extends AbstractStmt {
+public final class JReturnVoidStmt extends AbstractStmt implements ReturnStmt {
 
   public JReturnVoidStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
@@ -44,6 +45,21 @@ public final class JReturnVoidStmt extends AbstractStmt {
   @Override
   public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.RETURN);
+  }
+
+  @Override
+  public boolean isJReturnVoidStmt() {
+    return true;
+  }
+
+  @Override
+  public JReturnVoidStmt asJReturnVoidStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JReturnVoidStmt> toJReturnVoidStmt() {
+    return Optional.of(this);
   }
 
   @Override

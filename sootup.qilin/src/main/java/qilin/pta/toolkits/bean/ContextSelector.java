@@ -55,9 +55,9 @@ public abstract class ContextSelector {
   protected abstract void selectContext(OAG oag);
 
   protected void addAllocation(
-      ContextElements ctx, AllocNode heap, ContextElements newCtx, AllocNode succ) {
+      ContextElements ctx, AllocNode heap, ContextElements newContext, AllocNode succ) {
     Pair<ContextElements, AllocNode> csheap = new Pair<>(ctx, heap);
     allocation.computeIfAbsent(csheap, k -> new HashSet<>());
-    allocation.get(csheap).add(new Pair<>(newCtx, succ));
+    allocation.get(csheap).add(new Pair<>(newContext, succ));
   }
 }

@@ -39,15 +39,16 @@ public class DominanceFinder {
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
-  private ArrayList<Integer>[] domFrontiers;
+  private List<List<Integer>> domFrontiers;
   private BlockAnalysisDirection direction;
 
-  public DominanceFinder(StmtGraph<?> blockGraph) {
+  public DominanceFinder(ControlFlowGraph<?> blockGraph) {
     // normal DominanceFinder should be in reverse post order
     this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  protected DominanceFinder(@NonNull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
+  protected DominanceFinder(
+      @NonNull ControlFlowGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
     // define the blocks' order
     this.direction = direction;
@@ -108,9 +109,9 @@ public class DominanceFinder {
     }
 
     // initialize domFrontiers
-    domFrontiers = new ArrayList[blocks.size()];
-    for (int i = 0; i < domFrontiers.length; i++) {
-      domFrontiers[i] = new ArrayList<>();
+    domFrontiers = new ArrayList<>(blocks.size());
+    for (int i = 0; i < blocks.size(); i++) {
+      domFrontiers.add(new ArrayList<>());
     }
 
     doms[0] = -1;
@@ -122,7 +123,7 @@ public class DominanceFinder {
         for (BasicBlock<?> pred : preds) {
           int predId = blockToIdx.get(pred);
           while (predId != -1 && predId != doms[blockId]) {
-            domFrontiers[predId].add(blockId);
+            domFrontiers.get(predId).add(blockId);
             predId = doms[predId];
           }
         }
@@ -130,9 +131,9 @@ public class DominanceFinder {
     }
 
     if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
-      for (int i = 0; i < domFrontiers.length; i++) {
-        if (domFrontiers[i].contains(i)) {
-          domFrontiers[i].remove(Integer.valueOf(i));
+      for (int i = 0; i < domFrontiers.size(); i++) {
+        if (domFrontiers.get(i).contains(i)) {
+          domFrontiers.get(i).remove(Integer.valueOf(i));
         }
       }
     }
@@ -168,7 +169,7 @@ public class DominanceFinder {
     }
     int idx = blockToIdx.get(block);
     Set<BasicBlock<?>> dFs = new HashSet<>();
-    ArrayList<Integer> dFs_idx = this.domFrontiers[idx];
+    List<Integer> dFs_idx = this.domFrontiers.get(idx);
     for (Integer i : dFs_idx) {
       dFs.add(blocks.get(i));
     }

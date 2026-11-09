@@ -25,8 +25,9 @@ package sootup.java.core.jimple.common.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -42,9 +43,9 @@ public class JGotoStmtTest {
   public void test() {
 
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory typeFactory = new JavaIdentifierFactory();
 
-    Local local = new Local("r0", typeFactory.getType("java.lang.Exception"));
+    Local local = Jimple.newLocal("r0", typeFactory.getType("java.lang.Exception"));
 
     // Stmt
     Stmt targetStmt = new JThrowStmt(local, nop);

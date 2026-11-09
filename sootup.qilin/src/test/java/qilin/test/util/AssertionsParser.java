@@ -21,7 +21,6 @@ package qilin.test.util;
 import java.util.HashSet;
 import java.util.Set;
 import qilin.core.PTA;
-import qilin.util.PTAUtils;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -49,8 +48,8 @@ public class AssertionsParser {
       //
       // System.out.println("=================================================================");
       //            }
-      for (final Stmt stmt : PTAUtils.getMethodBody(sm).getStmts()) {
-        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+      for (final Stmt stmt : pta.getPag().getMethodBody(sm).getStmts()) {
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = stmt.asInvokableStmt().getInvokeExpr().get();
           if (ie instanceof JStaticInvokeExpr) {
             final MethodSignature calleeSig = ie.getMethodSignature();

@@ -19,9 +19,9 @@
 package qilin.core;
 
 import java.util.*;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
+import sootup.callgraph.SignaturePolymorphicMethods;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -44,7 +44,7 @@ public class VirtualCalls {
 
   public VirtualCalls(View view) {
     this.view = view;
-    this.typeToVtbl = DataFactory.createMap((int) view.getClasses().count());
+    this.typeToVtbl = new HashMap<>();
   }
 
   public SootMethod resolveSpecial(
@@ -66,9 +66,13 @@ public class VirtualCalls {
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = view.getMethod(methodSig);
+      if (otgt.isEmpty()) {
+        otgt = SignaturePolymorphicMethods.resolve(view, methodSig);
+      }
       if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
+        return null;
       }
       return otgt.get();
     }
@@ -79,17 +83,24 @@ public class VirtualCalls {
   }
 
   public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig, boolean appOnly) {
-    Map<MethodSubSignature, SootMethod> vtbl =
-        typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
+    Map<MethodSubSignature, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> new HashMap<>(8));
     SootMethod ret = vtbl.get(subSig);
     if (ret != null) {
       return ret;
     }
-    SootClass cls = view.getClass(t).get();
+    Optional<? extends SootClass> ocls = view.getClass(t);
+    if (!ocls.isPresent()) {
+      return null;
+    }
+    SootClass cls = ocls.get();
     if (appOnly && cls.isLibraryClass()) {
       return null;
     }
     Optional<? extends SootMethod> om = cls.getMethod(subSig);
+    if (om.isEmpty() && SignaturePolymorphicMethods.isHolder(t)) {
+      // MethodHandle/VarHandle: call-site descriptor never matches the declared method
+      om = SignaturePolymorphicMethods.resolve(cls, subSig.getName());
+    }
     if (om.isPresent()) {
       SootMethod m = om.get();
       if (!m.isAbstract()) {
@@ -99,8 +110,10 @@ public class VirtualCalls {
       Optional<? extends ClassType> oc = cls.getSuperclass();
       if (oc.isPresent()) {
         ClassType ct = oc.get();
-        SootClass c = view.getClass(ct).get();
-        ret = resolveNonSpecial(c.getType(), subSig);
+        Optional<? extends SootClass> oc2 = view.getClass(ct);
+        if (oc2.isPresent()) {
+          ret = resolveNonSpecial(oc2.get().getType(), subSig);
+        }
       }
     }
     if (ret == null) {
@@ -138,19 +151,19 @@ public class VirtualCalls {
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
     if (declaredType instanceof ArrayType) {
-      declaredType = PTAUtils.getClassType("java.lang.Object");
+      declaredType = JavaTypes.OBJECT;
     }
     if (sigType instanceof ArrayType) {
-      sigType = PTAUtils.getClassType("java.lang.Object");
+      sigType = JavaTypes.OBJECT;
     }
     if (t instanceof ArrayType) {
-      t = PTAUtils.getClassType("java.lang.Object");
+      t = JavaTypes.OBJECT;
     }
 
-    if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {
+    if (declaredType != null && !JavaTypes.canStoreType(view, t, declaredType)) {
       return;
     }
-    if (sigType != null && !PTAUtils.canStoreType(view, t, sigType)) {
+    if (sigType != null && !JavaTypes.canStoreType(view, t, sigType)) {
       return;
     }
     if (t instanceof ClassType) {

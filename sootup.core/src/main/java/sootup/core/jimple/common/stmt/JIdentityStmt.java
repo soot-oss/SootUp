@@ -22,10 +22,11 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
@@ -75,6 +76,21 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
     getLeftOp().toString(up);
     up.literal(" := ");
     getRightOp().toString(up);
+  }
+
+  @Override
+  public boolean isJIdentityStmt() {
+    return true;
+  }
+
+  @Override
+  public JIdentityStmt asJIdentityStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JIdentityStmt> toJIdentityStmt() {
+    return Optional.of(this);
   }
 
   @Override

@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashSet;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.common.Local;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
+import sootup.core.signatures.SignatureInterner;
+import sootup.core.types.*;
 
 public class LocalGeneratorTest {
 
@@ -33,7 +34,7 @@ public class LocalGeneratorTest {
 
               @Override
               public PackageName getPackageName() {
-                return new PackageName("Fruit");
+                return SignatureInterner.getPackageName("Fruit");
               }
             });
 

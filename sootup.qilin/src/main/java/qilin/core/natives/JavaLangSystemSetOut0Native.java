@@ -18,16 +18,17 @@
 
 package qilin.core.natives;
 
-import sootup.core.jimple.basic.Local;
+import qilin.core.pag.PAG;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaLangSystemSetOut0Native extends NativeMethod {
-  public JavaLangSystemSetOut0Native(View view, SootMethod method) {
-    super(view, method);
+  public JavaLangSystemSetOut0Native(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /**

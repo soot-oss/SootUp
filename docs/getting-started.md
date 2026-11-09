@@ -1,4 +1,46 @@
 # First Steps with SootUp
+
+## The Mental Model
+
+**What does "analyzing a program" mean in practice?**
+
+You want to ask questions about code without running it: "Can this variable ever be
+`null` at line 42?", "Does this method ever write to a file?", "Which methods could
+be invoked at this call site?". To answer these questions automatically, you need a
+structured, machine-traversable representation of the program — something richer than
+raw text, simpler than a running process.
+
+SootUp works in three layers:
+
+1. **Your program on disk** — compiled `.class` files (bytecode), source files, or an
+   Android `.apk`. The JVM can run these; SootUp reads them.
+
+2. **The Intermediate Representation (Jimple)** — SootUp translates bytecode into
+   Jimple, a clean, flat, named-variable form. Every instruction is explicit.
+   No implicit stack. No nested expressions. This makes it straightforward to traverse
+   and reason about in Java code. You almost never write bytecode; you write code that
+   walks Jimple.
+
+3. **Your analysis** — you walk the Jimple representation and compute whatever you
+   need: collect all call sites, track which locals may be null, count branches, or
+   check a security property.
+
+**How the API maps onto this model:**
+
+| SootUp type | What it represents |
+|---|---|
+| `AnalysisInputLocation` | Where on disk is the code you want to examine? |
+| `View` | Your in-memory handle to the loaded program — everything you query goes through here |
+| `SootClass` | One class loaded from the View |
+| `SootMethod` | One method inside a class |
+| `Body` | The instructions of a method, in Jimple form, plus declared local variables |
+| `ControlFlowGraph` | The edges between those instructions: which statement can follow which |
+
+With this model in mind, the code below should feel like a natural consequence rather
+than magic API calls.
+
+---
+
 Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
 - [`AnalysisInputLocation`]{It corresponds to the `cp` option, which specifies the classpath for Soot to find classes to be analyzed.}
@@ -11,11 +53,19 @@ handles the representation of the code you configured it to analyze.
 - `SootMethod`: represents a method of a class - loaded from the View via a `MethodSignature` identifier.
 - `SootField`: represents a field of a class - loaded from the View via a `FieldSignature` identifier.
 - `Body`: represents a method body of a `SootMethod`.
-- `StmtGraph`: represents the control flow graph of a `Body`. `Stmt`'s represent actual Instructions.
+- `ControlFlowGraph`: represents the control flow graph of a `Body`. `Stmt`'s represent actual Instructions.
 
 ## Creating a View
 
 You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.
+
+When you compile the program yourself, use `javac -g` so the class file keeps
+local variable names. Jimple then uses those names instead of `l0`, `l1`, which
+is easier to follow as a beginner.
+
+```
+javac -g Main.java
+```
 
 !!! example "Create a view to analyze Java bytecode"
 
@@ -50,7 +100,7 @@ If you have a [Jimple](../jimple) file, you can create a view for analyzing jimp
     AnalysisInputLocation inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
     
-    JimpleView view = new JimpleView(inputLocation);
+    JavaView view = new JavaView(inputLocation);
     ~~~
 
 <!---
@@ -164,20 +214,48 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Constant Field Values
+
+`JavaSootField.getConstantValue()` returns the classfile `ConstantValue` attribute as an
+`Optional<Constant>`, or an empty optional if absent. Field initializers are not evaluated.
+
+## Reading Annotation Visibility
+
+`AnnotationUsage.isRuntimeVisible()` distinguishes runtime-visible and runtime-invisible
+bytecode annotations on classes, fields, methods, and parameters. Parameter declaration
+queries support `"Any"`, `"RuntimeVisible"`, and `"RuntimeInvisible"`; type-use annotations
+remain on their existing targets. Nested annotation values inherit their container's
+visibility; the existing two-argument constructor defaults to runtime-visible.
+
+## Reading Class Nesting and Source Metadata
+
+`JavaSootClass` exposes source filenames (`getSourceFile()`), raw source/debug text
+(`getSourceDebugExtension()`), enclosing classes/methods (`getEnclosingClass()` /
+`getEnclosingMethod()`), and ordered `InnerClasses` entries (`getInnerClasses()`).
+Missing attributes return empty optionals or lists; SMAP text is preserved without
+remapping statement positions.
+
+## Reading Java Generic Signatures
+
+`getGenericSignature()` on `JavaSootClass`, `JavaSootField`, and `JavaSootMethod` (via
+`HasGenericSignature`) returns the raw classfile `Signature` attribute as an
+`Optional<String>`, or an empty optional if absent. Generic signatures do not change
+SootUp's erased types.
+
 ## Retrieving the Control-Flow Graph of a Method
 
-Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `StmtGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `ControlFlowGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
 
 !!! example "Retrieving the CFG of a SootMethod"
 
     ```java
-    StmtGraph<?> graph = sootMethod.getBody().getStmtGraph();
+    ControlFlowGraph<?> graph = sootMethod.getBody().getControlFlowGraph();
     ```
 
 
-## Using the StmtGraph
+## Using the ControlFlowGraph
 
-=== "StmtGraph Stmts"
+=== "ControlFlowGraph Stmts"
     ```java
     for( Stmt stmt : graph.nodes()){
         // pseudo topological order as Stmts would be serialized to a Jimple file.
@@ -187,7 +265,7 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
         // Stmts are unordered!
     }
     ```
-=== "StmtGraph Blocks"
+=== "ControlFlowGraph Blocks"
     ```java
     List<BasicBlock<?>> blocks = graph.getBlocks();
     for( BasicBlock<?> block : blocks){
@@ -208,7 +286,7 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
         }
     }
     ```
-=== "StmtGraph DotExport"
+=== "ControlFlowGraph DotExport"
     ```java
     String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
     System.out.println(urlToWebeditor);

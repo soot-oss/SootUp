@@ -18,7 +18,7 @@
 
 package qilin.pta.toolkits.dd;
 
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
@@ -43,7 +43,7 @@ import sootup.core.model.SootMethod;
 public class FeaturesTrueTable {
   private final boolean[] features = new boolean[26];
 
-  public FeaturesTrueTable(SootMethod sm) {
+  public FeaturesTrueTable(SootMethod sm, PAG pag) {
     String sig = sm.getSignature().toString();
     this.features[1] = sig.contains("java");
     this.features[2] = sig.contains("lang");
@@ -55,7 +55,7 @@ public class FeaturesTrueTable {
     this.features[8] = sig.contains("util");
     this.features[9] = sig.contains("String");
     this.features[10] = sig.contains("init");
-    Body body = PTAUtils.getMethodBody(sm);
+    Body body = pag.getMethodBody(sm);
     for (Stmt unit : body.getStmts()) {
       if (unit instanceof JAssignStmt) {
         this.features[11] = true;

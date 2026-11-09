@@ -27,8 +27,11 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 
-/** A block iterator that iterates through the blocks of a StmtGraph in reverse post-order. */
+/**
+ * A block iterator that iterates through the blocks of a ControlFlowGraph in reverse post-order.
+ */
 public class ReversePostOrderBlockIterator implements BlockIterator {
   private List<BasicBlock<?>> blocks;
   private int i = 0;
@@ -41,6 +44,34 @@ public class ReversePostOrderBlockIterator implements BlockIterator {
                 false)
             .collect(Collectors.toList());
     Collections.reverse(blocks);
+    ensureFallthroughConsecutive(blocks);
+  }
+
+  /**
+   * Scan the RPO list and move each fallthrough successor immediately after its source block. When
+   * a block ends with a FallsThroughStmt, the generated code expects no explicit jump to reach the
+   * next block; keeping source and target adjacent avoids gratuitous goto instructions.
+   *
+   * <p>Only forward moves are performed (j > i+1): if the fallthrough target is already ahead of
+   * the source or unreachable (back-edge targets in loops), we leave the order as-is.
+   */
+  private static void ensureFallthroughConsecutive(@NonNull List<BasicBlock<?>> rpo) {
+    for (int i = 0; i < rpo.size() - 1; i++) {
+      BasicBlock<?> block = rpo.get(i);
+      if (!(block.getTail() instanceof FallsThroughStmt)) {
+        continue;
+      }
+      List<? extends BasicBlock<?>> succs = block.getSuccessors();
+      if (succs.isEmpty()) {
+        continue;
+      }
+      BasicBlock<?> fallthrough = succs.get(0);
+      int j = rpo.indexOf(fallthrough);
+      if (j > i + 1) {
+        rpo.remove(j);
+        rpo.add(i + 1, fallthrough);
+      }
+    }
   }
 
   @Override

@@ -6,7 +6,7 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -17,16 +17,14 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -59,23 +57,27 @@ public class FieldModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(firstStmt);
-    stmtGraph.putEdge(firstStmt, returnVoidStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(firstStmt);
+    controlFlowGraph.putEdge(firstStmt, returnVoidStmt);
 
     Body body =
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
-    JavaSootField dummyField =
-        new JavaSootField(
-            new FieldSignature(
-                new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
+    FieldSignature fieldSignature =
+        view.getIdentifierFactory()
+            .getFieldSignature(
                 "i",
-                PrimitiveType.IntType.getInstance()),
-            fieldModifierEnumSet,
-            Collections.emptyList(),
-            NoPositionInformation.getInstance());
+                view.getIdentifierFactory().getClassType("FieldModifiersValidator"),
+                PrimitiveType.IntType.getInstance());
+    JavaSootField dummyField =
+        JavaSootField.JavaSootFieldBuilder.builder()
+            .withSignature(fieldSignature)
+            .withModifier(fieldModifierEnumSet)
+            .withAnnotation(Collections.emptyList())
+            .withPosition(NoPositionInformation.getInstance())
+            .build();
 
     JavaSootMethod dummyMainMethod =
         new JavaSootMethod(
@@ -88,20 +90,13 @@ public class FieldModifiersValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(dummyField),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withFields(Collections.singleton(dummyField))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 

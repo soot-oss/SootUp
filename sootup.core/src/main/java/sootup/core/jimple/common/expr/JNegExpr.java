@@ -22,11 +22,12 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -95,5 +96,20 @@ public final class JNegExpr extends AbstractUnopExpr {
   @NonNull
   public JNegExpr withOp(@NonNull Immediate op) {
     return new JNegExpr(op);
+  }
+
+  @Override
+  public boolean isJNegExpr() {
+    return true;
+  }
+
+  @Override
+  public JNegExpr asJNegExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNegExpr> toJNegExpr() {
+    return Optional.of(this);
   }
 }

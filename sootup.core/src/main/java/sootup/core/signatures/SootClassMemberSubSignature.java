@@ -27,7 +27,7 @@ import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -83,9 +83,12 @@ public abstract class SootClassMemberSubSignature {
     return Objects.equal(getName(), that.getName()) && Objects.equal(getType(), that.getType());
   }
 
+  private final Supplier<Integer> _cachedHashCode =
+      Suppliers.memoize(() -> Objects.hashCode(getName(), getType()));
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName(), getType());
+    return _cachedHashCode.get();
   }
 
   protected int compareTo(@NonNull SootClassMemberSubSignature o) {
@@ -100,9 +103,7 @@ public abstract class SootClassMemberSubSignature {
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
-          () ->
-              String.format(
-                  "%s %s", Jimple.escape(getType().toString()), Jimple.escape(getName())));
+          () -> String.format("%s %s", getType(), JimpleUtils.quotedNameOf(getName())));
 
   @Override
   @NonNull

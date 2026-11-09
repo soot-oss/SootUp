@@ -25,6 +25,8 @@ package sootup.core.jimple.basic;
 import java.util.Iterator;
 import java.util.List;
 import sootup.core.graph.BasicBlock;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;
@@ -63,8 +65,6 @@ import sootup.core.jimple.javabytecode.stmt.*;
  *   <li>For any non-null reference value {@code x}, {@code x.equivTo(null)} should return {@code
  *       false}.
  * </ul>
- *
- * <p>
  *
  * @author Markus Schmidt
  */

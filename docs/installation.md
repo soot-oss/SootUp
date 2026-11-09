@@ -26,6 +26,11 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.interceptors</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
@@ -56,11 +61,6 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.qilin</artifactId>
-            <version>{{ git_latest_release }}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.codepropertygraph</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
@@ -77,13 +77,13 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
     
     compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.core:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.interceptors:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.bytecode.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.jimple.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.apk.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.callgraph:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.analysis.intraprocedural:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.analysis.interprocedural:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.codepropertygraph:{{ git_latest_release }}"
     ```
 

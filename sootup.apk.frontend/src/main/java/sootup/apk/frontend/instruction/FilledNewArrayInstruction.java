@@ -28,8 +28,8 @@ import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
@@ -51,22 +51,26 @@ public class FilledNewArrayInstruction extends FilledArrayInstruction {
     };
     int usedRegister = filledNewArrayInstr.getRegisterCount();
 
-    Type t = DexUtil.toSootType(((TypeReference) filledNewArrayInstr.getReference()).getType(), 0);
+    Type t =
+        DexUtil.toSootType(
+            ((TypeReference) filledNewArrayInstr.getReference()).getType(),
+            0,
+            body.getIdentifierFactory());
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =
-        JavaJimple.getInstance().newNewArrayExpr(arrayType, IntConstant.getInstance(usedRegister));
+        JavaJimple.newNewArrayExpr(
+            arrayType, IntConstant.getInstance(usedRegister), body.getIdentifierFactory());
     // new local generated intentional, will be moved to real register by MoveResult
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assign =
-        Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(arrayLocal, arrayExpr, new SimpleStmtPositionInfo(lineNumber));
     body.add(assign);
     for (int i = 0; i < usedRegister; i++) {
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayLocal, IntConstant.getInstance(i));
+      JArrayRef arrayRef = JavaJimple.newArrayRef(arrayLocal, IntConstant.getInstance(i));
       JAssignStmt assign2 =
           Jimple.newAssignStmt(
-              arrayRef, body.getRegisterLocal(regs[i]), StmtPositionInfo.getNoStmtPositionInfo());
+              arrayRef, body.getRegisterLocal(regs[i]), new SimpleStmtPositionInfo(lineNumber));
       body.add(assign2);
     }
     setStmt(assign);

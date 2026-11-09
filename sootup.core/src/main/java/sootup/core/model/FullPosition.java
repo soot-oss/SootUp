@@ -22,8 +22,6 @@ package sootup.core.model;
  * #L%
  */
 
-import java.util.Objects;
-
 /** This class represents Position Information i.e. for IDEs to locate positions in sources. */
 // TODO: [ms] it represents a range - rename?
 public class FullPosition extends Position {
@@ -57,10 +55,5 @@ public class FullPosition extends Position {
   @Override
   public int getLastCol() {
     return lastCol;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(firstLine, firstCol, lastLine, lastCol);
   }
 }

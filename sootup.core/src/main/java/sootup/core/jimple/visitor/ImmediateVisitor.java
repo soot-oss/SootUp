@@ -23,7 +23,7 @@ package sootup.core.jimple.visitor;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 
 /*
  * @author Markus Schmidt

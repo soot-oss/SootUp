@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -47,8 +48,7 @@ public class CastAndReturnInlinerTest {
    */
   @Test
   public void testModification() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -57,7 +57,7 @@ public class CastAndReturnInlinerTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -68,14 +68,14 @@ public class CastAndReturnInlinerTest {
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
 
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
 
     bodyBuilder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
@@ -90,8 +90,9 @@ public class CastAndReturnInlinerTest {
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
     assertEquals(2, processedBody.getLocals().size());
-    assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    assertTrue(processedBody.getLocals().contains(new Local("a_ret0", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(Jimple.newLocal("a", UnknownType.getInstance())));
+    assertTrue(
+        processedBody.getLocals().contains(Jimple.newLocal("a_ret0", UnknownType.getInstance())));
   }
 
   /**
@@ -107,8 +108,7 @@ public class CastAndReturnInlinerTest {
    */
   @Test
   public void testNoModification() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -118,9 +118,9 @@ public class CastAndReturnInlinerTest {
     Local c = JavaJimple.newLocal("c", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt strToC =
-        JavaJimple.newAssignStmt(c, javaJimple.newStringConstant("str2"), noPositionInfo);
+        JavaJimple.newAssignStmt(c, JavaJimple.newStringConstant("str2", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     // Note this returns c, not b, hence the cast and return must not be inlined
@@ -131,14 +131,14 @@ public class CastAndReturnInlinerTest {
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, strToC);
-    stmtGraph.putEdge(strToC, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, strToC);
+    controlFlowGraph.putEdge(strToC, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
     bodyBuilder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 

@@ -26,8 +26,8 @@ import com.google.common.collect.ComparisonChain;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -83,9 +83,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(stmt);
       if (label == null) {
-        output.append("[?= ").append(Jimple.escape(stmt.toString())).append(']');
+        output.append("[?= ").append(JimpleUtils.escape(stmt.toString())).append(']');
       } else {
-        output.append(Jimple.escape(label));
+        output.append(JimpleUtils.escape(label));
       }
 
     } else {
@@ -97,9 +97,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         handleIndent();
         setIndent(indentStep / 2);
 
-        output.append('(').append(Jimple.escape(ref)).append(')');
+        output.append('(').append(JimpleUtils.escape(ref)).append(')');
       } else {
-        output.append(Jimple.escape(ref));
+        output.append(JimpleUtils.escape(ref));
       }
     }
   }
@@ -107,12 +107,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /**
    * createLabelMaps
    *
-   * @return the linearized StmtGraph
+   * @return the linearized ControlFlowGraph
    */
-  public Iterable<Stmt> initializeSootMethod(@NonNull StmtGraph<?> stmtGraph) {
-    this.graph = stmtGraph;
-    JNopStmt needsNopAtEnd = buildTraps(stmtGraph);
-    final Collection<Stmt> labeledStmts = getLabeledStmts(stmtGraph, this.traps);
+  public Iterable<Stmt> initializeSootMethod(@NonNull ControlFlowGraph<?> controlFlowGraph) {
+    this.graph = controlFlowGraph;
+    JNopStmt needsNopAtEnd = buildTraps(controlFlowGraph);
+    final Collection<Stmt> labeledStmts = getLabeledStmts(controlFlowGraph, this.traps);
 
     final int maxEstimatedSize = labeledStmts.size() + traps.size() * 3;
     labels = new HashMap<>(maxEstimatedSize, 1);
@@ -134,7 +134,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     // or is the begin of a trap-range) or does it mark the end of a trap range
     // does it need a label
     for (Stmt stmt : labeledStmts) {
-      if (trapStmts.contains(stmt) || stmtGraph.isStmtBranchTarget(stmt)) {
+      if (trapStmts.contains(stmt) || controlFlowGraph.isStmtBranchTarget(stmt)) {
         labelStmts.add(stmt);
       } else {
         refStmts.add(stmt);
@@ -151,8 +151,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    final List<Stmt> linearizedStmtGraph = stmtGraph.getStmts();
-    for (Stmt s : linearizedStmtGraph) {
+    final List<Stmt> linearizedControlFlowGraph = controlFlowGraph.getStmts();
+    for (Stmt s : linearizedControlFlowGraph) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }
@@ -163,11 +163,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     }
 
     if (needsNopAtEnd != null) {
-      linearizedStmtGraph.add(needsNopAtEnd);
+      linearizedControlFlowGraph.add(needsNopAtEnd);
       labels.put(needsNopAtEnd, String.format(formatString, ++labelCount));
     }
 
-    return linearizedStmtGraph;
+    return linearizedControlFlowGraph;
   }
 
   @Override
@@ -176,7 +176,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     typeSignature(methodSig.getDeclClassType());
     output.append(": ");
     typeSignature(methodSig.getType());
-    output.append(' ').append(Jimple.escape(methodSig.getName())).append('(');
+    output.append(' ').append(JimpleUtils.escape(methodSig.getName())).append('(');
 
     final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
     final int parameterTypesSize = parameterTypes.size();
@@ -197,7 +197,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     output.append(": ");
     final FieldSubSignature subSignature = fieldSig.getSubSignature();
     typeSignature(subSignature.getType());
-    output.append(' ').append(Jimple.escape(subSignature.getName())).append('>');
+    output.append(' ').append(JimpleUtils.escape(subSignature.getName())).append('>');
   }
 
   /**
@@ -208,10 +208,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    * BasicBlock.getExceptionalSuccessor()
    */
   /** hint: little expensive getter - its more of a build/create - currently no overlaps */
-  public JNopStmt buildTraps(StmtGraph stmtGraph) {
+  public JNopStmt buildTraps(ControlFlowGraph controlFlowGraph) {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
     // iteration information is not wasted..
-    BlockGraphIteratorAndTrapAggregator it = new BlockGraphIteratorAndTrapAggregator(stmtGraph);
+    BlockGraphIteratorAndTrapAggregator it =
+        new BlockGraphIteratorAndTrapAggregator(controlFlowGraph);
     // it.getTraps() is valid/completely build when the iterator is done.
     Map<Stmt, Integer> stmtsBlockIdx = new IdentityHashMap<>();
     int i = 0;
@@ -254,20 +255,24 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
   @NonNull
-  public Collection<Stmt> getLabeledStmts(StmtGraph stmtGraph, List<Trap> traps) {
+  public Collection<Stmt> getLabeledStmts(ControlFlowGraph<?> controlFlowGraph, List<Trap> traps) {
     Set<Stmt> stmtList = new HashSet<>();
-    Collection<Stmt> stmtGraphNodes = stmtGraph.getNodes();
-    for (Stmt stmt : stmtGraphNodes) {
+    Collection<Stmt> controlFlowGraphNodes = controlFlowGraph.getNodes();
+    for (Stmt stmt : controlFlowGraphNodes) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
           stmtList.add(
-              (Stmt) stmtGraph.getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
+              (Stmt)
+                  controlFlowGraph
+                      .getBranchTargetsOf((JIfStmt) stmt)
+                      .get(JIfStmt.FALSE_BRANCH_IDX));
         } else if (stmt instanceof JGotoStmt) {
-          // [ms] bounds are validated in Body if its a valid StmtGraph
+          // [ms] bounds are validated in Body if its a valid ControlFlowGraph
           stmtList.add(
-              (Stmt) stmtGraph.getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
+              (Stmt)
+                  controlFlowGraph.getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
         } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(stmtGraph.getBranchTargetsOf((BranchingStmt) stmt));
+          stmtList.addAll(controlFlowGraph.getBranchTargetsOf((BranchingStmt) stmt));
         }
       }
     }

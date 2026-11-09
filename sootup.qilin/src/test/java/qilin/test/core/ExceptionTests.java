@@ -18,12 +18,24 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class ExceptionTests extends JunitTests {
+/**
+ * Exercises {@link PointerAnalysisConfig#isPreciseExceptions()}, which the rest of the suite leaves
+ * off: with it, a thrown object flows to the matching {@code catch} parameter (and out to the
+ * caller's handler when nothing in the method catches it) instead of being merged into one global
+ * throw field.
+ */
+public class ExceptionTests extends QilinFrameworkTests {
+
+  @Override
+  protected PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
+    return super.configBuilder(contextSensitivity).preciseExceptions(true);
+  }
+
   @Test
   public void testSimpleException() {
     checkAssertions(run("qilin.microben.core.exception.SimpleException"));

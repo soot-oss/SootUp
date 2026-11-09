@@ -20,35 +20,39 @@ package qilin.test;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class FlowSensTests extends JunitTests {
+public class FlowSensTests extends QilinFrameworkTests {
   @Test
   public void testLoops() {
     checkAssertions(run("qilin.microben.flowsens.Loops"));
   }
 
+  @Test
   @Disabled
   public void testFlowSens0() {
     checkAssertions(run("qilin.microben.flowsens.FlowSens0"));
   }
 
+  @Test
   @Disabled
   public void testInstanceOf0() {
     checkAssertions(run("qilin.microben.flowsens.InstanceOf0"));
   }
 
+  @Test
   @Disabled
   public void testBranching1() {
     checkAssertions(run("qilin.microben.flowsens.Branching1"));
   }
 
+  @Test
   @Disabled
   public void testStrongUpdate1() {
     checkAssertions(run("qilin.microben.flowsens.StrongUpdate1"));
   }
 
+  @Test
   @Disabled
   public void testStrongUpdate2() {
     checkAssertions(run("qilin.microben.flowsens.StrongUpdate2"));

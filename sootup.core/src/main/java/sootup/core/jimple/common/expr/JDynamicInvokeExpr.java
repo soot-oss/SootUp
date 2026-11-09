@@ -23,12 +23,14 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -143,7 +145,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
     final MethodSubSignature mSubSig = methodSignature.getSubSignature();
     // dont print methodname from methodsubsignature in the usual way
     up.literal(
-        " \"" + Jimple.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
+        " \"" + JimpleUtils.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
     argsToPrinter(up);
 
     up.literal(") ");
@@ -190,24 +192,39 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public JDynamicInvokeExpr withBootstrapMethodSignature(
       @NonNull MethodSignature bootstrapMethodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withBootstrapArgs(@NonNull List<Immediate> bootstrapArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), getArgs());
+        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, getBootstrapArgs(), methodSignature, tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withMethodArgs(@NonNull List<Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), tag, methodArgs);
+  }
+
+  @Override
+  public boolean isJDynamicInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JDynamicInvokeExpr asJDynamicInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JDynamicInvokeExpr> toJDynamicInvokeExpr() {
+    return Optional.of(this);
   }
 }

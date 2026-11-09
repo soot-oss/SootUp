@@ -27,7 +27,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
         new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
 
     final ClassType sig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends SootClassSource> clazz = inputLocation.getClassSource(sig, view);
     assertTrue(clazz.isPresent());
@@ -42,9 +42,9 @@ public class JrtFileSystemAnalysisInputLocationTest {
         new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
 
     final ClassType sig1 =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     final ClassType sig2 =
-        JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("System", "java.lang", "java.base");
 
     final Collection<? extends SootClassSource> classSources =
         inputLocation.getClassSources(view).collect(Collectors.toList());
@@ -63,7 +63,8 @@ public class JrtFileSystemAnalysisInputLocationTest {
   @Test
   public void discoverModules() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Collection<ModuleSignature> modules = inputLocation.discoverModules();
+    Collection<ModuleSignature> modules =
+        inputLocation.discoverModules(new JavaModuleIdentifierFactory());
     assertTrue(modules.size() > 65);
     System.out.println(modules);
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("java.base")));

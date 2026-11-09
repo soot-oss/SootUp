@@ -52,7 +52,7 @@ public class AsmMethodSourceTest {
   public void testNestedMethodCalls() {
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
-            "../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
+            "src/test/resources/bugfixes/", SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     JavaSootMethod method =
@@ -73,7 +73,7 @@ public class AsmMethodSourceTest {
             + "virtualinvoke this.<NestedMethodCall: void decode(char,char)>($stack5, $stack4);\n"
             + "\n"
             + "return;",
-        method.getBody().getStmtGraph().toString().trim());
+        method.getBody().getControlFlowGraph().toString().trim());
   }
 
   @Test

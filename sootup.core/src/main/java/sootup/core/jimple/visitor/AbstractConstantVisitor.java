@@ -25,6 +25,9 @@ package sootup.core.jimple.visitor;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.*;
 
+/**
+ * Default (no-op) implementation of {@link ConstantVisitor} that delegates to defaultCaseConstant.
+ */
 public class AbstractConstantVisitor implements ConstantVisitor, Visitor {
 
   @Override

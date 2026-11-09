@@ -28,10 +28,11 @@ import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -47,12 +48,12 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
-  protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
+  protected LoadingCache<Body, ControlFlowGraph<?>> bodyToControlFlowGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<Body, StmtGraph<?>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
-            public StmtGraph<?> load(@NonNull Body body) {
+            public ControlFlowGraph<?> load(@NonNull Body body) {
               return makeGraph(body);
             }
           });
@@ -60,7 +61,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, List<Value>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
             public List<Value> load(@NonNull SootMethod m) {
@@ -71,7 +72,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, Set<Stmt>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
             public Set<Stmt> load(@NonNull SootMethod m) {
@@ -83,8 +84,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     this(true);
   }
 
+  /**
+   * Data flow solvers query the ICFG concurrently, while statements may be registered with {@link
+   * #setOwnerStatement(Stmt, Body)}. Statements are compared by identity, so a concurrent hash map
+   * keeps the identity semantics.
+   */
   protected Map<Stmt, Body> createStmtToOwnerMap() {
-    return new IdentityHashMap<>();
+    return new ConcurrentHashMap<>();
   }
 
   protected AbstractJimpleBasedICFG(boolean enableExceptions) {
@@ -112,21 +118,21 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.successors(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.successors(stmt);
   }
 
   @Override
-  public StmtGraph<?> getOrCreateStmtGraph(SootMethod method) {
-    return getOrCreateStmtGraph(method.getBody());
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod method) {
+    return getOrCreateControlFlowGraph(method.getBody());
   }
 
-  public StmtGraph<?> getOrCreateStmtGraph(Body body) {
-    return bodyToStmtGraph.getUnchecked(body);
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(Body body) {
+    return bodyToControlFlowGraph.getUnchecked(body);
   }
 
-  protected StmtGraph<?> makeGraph(Body body) {
-    return body.getStmtGraph();
+  protected ControlFlowGraph<?> makeGraph(Body body) {
+    return body.getControlFlowGraph();
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
@@ -138,15 +144,15 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @Override
   public boolean isExitStmt(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.getTails().contains(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getTails().contains(stmt);
   }
 
   @Override
   public boolean isStartPoint(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.getEntrypoints().contains(stmt);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getEntrypoints().contains(stmt);
   }
 
   @Override
@@ -156,7 +162,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return false;
     }
     Body body = getBodyOf(stmt);
-    return body.getStmtGraph().successors(stmt).get(0) == successorCandidate;
+    return body.getControlFlowGraph().successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
@@ -176,8 +182,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptySet();
     }
     Body body = m.getBody();
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.getEntrypoints();
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getEntrypoints();
   }
 
   public boolean setOwnerStatement(Stmt u, Body b) {
@@ -186,7 +192,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr();
+    return stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent();
   }
 
   @Override
@@ -218,7 +224,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return;
     }
     Body b = m.getBody();
-    b.getStmtGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
+    b.getControlFlowGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
   }
 
   @Override
@@ -228,8 +234,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.predecessors(u);
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.predecessors(u);
   }
 
   @Override
@@ -238,8 +244,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptySet();
     }
     Body body = m.getBody();
-    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
-    return stmtGraph.getTails();
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
+    return controlFlowGraph.getTails();
   }
 
   @Override

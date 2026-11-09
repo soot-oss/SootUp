@@ -31,10 +31,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
 
   public MethodSignature getMainMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
-        "main",
-        "void",
-        Collections.singletonList("java.lang.String[]"));
+        getDeclaredClassSignature(), identifierFactory.getMainSubSignature());
   }
 
   public MethodSignature getEnumConstructorSignature() {
@@ -61,9 +58,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
     assertJimpleStmts(sootMethod, expectedMainBodyStmts());
 
     sootMethod = loadMethod(getEnumConstructorSignature());
-    assertTrue(
-        identifierFactory.isStaticInitializerSubSignature(
-            sootMethod.getSignature().getSubSignature()));
+    assertTrue(identifierFactory.isStaticInitializerSubSignature(sootMethod.getSubSignature()));
     assertJimpleStmts(sootMethod, expectedEnumConstructorStmts());
 
     sootMethod = loadMethod(getEnumGetValueSignature());

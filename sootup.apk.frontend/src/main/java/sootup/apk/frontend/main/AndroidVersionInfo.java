@@ -38,22 +38,38 @@ import pxb.android.axml.AxmlReader;
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.NodeVisitor;
 
-/*
-1. Try to get the API_Version the current APK uses. For this get the Apk_path and the android_platform jar location (where android.jar file for many different android versions reside)
-2. First try to find the targetedSDKVersion the apk uses, it can be found in the AndroidManifest.Xml file
-3. If we found the targeted SDK version, but unfortunately it is not present in our local, then we fall back and take the latest android.jar file from the local
-4. For this, try to find the maximum apk version user has in his local.
-5. At last, we find the corresponding android.jar and use it for decompiling android bytecode.....
-* */
-
+/**
+ * Manages Android SDK version information for APK analysis.
+ *
+ * <p>This class determines the appropriate Android API version to use when analyzing an APK by:
+ *
+ * <ol>
+ *   <li>Extracting the targeted SDK version from the APK's AndroidManifest.xml file
+ *   <li>Finding the corresponding android.jar file from the Android platforms directory
+ *   <li>Falling back to the latest available android.jar if the targeted version is not available
+ *   <li>Using the android.jar file to resolve Android system library references during bytecode
+ *       analysis
+ * </ol>
+ */
 public class AndroidVersionInfo {
 
-  private String jar_path_location = "";
+  private String androidPlatformsPath = "";
   private Path apk_path = null;
 
-  public AndroidVersionInfo(Path apkPath, String android_jar_path) {
+  /**
+   * Creates a new AndroidVersionInfo instance.
+   *
+   * @param apkPath the path to the APK file to analyze
+   * @param androidPlatformsPath the path to the Android platforms directory containing Android
+   *     system libraries (android.jar files) for different API levels. This directory is required
+   *     to resolve method calls and class references that are not defined in the APK itself, but
+   *     are part of the Android system libraries. The Android platforms directory can be obtained
+   *     from <a
+   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   */
+  public AndroidVersionInfo(Path apkPath, String androidPlatformsPath) {
     this.apk_path = apkPath;
-    this.jar_path_location = android_jar_path;
+    this.androidPlatformsPath = androidPlatformsPath;
   }
 
   public int sdkTargetVersion = -1;
@@ -301,7 +317,7 @@ public class AndroidVersionInfo {
   }
 
   public int getApi_version() {
-    getAndroidJarPath(jar_path_location, apk_path);
+    getAndroidJarPath(androidPlatformsPath, apk_path);
     return api_version;
   }
 

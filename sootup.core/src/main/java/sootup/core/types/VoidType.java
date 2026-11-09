@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -47,5 +48,20 @@ public class VoidType extends Type {
   public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseVoidType();
     return v;
+  }
+
+  @Override
+  protected boolean isVoidType() {
+    return true;
+  }
+
+  @Override
+  protected VoidType asVoidType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<VoidType> toVoidType() {
+    return Optional.of(this);
   }
 }

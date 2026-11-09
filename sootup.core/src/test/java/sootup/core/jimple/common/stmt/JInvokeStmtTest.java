@@ -19,16 +19,16 @@ public class JInvokeStmtTest {
     SimpleStmtPositionInfo pos = new SimpleStmtPositionInfo(1);
 
     JInvokeStmt invokeStmt = new JInvokeStmt(TestUtil.createDummyStaticInvokeExpr(), pos);
-    assertTrue(invokeStmt.containsInvokeExpr());
+    assertTrue(invokeStmt.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt1 = new JInvokeStmt(TestUtil.createDummyInterfaceInvokeExpr(), pos);
-    assertTrue(invokeStmt1.containsInvokeExpr());
+    assertTrue(invokeStmt1.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt2 = new JInvokeStmt(TestUtil.createDummySpecialInvokeExpr(), pos);
-    assertTrue(invokeStmt2.containsInvokeExpr());
+    assertTrue(invokeStmt2.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt3 = new JInvokeStmt(TestUtil.createDummyVirtualInvokeExpr(), pos);
-    assertTrue(invokeStmt3.containsInvokeExpr());
+    assertTrue(invokeStmt3.getInvokeExpr().isPresent());
   }
 
   @Test
@@ -54,18 +54,22 @@ public class JInvokeStmtTest {
 
     JStaticInvokeExpr staticExpr = TestUtil.createDummyStaticInvokeExpr();
     JInvokeStmt invokeStmt = new JInvokeStmt(staticExpr, pos);
+    assertTrue(invokeStmt.getInvokeExpr().isPresent());
     assertEquals(staticExpr, invokeStmt.getInvokeExpr().get());
 
     JVirtualInvokeExpr virtualExpr = TestUtil.createDummyVirtualInvokeExpr();
     JInvokeStmt invokeStmt1 = new JInvokeStmt(virtualExpr, pos);
+    assertTrue(invokeStmt1.getInvokeExpr().isPresent());
     assertEquals(virtualExpr, invokeStmt1.getInvokeExpr().get());
 
     JSpecialInvokeExpr specialExpr = TestUtil.createDummySpecialInvokeExpr();
     JInvokeStmt invokeStmt2 = new JInvokeStmt(specialExpr, pos);
+    assertTrue(invokeStmt2.getInvokeExpr().isPresent());
     assertEquals(specialExpr, invokeStmt2.getInvokeExpr().get());
 
     JInterfaceInvokeExpr interfaceExpr = TestUtil.createDummyInterfaceInvokeExpr();
     JInvokeStmt invokeStmt3 = new JInvokeStmt(interfaceExpr, pos);
+    assertTrue(invokeStmt3.getInvokeExpr().isPresent());
     assertEquals(interfaceExpr.toString(), invokeStmt3.getInvokeExpr().get().toString());
   }
 }

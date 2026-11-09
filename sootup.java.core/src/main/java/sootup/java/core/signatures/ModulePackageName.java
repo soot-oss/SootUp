@@ -23,7 +23,9 @@ package sootup.java.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
+import sootup.core.signatures.SignatureInterner;
 import sootup.java.core.JavaPackageName;
 
 /** Represents the signature of a Java 9 package, referencing its module. */
@@ -38,9 +40,19 @@ public class ModulePackageName extends JavaPackageName {
    * @param packageName the package's name
    * @param moduleSignature the module declaring the package
    */
-  public ModulePackageName(final String packageName, final ModuleSignature moduleSignature) {
+  protected ModulePackageName(final String packageName, final ModuleSignature moduleSignature) {
     super(packageName);
     this.moduleSignature = moduleSignature;
+  }
+
+  /**
+   * Returns the unique {@link ModulePackageName} for the given package and module, so that equal
+   * module-scoped package names are the same instance and may be compared with {@code ==}.
+   */
+  @NonNull
+  public static ModulePackageName of(
+      @NonNull String packageName, @NonNull ModuleSignature moduleSignature) {
+    return SignatureInterner.internPackageName(new ModulePackageName(packageName, moduleSignature));
   }
 
   @Override

@@ -29,7 +29,9 @@ public interface Acceptor<V extends Visitor> {
   /**
    * Called when this object is visited.
    *
-   * @param v
+   * @param <X> the concrete visitor type
+   * @param v the visitor processing this object
+   * @return the visitor after processing
    */
   <X extends V> V accept(@NonNull X v);
 }

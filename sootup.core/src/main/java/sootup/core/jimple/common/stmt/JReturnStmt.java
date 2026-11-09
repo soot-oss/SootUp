@@ -22,18 +22,19 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning a value. */
-public final class JReturnStmt extends AbstractStmt {
+public final class JReturnStmt extends AbstractStmt implements ReturnStmt {
 
   private final Immediate op;
 
@@ -52,6 +53,21 @@ public final class JReturnStmt extends AbstractStmt {
     up.literal(Jimple.RETURN);
     up.literal(" ");
     op.toString(up);
+  }
+
+  @Override
+  public boolean isJReturnStmt() {
+    return true;
+  }
+
+  @Override
+  public JReturnStmt asJReturnStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JReturnStmt> toJReturnStmt() {
+    return Optional.of(this);
   }
 
   @Override
@@ -81,9 +97,9 @@ public final class JReturnStmt extends AbstractStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 
   @Override

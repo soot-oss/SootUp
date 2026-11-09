@@ -23,8 +23,8 @@ package sootup.core.jimple.visitor;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.Constant;
 
 public class AbstractImmediateVisitor extends AbstractConstantVisitor implements ImmediateVisitor {

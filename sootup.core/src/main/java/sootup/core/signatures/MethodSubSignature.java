@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -52,7 +52,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
    * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
    */
-  public MethodSubSignature(
+  MethodSubSignature(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
     super(name, type);
 
@@ -87,9 +87,12 @@ public class MethodSubSignature extends SootClassMemberSubSignature
     return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 
+  private final Supplier<Integer> _cachedHashCode =
+      Suppliers.memoize(() -> Objects.hashCode(super.hashCode(), getParameterTypes()));
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), getParameterTypes());
+    return _cachedHashCode.get();
   }
 
   @Override
@@ -102,7 +105,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
           () ->
               getType()
                   + " "
-                  + getName()
+                  + JimpleUtils.quotedNameOf(getName())
                   + "("
                   + getParameterTypes().stream()
                       .map(Object::toString)
@@ -119,7 +122,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(Jimple.escape(getName()));
+    printer.literal(JimpleUtils.quotedNameOf(getName()));
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();
