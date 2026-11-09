@@ -1279,4 +1279,41 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             .filter(call -> call.targetMethodSignature().equals(methodSigOperation4))
             .count());
   }
+
+  /**
+   * Signature-polymorphic calls (JVMS 2.9.3) carry the call-site descriptor, which never matches
+   * the declared {@code native varargs (Object[])} method. The edge must go to the declared method.
+   */
+  @Test
+  public void testSignaturePolymorphicCalls() {
+    CallGraph cg = loadCallGraph("Polymorphic", "PolymorphicSignatureExamples");
+    JavaClassType mh = identifierFactory.getClassType("java.lang.invoke.MethodHandle");
+    JavaClassType vh = identifierFactory.getClassType("java.lang.invoke.VarHandle");
+    List<String> objArr = Collections.singletonList("java.lang.Object[]");
+
+    Set<MethodSignature> targets = cg.callTargetsFrom(mainMethodSignature);
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(mh, "invokeExact", "java.lang.Object", objArr)));
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(mh, "invoke", "java.lang.Object", objArr)));
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(vh, "get", "java.lang.Object", objArr)));
+
+    // no edge to the (non-existent) call-site signatures
+    assertFalse(
+        targets.contains(
+            identifierFactory.getMethodSignature(
+                mh,
+                "invokeExact",
+                "int",
+                Arrays.asList("java.lang.String", "java.lang.String", "int"))));
+    assertTrue(
+        targets.stream()
+            .filter(t -> t.getDeclClassType().equals(mh) || t.getDeclClassType().equals(vh))
+            .allMatch(t -> view.getMethod(t).isPresent()),
+        () -> "unresolved MethodHandle/VarHandle target in " + targets);
+  }
 }
