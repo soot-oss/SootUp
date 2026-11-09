@@ -44,14 +44,6 @@
     "aliases": []
   },
   {
-    "version": "pr-1251",
-    "title": "Preview for PR-1251",
-    "aliases": [],
-    "properties": {
-      "hidden": true
-    }
-  },
-  {
     "version": "develop",
     "title": "latest",
     "aliases": [
