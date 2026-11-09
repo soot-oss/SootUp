@@ -36,6 +36,7 @@ import qilin.util.sets.DoublePointsToSet;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
+import sootup.callgraph.SignaturePolymorphicMethods;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.scope.ExplorationVerdict;
@@ -171,6 +172,10 @@ public class Solver extends Propagator {
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
           Optional<? extends SootMethod> otgt = pta.getView().getMethod(tgtSig);
+          if (otgt.isEmpty()) {
+            // static polymorphic, e.g. MethodHandle.linkToStatic(..)
+            otgt = SignaturePolymorphicMethods.resolve(pta.getView(), tgtSig);
+          }
           if (otgt.isPresent()) {
             cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
           }

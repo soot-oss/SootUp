@@ -21,6 +21,7 @@ package qilin.core;
 import java.util.*;
 import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
+import sootup.callgraph.SignaturePolymorphicMethods;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -65,6 +66,9 @@ public class VirtualCalls {
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = view.getMethod(methodSig);
+      if (otgt.isEmpty()) {
+        otgt = SignaturePolymorphicMethods.resolve(view, methodSig);
+      }
       if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
@@ -93,6 +97,10 @@ public class VirtualCalls {
       return null;
     }
     Optional<? extends SootMethod> om = cls.getMethod(subSig);
+    if (om.isEmpty() && SignaturePolymorphicMethods.isHolder(t)) {
+      // MethodHandle/VarHandle: call-site descriptor never matches the declared method
+      om = SignaturePolymorphicMethods.resolve(cls, subSig.getName());
+    }
     if (om.isPresent()) {
       SootMethod m = om.get();
       if (!m.isAbstract()) {
