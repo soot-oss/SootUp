@@ -26,9 +26,9 @@ import org.jspecify.annotations.NonNull;
 
 public interface ShiftableConstant<A extends ShiftableConstant<A>>
     extends NumericConstant<A>, LogicalConstant<A> {
-  @NonNull A shiftLeft(@NonNull IntConstant c);
+  @NonNull A shiftLeft(@NonNull ShiftableConstant<?> c);
 
-  @NonNull A shiftRight(@NonNull IntConstant c);
+  @NonNull A shiftRight(@NonNull ShiftableConstant<?> c);
 
-  @NonNull A unsignedShiftRight(@NonNull IntConstant c);
+  @NonNull A unsignedShiftRight(@NonNull ShiftableConstant<?> c);
 }

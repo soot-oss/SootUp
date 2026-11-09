@@ -21,11 +21,12 @@ package qilin.util.queue;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
-import qilin.util.Invalidable;
+import qilin.util.Invalidatable;
 
 /**
  * A queue of Object's. One can add objects to the queue, and they are later read by a QueueReader.
@@ -70,9 +71,9 @@ public class QueueReader<E> implements java.util.Iterator<E> {
   }
 
   protected boolean skip(Object ret) {
-    if (ret instanceof Invalidable) {
-      final Invalidable invalidable = (Invalidable) ret;
-      if (invalidable.isInvalid()) {
+    if (ret instanceof Invalidatable) {
+      final Invalidatable invalidatable = (Invalidatable) ret;
+      if (invalidatable.isInvalid()) {
         return true;
       }
     }
@@ -109,8 +110,8 @@ public class QueueReader<E> implements java.util.Iterator<E> {
    * @param o The element to remove
    */
   public void remove(E o) {
-    if (o instanceof Invalidable) {
-      ((Invalidable) o).invalidate();
+    if (o instanceof Invalidatable) {
+      ((Invalidatable) o).invalidate();
       return;
     }
     remove(Collections.singleton(o));
@@ -126,12 +127,12 @@ public class QueueReader<E> implements java.util.Iterator<E> {
   public void remove(Collection<E> toRemove) {
     boolean allInvalidable = true;
     for (E o : toRemove) {
-      if (!(o instanceof Invalidable)) {
+      if (!(o instanceof Invalidatable)) {
         allInvalidable = false;
         continue;
       }
 
-      ((Invalidable) o).invalidate();
+      ((Invalidatable) o).invalidate();
     }
     if (allInvalidable) {
       return;

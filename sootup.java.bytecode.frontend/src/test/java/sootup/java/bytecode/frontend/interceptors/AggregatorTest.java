@@ -84,7 +84,7 @@ public class AggregatorTest {
 
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
     JavaClassType fileType = identifierFactory.getClassType("File");
 
     Local a = JavaJimple.newLocal("a", fileType);
@@ -137,7 +137,7 @@ public class AggregatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(intToA);

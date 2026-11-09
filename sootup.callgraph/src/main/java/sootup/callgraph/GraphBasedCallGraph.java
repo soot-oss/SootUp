@@ -41,6 +41,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull private final DirectedPseudograph<MethodSignature, Call> graph;
   @NonNull private final List<MethodSignature> entryMethods;
 
+  /**
+   * The calls of the graph, for {@link #containsCall(Call)}. graph4j's own lookup by edge label
+   * ({@code findEdge}) keeps a label-to-edge map that every added edge then has to update.
+   */
+  @NonNull private final Set<Call> calls;
+
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   @SuppressWarnings("unchecked")
   public GraphBasedCallGraph(@NonNull List<MethodSignature> entryMethods) {
@@ -55,6 +61,22 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       @NonNull List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.entryMethods = entryMethods;
+    this.calls = new HashSet<>();
+    EdgeIterator<Call> it = graph.edgeIterator();
+    while (it.hasNext()) {
+      it.next();
+      calls.add(it.getLabel());
+    }
+  }
+
+  /**
+   * Creates a deep copy of the given call graph. Subclasses use it to take over the nodes and edges
+   * of an existing call graph.
+   *
+   * @param other the call graph that is copied
+   */
+  protected GraphBasedCallGraph(@NonNull GraphBasedCallGraph other) {
+    this(other.graph.copy(), new ArrayList<>(other.entryMethods));
   }
 
   @Override
@@ -75,15 +97,16 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public void addCall(@NonNull Call call) {
-    if (!containsMethod(call.sourceMethodSignature())) {
-      addMethod(call.sourceMethodSignature());
-    }
-    int source = vertexOf(call.sourceMethodSignature());
-    if (!containsMethod(call.targetMethodSignature())) {
-      addMethod(call.targetMethodSignature());
-    }
-    int target = vertexOf(call.targetMethodSignature());
+    int source = vertexOrAdd(call.sourceMethodSignature());
+    int target = vertexOrAdd(call.targetMethodSignature());
     graph.addLabeledEdge(source, target, call);
+    calls.add(call);
+  }
+
+  /** Returns the vertex of the given method, adding the method if it is not in the graph yet. */
+  private int vertexOrAdd(@NonNull MethodSignature method) {
+    int vertex = graph.findVertex(method);
+    return vertex >= 0 ? vertex : graph.addLabeledVertex(method);
   }
 
   @NonNull
@@ -167,15 +190,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt invokableStmt) {
-    if (!containsMethod(sourceMethod) || !containsMethod(targetMethod)) {
-      return false;
-    }
     return containsCall(new Call(sourceMethod, targetMethod, invokableStmt));
   }
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    return graph.findEdge(call) != null;
+    return calls.contains(call);
   }
 
   @Override

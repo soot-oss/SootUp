@@ -51,10 +51,15 @@ public abstract class JFieldRef implements ConcreteRef, LValue {
     if (this == o) {
       return true;
     }
-    if ((!(o instanceof JFieldRef))) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     return this.getFieldSignature().equals(((JFieldRef) o).getFieldSignature());
+  }
+
+  @Override
+  public int hashCode() {
+    return fieldSignature.hashCode();
   }
 
   @NonNull

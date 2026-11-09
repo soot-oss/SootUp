@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Java 17
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
-          distribution: adopt
+          distribution: temurin
           java-package: jdk
           java-version: 17
 
@@ -30,9 +30,9 @@ jobs:
 
       - name: Deploy SNAPSHOT version
         if: endsWith(env.PROJECT_VERSION, '-SNAPSHOT')
-        uses: secure-software-engineering/actions/deployment/maven-deployment@0caaeef2e50a42448e00423a073c676aebead49f # develop
+        uses: secure-software-engineering/actions/deployment/maven-deployment@c98577761faae44108ba0ec2de7ebd67ddd4b40b # develop
         with:
-          java-distribution: adopt
+          java-distribution: temurin
           java-version: 17
           server-id: central
           server-username: ${{ secrets.MAVEN_USERNAME }}

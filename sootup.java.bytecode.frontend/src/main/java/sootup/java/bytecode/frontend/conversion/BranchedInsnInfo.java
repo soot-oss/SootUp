@@ -35,18 +35,15 @@ class BranchedInsnInfo {
   @NonNull private final LinkedList<Operand[]> prevStacks;
   /* current stack at edge */
   @Nullable private final List<List<Operand>> operandStacks = new ArrayList<>();
-  private final int lineNumber;
   private final Set<TryCatchBlockNode> activeTrapHandlers;
 
   BranchedInsnInfo(
       @NonNull AbstractInsnNode insn,
       @NonNull List<Operand> operands,
-      int lineNumber,
       Set<TryCatchBlockNode> activeTrapHandlers) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
     this.operandStacks.add(operands);
-    this.lineNumber = lineNumber;
     this.activeTrapHandlers = new HashSet<>(activeTrapHandlers);
   }
 
@@ -71,10 +68,6 @@ class BranchedInsnInfo {
 
   public void addToPrevStack(@NonNull Operand[] stacksOperands) {
     prevStacks.add(stacksOperands);
-  }
-
-  public int getLineNumber() {
-    return this.lineNumber;
   }
 
   public Set<TryCatchBlockNode> getActiveTrapHandlers() {

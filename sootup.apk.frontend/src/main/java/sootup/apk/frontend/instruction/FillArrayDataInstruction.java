@@ -109,7 +109,9 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
             ArrayType arrayType =
                 (ArrayType)
                     DexUtil.toSootType(
-                        ((TypeReference) instruction22c.getReference()).getType(), 0);
+                        ((TypeReference) instruction22c.getReference()).getType(),
+                        0,
+                        dexBody.getIdentifierFactory());
             elementType = arrayType.getElementType();
             break Outer;
           }

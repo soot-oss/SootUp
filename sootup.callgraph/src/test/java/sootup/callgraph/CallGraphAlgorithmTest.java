@@ -39,8 +39,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
 
-    JavaClassType newClass =
-        new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
+    JavaClassType newClass = identifierFactory.getClassType("AdderA", "update.operation.cg");
     CallGraph newCallGraph = algorithm.addClass(cg, newClass);
 
     assertEquals(0, cg.callsTo(mainMethodSignature).size());
@@ -48,6 +47,27 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
     assertEquals(1, cg.callsTo(methodSignature).size());
     assertEquals(3, newCallGraph.callsTo(methodSignature).size());
+  }
+
+  @Test
+  public void testLambdaBodyIsReachable() {
+    CallGraph cg = loadCallGraph("Misc", "lambda.Class");
+
+    MethodSignature lambdaBody =
+        identifierFactory.getMethodSignature(
+            mainClassSignature,
+            "lambda$main$0",
+            "java.lang.String",
+            Collections.singletonList("java.lang.String"));
+    MethodSignature target =
+        identifierFactory.getMethodSignature(
+            mainClassSignature,
+            "target",
+            "java.lang.String",
+            Collections.singletonList("java.lang.String"));
+
+    assertTrue(cg.callTargetsFrom(mainMethodSignature).contains(lambdaBody));
+    assertTrue(cg.callTargetsFrom(lambdaBody).contains(target));
   }
 
   @Test

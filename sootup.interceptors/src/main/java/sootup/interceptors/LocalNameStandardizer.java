@@ -67,7 +67,9 @@ public class LocalNameStandardizer implements BodyInterceptor {
       Local local = iterator.next();
       Local newLocal;
       Type type = local.getType();
-      newLocal = lgen.generateLocal(type);
+      // Generate a standard name, then copy the original local with that name to preserve its kind,
+      // JVM slot index, and Java annotations.
+      newLocal = local.withName(lgen.generateLocal(type).getName());
       builder.replaceLocal(local, newLocal);
     }
   }

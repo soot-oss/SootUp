@@ -40,7 +40,8 @@ public class IgetInstruction extends FieldInstruction {
     FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
     JInstanceFieldRef jInstanceFieldRef =
         Jimple.newInstanceFieldRef(
-            body.getRegisterLocal(object), getSootFieldRef(f).getFieldSignature());
+            body.getRegisterLocal(object),
+            getSootFieldRef(f, body.getIdentifierFactory()).getFieldSignature());
     JAssignStmt assignStmt = getAssignStmt(body.getRegisterLocal(dest), jInstanceFieldRef);
     setStmt(assignStmt);
     body.add(assignStmt);

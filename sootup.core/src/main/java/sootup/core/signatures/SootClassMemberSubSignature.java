@@ -103,10 +103,7 @@ public abstract class SootClassMemberSubSignature {
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
-          () ->
-              String.format(
-                  "%s %s",
-                  JimpleUtils.escape(getType().toString()), JimpleUtils.escape(getName())));
+          () -> String.format("%s %s", getType(), JimpleUtils.quotedNameOf(getName())));
 
   @Override
   @NonNull

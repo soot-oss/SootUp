@@ -202,8 +202,8 @@ public class LocalPacker implements BodyInterceptor {
           }
         }
         if (assignedColor < 0) {
-          colorCount++;
           assignedColor = colorCount;
+          colorCount++;
           typeToColorCount.put(type, colorCount);
         }
         localToColor.put(local, assignedColor);

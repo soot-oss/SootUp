@@ -51,6 +51,18 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
+  /**
+   * Get the name FQN of the boxed type corresponding to this primitive type.
+   *
+   * <p>E.g. int -> java.lang.Integer.
+   *
+   * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.7">5.1.7.
+   *     Boxing Conversion</a>
+   * @return the FQN of the boxed type
+   */
+  @NonNull
+  public abstract String getBoxedName();
+
   @Override
   @NonNull
   public String toString() {
@@ -229,7 +241,7 @@ public abstract class PrimitiveType extends Type {
     return Optional.empty();
   }
 
-  public static class ByteType extends PrimitiveType.IntType {
+  public static final class ByteType extends PrimitiveType.IntType {
     private static final ByteType INSTANCE = new ByteType();
 
     private ByteType() {
@@ -238,6 +250,11 @@ public abstract class PrimitiveType extends Type {
 
     public static ByteType getInstance() {
       return INSTANCE;
+    }
+
+    @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Byte";
     }
 
     @Override
@@ -262,7 +279,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class ShortType extends PrimitiveType.IntType {
+  public static final class ShortType extends PrimitiveType.IntType {
     private static final ShortType INSTANCE = new ShortType();
 
     private ShortType() {
@@ -271,6 +288,11 @@ public abstract class PrimitiveType extends Type {
 
     public static ShortType getInstance() {
       return INSTANCE;
+    }
+
+    @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Short";
     }
 
     @Override
@@ -304,6 +326,11 @@ public abstract class PrimitiveType extends Type {
 
     protected IntType(@NonNull String name) {
       super(name);
+    }
+
+    @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Integer";
     }
 
     @Override
@@ -359,6 +386,11 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Double";
+    }
+
+    @Override
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseDoubleType();
       return v;
@@ -407,6 +439,11 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Long";
+    }
+
+    @Override
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseLongType();
       return v;
@@ -447,6 +484,11 @@ public abstract class PrimitiveType extends Type {
 
     public static FloatType getInstance() {
       return INSTANCE;
+    }
+
+    @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Float";
     }
 
     @Override
@@ -498,6 +540,11 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Character";
+    }
+
+    @Override
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseCharType();
       return v;
@@ -532,6 +579,11 @@ public abstract class PrimitiveType extends Type {
 
     public static BooleanType getInstance() {
       return INSTANCE;
+    }
+
+    @Override
+    public @NonNull String getBoxedName() {
+      return "java.lang.Boolean";
     }
 
     @Override

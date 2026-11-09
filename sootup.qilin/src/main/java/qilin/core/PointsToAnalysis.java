@@ -19,9 +19,10 @@
 package qilin.core;
 
 import qilin.core.context.Context;
-import qilin.core.pag.Node;
-import qilin.core.sets.PointsToSet;
+import qilin.core.pag.PagNode;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 
@@ -32,9 +33,6 @@ import sootup.core.model.SootMethod;
  */
 public interface PointsToAnalysis {
 
-  int THIS_NODE = -1;
-  int RETURN_NODE = -2;
-  int THROW_NODE = -3;
   String STRING_NODE = "STRING_NODE";
   String EXCEPTION_NODE = "EXCEPTION_NODE";
   String MAIN_THREAD_GROUP_NODE_LOCAL = "MAIN_THREAD_GROUP_NODE_LOCAL";
@@ -42,7 +40,7 @@ public interface PointsToAnalysis {
   /** Returns the set of objects pointed to by variable l. */
   PointsToSet reachingObjects(SootMethod m, Local l);
 
-  PointsToSet reachingObjects(Node n);
+  PointsToSet reachingObjects(PagNode n);
 
   /** Returns the set of objects pointed to by variable l in context c. */
   PointsToSet reachingObjects(Context c, SootMethod m, Local l);
@@ -66,4 +64,11 @@ public interface PointsToAnalysis {
 
   /** Returns the set of objects pointed to by elements of the arrays in the PointsToSet s. */
   PointsToSet reachingObjectsOfArrayElement(PointsToSet s);
+
+  /**
+   * Returns whether va and vb, evaluated in method m, may point to a common runtime object.
+   * Supports {@link Local} references and {@code null}/String/class constants; any other {@link
+   * Value} kind is rejected with {@link IllegalArgumentException}.
+   */
+  boolean isMayAlias(SootMethod m, Value va, Value vb);
 }

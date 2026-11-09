@@ -20,14 +20,13 @@ package qilin.stat;
 
 import com.google.common.collect.Sets;
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
 import qilin.util.Triple;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -40,7 +39,7 @@ public class PointsToStat implements AbstractStat {
   private final PTA pta;
   private final PAG pag;
   private int contextCnt = 0;
-  private double avgCtxPerMthd = 0.0;
+  private double avgContextPerMthd = 0.0;
 
   private int ciAllocs = 0;
   private int csAllocs = 0;
@@ -114,7 +113,7 @@ public class PointsToStat implements AbstractStat {
       try {
         GlobalVarNode gvn = pag.findGlobalVarNode(global);
         ClassType classType = global.getDeclClassType();
-        if (PTAUtils.isFakeMainClass(classType)) {
+        if (FakeMainMethods.isFakeMainClass(classType)) {
           continue;
         }
         Optional<? extends SootClass> optClass = pta.getView().getClass(classType);
@@ -140,10 +139,10 @@ public class PointsToStat implements AbstractStat {
     // locals exclude Exceptions
     for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        SootMethod method = localTriple.getFirst();
-        Local local = localTriple.getSecond();
+        SootMethod method = localTriple.first();
+        Local local = localTriple.second();
         Collection<VarNode> varNodes = pag.getVarNodes(method, local);
-        LocalVarNode lvn = pag.findLocalVarNode(method, local, localTriple.getThird());
+        LocalVarNode lvn = pag.findLocalVarNode(method, local, localTriple.third());
         if (local.toString().contains("intermediate/")) {
           continue;
         }
@@ -201,11 +200,11 @@ public class PointsToStat implements AbstractStat {
           cnts[1] += v.size();
         });
     contextCnt = cnts[1];
-    avgCtxPerMthd = cnts[1] * 1.0 / cnts[0];
+    avgContextPerMthd = cnts[1] * 1.0 / cnts[0];
 
     // stat method throw points-to.
     for (SootMethod sm : pta.getNakedReachableMethods()) {
-      Node mThrow = pag.getMethodPAG(sm).nodeFactory().caseMethodThrow();
+      PagNode mThrow = pag.getMethodPAG(sm).nodeFactory().caseMethodThrow();
       PointsToSet pts = pta.reachingObjects(mThrow);
       if (!pts.isEmpty()) {
         methodThrowCnt++;
@@ -236,7 +235,7 @@ public class PointsToStat implements AbstractStat {
     Set<LocalVarNode> tmp = new HashSet<>();
     for (LocalVarNode lvn : mLocalVarNodes) {
       SootMethod sm = lvn.getMethod();
-      if (PTAUtils.isFakeMainMethod(sm)) {
+      if (FakeMainMethods.isFakeMainMethod(sm)) {
         tmp.add(lvn);
         continue;
       }
@@ -266,7 +265,7 @@ public class PointsToStat implements AbstractStat {
   @Override
   public void export(Exporter exporter) {
     exporter.collectMetric("#Context:", String.valueOf(contextCnt));
-    exporter.collectMetric("#Avg Context per Method:", String.valueOf(avgCtxPerMthd));
+    exporter.collectMetric("#Avg Context per Method:", String.valueOf(avgContextPerMthd));
     exporter.collectMetric("#Method with Throw Pointer-to:", String.valueOf(methodThrowCnt));
 
     exporter.collectMetric("#Alloc Node(CI): ", String.valueOf(ciAllocs));
@@ -325,7 +324,7 @@ public class PointsToStat implements AbstractStat {
     exporter.collectMetric(
         "#App Context Local Avg Points-To Target(CS):",
         String.valueOf(((double) appLocalCsToCs) / ((double) appLocalPointersCs)));
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpMethodThrowPointsto(methodThrowPts);
       exporter.dumpReachableLocalVars(mLocalVarNodes);
       exporter.dumpReachableLocalVarsNoNative(mLocalVarNodesNoNative);

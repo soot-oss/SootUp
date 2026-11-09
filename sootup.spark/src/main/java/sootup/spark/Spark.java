@@ -26,6 +26,8 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -51,6 +53,17 @@ import sootup.core.views.View;
  * {@code callGraph(...)}. This is ignored (with a warning logged) when {@code onFlyCallGraph} is
  * on, since OTF mode grows its own call graph incrementally from the entry points instead of
  * consuming one.
+ *
+ * <p>Spark has no {@code <clinit>}-handling knob of its own; this is also the way to control it in
+ * the non-OTF path. Pre-build the graph with {@code ClassHierarchyAnalysisAlgorithm}'s {@code
+ * seedEntryPointClinits}/{@code sootup.callgraph.scope.VirtualCallResolver} constructor and pass it
+ * via {@code callGraph(...)} instead of letting Spark run CHA with its defaults.
+ *
+ * <p>{@code reflectionModel(...)} (default {@code ReflectionModel.none()}) makes reflective calls
+ * explicit in every body Spark reads. {@code dynamicInvokeResolver(...)} (default {@code
+ * DynamicInvokeResolver.bootstrapMethodHandles()}) decides invokedynamic targets; values captured
+ * by a lambda flow into its body. When passing a pre-built {@code callGraph}, build it with the
+ * same model and resolver instances, else reflective/invokedynamic edges and PAG disagree.
  */
 public class Spark {
 
@@ -63,13 +76,17 @@ public class Spark {
       @NonNull View view,
       List<MethodSignature> entryPoints,
       SparkOptions sparkOptions,
-      CallGraph callGraph) {
+      CallGraph callGraph,
+      ReflectionModel reflectionModel,
+      DynamicInvokeResolver dynamicInvokeResolver) {
     this.solver =
         Solver.builder()
             .view(view)
             .entryPoints(entryPoints)
             .sparkOptions(sparkOptions)
             .callGraph(callGraph)
+            .reflectionModel(reflectionModel)
+            .dynamicInvokeResolver(dynamicInvokeResolver)
             .build();
   }
 

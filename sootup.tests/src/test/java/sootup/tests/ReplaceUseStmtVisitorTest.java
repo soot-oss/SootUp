@@ -24,7 +24,7 @@ import sootup.java.core.types.JavaClassType;
  * @author Zun Wang
  */
 public class ReplaceUseStmtVisitorTest {
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
@@ -37,7 +37,8 @@ public class ReplaceUseStmtVisitorTest {
   Local base = JavaJimple.newLocal("base", testClass);
 
   MethodSignature methodeWithOutParas =
-      new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
+      new JavaIdentifierFactory()
+          .getMethodSignature(testClass, "invokeExpr", voidType, Collections.emptyList());
 
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
