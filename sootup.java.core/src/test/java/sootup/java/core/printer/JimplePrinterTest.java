@@ -48,10 +48,10 @@ public class JimplePrinterTest {
             "import some.great.Interface",
             "public class SomeClass extends Superclass implements Interface",
             "private int counter",
-            "private int otherMethod() throws FileNotFoundException",
+            "public static void main()",
             "nop",
             "return",
-            "public static void main()",
+            "private void otherMethod() throws FileNotFoundException",
             "nop",
             "return"),
         Utils.filterJimple(writer.toString()));
@@ -130,7 +130,7 @@ public class JimplePrinterTest {
 
     MethodSignature methodSignatureTwo =
         identifierFactory.getMethodSignature(
-            className, "otherMethod", "int", Collections.emptyList());
+            className, "otherMethod", "void", Collections.emptyList());
     bodyBuilder
         .setMethodSignature(methodSignatureTwo)
         .setPosition(NoPositionInformation.getInstance());
