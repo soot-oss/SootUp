@@ -45,7 +45,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
 
   private static final MutableBasicBlockImpl[] NO_SUCCESSORS = new MutableBasicBlockImpl[0];
 
-  @NonNull private final ArrayList<Stmt> stmts = new ArrayList<>();
+  @NonNull private final StmtDeque stmts = new StmtDeque();
 
   /** slot i: i-th successor of the tail, may be null */
   @NonNull private MutableBasicBlockImpl[] successors = NO_SUCCESSORS;
@@ -187,14 +187,38 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return stmts.get(idx);
   }
 
-  /** identity based index of stmt or -1 */
+  /** identity based index of stmt or -1; O(1) for larger blocks */
   int indexOf(@NonNull Stmt stmt) {
-    for (int i = 0, n = stmts.size(); i < n; i++) {
-      if (stmts.get(i) == stmt) {
-        return i;
+    return stmts.identityIndexOf(stmt);
+  }
+
+  /** inserts fall-through, non-branching stmts at idx (idx == size appends after the tail) */
+  void insertStmts(int idx, @NonNull List<? extends Stmt> inserted) {
+    for (Stmt s : inserted) {
+      if (s instanceof BranchingStmt || !(s instanceof FallsThroughStmt)) {
+        throw new IllegalArgumentException("only the tail of a Block may branch or end the flow");
       }
     }
-    return -1;
+    if (idx == stmts.size() && !stmts.isEmpty()) {
+      Stmt tail = getTail();
+      if (tail instanceof BranchingStmt || !(tail instanceof FallsThroughStmt)) {
+        throw new IllegalArgumentException(
+            "Can't add another Stmt to a Block after a BranchingStmt.");
+      }
+    }
+    stmts.addAll(idx, inserted);
+    adjustArity();
+  }
+
+  /** removes and returns the stmts [0, to); the tail stays */
+  List<Stmt> removeStmtsUpTo(int to) {
+    if (to >= stmts.size()) {
+      throw new IndexOutOfBoundsException("the tail must stay in the block");
+    }
+    List<Stmt> head = stmts.subList(0, to);
+    List<Stmt> removed = new ArrayList<>(head);
+    head.clear();
+    return removed;
   }
 
   /** appends stmt as new tail; the current tail must fall through and have no successor set */
@@ -456,5 +480,189 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
       }
     }
     return res;
+  }
+
+  /**
+   * Stmt list with O(1) add/remove at both ends and an identity index that survives those
+   * operations; inner insertions/removals shift the shorter side and drop the index, which is
+   * rebuilt on the next lookup.
+   */
+  static final class StmtDeque extends AbstractList<Stmt> implements RandomAccess {
+    private static final int INDEX_THRESHOLD = 8;
+
+    private Stmt[] buf = new Stmt[8];
+    private int off = 4;
+    private int len = 0;
+
+    /** stmt -> key; index = key - base. null if not built */
+    @Nullable private IdentityHashMap<Stmt, Integer> pos;
+
+    private int base;
+
+    @Override
+    public int size() {
+      return len;
+    }
+
+    @Override
+    public Stmt get(int i) {
+      Objects.checkIndex(i, len);
+      return buf[off + i];
+    }
+
+    @Override
+    public Stmt set(int i, Stmt s) {
+      Objects.checkIndex(i, len);
+      Stmt old = buf[off + i];
+      buf[off + i] = s;
+      if (pos != null) {
+        pos.remove(old);
+        pos.put(s, base + i);
+      }
+      return old;
+    }
+
+    @Override
+    public void add(int i, Stmt s) {
+      addAll(i, Collections.singletonList(s));
+    }
+
+    @Override
+    public boolean addAll(int i, Collection<? extends Stmt> c) {
+      if (i < 0 || i > len) {
+        throw new IndexOutOfBoundsException("Index: " + i + ", Size: " + len);
+      }
+      final int k = c.size();
+      if (k == 0) {
+        return false;
+      }
+      final Object[] in = c.toArray();
+      if (i == 0 && off >= k) {
+        off -= k;
+        System.arraycopy(in, 0, buf, off, k);
+        if (pos != null) {
+          base -= k;
+          for (int j = 0; j < k; j++) {
+            pos.put((Stmt) in[j], base + j);
+          }
+        }
+      } else if (i == len && off + len + k <= buf.length) {
+        System.arraycopy(in, 0, buf, off + len, k);
+        if (pos != null) {
+          for (int j = 0; j < k; j++) {
+            pos.put((Stmt) in[j], base + len + j);
+          }
+        }
+      } else if (i != 0 && i != len && off + len + k <= buf.length && len - i <= i) {
+        System.arraycopy(buf, off + i, buf, off + i + k, len - i);
+        System.arraycopy(in, 0, buf, off + i, k);
+        pos = null;
+      } else if (i != 0 && i != len && off >= k) {
+        System.arraycopy(buf, off, buf, off - k, i);
+        off -= k;
+        System.arraycopy(in, 0, buf, off + i, k);
+        pos = null;
+      } else {
+        int cap = Math.max(8, (len + k) * 2);
+        Stmt[] nb = new Stmt[cap];
+        int nOff = (cap - (len + k)) / 2;
+        System.arraycopy(buf, off, nb, nOff, i);
+        System.arraycopy(in, 0, nb, nOff + i, k);
+        System.arraycopy(buf, off + i, nb, nOff + i + k, len - i);
+        buf = nb;
+        off = nOff;
+        if (pos != null) {
+          if (i == 0) {
+            base -= k;
+            for (int j = 0; j < k; j++) {
+              pos.put((Stmt) in[j], base + j);
+            }
+          } else if (i == len) {
+            for (int j = 0; j < k; j++) {
+              pos.put((Stmt) in[j], base + len + j);
+            }
+          } else {
+            pos = null;
+          }
+        }
+      }
+      len += k;
+      modCount++;
+      return true;
+    }
+
+    @Override
+    public Stmt remove(int i) {
+      Objects.checkIndex(i, len);
+      Stmt s = buf[off + i];
+      removeRange(i, i + 1);
+      return s;
+    }
+
+    @Override
+    protected void removeRange(int from, int to) {
+      if (from >= to) {
+        return;
+      }
+      final int k = to - from;
+      if (pos != null) {
+        if (from == 0 || to == len) {
+          for (int j = from; j < to; j++) {
+            pos.remove(buf[off + j]);
+          }
+          if (from == 0) {
+            base += k;
+          }
+        } else {
+          pos = null;
+        }
+      }
+      if (from == 0) {
+        Arrays.fill(buf, off, off + k, null);
+        off += k;
+      } else if (to == len) {
+        Arrays.fill(buf, off + from, off + to, null);
+      } else if (from < len - to) {
+        // shift the (shorter) front part right
+        System.arraycopy(buf, off, buf, off + k, from);
+        Arrays.fill(buf, off, off + k, null);
+        off += k;
+      } else {
+        System.arraycopy(buf, off + to, buf, off + from, len - to);
+        Arrays.fill(buf, off + len - k, off + len, null);
+      }
+      len -= k;
+      if (len == 0) {
+        off = buf.length / 2;
+        pos = null;
+        base = 0;
+      }
+      modCount++;
+    }
+
+    @Override
+    public void clear() {
+      removeRange(0, len);
+    }
+
+    int identityIndexOf(Stmt s) {
+      if (pos == null) {
+        if (len <= INDEX_THRESHOLD) {
+          for (int j = 0; j < len; j++) {
+            if (buf[off + j] == s) {
+              return j;
+            }
+          }
+          return -1;
+        }
+        pos = new IdentityHashMap<>(len * 2);
+        base = 0;
+        for (int j = 0; j < len; j++) {
+          pos.put(buf[off + j], j);
+        }
+      }
+      Integer key = pos.get(s);
+      return key == null ? -1 : key - base;
+    }
   }
 }

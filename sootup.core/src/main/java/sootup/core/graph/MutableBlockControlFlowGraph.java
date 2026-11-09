@@ -564,8 +564,9 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   }
 
   /**
-   * Splits block before idx: the stmts [idx, n) move to a new block which takes over the successors
-   * and gets the same exceptional successors; block falls through into it.
+   * Splits block before idx into [0, idx) and [idx, n); the first part falls through into the
+   * second, both keep the exceptional successors. The smaller part moves to a new block, so callers
+   * must look blocks up by stmt afterwards.
    *
    * @return the block whose head is the stmt formerly at idx
    */
@@ -575,6 +576,19 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       throw new IndexOutOfBoundsException("split index " + idx + " of " + block);
     }
     modified();
+    if (2 * idx < block.size()) {
+      // the front part is smaller: move it into a new block in front of block
+      MutableBasicBlockImpl first = new MutableBasicBlockImpl();
+      for (Stmt s : block.removeStmtsUpTo(idx)) {
+        first.addStmt(s);
+        stmtToBlock.put(s, first);
+      }
+      redirectPredecessors(block, first);
+      first.copyExcFrom(block);
+      first.link(0, block);
+      blocks.add(first);
+      return block;
+    }
     MutableBasicBlockImpl[] targets = successorsOf(block);
     block.unlinkAllSuccessors();
     MutableBasicBlockImpl second = new MutableBasicBlockImpl();
@@ -600,7 +614,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     if (block.size() > 1) {
       split(block, 1);
     }
-    return block;
+    return blockOf(stmt);
   }
 
   private static MutableBasicBlockImpl[] successorsOf(MutableBasicBlockImpl block) {
@@ -761,8 +775,10 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     if (traps.isEmpty()) {
       return;
     }
+    // split first, then resolve: a later split may move an earlier handler to a new block
+    traps.values().forEach(this::blockStartingAt);
     Map<ClassType, MutableBasicBlockImpl> handlerBlocks = new HashMap<>();
-    traps.forEach((type, handler) -> handlerBlocks.put(type, blockStartingAt(handler)));
+    traps.forEach((type, handler) -> handlerBlocks.put(type, blockOf(handler)));
     Set<MutableBasicBlockImpl> done = Collections.newSetFromMap(new IdentityHashMap<>());
     for (Stmt s : stmts) {
       MutableBasicBlockImpl block = blockOf(s);
@@ -1059,11 +1075,14 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
 
     // stmt is in the middle of the block
-    if (!keepFlow) {
+    if (keepFlow) {
+      block.removeStmt(idx);
+    } else {
       split(block, idx + 1);
-      block.unlink(0);
+      MutableBasicBlockImpl first = blockOf(stmt);
+      first.unlink(0);
+      first.removeStmt(first.size() - 1);
     }
-    block.removeStmt(idx);
     stmtToBlock.remove(stmt);
   }
 
@@ -1106,15 +1125,17 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       // only a tail may branch or end the flow
       split(block, idx + 1);
     }
-    final boolean isTail = idx == block.size() - 1;
-    block.setStmt(idx, newStmt);
+    final MutableBasicBlockImpl target = blockOf(oldStmt);
+    final int targetIdx = target.indexOf(oldStmt);
+    final boolean isTail = targetIdx == target.size() - 1;
+    target.setStmt(targetIdx, newStmt);
     stmtToBlock.remove(oldStmt);
-    stmtToBlock.put(newStmt, block);
+    stmtToBlock.put(newStmt, target);
     if (oldStmt == startingStmt) {
       startingStmt = newStmt;
     }
     if (isTail) {
-      normalize(block);
+      normalize(target);
     }
   }
 
@@ -1173,9 +1194,20 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
     checkNew(stmts);
     modified();
-    final MutableBasicBlockImpl target = blockStartingAt(existingStmt);
+    if (!isExceptionalFlowDifferent(exceptionMap, existingBlock)) {
+      // same traps: insert in place, edges into existingStmt now reach the first inserted stmt
+      existingBlock.insertStmts(existingBlock.indexOf(existingStmt), stmts);
+      stmts.forEach(s -> stmtToBlock.put(s, existingBlock));
+      if (existingStmt == startingStmt) {
+        startingStmt = stmts.get(0);
+      }
+      return existingBlock;
+    }
+    blockStartingAt(existingStmt);
     newBlock(stmts);
     applyTraps(stmts, exceptionMap);
+    // applyTraps may split blocks: re-look up by stmt, block refs can be stale
+    final MutableBasicBlockImpl target = blockOf(existingStmt);
     final Stmt first = stmts.get(0);
     redirectPredecessors(target, blockOf(first));
     blockOf(stmts.get(stmts.size() - 1)).link(0, target);
@@ -1219,17 +1251,25 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     checkNew(stmts);
     modified();
     int idx = existingBlock.indexOf(existingStmt);
+    if (!isExceptionalFlowDifferent(exceptionMap, existingBlock)) {
+      // same traps: insert in place; at the tail the successor moves on to the last inserted stmt
+      existingBlock.insertStmts(idx + 1, stmts);
+      stmts.forEach(s -> stmtToBlock.put(s, existingBlock));
+      return existingBlock;
+    }
     if (idx < existingBlock.size() - 1) {
       split(existingBlock, idx + 1);
     }
-    final MutableBasicBlockImpl oldSuccessor = existingBlock.successorAt(0);
+    final MutableBasicBlockImpl succ = blockOf(existingStmt).successorAt(0);
+    // applyTraps may split blocks: remember the successor by its head stmt
+    final Stmt oldSuccHead = succ == null ? null : succ.getHead();
     newBlock(stmts);
     applyTraps(stmts, exceptionMap);
     final Stmt first = stmts.get(0);
     final Stmt last = stmts.get(stmts.size() - 1);
     blockOf(existingStmt).link(0, blockOf(first));
-    if (oldSuccessor != null) {
-      blockOf(last).link(0, oldSuccessor);
+    if (oldSuccHead != null) {
+      blockOf(last).link(0, blockOf(oldSuccHead));
     }
     normalize(blockOf(first));
     normalize(blockOf(last));
@@ -1405,7 +1445,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         // inner stmts: split the block and don't link the parts
         modified();
         split(blockOfFrom, fromIdx + 1);
-        blockOfFrom.unlink(0);
+        blockOf(from).unlink(0);
         return Collections.singletonList(0);
       }
     }
