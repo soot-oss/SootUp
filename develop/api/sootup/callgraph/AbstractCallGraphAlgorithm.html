@@ -103,19 +103,24 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final @NonNull <a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
-<div class="col-second even-row-color"><code><a href="#threadType" class="member-name-link">threadType</a></code></div>
+<div class="col-first even-row-color"><code>protected final @NonNull <a href="MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></code></div>
+<div class="col-second even-row-color"><code><a href="#methodLookup" class="member-name-link">methodLookup</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Cached JVM method lookup, see <a href="MethodLookup.html" title="class in sootup.callgraph"><code>MethodLookup</code></a>.</div>
+</div>
+<div class="col-first odd-row-color"><code>protected final @NonNull <a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#threadType" class="member-name-link">threadType</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The class type for java.lang.Thread, used for thread start call edge handling.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected final @NonNull <a href="../core/typehierarchy/TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#typeHierarchy" class="member-name-link">typeHierarchy</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>protected final @NonNull <a href="../core/typehierarchy/TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a></code></div>
+<div class="col-second even-row-color"><code><a href="#typeHierarchy" class="member-name-link">typeHierarchy</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The type hierarchy derived from the view.</div>
 </div>
-<div class="col-first even-row-color"><code>protected final @NonNull <a href="../core/views/View.html" title="interface in sootup.core.views">View</a></code></div>
-<div class="col-second even-row-color"><code><a href="#view" class="member-name-link">view</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected final @NonNull <a href="../core/views/View.html" title="interface in sootup.core.views">View</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#view" class="member-name-link">view</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The view providing access to all classes and type hierarchy.</div>
 </div>
 </div>
@@ -407,6 +412,13 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <h3>typeHierarchy</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">@NonNull <a href="../core/typehierarchy/TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a></span>&nbsp;<span class="element-name">typeHierarchy</span></div>
 <div class="block">The type hierarchy derived from the view.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="methodLookup">
+<h3>methodLookup</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">@NonNull <a href="MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></span>&nbsp;<span class="element-name">methodLookup</span></div>
+<div class="block">Cached JVM method lookup, see <a href="MethodLookup.html" title="class in sootup.callgraph"><code>MethodLookup</code></a>.</div>
 </section>
 </li>
 <li>

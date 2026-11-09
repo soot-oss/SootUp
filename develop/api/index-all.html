@@ -7396,6 +7396,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Implicit call to java.lang.ref.Finalizer.register from new bytecode.</div>
 </dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#find(sootup.core.signatures.MethodSignature)" class="member-name-link">find(MethodSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
+<dd>
+<div class="block">Lookup starting at the declaring class of <code>sig</code>.</div>
+</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#find(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)" class="member-name-link">find(ClassType, MethodSubSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
+<dd>
+<div class="block">Lookup starting at <code>start</code>; may yield an abstract method.</div>
+</dd>
 <dt><a href="qilin/util/UnionFindSet.html#find(E)" class="member-name-link">find(E)</a> - Method in class qilin.util.<a href="qilin/util/UnionFindSet.html" title="class in qilin.util">UnionFindSet</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/util/StringNumberer.html#find(java.lang.String)" class="member-name-link">find(String)</a> - Method in class qilin.util.<a href="qilin/util/StringNumberer.html" title="class in qilin.util">StringNumberer</a></dt>
@@ -7404,6 +7412,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/interceptors/DexTransformer.html#findArrayType(sootup.apk.frontend.interceptors.DexDefUseAnalysis,sootup.core.jimple.common.stmt.Stmt,int,java.util.Set)" class="member-name-link">findArrayType(DexDefUseAnalysis, Stmt, int, Set&lt;Stmt&gt;)</a> - Method in class sootup.apk.frontend.interceptors.<a href="sootup/apk/frontend/interceptors/DexTransformer.html" title="class in sootup.apk.frontend.interceptors">DexTransformer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#findConcrete(sootup.core.signatures.MethodSignature)" class="member-name-link">findConcrete(MethodSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
+<dd>
+<div class="block">Like <a href="sootup/callgraph/MethodLookup.html#find(sootup.core.signatures.MethodSignature)"><code>MethodLookup.find(MethodSignature)</code></a>, abstract result mapped to empty.</div>
+</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#findConcrete(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)" class="member-name-link">findConcrete(ClassType, MethodSubSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
+<dd>
+<div class="block">Like <a href="sootup/callgraph/MethodLookup.html#find(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)"><code>MethodLookup.find(ClassType, MethodSubSignature)</code></a>, abstract result mapped to empty.</div>
+</dd>
 <dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#findConcreteMethod(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">findConcreteMethod(View, MethodSignature)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">searches the method object in the given hierarchy</div>
@@ -9279,6 +9295,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/pag/PAG.html#getMethodBody(sootup.core.model.SootMethod)" class="member-name-link">getMethodBody(SootMethod)</a> - Method in class qilin.core.pag.<a href="qilin/core/pag/PAG.html" title="class in qilin.core.pag">PAG</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="qilin/core/builder/CallGraphBuilder.html#getMethodLookup()" class="member-name-link">getMethodLookup()</a> - Method in class qilin.core.builder.<a href="qilin/core/builder/CallGraphBuilder.html" title="class in qilin.core.builder">CallGraphBuilder</a></dt>
+<dd>
+<div class="block">Shared cached JVM method lookup (dispatch and static resolution).</div>
+</dd>
+<dt><a href="qilin/core/VirtualCalls.html#getMethodLookup()" class="member-name-link">getMethodLookup()</a> - Method in class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/util/Modifiers.html#getMethodModifiers(int)" class="member-name-link">getMethodModifiers(int)</a> - Static method in class sootup.core.util.<a href="sootup/core/util/Modifiers.html" title="class in sootup.core.util">Modifiers</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html#getMethodOf(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getMethodOf(Stmt)</a> - Method in class sootup.analysis.interprocedural.icfg.<a href="sootup/analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html" title="class in sootup.analysis.interprocedural.icfg">AbstractJimpleBasedICFG</a></dt>
@@ -10853,6 +10875,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#getView()" class="member-name-link">getView()</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/config/CommonCallGraphSettings.html#getView()" class="member-name-link">getView()</a> - Method in class sootup.callgraph.config.<a href="sootup/callgraph/config/CommonCallGraphSettings.html" title="class in sootup.callgraph.config">CommonCallGraphSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#getView()" class="member-name-link">getView()</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/config/CommonCallGraphSettings.html#getVirtualCallResolver()" class="member-name-link">getVirtualCallResolver()</a> - Method in class sootup.callgraph.config.<a href="sootup/callgraph/config/CommonCallGraphSettings.html" title="class in sootup.callgraph.config">CommonCallGraphSettings</a></dt>
 <dd>
@@ -15154,6 +15178,17 @@ loadScripts(document, 'script');</script>
 <dt><a href="qilin/pta/toolkits/turner/MethodLevelCallGraph.html" class="type-name-link" title="class in qilin.pta.toolkits.turner">MethodLevelCallGraph</a> - Class in <a href="qilin/pta/toolkits/turner/package-summary.html">qilin.pta.toolkits.turner</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/turner/MethodLevelCallGraph.html#%3Cinit%3E(qilin.core.builder.callgraph.OnFlyCallGraph)" class="member-name-link">MethodLevelCallGraph(OnFlyCallGraph)</a> - Constructor for class qilin.pta.toolkits.turner.<a href="qilin/pta/toolkits/turner/MethodLevelCallGraph.html" title="class in qilin.pta.toolkits.turner">MethodLevelCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#methodLookup" class="member-name-link">methodLookup</a> - Variable in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dd>
+<div class="block">Cached JVM method lookup, see <a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph"><code>MethodLookup</code></a>.</div>
+</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html" class="type-name-link" title="class in sootup.callgraph">MethodLookup</a> - Class in <a href="sootup/callgraph/package-summary.html">sootup.callgraph</a></dt>
+<dd>
+<div class="block">JVM method lookup shared by all call graph / points-to algorithms: from a start class (declared
+ owner for resolution, receiver type for dispatch) find the method a sub-signature binds to.</div>
+</dd>
+<dt><a href="sootup/callgraph/MethodLookup.html#%3Cinit%3E(sootup.core.views.View)" class="member-name-link">MethodLookup(View)</a> - Constructor for class sootup.callgraph.<a href="sootup/callgraph/MethodLookup.html" title="class in sootup.callgraph">MethodLookup</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/MethodModifier.html" class="type-name-link" title="enum class in sootup.core.model">MethodModifier</a> - Enum Class in <a href="sootup/core/model/package-summary.html">sootup.core.model</a></dt>
 <dd>
@@ -21911,6 +21946,8 @@ the order they are declared.</div>
 <dd>
 <div class="block">Resolves virtual calls.</div>
 </dd>
+<dt><a href="qilin/core/VirtualCalls.html#%3Cinit%3E(sootup.callgraph.MethodLookup)" class="member-name-link">VirtualCalls(MethodLookup)</a> - Constructor for class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="qilin/core/VirtualCalls.html#%3Cinit%3E(sootup.core.views.View)" class="member-name-link">VirtualCalls(View)</a> - Constructor for class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/pag/VirtualCallSite.html" class="type-name-link" title="class in qilin.core.pag">VirtualCallSite</a> - Class in <a href="qilin/core/pag/package-summary.html">qilin.core.pag</a></dt>
