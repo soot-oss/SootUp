@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
@@ -41,17 +40,11 @@ public class VaultHardeningInterceptor implements BodyInterceptor {
       return;
     }
     MutableControlFlowGraph graph = builder.getControlFlowGraph();
-    MutableBlockControlFlowGraph blockGraph =
-        graph instanceof MutableBlockControlFlowGraph ? (MutableBlockControlFlowGraph) graph : null;
-    if (blockGraph != null) {
-      blockGraph.beginBatch();
-    }
+    graph.beginBatch();
     try {
       harden(builder, graph, view);
     } finally {
-      if (blockGraph != null) {
-        blockGraph.endBatch();
-      }
+      graph.endBatch();
     }
   }
 

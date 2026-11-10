@@ -282,12 +282,13 @@ It is registered on the input location after the default interceptors:
 
 ### Many edits: batch mode
 
-The interceptor wraps its edits in `beginBatch()` / `endBatch()`. After each edit, a
-`MutableBlockControlFlowGraph` merges blocks that became mergeable, so that blocks stay maximal.
+The interceptor wraps its edits in `beginBatch()` / `endBatch()` of `MutableControlFlowGraph`.
+After each edit, a `MutableBlockControlFlowGraph` merges blocks that became mergeable, so that blocks stay maximal.
 During a sequence of edits that often means splitting and merging the same blocks again and
 again. Inside a batch, merging is postponed until the outermost `endBatch()`. The stmt-level flows
 are exact during the batch, only `getBlocks()` may return more, smaller blocks than necessary.
-Batches can be nested. Put `endBatch()` in a `finally` block.
+Batches can be nested. Put `endBatch()` in a `finally` block. Other `MutableControlFlowGraph`
+implementations treat both calls as no-ops, so the pattern is always safe.
 
 !!! tip "Changing a single method without an interceptor"
     To replace the body of one `SootMethod` in an existing view, wrap the new body into an

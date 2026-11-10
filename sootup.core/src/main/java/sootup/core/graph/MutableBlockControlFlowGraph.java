@@ -698,11 +698,13 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
    * batch the graph is consistent and its stmt-level flows are exact, only blocks may be smaller
    * than necessary. Batches nest.
    */
+  @Override
   public void beginBatch() {
     batchDepth++;
   }
 
   /** ends a batch; the outermost one merges the blocks touched since its {@link #beginBatch()} */
+  @Override
   public void endBatch() {
     if (batchDepth == 0) {
       throw new IllegalStateException("endBatch() without beginBatch()");

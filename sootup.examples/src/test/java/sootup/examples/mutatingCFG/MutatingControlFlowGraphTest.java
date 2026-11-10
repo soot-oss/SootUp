@@ -77,8 +77,8 @@ public class MutatingControlFlowGraphTest {
             Paths.get(BINARY), SourceType.Application, interceptors);
     return new JavaView(inputLocation);
   }
-  // --8<-- [end:load-view]
 
+  // --8<-- [end:load-view]
 
   @Test
   public void hardenWithdraw() {
