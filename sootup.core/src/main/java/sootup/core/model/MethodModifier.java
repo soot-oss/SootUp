@@ -123,6 +123,24 @@ public enum MethodModifier {
   }
 
   /**
+   * Rejects combinations no valid class file can hold (JVMS 4.6): more than one access flag, or
+   * abstract together with private, static, final, synchronized or native.
+   *
+   * @throws IllegalArgumentException on an illegal combination
+   */
+  public static void checkWellFormed(@NonNull Set<MethodModifier> m) {
+    if ((isPublic(m) ? 1 : 0) + (isPrivate(m) ? 1 : 0) + (isProtected(m) ? 1 : 0) > 1) {
+      throw new IllegalArgumentException(
+          "Method may have at most one of public, protected, private: " + m);
+    }
+    if (isAbstract(m)
+        && (isPrivate(m) || isStatic(m) || isFinal(m) || isSynchronized(m) || isNative(m))) {
+      throw new IllegalArgumentException(
+          "Abstract method may not be private, static, final, synchronized or native: " + m);
+    }
+  }
+
+  /**
    * Converts the given modifiers to their string representation, in canonical form.
    *
    * @param m a modifier set

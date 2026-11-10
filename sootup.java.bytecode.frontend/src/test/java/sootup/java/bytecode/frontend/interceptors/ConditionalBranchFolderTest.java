@@ -306,7 +306,7 @@ public class ConditionalBranchFolderTest {
     controlFlowGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
         new JavaIdentifierFactory()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "java.lang.String", Collections.emptyList()));
     return bodyBuilder;
   }
 }

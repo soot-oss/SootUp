@@ -125,6 +125,7 @@ public class JavaSootField extends SootClassMember<FieldSignature>
       @Nullable String genericSignature) {
     super(signature, position);
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    FieldModifier.checkWellFormed(this.modifiers);
     this.annotations = annotations;
     this.constantValue = constantValue;
     this.genericSignature = genericSignature;

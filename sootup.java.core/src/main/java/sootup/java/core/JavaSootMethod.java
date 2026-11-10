@@ -110,6 +110,7 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     super(methodSignature, position);
     this.bodySource = source;
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    MethodModifier.checkWellFormed(this.modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
     this.annotations = annotations;
     this.genericSignature = genericSignature;
