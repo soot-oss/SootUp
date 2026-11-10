@@ -31,12 +31,14 @@ import sootup.core.types.Type;
 /** Represents the fully qualified signature of a method. */
 public class MethodSignature extends SootClassMemberSignature<MethodSubSignature> {
 
-  public MethodSignature(
+  MethodSignature(
       @NonNull ClassType declaringClassSignature,
       @NonNull String methodName,
       @NonNull Iterable<Type> parameters,
       @NonNull Type fqReturnType) {
-    this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
+    this(
+        declaringClassSignature,
+        SignatureInterner.getMethodSubSignature(methodName, fqReturnType, parameters));
   }
 
   /**
@@ -46,8 +48,7 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
    * @param declaringClass the declaring class signature
    * @param subSignature the sub-signature
    */
-  public MethodSignature(
-      @NonNull ClassType declaringClass, @NonNull MethodSubSignature subSignature) {
+  MethodSignature(@NonNull ClassType declaringClass, @NonNull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
   }
 

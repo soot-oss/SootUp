@@ -41,7 +41,8 @@ public class ReachingDefs {
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
 
     for (Stmt stmt : graph.getStmts()) {
-      if (!stmt.getUses().findAny().isPresent()) continue;
+      List<Value> uses = stmt.getUses();
+      if (uses.isEmpty()) continue;
 
       Set<VariableDefinition> inset = analysis.getFlowBefore(stmt);
       reachingDefs.put(stmt, new ArrayList<>());
@@ -50,7 +51,7 @@ public class ReachingDefs {
         Value definedVar = def.getValue();
         Optional<Stmt> definingStmt = def.getStmt();
 
-        stmt.getUses()
+        uses.stream()
             .filter(
                 usedVar ->
                     definedVar.equivTo(usedVar)

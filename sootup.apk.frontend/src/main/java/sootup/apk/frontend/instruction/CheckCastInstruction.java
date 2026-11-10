@@ -28,7 +28,7 @@ import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -46,13 +46,16 @@ public class CheckCastInstruction extends DexLibAbstractInstruction {
 
     Local castValue = body.getRegisterLocal(checkCastInstr.getRegisterA());
     Type checkCastType =
-        DexUtil.toSootType(((TypeReference) checkCastInstr.getReference()).getType(), 0);
+        DexUtil.toSootType(
+            ((TypeReference) checkCastInstr.getReference()).getType(),
+            0,
+            body.getIdentifierFactory());
 
     JCastExpr castExpr = Jimple.newCastExpr(castValue, checkCastType);
     // generate "x = (Type) x"
     // splitter will take care of the rest
     JAssignStmt jAssignStmt =
-        Jimple.newAssignStmt(castValue, castExpr, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(castValue, castExpr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

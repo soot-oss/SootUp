@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.interceptors.DeadAssignmentEliminator;
@@ -76,5 +77,102 @@ public class JimpleStringAnalysisInputLocationTest {
                 VoidType.getInstance(),
                 Collections.emptyList());
     assertTrue(view.getMethod(methodSig).isPresent());
+  }
+
+  @Test
+  public void testGetNonExistingClass() {
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(
+            "class DummyClass extends java.lang.Object {\n\t"
+                + "void banana(){\n\t\t"
+                + "params = new java.security.AlgorithmParameters;\n\t\t"
+                + "return;\n\t"
+                + "}\n"
+                + "}");
+    JavaView view = new JavaView(analysisInputLocation);
+    ClassType nonExistientClassType = view.getIdentifierFactory().getClassType("NotDummyClass");
+    assertTrue(view.getClass(nonExistientClassType).isEmpty());
+  }
+
+  @Test
+  public void testCachingSameView() {
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n\t"
+            + "void banana(){\n\t\t"
+            + "params = new java.security.AlgorithmParameters;\n\t\t"
+            + "return;\n\t"
+            + "}\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(methodStr);
+    JavaView view = new JavaView(analysisInputLocation);
+
+    ClassType dummyClassType = view.getIdentifierFactory().getClassType("DummyClass");
+    var firstAccess = analysisInputLocation.getClassSource(dummyClassType, view);
+    assertTrue(firstAccess.isPresent());
+
+    var secondAccess = analysisInputLocation.getClassSource(dummyClassType, view);
+    assertTrue(secondAccess.isPresent());
+    assertSame(firstAccess.get(), secondAccess.get());
+  }
+
+  @Test
+  public void testCachingDifferentViews() {
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n\t"
+            + "void banana(){\n\t\t"
+            + "params = new java.security.AlgorithmParameters;\n\t\t"
+            + "return;\n\t"
+            + "}\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(methodStr);
+    JavaView view1 = new JavaView(analysisInputLocation);
+    JavaView view2 = new JavaView(analysisInputLocation);
+
+    ClassType dummyClassType1 = view1.getIdentifierFactory().getClassType("DummyClass");
+    var firstViewAccess = analysisInputLocation.getClassSource(dummyClassType1, view1);
+    assertTrue(firstViewAccess.isPresent());
+
+    ClassType dummyClassType2 = view2.getIdentifierFactory().getClassType("DummyClass");
+    var secondViewAccess = analysisInputLocation.getClassSource(dummyClassType2, view2);
+    assertTrue(secondViewAccess.isPresent());
+    assertNotSame(firstViewAccess.get(), secondViewAccess.get());
+  }
+
+  @Test
+  public void testTrapUntilEndOfBody() {
+    // the JimplePrinter appends a labeled nop to denote the end of a Trap covering the last Stmt
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n"
+            + "  java.lang.Object foo() {\n"
+            + "    DummyClass this;\n"
+            + "    java.lang.Throwable e;\n"
+            + "    this := @this: DummyClass;\n"
+            + "  label1:\n"
+            + "    return this;\n"
+            + "  label2:\n"
+            + "    e := @caughtexception;\n"
+            + "    throw e;\n"
+            + "  label3:\n"
+            + "    nop;\n"
+            + "  catch java.lang.Exception from label1 to label2 with label2;\n"
+            + "  catch java.lang.Throwable from label2 to label3 with label2;\n"
+            + "  }\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(
+            methodStr, SourceType.Application, Collections.emptyList());
+    View view = new JavaView(Collections.singletonList(analysisInputLocation));
+    ClassType dummyClass = view.getIdentifierFactory().getClassType("DummyClass");
+    MethodSignature methodSig =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                dummyClass, "foo", "java.lang.Object", Collections.<String>emptyList());
+    assertEquals(4, view.getMethod(methodSig).get().getBody().getStmts().size());
   }
 }

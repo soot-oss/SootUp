@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -21,7 +20,7 @@ import sootup.java.core.types.JavaClassType;
  * @author Zun Wang
  */
 public class ReplaceUseRefVisitorTest {
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType arrayType = factory.getClassType("Array");
 
@@ -34,7 +33,8 @@ public class ReplaceUseRefVisitorTest {
   Local localIndex = JavaJimple.newLocal("index", intType);
   Local localNewIndex = JavaJimple.newLocal("newIndex", intType);
 
-  FieldSignature fieldSignature = new FieldSignature(arrayType, "field", intType);
+  FieldSignature fieldSignature =
+      new JavaIdentifierFactory().getFieldSignature("field", arrayType, intType);
 
   /** Test use replacing in case JArrayRef. */
   @Test
@@ -51,7 +51,7 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.add(newBase);
     expectedUses.add(conIndex);
 
-    assertEquals(expectedUses, newRef.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newRef.getUses());
     expectedUses.clear();
 
     // replace constant index with newUse
@@ -63,7 +63,7 @@ public class ReplaceUseRefVisitorTest {
 
     expectedUses.add(base);
     expectedUses.add(conNewIndex);
-    assertEquals(expectedUses, newRef.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newRef.getUses());
     expectedUses.clear();
 
     // replace local index with newUse
@@ -75,7 +75,7 @@ public class ReplaceUseRefVisitorTest {
 
     expectedUses.add(base);
     expectedUses.add(localNewIndex);
-    assertEquals(expectedUses, newRef.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newRef.getUses());
     expectedUses.clear();
 
     // no matched use
@@ -99,7 +99,7 @@ public class ReplaceUseRefVisitorTest {
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newBase);
 
-    assertEquals(expectedUses, newRef.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newRef.getUses());
 
     // no matched use
     ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);

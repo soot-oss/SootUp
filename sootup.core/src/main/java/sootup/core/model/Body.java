@@ -199,11 +199,7 @@ public class Body implements HasPosition {
    */
   @NonNull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
-    }
-    return stmts;
+    return graph.getStmts();
   }
 
   @NonNull
@@ -261,7 +257,7 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Stream<Value> getUses() {
-    return graph.getNodes().stream().flatMap(Stmt::getUses);
+    return graph.getNodes().stream().flatMap(stmt -> stmt.getUses().stream());
   }
 
   /**
@@ -361,13 +357,13 @@ public class Body implements HasPosition {
 
       for (Stmt currStmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
         final Stmt stmt = currStmt;
-        if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
+        if (currStmt.getUses().stream().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
         }
         Optional<LValue> defOpt = currStmt.getDef();
         if (defOpt.isPresent()) {
           LValue def = defOpt.get();
-          if (def == existingLocal || def.getUses().anyMatch(v -> v == existingLocal)) {
+          if (def == existingLocal || def.getUses().stream().anyMatch(v -> v == existingLocal)) {
             if (currStmt instanceof AbstractDefinitionStmt) {
               currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
@@ -379,6 +375,69 @@ public class Body implements HasPosition {
       }
       locals.remove(existingLocal);
       locals.add(newLocal);
+    }
+
+    /**
+     * Replaces each key of the map by its value, like {@link #replaceLocal(Local, Local)} for every
+     * entry, but in a single pass over the statements: a statement is only rewritten for the locals
+     * it uses or defines. Calling {@link #replaceLocal(Local, Local)} for many locals scans the
+     * whole body for each of them.
+     *
+     * @param replacements the locals to replace (compared by identity) and their replacements
+     */
+    public void replaceLocals(@NonNull Map<Local, Local> replacements) {
+      if (replacements.isEmpty()) {
+        return;
+      }
+      Map<Local, Local> byIdentity = new IdentityHashMap<>(replacements);
+      for (Local existingLocal : byIdentity.keySet()) {
+        if (!locals.contains(existingLocal)) {
+          throw new IllegalArgumentException(
+              "The given existing Local '" + existingLocal + "' is not in the body!");
+        }
+      }
+
+      for (Stmt stmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
+        Stmt currStmt = stmt;
+        for (Local existingLocal : localsOf(stmt, byIdentity)) {
+          Local newLocal = byIdentity.get(existingLocal);
+          if (currStmt.getUses().stream().anyMatch(v -> v == existingLocal)) {
+            currStmt = currStmt.withNewUse(existingLocal, newLocal);
+          }
+          Optional<LValue> defOpt = currStmt.getDef();
+          if (defOpt.isPresent()) {
+            LValue def = defOpt.get();
+            if (def == existingLocal || def.getUses().stream().anyMatch(v -> v == existingLocal)) {
+              if (currStmt instanceof AbstractDefinitionStmt) {
+                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
+              }
+            }
+          }
+        }
+        if (stmt != currStmt) {
+          getControlFlowGraph().replaceNode(stmt, currStmt);
+        }
+      }
+      for (Map.Entry<Local, Local> replacement : byIdentity.entrySet()) {
+        locals.remove(replacement.getKey());
+        locals.add(replacement.getValue());
+      }
+    }
+
+    /** The locals of the map that the statement uses or defines, in the order they occur */
+    private static Collection<Local> localsOf(Stmt stmt, Map<Local, Local> byIdentity) {
+      Set<Local> found = Collections.newSetFromMap(new IdentityHashMap<>());
+      List<Local> ordered = new ArrayList<>();
+      stmt.getUsesAndDefs()
+          .forEach(
+              value -> {
+                if (value instanceof Local
+                    && byIdentity.containsKey(value)
+                    && found.add((Local) value)) {
+                  ordered.add((Local) value);
+                }
+              });
+      return ordered;
     }
 
     public BodyBuilder setModifiers(@NonNull Set<MethodModifier> modifiers) {
@@ -499,7 +558,7 @@ public class Body implements HasPosition {
    */
   public static Map<Value, List<Stmt>> collectUses(Collection<Stmt> stmts) {
     return stmts.stream()
-        .flatMap(stmt -> stmt.getUses().map(value -> (Pair.of(value, stmt))))
+        .flatMap(stmt -> stmt.getUses().stream().map(value -> (Pair.of(value, stmt))))
         .collect(
             Collectors.groupingBy(
                 Pair::getLeft, Collectors.mapping(Pair::getRight, Collectors.toList())));

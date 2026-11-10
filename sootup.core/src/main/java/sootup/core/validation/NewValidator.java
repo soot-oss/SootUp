@@ -148,7 +148,7 @@ public class NewValidator implements BodyValidator {
 
         if (!creatingAlias) {
           for (Iterator<Value> iterator =
-                  curStmt.getUses().filter(use -> use instanceof Local).iterator();
+                  curStmt.getUses().stream().filter(use -> use instanceof Local).iterator();
               iterator.hasNext(); ) {
             Value box = iterator.next();
             if (aliasingLocals.contains(box)) {

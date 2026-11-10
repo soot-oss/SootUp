@@ -2,11 +2,15 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -17,11 +21,13 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
 import sootup.interceptors.ConditionalBranchFolder;
+import sootup.interceptors.CopyPropagator;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -31,6 +37,9 @@ import sootup.java.core.views.JavaView;
  * @author Marcus Nachtigall
  */
 public class ConditionalBranchFolderTest {
+
+  Path classFilePath = Paths.get("src/test/resources/bugfixes/ConditionalBranchFolderCases.class");
+
   /**
    * Tests the correct deletion of an if-statement with a constant condition. Transforms from
    *
@@ -38,7 +47,7 @@ public class ConditionalBranchFolderTest {
    *
    * <p>to
    *
-   * <p>a = "str"; b = "str"; return a;
+   * <p>a = "str"; b = "str"; goto label1; label1: return a;
    */
   @Test
   public void testUnconditionalBranching() {
@@ -47,7 +56,7 @@ public class ConditionalBranchFolderTest {
     Body processedBody = builder.build();
 
     assertEquals(
-        Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
+        Arrays.asList("a = \"str\"", "b = \"str\"", "goto label1", "label1:", "return a"),
         Utils.bodyStmtsAsStrings(processedBody));
   }
 
@@ -64,7 +73,8 @@ public class ConditionalBranchFolderTest {
     Body processedBody = builder.build();
 
     assertEquals(
-        Arrays.asList("a = \"str\"", "b = \"different string\"", "return b"),
+        Arrays.asList(
+            "a = \"str\"", "b = \"different string\"", "goto label1", "label1:", "return b"),
         Utils.bodyStmtsAsStrings(processedBody));
   }
 
@@ -78,6 +88,157 @@ public class ConditionalBranchFolderTest {
     assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));
   }
 
+  private List<String> foldedJimple(String methodName) {
+    AnalysisInputLocation inputLocation =
+        new ClassFileBasedAnalysisInputLocation(
+            classFilePath,
+            "",
+            SourceType.Application,
+            Arrays.asList(new CopyPropagator(), new ConditionalBranchFolder()));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "ConditionalBranchFolderCases", methodName, "void", Collections.emptyList());
+    Body body = view.getMethod(methodSignature).get().getBody();
+    return Utils.filterJimple(body.toString());
+  }
+
+  /** nested constant ifs: only the "lets see" + "mid" path stays */
+  @Test
+  public void testConditionalBranchFolderWithMultipleBranches() {
+    assertEquals(
+        Arrays.asList(
+            "ConditionalBranchFolderCases this",
+            "int bool",
+            "java.io.PrintStream $stack3, $stack4",
+            "this := @this: ConditionalBranchFolderCases",
+            "bool = 1",
+            "goto label1",
+            "label1:",
+            "goto label2",
+            "label2:",
+            "goto label3",
+            "label3:",
+            "$stack4 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(\"lets see\")",
+            "$stack3 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>(\"mid\")",
+            "goto label4",
+            "label4:",
+            "return"),
+        foldedJimple("tc1"));
+  }
+
+  /** nested constant ifs: only the "False 2" path stays */
+  @Test
+  public void testConditionalBranchFolderWithMultipleBranches2() {
+    assertEquals(
+        Arrays.asList(
+            "ConditionalBranchFolderCases this",
+            "int bool",
+            "java.io.PrintStream $stack2",
+            "this := @this: ConditionalBranchFolderCases",
+            "bool = 1",
+            "goto label1",
+            "label1:",
+            "goto label2",
+            "label2:",
+            "goto label3",
+            "label3:",
+            "$stack2 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>(\"False 2\")",
+            "return"),
+        foldedJimple("tc1_1"));
+  }
+
+  /** constant true if inside a try block: throw stays, handler stays reachable */
+  @Test
+  public void testConditionalBranchFolderWithTraps() {
+    assertEquals(
+        Arrays.asList(
+            "ConditionalBranchFolderCases this",
+            "int bool",
+            "java.lang.Exception $stack3",
+            "java.lang.Throwable e",
+            "unknown $stack4",
+            "this := @this: ConditionalBranchFolderCases",
+            "bool = 1",
+            "label1:",
+            "goto label2",
+            "label2:",
+            "$stack3 = new java.lang.Exception",
+            "specialinvoke $stack3.<java.lang.Exception: void <init>(java.lang.String)>(\"True\")",
+            "throw $stack3",
+            "label3:",
+            "$stack4 := @caughtexception",
+            "e = $stack4",
+            "virtualinvoke $stack4.<java.lang.Exception: void printStackTrace()>()",
+            "return",
+            "catch java.lang.Exception from label1 to label3 with label3"),
+        foldedJimple("tc2"));
+  }
+
+  /** constant false if inside a try block: throw is pruned */
+  @Test
+  public void testConditionalBranchFolderWithTrapsFalse() {
+    assertEquals(
+        Arrays.asList(
+            "ConditionalBranchFolderCases this",
+            "int bool",
+            "java.lang.Throwable e",
+            "unknown $stack4",
+            "this := @this: ConditionalBranchFolderCases",
+            "bool = 0",
+            "label1:",
+            "goto label4",
+            "label2:",
+            "$stack4 := @caughtexception",
+            "e = $stack4",
+            "virtualinvoke $stack4.<java.lang.Exception: void printStackTrace()>()",
+            "label3:",
+            "return",
+            "label4:",
+            "goto label3",
+            "catch java.lang.Exception from label1 to label2 with label2"),
+        foldedJimple("tc3"));
+  }
+
+  /** constant ifs around and inside a try block */
+  @Test
+  public void testConditionalBranchFolderWithNestedTrap() {
+    assertEquals(
+        Arrays.asList(
+            "ConditionalBranchFolderCases this",
+            "int bool, x",
+            "java.io.PrintStream $stack4, $stack5, $stack6",
+            "java.lang.Throwable e",
+            "unknown $stack7",
+            "this := @this: ConditionalBranchFolderCases",
+            "x = 10",
+            "bool = 1",
+            "goto label1",
+            "label1:",
+            "$stack5 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.String)>(\"Try Block\")",
+            "goto label2",
+            "label2:",
+            "$stack6 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.String)>(\"True inside Try\")",
+            "label3:",
+            "goto label5",
+            "label4:",
+            "$stack7 := @caughtexception",
+            "e = $stack7",
+            "virtualinvoke $stack7.<java.lang.Exception: void printStackTrace()>()",
+            "label5:",
+            "$stack4 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(\"\")",
+            "return",
+            "catch java.lang.Exception from label1 to label3 with label4"),
+        foldedJimple("tc4"));
+  }
+
   /**
    * Generates the correct test {@link Body} for the corresponding test case.
    *
@@ -85,14 +246,14 @@ public class ConditionalBranchFolderTest {
    * @return the generated {@link Body}
    */
   private static Body.BodyBuilder createBodyBuilder(int constantCondition) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType stringType = factory.getClassType("java.lang.String");
     Local a = JavaJimple.newLocal("a", stringType);
     Local b = JavaJimple.newLocal("b", stringType);
 
-    StringConstant stringConstant = JavaJimple.newStringConstant("str");
+    StringConstant stringConstant = JavaJimple.newStringConstant("str", factory);
     FallsThroughStmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
     FallsThroughStmt strToB;
@@ -100,26 +261,26 @@ public class ConditionalBranchFolderTest {
     JEqExpr jEqExpr;
     switch (constantCondition) {
       case 0:
-        anotherStringConstant = JavaJimple.newStringConstant("str");
+        anotherStringConstant = JavaJimple.newStringConstant("str", factory);
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 
         break;
       case 1:
-        anotherStringConstant = JavaJimple.newStringConstant("different string");
+        anotherStringConstant = JavaJimple.newStringConstant("different string", factory);
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 
         break;
       case 2:
         final MethodSignature methodSignature =
-            JavaIdentifierFactory.getInstance()
+            new JavaIdentifierFactory()
                 .getMethodSignature(
                     "java.lang.Object", "toString", "String", Collections.emptyList());
         Local base =
-            new Local(
+            Jimple.newLocal(
                 "someObjectThatHasSomethingToString",
-                new JavaClassType("StringBuilder", new PackageName("java.lang")));
+                factory.getClassType("StringBuilder", "java.lang"));
         strToB =
             JavaJimple.newAssignStmt(
                 b, Jimple.newVirtualInvokeExpr(base, methodSignature), noPositionInfo);
@@ -144,7 +305,7 @@ public class ConditionalBranchFolderTest {
     controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, retb);
     controlFlowGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     return bodyBuilder;
   }

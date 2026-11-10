@@ -73,20 +73,12 @@ public class MethodDeclarationValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 

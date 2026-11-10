@@ -31,12 +31,13 @@ import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
-import sootup.apk.frontend.main.DexBody;
 import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
@@ -53,19 +54,21 @@ public class DexMethod {
 
   public JavaSootMethod makeSootMethod(
       final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
+    List<Type> parameters =
+        method.getParameters().stream()
+            .map(
+                methodParameter ->
+                    DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
+            .collect(Collectors.toList());
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                declaringclassType,
+                method.getName(),
+                DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
+                parameters);
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
-      List<Type> parameters =
-          method.getParameters().stream()
-              .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
-              .collect(Collectors.toList());
-      MethodSignature methodSignature =
-          view.getIdentifierFactory()
-              .getMethodSignature(
-                  declaringclassType,
-                  method.getName(),
-                  DexUtil.toSootType(method.getReturnType(), 0),
-                  parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),
@@ -75,9 +78,15 @@ public class DexMethod {
               bodyInterceptors,
               view);
       return dexMethodSource.makeSootMethod();
-    } else {
-      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
-      return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
     }
+    // the code is converted when the body is requested for the first time
+    return new JavaSootMethod(
+        new DexMethodSource(
+            method, dexEntry, declaringclassType, methodSignature, bodyInterceptors, view),
+        methodSignature,
+        Modifiers.getMethodModifiers(modifierFlags),
+        DexUtil.extractThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+        DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
+        NoPositionInformation.getInstance());
   }
 }

@@ -17,13 +17,14 @@
  */
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod {
-  public JavaSecurityAccessControllerDoPrivilegedNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaSecurityAccessControllerDoPrivilegedNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /**

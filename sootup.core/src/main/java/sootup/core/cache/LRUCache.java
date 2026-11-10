@@ -23,6 +23,7 @@ package sootup.core.cache;
  */
 
 import java.util.*;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
@@ -45,14 +46,14 @@ public class LRUCache implements ClassCache {
   }
 
   @Override
-  public synchronized SootClass getClass(ClassType classType) {
+  public SootClass getClass(ClassType classType) {
     return cache.get(classType);
   }
 
   @NonNull
   @Override
-  public synchronized Collection<SootClass> getClasses() {
-    return cache.values();
+  public Stream<SootClass> getClasses() {
+    return cache.values().stream();
   }
 
   @Override

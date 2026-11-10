@@ -13,9 +13,7 @@ import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.language.JavaJimple;
@@ -70,21 +68,23 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
     // test bootstrap args
     List<Immediate> bootTrapArgs = invoke.getBootstrapArgs();
-    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecord;")));
-    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b")));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecord;", identifierFactory)));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b", identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
-                new FieldSignature(
-                    new JavaClassType("Record", new PackageName("")), "a", PrimitiveType.getInt()),
-                1)));
+                identifierFactory.getFieldSignature(
+                    "a", identifierFactory.getClassType("Record"), PrimitiveType.getInt()),
+                1,
+                identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
-                new FieldSignature(
-                    new JavaClassType("Record", new PackageName("")),
+                identifierFactory.getFieldSignature(
                     "b",
-                    new JavaClassType("String", new PackageName("java.lang"))),
-                1)));
+                    identifierFactory.getClassType("Record"),
+                    identifierFactory.getClassType("String", "java.lang")),
+                1,
+                identifierFactory)));
   }
 }

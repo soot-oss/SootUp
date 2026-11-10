@@ -46,7 +46,7 @@ public class AputInstruction extends FieldInstruction {
     JArrayRef jArrayRef = JavaJimple.newArrayRef(arrayBase, index);
 
     Local sourceValue = body.getRegisterLocal(source);
-    JAssignStmt assign = getAssignStmt(sourceValue, jArrayRef);
+    JAssignStmt assign = getAssignStmt(jArrayRef, sourceValue);
     setStmt(assign);
     body.add(assign);
   }

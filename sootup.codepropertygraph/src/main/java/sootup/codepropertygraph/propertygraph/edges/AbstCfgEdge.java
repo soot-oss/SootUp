@@ -24,10 +24,13 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 
+/** Abstract base class for CFG (Control Flow Graph) edges in a property graph. */
 public abstract class AbstCfgEdge extends PropertyGraphEdge {
+  /** Creates a CFG edge between the given source and destination nodes. */
   public AbstCfgEdge(PropertyGraphNode source, PropertyGraphNode destination) {
     super(source, destination);
   }
 
+  /** Returns the label identifying this CFG edge type. */
   public abstract String getLabel();
 }

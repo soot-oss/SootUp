@@ -1,21 +1,50 @@
 package sootup.codepropertygraph.benchmark;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
-import java.util.Collections;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.BenchmarkTestSuiteBase;
 import sootup.codepropertygraph.cdg.CdgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
+
+  private static final String SW_1_2_3_DEF =
+      "switch(l1) {     case 1:     case 2:     case 3:     default:  }";
+  private static final String SW_10_20_DEF =
+      "switch(l1) {     case 10:     case 20:     default:  }";
+  private static final String SW_20_30_40_DEF =
+      "switch(l1) {     case 20:     case 30:     case 40:     default:  }";
+  private static final String SW_ENUM = "switch($stack5) {     case 1:     case 2:     default:  }";
+
   private final ClassType IfElseStatement = getClassType("IfElseStatement");
   private final ClassType TryCatchFinally = getClassType("TryCatchFinally");
   private final ClassType SwitchCaseStatement = getClassType("SwitchCaseStatement");
@@ -28,626 +57,255 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
     cdgCreator = new CdgCreator();
   }
 
+  private PropertyGraph buildGraph(
+      ClassType classType, String methodName, String returnType, String... paramTypes) {
+    MethodSignature sig =
+        getMethodSignature(classType, methodName, returnType, Arrays.asList(paramTypes));
+    return cdgCreator.createGraph(getMinimalTestSuiteMethod(sig).orElseThrow());
+  }
+
+  /**
+   * Asserts that the CDG contains exactly the given edges (order-independent, multiset semantics).
+   * Each edge is expressed as "source.toString() -> dest.toString()".
+   */
+  private static void assertEdges(PropertyGraph graph, String... expected) {
+    List<String> actual =
+        graph.getEdges().stream()
+            .map(e -> e.getSource() + " -> " + e.getDestination())
+            .sorted()
+            .collect(Collectors.toList());
+    List<String> exp = Arrays.stream(expected).sorted().collect(Collectors.toList());
+    assertEquals(exp, actual);
+  }
+
   @Test
   public void testCdgForIfStatement() {
-    runTest(
-        "ifStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfStatement());
+    PropertyGraph g = buildGraph(IfElseStatement, "ifStatement", "int", "int");
+    assertEdges(g, "if l1 >= 42 -> l2 = 1");
   }
 
   @Test
   public void testCdgForIfElseStatement() {
-    runTest(
-        "ifElseStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfElseStatement());
+    PropertyGraph g = buildGraph(IfElseStatement, "ifElseStatement", "int", "int");
+    assertEdges(g, "if l1 >= 42 -> goto", "if l1 >= 42 -> l2 = 1", "if l1 >= 42 -> l2 = 2");
   }
 
   @Test
   public void testCdgForIfElseIfStatement() {
-    runTest(
-        "ifElseIfStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfElseIfStatement());
+    PropertyGraph g = buildGraph(IfElseStatement, "ifElseIfStatement", "int", "int");
+    assertEdges(
+        g,
+        "if l1 <= 123 -> goto",
+        "if l1 <= 123 -> l2 = 2",
+        "if l1 <= 123 -> l2 = 3",
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> if l1 <= 123",
+        "if l1 >= 42 -> l2 = 1");
   }
 
   @Test
   public void testCdgForIfElseCascadingStatement() {
-    runTest(
-        "ifElseCascadingStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfElseCascadingStatement());
+    PropertyGraph g = buildGraph(IfElseStatement, "ifElseCascadingStatement", "int", "int");
+    // outer "if l1 >= 42" controls the inner "if l1 >= 42" and the else-branch (l2=3);
+    // inner "if l1 >= 42" controls l2=11, l2=12, and two gotos (then/else exits)
+    assertEdges(
+        g,
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> if l1 >= 42",
+        "if l1 >= 42 -> l2 = 11",
+        "if l1 >= 42 -> l2 = 12",
+        "if l1 >= 42 -> l2 = 3");
   }
 
   @Test
   public void testCdgForIfElseCascadingElseIfStatement() {
-    runTest(
-        "ifElseCascadingElseIfStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfElseCascadingElseIfStatement());
+    PropertyGraph g = buildGraph(IfElseStatement, "ifElseCascadingElseIfStatement", "int", "int");
+    // outer "if l1 >= 42" controls the middle "if l1 >= 42" and the else-branch (l2=2)
+    // middle "if l1 >= 42" controls one goto, "if l1 <= 123" and l2=11
+    // "if l1 <= 123" controls two gotos, l2=12, l2=13
+    assertEdges(
+        g,
+        "if l1 <= 123 -> goto",
+        "if l1 <= 123 -> goto",
+        "if l1 <= 123 -> l2 = 12",
+        "if l1 <= 123 -> l2 = 13",
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> if l1 <= 123",
+        "if l1 >= 42 -> if l1 >= 42",
+        "if l1 >= 42 -> l2 = 11",
+        "if l1 >= 42 -> l2 = 2");
   }
 
   @Test
   public void testCdgForIfElseCascadingElseIfInElseStatement() {
-    runTest(
-        "ifElseCascadingElseIfInElseStatement",
-        IfElseStatement,
-        "int",
-        Collections.singletonList("int"),
-        getExpectedDotGraphForIfElseCascadingElseIfInElseStatement());
+    PropertyGraph g =
+        buildGraph(IfElseStatement, "ifElseCascadingElseIfInElseStatement", "int", "int");
+    // outermost "if l1 >= 42" controls the next "if l1 >= 42" and l2=1
+    // middle "if l1 >= 42" controls one goto, "if l1 <= 123" and l2=21
+    // "if l1 <= 123" controls one goto, l2=22, l2=23
+    assertEdges(
+        g,
+        "if l1 <= 123 -> goto",
+        "if l1 <= 123 -> l2 = 22",
+        "if l1 <= 123 -> l2 = 23",
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> goto",
+        "if l1 >= 42 -> if l1 <= 123",
+        "if l1 >= 42 -> if l1 >= 42",
+        "if l1 >= 42 -> l2 = 1",
+        "if l1 >= 42 -> l2 = 21");
   }
 
   @Test
   public void testCdgForTryCatch() {
-    runTest(
-        "tryCatch",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatch());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatch", "void"));
   }
 
   @Test
   public void testCdgForTryCatchNested() {
-    runTest(
-        "tryCatchNested",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchNested());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchNested", "void"));
   }
 
   @Test
   public void testCdgForTryCatchFinallyNested() {
-    runTest(
-        "tryCatchFinallyNested",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchFinallyNested());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchFinallyNested", "void"));
   }
 
   @Test
   public void testCdgForTryCatchFinallyNestedInFinally() {
-    runTest(
-        "tryCatchFinallyNestedInFinally",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchFinallyNestedInFinally());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchFinallyNestedInFinally", "void"));
   }
 
   @Test
   public void testCdgForTryCatchFinallyCombined() {
-    runTest(
-        "tryCatchFinallyCombined",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchFinallyCombined());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchFinallyCombined", "void"));
   }
 
   @Test
   public void testCdgForTryCatchFinallyNestedInCatch() {
-    runTest(
-        "tryCatchFinallyNestedInCatch",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchFinallyNestedInCatch());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchFinallyNestedInCatch", "void"));
   }
 
   @Test
   public void testCdgForTryCatchFinally() {
-    runTest(
-        "tryCatchFinally",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchFinally());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchFinally", "void"));
   }
 
   @Test
   public void testCdgForTryCatchNestedInCatch() {
-    runTest(
-        "tryCatchNestedInCatch",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchNestedInCatch());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchNestedInCatch", "void"));
   }
 
   @Test
   public void testCdgForTryCatchCombined() {
-    runTest(
-        "tryCatchCombined",
-        TryCatchFinally,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForTryCatchCombined());
+    assertEdges(buildGraph(TryCatchFinally, "tryCatchCombined", "void"));
   }
 
   @Test
   public void testCdgForSwitchCaseGroupedTargetsDefault() {
-    runTest(
-        "switchCaseGroupedTargetsDefault",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseGroupedTargetsDefault());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseGroupedTargetsDefault", "void");
+    assertEdges(
+        g,
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> l2 = \"first\"",
+        SW_1_2_3_DEF + " -> l2 = \"other\"",
+        SW_1_2_3_DEF + " -> l2 = \"second\"");
   }
 
   @Test
   public void testCdgForSwitchWithSwitch() {
-    runTest(
-        "switchWithSwitch",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchWithSwitch());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchWithSwitch", "void");
+    assertEdges(
+        g,
+        SW_10_20_DEF + " -> goto",
+        SW_10_20_DEF + " -> l2 = 11",
+        SW_10_20_DEF + " -> l2 = 12",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> l2 = -1",
+        SW_1_2_3_DEF + " -> l2 = 2",
+        SW_1_2_3_DEF + " -> l2 = 3",
+        SW_1_2_3_DEF + " -> " + SW_10_20_DEF,
+        SW_1_2_3_DEF + " -> " + SW_20_30_40_DEF,
+        SW_20_30_40_DEF + " -> goto",
+        SW_20_30_40_DEF + " -> goto",
+        SW_20_30_40_DEF + " -> l2 = 220",
+        SW_20_30_40_DEF + " -> l2 = 230",
+        SW_20_30_40_DEF + " -> l2 = 240");
   }
 
   @Test
   public void testCdgForSwitchCaseStatementInt() {
-    runTest(
-        "switchCaseStatementInt",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseStatementInt());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseStatementInt", "void");
+    assertEdges(
+        g,
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> l2 = \"invalid\"",
+        SW_1_2_3_DEF + " -> l2 = \"one\"",
+        SW_1_2_3_DEF + " -> l2 = \"three\"",
+        SW_1_2_3_DEF + " -> l2 = \"two\"");
   }
 
   @Test
   public void testCdgForSwitchCaseGroupedTargets() {
-    runTest(
-        "switchCaseGroupedTargets",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseGroupedTargets());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseGroupedTargets", "void");
+    assertEdges(
+        g,
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> l2 = \"first\"",
+        SW_1_2_3_DEF + " -> l2 = \"second\"");
   }
 
   @Test
   public void testCdgForSwitchCaseStatementEnum() {
-    runTest(
-        "switchCaseStatementEnum",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseStatementEnum());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseStatementEnum", "void");
+    assertEdges(
+        g,
+        SW_ENUM + " -> goto",
+        SW_ENUM + " -> goto",
+        SW_ENUM + " -> l2 = \"green\"",
+        SW_ENUM + " -> l2 = \"invalid\"",
+        SW_ENUM + " -> l2 = \"red\"");
   }
 
   @Test
   public void testCdgForSwitchCaseStatementCaseIncludingIf() {
-    runTest(
-        "switchCaseStatementCaseIncludingIf",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseStatementCaseIncludingIf());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseStatementCaseIncludingIf", "void");
+    assertEdges(
+        g,
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> if l1 != 666",
+        SW_1_2_3_DEF + " -> l2 = -1",
+        SW_1_2_3_DEF + " -> l2 = 1",
+        SW_1_2_3_DEF + " -> l2 = 2",
+        SW_1_2_3_DEF + " -> l2 = 3",
+        "if l1 != 666 -> goto",
+        "if l1 != 666 -> goto",
+        "if l1 != 666 -> l2 = 11",
+        "if l1 != 666 -> l2 = 12");
   }
 
   @Test
   public void testCdgForSwitchCaseWithoutDefault() {
-    runTest(
-        "switchCaseWithoutDefault",
-        SwitchCaseStatement,
-        "void",
-        Collections.emptyList(),
-        getExpectedDotGraphForSwitchCaseWithoutDefault());
+    PropertyGraph g = buildGraph(SwitchCaseStatement, "switchCaseWithoutDefault", "void");
+    assertEdges(
+        g,
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> goto",
+        SW_1_2_3_DEF + " -> l2 = \"one\"",
+        SW_1_2_3_DEF + " -> l2 = \"three\"",
+        SW_1_2_3_DEF + " -> l2 = \"two\"");
   }
 
   @Test
   public void testCdgForWhileLoop() {
-    runTest(
-        "whileLoop", WhileLoop, "void", Collections.emptyList(), getExpectedDotGraphForWhileLoop());
-  }
-
-  private void runTest(
-      String methodName,
-      ClassType classType,
-      String returnType,
-      List<String> parameters,
-      String expectedDotGraph) {
-    MethodSignature methodSignature =
-        getMethodSignature(classType, methodName, returnType, parameters);
-    Optional<? extends SootMethod> optionalMethod = getMinimalTestSuiteMethod(methodSignature);
-    assertTrue(optionalMethod.isPresent(), "Method should be present");
-
-    SootMethod method = optionalMethod.get();
-    PropertyGraph graph = cdgCreator.createGraph(method);
-
-    String actualDotGraph = normalizeDotGraph(graph.toDotGraph());
-    String expectedNormalizedDotGraph = normalizeDotGraph(expectedDotGraph);
-
-    assertEquals(
-        expectedNormalizedDotGraph, actualDotGraph, "DOT graph should match the expected output");
-  }
-
-  private String normalizeDotGraph(String dotGraph) {
-    return dotGraph.replaceAll("\\s+", "").replaceAll("[\\r\\n]+", "");
-  }
-
-  private String getExpectedDotGraphForIfStatement() {
-    return "digraph cdg_ifStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"l2 = 1\", fillcolor=\"lightblue\"];\n"
-        + "	\"1\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForIfElseStatement() {
-    return "digraph cdg_ifElseStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"l2 = 1\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"2\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"2\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForIfElseIfStatement() {
-    return "digraph cdg_ifElseIfStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"if l1 &lt;= 123\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = 1\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"3\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"3\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForIfElseCascadingStatement() {
-    return "digraph cdg_ifElseCascadingStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = 11\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"l2 = 12\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"3\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForIfElseCascadingElseIfStatement() {
-    return "digraph cdg_ifElseCascadingElseIfStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"if l1 &lt;= 123\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = 11\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" [label=\"l2 = 12\", fillcolor=\"lightblue\"];\n"
-        + "	\"9\" [label=\"l2 = 13\", fillcolor=\"lightblue\"];\n"
-        + "	\"10\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForIfElseCascadingElseIfInElseStatement() {
-    return "digraph cdg_ifElseCascadingElseIfInElseStatement {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"if l1 &lt;= 123\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"if l1 &gt;= 42\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = 1\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" [label=\"l2 = 21\", fillcolor=\"lightblue\"];\n"
-        + "	\"9\" [label=\"l2 = 22\", fillcolor=\"lightblue\"];\n"
-        + "	\"10\" [label=\"l2 = 23\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatch() {
-    return "digraph cdg_tryCatch {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchNested() {
-    return "digraph cdg_tryCatchNested {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchFinallyNested() {
-    return "digraph cdg_tryCatchFinallyNested {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchFinallyNestedInFinally() {
-    return "digraph cdg_tryCatchFinallyNestedInFinally {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchFinallyCombined() {
-    return "digraph cdg_tryCatchFinallyCombined {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchFinallyNestedInCatch() {
-    return "digraph cdg_tryCatchFinallyNestedInCatch {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchFinally() {
-    return "digraph cdg_tryCatchFinally {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchNestedInCatch() {
-    return "digraph cdg_tryCatchNestedInCatch {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForTryCatchCombined() {
-    return "digraph cdg_tryCatchCombined {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseGroupedTargetsDefault() {
-    return "digraph cdg_switchCaseGroupedTargetsDefault {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"l2 = \\\"first\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"l2 = \\\"other\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = \\\"second\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchWithSwitch() {
-    return "digraph cdg_switchWithSwitch {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = -1\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" [label=\"l2 = 11\", fillcolor=\"lightblue\"];\n"
-        + "	\"9\" [label=\"l2 = 12\", fillcolor=\"lightblue\"];\n"
-        + "	\"10\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
-        + "	\"11\" [label=\"l2 = 220\", fillcolor=\"lightblue\"];\n"
-        + "	\"12\" [label=\"l2 = 230\", fillcolor=\"lightblue\"];\n"
-        + "	\"13\" [label=\"l2 = 240\", fillcolor=\"lightblue\"];\n"
-        + "	\"14\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
-        + "	\"15\" [label=\"switch(l1) \\{     case 10:     case 20:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"16\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"17\" [label=\"switch(l1) \\{     case 20:     case 30:     case 40:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"15\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"15\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"15\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"14\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"15\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"17\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"11\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"12\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"13\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseStatementInt() {
-    return "digraph cdg_switchCaseStatementInt {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"l2 = \\\"invalid\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = \\\"one\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"l2 = \\\"three\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = \\\"two\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"8\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseGroupedTargets() {
-    return "digraph cdg_switchCaseGroupedTargets {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"l2 = \\\"first\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"l2 = \\\"second\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseStatementEnum() {
-    return "digraph cdg_switchCaseStatementEnum {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"l2 = \\\"green\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"l2 = \\\"invalid\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = \\\"red\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"switch($stack5) \\{     case 1:     case 2:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseStatementCaseIncludingIf() {
-    return "digraph cdg_switchCaseStatementCaseIncludingIf {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"if l1 != 666\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"l2 = -1\", fillcolor=\"lightblue\"];\n"
-        + "	\"7\" [label=\"l2 = 1\", fillcolor=\"lightblue\"];\n"
-        + "	\"8\" [label=\"l2 = 11\", fillcolor=\"lightblue\"];\n"
-        + "	\"9\" [label=\"l2 = 12\", fillcolor=\"lightblue\"];\n"
-        + "	\"10\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
-        + "	\"11\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
-        + "	\"12\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"12\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"11\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForSwitchCaseWithoutDefault() {
-    return "digraph cdg_switchCaseWithoutDefault {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"goto\", fillcolor=\"lightblue\"];\n"
-        + "	\"3\" [label=\"l2 = \\\"one\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"4\" [label=\"l2 = \\\"three\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" [label=\"l2 = \\\"two\\\"\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"6\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
-  }
-
-  private String getExpectedDotGraphForWhileLoop() {
-    return "digraph cdg_whileLoop {\n"
-        + "	rankdir=TB;\n"
-        + "	node [style=filled, shape=record];\n"
-        + "	edge [style=filled]\n"
-        + "	\"1\" [label=\"if l1 &lt;= l2\", fillcolor=\"lightblue\"];\n"
-        + "	\"2\" [label=\"return\", fillcolor=\"lightblue\"];\n"
-        + "	\"1\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "}\n";
+    PropertyGraph g = buildGraph(WhileLoop, "whileLoop", "void");
+    assertEdges(g, "if l1 <= l2 -> return");
   }
 }

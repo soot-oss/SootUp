@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Set;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -47,7 +47,7 @@ public class IntraFlowAnalysis {
     // handle parameters
     for (int i = 0; i < method.getParameterCount(); ++i) {
       if (method.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(method.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
         this.params.add(param);
       }
@@ -59,14 +59,14 @@ public class IntraFlowAnalysis {
   /*
    * x = y = z = ... = node;
    * */
-  Set<Node> epsilon(Node node) {
-    Queue<Node> queue = new UniqueQueue<>();
+  Set<PagNode> epsilon(PagNode node) {
+    Queue<PagNode> queue = new UniqueQueue<>();
     for (Edge edge : xpag.getOutEdges(node)) {
       queue.add(edge.to);
     }
-    Set<Node> visit = new HashSet<>();
+    Set<PagNode> visit = new HashSet<>();
     while (!queue.isEmpty()) {
-      Node front = queue.poll();
+      PagNode front = queue.poll();
       visit.add(front);
       for (Edge edge : xpag.getOutEdges(front)) {
         if (edge.kind == EdgeKind.ASSIGN && !visit.contains(edge.to)) {
@@ -83,9 +83,9 @@ public class IntraFlowAnalysis {
    * return x;
    * */
   public boolean isDirectlyReturnedHeap(AllocNode heap) {
-    Set<Node> visit = epsilon(heap);
+    Set<PagNode> visit = epsilon(heap);
     boolean flag = false;
-    for (Node node : visit) {
+    for (PagNode node : visit) {
       if (node instanceof LocalVarNode) {
         LocalVarNode lvn = (LocalVarNode) node;
         if (lvn.isReturn()) {
@@ -109,15 +109,15 @@ public class IntraFlowAnalysis {
    * return true iff heap.f comes from any parameter of heap.getMethod().
    * */
   private boolean isInstanceObjectContentFromParam(AllocNode heap) {
-    Set<Node> paramInArgs = collectParamInArguments(heap);
+    Set<PagNode> paramInArgs = collectParamInArguments(heap);
     if (paramInArgs.isEmpty()) {
       return false;
     }
-    Queue<Node> queue = new UniqueQueue<>();
-    Set<Node> visited = new HashSet<>();
+    Queue<PagNode> queue = new UniqueQueue<>();
+    Set<PagNode> visited = new HashSet<>();
     queue.addAll(params);
     while (!queue.isEmpty()) {
-      Node front = queue.poll();
+      PagNode front = queue.poll();
       if (paramInArgs.contains(front)) {
         return true;
       }
@@ -135,10 +135,10 @@ public class IntraFlowAnalysis {
     return false;
   }
 
-  private Set<Node> collectParamInArguments(AllocNode heap) {
+  private Set<PagNode> collectParamInArguments(AllocNode heap) {
     ClassType type = (ClassType) heap.getType();
-    Set<Node> x = epsilon(heap);
-    Set<Node> ret = new HashSet<>();
+    Set<PagNode> x = epsilon(heap);
+    Set<PagNode> ret = new HashSet<>();
     HeapContainerQuery hcq = this.utility.getHCQ(heap);
     Set<LocalVarNode> inParams = hcq.getInParamsToCSFields();
     MethodPAG srcmpag = pag.getMethodPAG(method);
@@ -207,12 +207,12 @@ public class IntraFlowAnalysis {
     if (!(heap.getType() instanceof ArrayType)) {
       return false;
     }
-    Set<Node> x = epsilon(heap);
-    Queue<Node> queue = new UniqueQueue<>();
-    Set<Node> visited = new HashSet<>();
+    Set<PagNode> x = epsilon(heap);
+    Queue<PagNode> queue = new UniqueQueue<>();
+    Set<PagNode> visited = new HashSet<>();
     queue.addAll(params);
     while (!queue.isEmpty()) {
-      Node front = queue.poll();
+      PagNode front = queue.poll();
       visited.add(front);
       for (Edge edge : xpag.getOutEdges(front)) {
         if (edge.kind == EdgeKind.ASSIGN
@@ -265,11 +265,11 @@ public class IntraFlowAnalysis {
   /*
    * implementation of nextNodeStates in Algorithm 3 in the paper. It also encodes Fig 10 in the paper.
    * */
-  private Set<Pair<Node, State>> getNextNodeStates(
-      Pair<Node, State> nodeState, Set<Node> thisAlias, Set<SparkField> stFields) {
-    Node node = nodeState.getFirst();
-    State state = nodeState.getSecond();
-    Set<Pair<Node, State>> ret = new HashSet<>();
+  private Set<Pair<PagNode, State>> getNextNodeStates(
+      Pair<PagNode, State> nodeState, Set<PagNode> thisAlias, Set<SparkField> stFields) {
+    PagNode node = nodeState.first();
+    State state = nodeState.second();
+    Set<Pair<PagNode, State>> ret = new HashSet<>();
     for (Edge edge : xpag.getOutEdges(node)) {
       State nextState = nextState(state, edge.kind);
       if (nextState != State.Error) {
@@ -301,15 +301,15 @@ public class IntraFlowAnalysis {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     VarNode thisNode = srcnf.caseThis();
-    Set<Node> thisAlias = epsilon(thisNode);
-    Queue<Pair<Node, State>> queue = new UniqueQueue<>();
-    Set<Pair<Node, State>> visited = new HashSet<>();
+    Set<PagNode> thisAlias = epsilon(thisNode);
+    Queue<Pair<PagNode, State>> queue = new UniqueQueue<>();
+    Set<Pair<PagNode, State>> visited = new HashSet<>();
     queue.add(new Pair<>(heap, State.O));
     while (!queue.isEmpty()) {
-      Pair<Node, State> front = queue.poll();
+      Pair<PagNode, State> front = queue.poll();
       visited.add(front);
-      Set<Pair<Node, State>> nextStates = getNextNodeStates(front, thisAlias, ret);
-      for (Pair<Node, State> nextState : nextStates) {
+      Set<Pair<PagNode, State>> nextStates = getNextNodeStates(front, thisAlias, ret);
+      for (Pair<PagNode, State> nextState : nextStates) {
         if (!visited.contains(nextState)) {
           queue.add(nextState);
         }

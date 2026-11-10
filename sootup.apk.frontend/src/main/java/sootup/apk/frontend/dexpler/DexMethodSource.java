@@ -22,25 +22,31 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import com.google.common.collect.Sets;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.jf.dexlib2.dexbacked.DexBackedMethod;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MethodParameter;
+import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.apk.frontend.main.DexBody;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
@@ -49,9 +55,12 @@ import sootup.java.core.JavaSootMethod;
 
 public class DexMethodSource implements BodySource {
 
-  private final Set<Local> locals;
-  private final MutableControlFlowGraph mutableControlFlowGraph;
+  // null until the code is converted, for a method whose body is resolved lazily
+  @Nullable private final Set<Local> locals;
+  @Nullable private final MutableControlFlowGraph mutableControlFlowGraph;
   private final Method method;
+  private final MultiDexContainer.@Nullable DexEntry<? extends DexFile> dexEntry;
+  @Nullable private final ClassType declaringClass;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
@@ -71,16 +80,43 @@ public class DexMethodSource implements BodySource {
     this.bodyInterceptors = bodyInterceptors;
     this.mutableControlFlowGraph = mutableControlFlowGraph;
     this.method = method;
+    this.dexEntry = null;
+    this.declaringClass = null;
+  }
+
+  /** A body source that converts the code of the method when the body is resolved. */
+  public DexMethodSource(
+      Method method,
+      MultiDexContainer.DexEntry<? extends DexFile> dexEntry,
+      ClassType declaringClass,
+      MethodSignature methodSignature,
+      List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
+    this.methodSignature = methodSignature;
+    this.view = view;
+    this.locals = null;
+    this.bodyInterceptors = bodyInterceptors;
+    this.mutableControlFlowGraph = null;
+    this.method = method;
+    this.dexEntry = dexEntry;
+    this.declaringClass = declaringClass;
   }
 
   @NonNull
   @Override
   public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException {
+    Set<Local> locals = this.locals;
+    MutableControlFlowGraph graph = mutableControlFlowGraph;
+    if (graph == null) {
+      DexBody dexBody = new DexBody(method, dexEntry, declaringClass, view);
+      graph = dexBody.buildGraph(methodSignature);
+      locals = dexBody.getLocals();
+    }
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
     Body.BodyBuilder bodyBuilder =
-        Body.builder(mutableControlFlowGraph)
+        Body.builder(graph)
             .setModifiers(modifiersSet)
             .setMethodSignature(getSignature())
             .setPosition(NoPositionInformation.getInstance())
@@ -94,33 +130,16 @@ public class DexMethodSource implements BodySource {
   public JavaSootMethod makeSootMethod() {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
-    Iterable<AnnotationUsage> annotationUsages =
-        DexUtil.createAnnotationUsage(method.getAnnotations(), view);
-    List<Set<AnnotationUsage>> parameterAnnotations = Collections.emptyList();
-    Iterable<ClassType> thrownExceptions =
-        DexUtil.extractThrownExceptions(method.getAnnotations(), view);
-
-    if (method instanceof DexBackedMethod) {
-      parameterAnnotations =
-          ((DexBackedMethod) method)
-              .getParameterAnnotations().stream()
-                  .map(
-                      annotations ->
-                          (Set<AnnotationUsage>)
-                              Sets.newHashSet(DexUtil.createAnnotationUsage(annotations, view)))
-                  .toList();
-    }
-
     try {
+      // keep this source as delegate, so the parameter annotations stay available
       sootMethod =
           new JavaSootMethod(
-              new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
+              new OverridingBodySource(this).withBody(resolveBody(methodModifiers)),
               getSignature(),
               methodModifiers,
-              thrownExceptions,
-              annotationUsages,
-              NoPositionInformation.getInstance(),
-              parameterAnnotations);
+              DexUtil.extractThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+              DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
+              NoPositionInformation.getInstance());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -129,7 +148,32 @@ public class DexMethodSource implements BodySource {
 
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    throw new UnsupportedOperationException("TODO");
+    // only abstract methods of annotations have default values, and they do not use this source
+    return null;
+  }
+
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  /**
+   * Returns the annotations of a parameter. Dex files store BUILD annotations as runtime invisible
+   * and RUNTIME annotations as runtime visible ones.
+   */
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex, String visibility) {
+    List<? extends MethodParameter> parameters = method.getParameters();
+    if (paramIndex < 0 || paramIndex >= parameters.size()) {
+      return Collections.emptyList();
+    }
+    boolean visible = "Any".equals(visibility) || "RuntimeVisible".equals(visibility);
+    boolean invisible = "Any".equals(visibility) || "RuntimeInvisible".equals(visibility);
+    return DexUtil.createAnnotationUsage(
+            parameters.get(paramIndex).getAnnotations(), view.getIdentifierFactory())
+        .stream()
+        .filter(usage -> usage.isRuntimeVisible() ? visible : invisible)
+        .collect(Collectors.toList());
   }
 
   @NonNull

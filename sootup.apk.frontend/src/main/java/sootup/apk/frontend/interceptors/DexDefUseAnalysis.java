@@ -23,7 +23,6 @@ package sootup.apk.frontend.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -68,7 +67,7 @@ public class DexDefUseAnalysis {
         Value val = ((AbstractDefinitionStmt) stmt).getLeftOp();
         addLocalToUseBits(i, val, localToDefsBits);
       }
-      List<Value> collect = stmt.getUses().collect(Collectors.toList());
+      List<Value> collect = stmt.getUses();
       // Record the uses
       for (Value val : collect) {
         addLocalToUseBits(i, val, localToUsesBits);
@@ -76,11 +75,14 @@ public class DexDefUseAnalysis {
     }
   }
 
+  // The sets keep the order of the statements: the transformers take the first use that decides,
+  // and statements are hashed by identity
+
   /* Returns the uses of statement for the given Local */
   public Set<Stmt> getUsesOf(Local l) {
     Set<Stmt> uses = localToUses.get(l);
     if (uses == null) {
-      uses = new HashSet<>();
+      uses = new LinkedHashSet<>();
       BitSet bs = localToUsesBits[localToNumber.get(l)];
       if (bs != null) {
         for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -103,7 +105,7 @@ public class DexDefUseAnalysis {
   protected Set<Stmt> collectDefinitionsWithAliases(Local l) {
     Set<Stmt> defs = localToDefsWithAliases.get(l);
     if (defs == null) {
-      defs = new HashSet<Stmt>();
+      defs = new LinkedHashSet<Stmt>();
 
       Set<Local> seenLocals = new HashSet<Local>();
       List<Local> newLocals = new ArrayList<Local>();
@@ -155,7 +157,7 @@ public class DexDefUseAnalysis {
   public List<Stmt> getDefsOf(Local l) {
     Set<Stmt> defs = localToDefs.get(l);
     if (defs == null) {
-      defs = new HashSet<>();
+      defs = new LinkedHashSet<>();
       if (localToNumber.get(l) == null) {
         return Collections.emptyList();
       }

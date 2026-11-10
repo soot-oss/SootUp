@@ -22,6 +22,8 @@ package sootup.core.frontend;
  * #L%
  */
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.model.Body;
@@ -89,5 +91,12 @@ public class OverridingBodySource implements BodySource {
   @NonNull
   public OverridingBodySource withBody(@NonNull Body body) {
     return new OverridingBodySource(delegate, body);
+  }
+
+  @Override
+  public <T> List<T> getParameterAnnotations(int paramIndex, String visibility) {
+    return delegate != null
+        ? delegate.getParameterAnnotations(paramIndex, visibility)
+        : Collections.emptyList();
   }
 }

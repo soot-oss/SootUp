@@ -17,16 +17,14 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -68,10 +66,11 @@ public class FieldModifiersValidatorTest {
     assertEquals(1, body.getLocalCount());
 
     FieldSignature fieldSignature =
-        new FieldSignature(
-            new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
-            "i",
-            PrimitiveType.IntType.getInstance());
+        view.getIdentifierFactory()
+            .getFieldSignature(
+                "i",
+                view.getIdentifierFactory().getClassType("FieldModifiersValidator"),
+                PrimitiveType.IntType.getInstance());
     JavaSootField dummyField =
         JavaSootField.JavaSootFieldBuilder.builder()
             .withSignature(fieldSignature)
@@ -91,20 +90,13 @@ public class FieldModifiersValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(dummyField),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withFields(Collections.singleton(dummyField))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 

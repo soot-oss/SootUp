@@ -83,9 +83,12 @@ public abstract class SootClassMemberSubSignature {
     return Objects.equal(getName(), that.getName()) && Objects.equal(getType(), that.getType());
   }
 
+  private final Supplier<Integer> _cachedHashCode =
+      Suppliers.memoize(() -> Objects.hashCode(getName(), getType()));
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName(), getType());
+    return _cachedHashCode.get();
   }
 
   protected int compareTo(@NonNull SootClassMemberSubSignature o) {
@@ -100,10 +103,7 @@ public abstract class SootClassMemberSubSignature {
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(
-          () ->
-              String.format(
-                  "%s %s",
-                  JimpleUtils.escape(getType().toString()), JimpleUtils.escape(getName())));
+          () -> String.format("%s %s", getType(), JimpleUtils.quotedNameOf(getName())));
 
   @Override
   @NonNull

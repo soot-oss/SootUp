@@ -47,7 +47,7 @@ public class PostOrderBlockTraversal implements BlockTraversalStrategy {
 
   @Override
   @NonNull
-  public List<BasicBlock<?>> getBlocksSorted() {
+  public List<BasicBlock<?>> getBlockTraversal() {
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)
         .collect(Collectors.toList());

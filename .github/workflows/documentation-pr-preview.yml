@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0                                  # mike needs full history to push to gh-pages
 
@@ -41,11 +41,11 @@ jobs:
 
       - name: Generate Javadoc
         shell: bash
-        run: mvn clean install -DskipTests -B && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
+        run: mvn clean install -DskipTests -B -ntp && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
 
       - name: Move generated Javadoc into docs directory
         shell: bash
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Create Documentation Preview
-        uses: secure-software-engineering/actions/documentation/pr-preview@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        uses: secure-software-engineering/actions/documentation/pr-preview@c98577761faae44108ba0ec2de7ebd67ddd4b40b # develop

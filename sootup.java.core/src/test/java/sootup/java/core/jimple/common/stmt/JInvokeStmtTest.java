@@ -29,16 +29,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -63,27 +61,22 @@ public class JInvokeStmtTest {
   public void test() {
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory dif = new JavaIdentifierFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/nonexistent.java"));
     JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<JavaSootField> fields = new LinkedHashSet<>();
     Set<JavaSootMethod> methods = new LinkedHashSet<>();
-    OverridingJavaClassSource javaClassSource =
-        new OverridingJavaClassSource(
-            new EagerInputLocation(),
-            dummyPath,
-            dif.getClassType("de.upb.sootup.instructions.stmt.IdentityStmt"),
-            superClassSignature,
-            new HashSet<>(),
-            null,
-            fields,
-            methods,
-            NoPositionInformation.getInstance(),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource javaClassSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(dif.getClassType("de.upb.sootup.instructions.stmt.IdentityStmt"))
+            .withSourcePath(dummyPath)
+            .withSuperclass(superClassSignature)
+            .withFields(fields)
+            .withMethods(methods)
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .build();
 
     SootClass sootClass = new JavaSootClass(javaClassSource, SourceType.Application);
 
@@ -94,7 +87,8 @@ public class JInvokeStmtTest {
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
-                statMethodSig, Collections.singletonList(JavaJimple.newStringConstant("Towel"))),
+                statMethodSig,
+                Collections.singletonList(JavaJimple.newStringConstant("Towel", dif))),
             nop);
 
     // toString
@@ -112,7 +106,7 @@ public class JInvokeStmtTest {
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
+                Jimple.newLocal("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
             nop);
 
     // toString
@@ -129,7 +123,7 @@ public class JInvokeStmtTest {
     Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                new Local("r2", sootClass.getType()), imethodSig, Collections.emptyList()),
+                Jimple.newLocal("r2", sootClass.getType()), imethodSig, Collections.emptyList()),
             nop);
 
     // toString

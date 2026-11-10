@@ -22,15 +22,14 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -50,6 +49,7 @@ public class JavaView extends AbstractView {
 
   @NonNull protected final List<AnalysisInputLocation> inputLocations;
   @NonNull protected final ClassCache cache;
+  @NonNull protected final LoadingStrategy loadingStrategy;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -64,16 +64,36 @@ public class JavaView extends AbstractView {
   public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, LoadingStrategy.onDemand());
   }
 
-  protected JavaView(
+  public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
+      @NonNull LoadingStrategy loadingStrategy) {
+    this(inputLocations, cacheProvider, loadingStrategy, new JavaIdentifierFactory());
+  }
+
+  /**
+   * Creates a view that uses the given {@link JavaIdentifierFactory} instead of one of its own. The
+   * factory shares the lifetime of the views it is handed to, so passing the same instance to
+   * several views is the way to share it between them.
+   *
+   * @param inputLocations the input locations the view resolves classes from
+   * @param cacheProvider provides the cache that stores the resolved classes
+   * @param loadingStrategy determines when classes are resolved
+   * @param idf the identifier factory this view hands out
+   */
+  public JavaView(
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
+      @NonNull LoadingStrategy loadingStrategy,
       @NonNull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
+    this.loadingStrategy = loadingStrategy;
     this.identifierFactory = idf;
+    loadingStrategy.initialize(this);
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
@@ -81,20 +101,22 @@ public class JavaView extends AbstractView {
   @NonNull
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
+      return cache.getClasses().map(clazz -> (JavaSootClass) clazz);
     }
-
-    Stream<JavaSootClass> resolvedClasses =
+    List<JavaSootClass> resolvedClasses =
         inputLocations.stream()
             .flatMap(
                 location -> {
-                  // TODO: [ms] find a way to not stream().collect().stream()
-                  return location.getClassSources(this).toList().stream();
+                  try (Stream<? extends SootClassSource> sources = location.getClassSources(this)) {
+                    return sources.toList().stream();
+                  }
                 })
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
-            .map(this::buildClassFrom);
+            .map(this::buildClassFrom)
+            .toList();
+
     isFullyResolved = true;
-    return resolvedClasses;
+    return resolvedClasses.stream();
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
@@ -105,9 +127,25 @@ public class JavaView extends AbstractView {
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
+    return loadingStrategy.resolveOnCacheMiss(this, type);
+  }
 
-    Optional<JavaSootClassSource> abstractClass = getClassSource(type);
-    return abstractClass.map(this::buildClassFrom);
+  /**
+   * Forgets that {@code type} was previously resolved as absent, so that the next {@link
+   * #getClass(ClassType)} queries the input locations again. Subclasses that make a class available
+   * after construction should call this. Delegates to the active {@link LoadingStrategy}; a no-op
+   * under the eager strategy, which tracks no absence state to forget - by design, not a bug, since
+   * a class absent after an eager load can never become present.
+   *
+   * <p>It is not load-bearing for {@link MutableJavaView} as currently written: {@link
+   * #getClass(ClassType)} consults {@link #cache} before the loading strategy, and {@code addClass}
+   * populates that cache, so a stale absence record is shadowed anyway. It guards the cases where
+   * that no longer holds - if the two checks are ever reordered, or if a mutating view is given an
+   * evicting cache such as {@link sootup.core.cache.LRUCache}, where an added class can disappear
+   * from the cache again and let the stale record surface.
+   */
+  protected synchronized void forgetAbsence(@NonNull ClassType type) {
+    loadingStrategy.makeAvailable(type);
   }
 
   @Override
@@ -137,25 +175,20 @@ public class JavaView extends AbstractView {
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type) {
-    return inputLocations.parallelStream()
+    return inputLocations.stream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
-        // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
-        // classpath the first is returned (see splitpackage)
-        .limit(1)
         .map(Optional::get)
-        .map(classSource -> (JavaSootClassSource) classSource)
-        .findAny();
+        .findFirst()
+        .map(src -> (JavaSootClassSource) src);
   }
 
   @NonNull
   protected synchronized JavaSootClass buildClassFrom(JavaSootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
-    JavaSootClass theClass;
-    if (cache.hasClass(classType)) {
-      theClass = (JavaSootClass) cache.getClass(classType);
-    } else {
+    JavaSootClass theClass = (JavaSootClass) cache.getClass(classType);
+    if (theClass == null) {
       theClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }

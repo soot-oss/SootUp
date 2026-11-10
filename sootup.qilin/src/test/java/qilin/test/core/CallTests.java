@@ -18,12 +18,10 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class CallTests extends JunitTests {
+public class CallTests extends QilinFrameworkTests {
   @Test
   public void testVirtualCall0() {
     checkAssertions(run("qilin.microben.core.call.VirtualCall0"));
@@ -37,5 +35,15 @@ public class CallTests extends JunitTests {
   @Test
   public void testStaticCall() {
     checkAssertions(run("qilin.microben.core.call.StaticCall"));
+  }
+
+  @Test
+  public void testDefaultMethodCall() {
+    checkAssertions(run("qilin.microben.core.call.DefaultMethodCall"));
+  }
+
+  @Test
+  public void testInheritedStaticCall() {
+    checkAssertions(run("qilin.microben.core.call.InheritedStaticCall"));
   }
 }

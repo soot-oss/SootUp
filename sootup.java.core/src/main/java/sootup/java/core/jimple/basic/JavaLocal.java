@@ -28,42 +28,17 @@ import sootup.core.types.Type;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.HasAnnotation;
 
-public class JavaLocal extends Local implements HasAnnotation {
+/** A local with Java annotations, independent of its slot or operand stack provenance. */
+public interface JavaLocal extends Local, HasAnnotation {
+  @Override
+  @NonNull Iterable<AnnotationUsage> getAnnotations();
 
-  // TODO: [ms] add to JavaJimple
-  // TODO: [ms] make use of this class in both Java Frontends
+  @Override
+  @NonNull JavaLocal withName(@NonNull String name);
 
-  @NonNull private final Iterable<AnnotationUsage> annotations;
+  @Override
+  @NonNull JavaLocal withType(@NonNull Type type);
 
-  /**
-   * Constructs a JimpleLocal of the given name and type.
-   *
-   * @param name
-   * @param type
-   */
-  public JavaLocal(
-      @NonNull String name, @NonNull Type type, @NonNull Iterable<AnnotationUsage> annotations) {
-    super(name, type);
-    this.annotations = annotations;
-  }
-
-  @NonNull
-  public Iterable<AnnotationUsage> getAnnotations() {
-    return annotations;
-  }
-
-  @NonNull
-  public Local withName(@NonNull String name) {
-    return new JavaLocal(name, getType(), getAnnotations());
-  }
-
-  @NonNull
-  public Local withType(@NonNull Type type) {
-    return new JavaLocal(getName(), type, getAnnotations());
-  }
-
-  @NonNull
-  public Local withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
-    return new JavaLocal(getName(), getType(), annotations);
-  }
+  /** Returns a copy with new annotations, preserving all other state and capabilities. */
+  @NonNull JavaLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
 }

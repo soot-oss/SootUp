@@ -28,6 +28,9 @@ import com.google.common.collect.Iterables;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -40,6 +43,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -47,7 +51,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.types.JavaClassType;
 
-public class JavaSootClass implements SootClass, HasAnnotation {
+public class JavaSootClass implements SootClass, HasAnnotation, HasGenericSignature {
 
   final SootClassSource classSource;
   final SourceType sourceType;
@@ -63,6 +67,9 @@ public class JavaSootClass implements SootClass, HasAnnotation {
 
   @NonNull private final Supplier<Set<? extends SootField>> _lazyFields;
 
+  @NonNull
+  private final Supplier<Map<MethodSubSignature, JavaSootMethod>> _lazyMethodBySubSignature;
+
   public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
     this.classSource = classSource;
     this.sourceType = sourceType;
@@ -74,6 +81,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.lazyPosition = Suppliers.memoize(classSource::resolvePosition);
     this._lazyMethods = Suppliers.memoize(this::lazyMethodInitializer);
     this._lazyFields = Suppliers.memoize(this::lazyFieldInitializer);
+    this._lazyMethodBySubSignature =
+        Suppliers.memoize(() -> buildMethodBySubSignatureMap(getMethods()));
   }
 
   public JavaSootClass(
@@ -96,14 +105,23 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.lazySuperclass = Suppliers.ofInstance(superclass);
     this.lazyOuterClass = Suppliers.ofInstance(outerClass);
     this.lazyPosition = Suppliers.ofInstance(position);
+    this._lazyMethodBySubSignature = Suppliers.memoize(() -> buildMethodBySubSignatureMap(methods));
+  }
+
+  @NonNull
+  private static Map<MethodSubSignature, JavaSootMethod> buildMethodBySubSignatureMap(
+      @NonNull Set<JavaSootMethod> methods) {
+    Map<MethodSubSignature, JavaSootMethod> map = new HashMap<>(methods.size() * 2);
+    for (JavaSootMethod method : methods) {
+      map.put(method.getSignature().getSubSignature(), method);
+    }
+    return Collections.unmodifiableMap(map);
   }
 
   @Override
   @NonNull
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
-    return getMethods().stream()
-        .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
-        .findAny();
+    return Optional.ofNullable(_lazyMethodBySubSignature.get().get(subSignature));
   }
 
   @Override
@@ -202,6 +220,56 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<ClassModifier> getModifiers() {
     return lazyModifiers.get();
+  }
+
+  /** Returns the SourceFile attribute, distinct from the filesystem path of the classfile. */
+  @NonNull
+  public Optional<String> getSourceFile() {
+    return getClassFileMetadata().getSourceFile();
+  }
+
+  /**
+   * Returns decoded, unparsed SourceDebugExtension text, such as SMAP; no line remapping is done.
+   */
+  @NonNull
+  public Optional<String> getSourceDebugExtension() {
+    return getClassFileMetadata().getSourceDebugExtension();
+  }
+
+  /**
+   * Returns the owner from EnclosingMethod, including for classes declared in initializers. Member
+   * classes instead describe their declaring class in InnerClasses and {@link #getOuterClass()}.
+   */
+  @NonNull
+  public Optional<JavaClassType> getEnclosingClass() {
+    return getClassFileMetadata().getEnclosingClass();
+  }
+
+  /** Returns the enclosing method or constructor; classes declared in initializers have none. */
+  @NonNull
+  public Optional<MethodSignature> getEnclosingMethod() {
+    return getClassFileMetadata().getEnclosingMethod();
+  }
+
+  /**
+   * Returns immutable InnerClasses entries in classfile order, including referenced nested classes.
+   */
+  @NonNull
+  public List<JavaInnerClassInfo> getInnerClasses() {
+    return getClassFileMetadata().getInnerClasses();
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return getClassFileMetadata().getGenericSignature();
+  }
+
+  private JavaClassFileMetadata getClassFileMetadata() {
+    return classSource instanceof JavaSootClassSource
+        ? ((JavaSootClassSource) classSource).getClassFileMetadata()
+        : JavaClassFileMetadata.empty();
   }
 
   /**

@@ -40,5 +40,5 @@ public interface BlockTraversalStrategy {
    *
    * @return a list of Blocks in traversal order
    */
-  public List<BasicBlock<?>> getBlocksSorted();
+  public List<BasicBlock<?>> getBlockTraversal();
 }

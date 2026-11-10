@@ -21,17 +21,14 @@ package qilin.pta.tools;
 import java.util.HashSet;
 import java.util.Set;
 import qilin.core.PTAScene;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PartialMethodLvSelector;
-import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
+import qilin.parm.select.PartialMethodLevelSelector;
 import qilin.pta.toolkits.zipper.Main;
-import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -50,36 +47,35 @@ import sootup.core.types.ReferenceType;
  * */
 public class ZipperPTA extends StagedPTA {
   private final Set<SootMethod> PCMs = new HashSet<>();
+  private final boolean isExpress;
 
   /*
    * Zipper support object-sensitivity, callsite-sensitivity by using corresponding
    * context-constructor.
    * */
-  public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
+  public ZipperPTA(
+      PTAScene scene, int k, int hk, ContextConstructor contextConstructor, boolean isExpress) {
     super(scene);
-    this.ctxCons = ctxCons;
-    CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
-    this.prePTA = new Spark(scene);
+    this.isExpress = isExpress;
+    ContextSelector us = new PartialMethodLevelSelector(k, hk, PCMs);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
+    this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
   }
 
   @Override
   protected void preAnalysis() {
+    getScene().getCallDetails().enable();
     Stopwatch sparkTimer = Stopwatch.newAndStart("Spark");
     prePTA.pureRun();
+    getScene().getCallDetails().disable();
     sparkTimer.stop();
     System.out.println(sparkTimer);
     Stopwatch zipperTimer = Stopwatch.newAndStart("Zipper");
-    Main.run(prePTA, PCMs);
+    Main.run(prePTA, PCMs, isExpress);
     zipperTimer.stop();
     System.out.println(zipperTimer);
     extraStats();
@@ -92,13 +88,13 @@ public class ZipperPTA extends StagedPTA {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
 
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         return;
       }
       MethodPAG srcmpag = pag.getMethodPAG(method);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           nodes.add(((VarNode) from).getVariable());
         } else if (from instanceof AllocNode) {

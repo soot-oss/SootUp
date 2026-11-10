@@ -7,6 +7,8 @@
 !sootup.codepropertygraph/src/test/resources/**/*.class
 !sootup.tests/src/test/resources/**/*.class
 !sootup.java.bytecode.frontend/src/test/resources/**/*.class
+!sootup.spark/src/test/resources/pta/binary/**/*.class
+!sootup.examples/src/test/resources/**/*.class
 
 # Log file
 *.log
@@ -24,6 +26,8 @@
 !sootup.java.bytecode.frontend/src/test/resources/java-warApp/dummyWarApp.war
 !sootup.java.bytecode.frontend/src/test/resources/multi-release-jar/mrjar.jar
 !sootup.java.bytecode.frontend/src/test/resources/multi-release-jar-modular/mrjar.jar
+!sootup.apk.frontend/src/test/resources/platforms/**/*.jar
+!sootup.qilin/src/test/resources/jre1.6.0_45-min/lib/jre1.6.0_45-collections-min.jar
 *.ear
 *.zip
 *.tar.gz
@@ -168,3 +172,4 @@ fabric.properties
 =======
 .vscode/
 .DS_Store
+sootup.spark/src/test/java/sootup/spark/test/PointsToAnalysisDemoTest.java

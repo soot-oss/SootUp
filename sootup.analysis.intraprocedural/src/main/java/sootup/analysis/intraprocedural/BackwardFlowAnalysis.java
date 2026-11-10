@@ -39,6 +39,6 @@ public abstract class BackwardFlowAnalysis<A> extends FlowAnalysis<A> {
 
   @Override
   protected void execute() {
-    int i = execute(stmtToAfterFlow, stmtToBeforeFlow);
+    int i = execute(flowAfter, flowBefore);
   }
 }

@@ -1,9 +1,9 @@
-<p align="center">
-<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
+<p>
+<img width="350px" alt="Logo of SootUp" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
 # SootUp library
-[![Unit & Integration Tests with Maven](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml/badge.svg)](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central Version](https://img.shields.io/maven-central/v/org.soot-oss/sootup)](https://central.sonatype.com/artifact/org.soot-oss/sootup) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/soot-oss/SootUp/badge)](https://scorecard.dev/viewer/?uri=github.com/soot-oss/SootUp)
+[![Unit & Integration Tests with Maven](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml/badge.svg)](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central Version](https://img.shields.io/maven-central/v/org.soot-oss/sootup)](https://central.sonatype.com/artifact/org.soot-oss/sootup) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/soot-oss/SootUp/badge)](https://scorecard.dev/viewer/?uri=github.com/soot-oss/SootUp)[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11242/badge)](https://www.bestpractices.dev/projects/11242)
 
 
 
@@ -76,10 +76,10 @@ isbn="978-3-031-57246-3"
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
-<table border="0">
+<table>
 <tr>
-<td><img src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
-<td><img src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
+<td><img alt="Logo of DFG" src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
+<td><img alt="Logo of HNI" src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
 </tr>
 </table>
 

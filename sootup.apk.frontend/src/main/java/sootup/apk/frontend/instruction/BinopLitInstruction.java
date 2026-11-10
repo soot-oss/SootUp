@@ -30,7 +30,7 @@ import org.jf.dexlib2.iface.instruction.formats.Instruction22b;
 import org.jf.dexlib2.iface.instruction.formats.Instruction22s;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -55,7 +55,7 @@ public class BinopLitInstruction extends DexLibAbstractInstruction {
     Value expr = getExpression(source1, constant);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), expr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }
