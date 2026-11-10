@@ -78,12 +78,18 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DexClassSource.</span><code><a href="../../../apk/frontend/dexpler/DexClassSource.html#convertAnnotation(java.util.Set)" class="member-name-link">convertAnnotation</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations)</code></div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexMethodSource.</span><code><a href="../../../apk/frontend/dexpler/DexMethodSource.html#getParameterAnnotations(int)" class="member-name-link">getParameterAnnotations</a><wbr>(int&nbsp;paramIndex)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DexClassSource.</span><code><a href="../../../apk/frontend/dexpler/DexClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DexMethodSource.</span><code><a href="../../../apk/frontend/dexpler/DexMethodSource.html#getParameterAnnotations(int,java.lang.String)" class="member-name-link">getParameterAnnotations</a><wbr>(int&nbsp;paramIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;visibility)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Returns the annotations of a parameter.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexClassSource.</span><code><a href="../../../apk/frontend/dexpler/DexClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -95,9 +101,12 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../../apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set)" class="member-name-link">createAnnotationUsage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../../apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+ @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Converts the annotations of a dex class, field, method or parameter.</div>
+</div>
 </div>
 </section>
 </li>

@@ -4375,8 +4375,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#convertAnnotation(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotation(List&lt;AnnotationNode&gt;, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#convertAnnotation(java.util.Set)" class="member-name-link">convertAnnotation(Set&lt;? extends Annotation&gt;)</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#convertAnnotationValue(java.lang.Object,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotationValue(Object, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/main/DexBody.html#convertMultimap(com.google.common.collect.LinkedListMultimap)" class="member-name-link">convertMultimap(LinkedListMultimap&lt;BranchingStmt, List&lt;Stmt&gt;&gt;)</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexBody.html" title="class in sootup.apk.frontend.main">DexBody</a></dt>
@@ -4455,14 +4453,16 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html#createAnalysisInputLocation(java.nio.file.Path,sootup.core.model.SourceType,java.util.List)" class="member-name-link">createAnalysisInputLocation(Path, SourceType, List&lt;BodyInterceptor&gt;)</a> - Method in class sootup.java.bytecode.frontend.inputlocation.<a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html" title="class in sootup.java.bytecode.frontend.inputlocation">MultiReleaseJarAnalysisInputLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage(Set&lt;? extends Annotation&gt;, IdentifierFactory)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
+<dd>
+<div class="block">Converts the annotations of a dex class, field, method or parameter.</div>
+</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage(List&lt;? extends AnnotationNode&gt;, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage(List&lt;? extends AnnotationNode&gt;, IdentifierFactory, boolean)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>
 <div class="block">Converts annotations, propagating the containing attribute's visibility to nested values.</div>
 </dd>
-<dt><a href="sootup/apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set)" class="member-name-link">createAnnotationUsage(Set&lt;? extends Annotation&gt;)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage(AnnotationNode, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage(AnnotationNode, IdentifierFactory, boolean)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
@@ -7125,6 +7125,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/main/DexBody.html#extractDexInstructions(org.jf.dexlib2.iface.MethodImplementation)" class="member-name-link">extractDexInstructions(MethodImplementation)</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexBody.html" title="class in sootup.apk.frontend.main">DexBody</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/Util/DexUtil.html#extractThrownExceptions(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">extractThrownExceptions(Set&lt;? extends Annotation&gt;, IdentifierFactory)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
+<dd>
+<div class="block">Extracts the declared exceptions of a method from its <code>dalvik.annotation.Throws</code>
+ system annotation.</div>
+</dd>
 <dt><a href="qilin/pta/tools/PartialCallSiteSensPTA.html#extraStats()" class="member-name-link">extraStats()</a> - Method in class qilin.pta.tools.<a href="qilin/pta/tools/PartialCallSiteSensPTA.html" title="class in qilin.pta.tools">PartialCallSiteSensPTA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/tools/PartialObjSensPTA.html#extraStats()" class="member-name-link">extraStats()</a> - Method in class qilin.pta.tools.<a href="qilin/pta/tools/PartialObjSensPTA.html" title="class in qilin.pta.tools">PartialObjSensPTA</a></dt>
@@ -9786,6 +9791,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/ArtificialMethod.html#getPara(int,sootup.core.types.Type)" class="member-name-link">getPara(int, Type)</a> - Method in class qilin.core.<a href="qilin/core/ArtificialMethod.html" title="class in qilin.core">ArtificialMethod</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html#getParameterAnnotations(int)" class="member-name-link">getParameterAnnotations(int)</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethodSource.html" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/frontend/BodySource.html#getParameterAnnotations(int)" class="member-name-link">getParameterAnnotations(int)</a> - Method in interface sootup.core.frontend.<a href="sootup/core/frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a></dt>
 <dd>
 <div class="block">Query method parameter declaration annotations (JVMS §4.7.18/§4.7.19) by index.</div>
@@ -9796,6 +9803,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmMethodSource.html#getParameterAnnotations(int)" class="member-name-link">getParameterAnnotations(int)</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmMethodSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmMethodSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html#getParameterAnnotations(int,java.lang.String)" class="member-name-link">getParameterAnnotations(int, String)</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethodSource.html" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a></dt>
+<dd>
+<div class="block">Returns the annotations of a parameter.</div>
+</dd>
 <dt><a href="sootup/core/frontend/BodySource.html#getParameterAnnotations(int,java.lang.String)" class="member-name-link">getParameterAnnotations(int, String)</a> - Method in interface sootup.core.frontend.<a href="sootup/core/frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/frontend/OverridingBodySource.html#getParameterAnnotations(int,java.lang.String)" class="member-name-link">getParameterAnnotations(int, String)</a> - Method in class sootup.core.frontend.<a href="sootup/core/frontend/OverridingBodySource.html" title="class in sootup.core.frontend">OverridingBodySource</a></dt>
