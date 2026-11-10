@@ -3421,12 +3421,20 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/instruction/CheckCastInstruction.html#%3Cinit%3E(org.jf.dexlib2.iface.instruction.Instruction,int)" class="member-name-link">CheckCastInstruction(Instruction, int)</a> - Constructor for class sootup.apk.frontend.instruction.<a href="sootup/apk/frontend/instruction/CheckCastInstruction.html" title="class in sootup.apk.frontend.instruction">CheckCastInstruction</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/signatures/JvmNames.html#checkFieldName(java.lang.String)" class="member-name-link">checkFieldName(String)</a> - Static method in class sootup.core.signatures.<a href="sootup/core/signatures/JvmNames.html" title="class in sootup.core.signatures">JvmNames</a></dt>
+<dd>
+<div class="block">Field name: non-empty, none of <code>. ; [ /</code>.</div>
+</dd>
 <dt><a href="sootup/core/validation/CheckInitValidator.html" class="type-name-link" title="class in sootup.core.validation">CheckInitValidator</a> - Class in <a href="sootup/core/validation/package-summary.html">sootup.core.validation</a></dt>
 <dd>
 <div class="block">This validator checks whether local variables are defined before they are used.</div>
 </dd>
 <dt><a href="sootup/core/validation/CheckInitValidator.html#%3Cinit%3E()" class="member-name-link">CheckInitValidator()</a> - Constructor for class sootup.core.validation.<a href="sootup/core/validation/CheckInitValidator.html" title="class in sootup.core.validation">CheckInitValidator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/signatures/JvmNames.html#checkMethodName(java.lang.String)" class="member-name-link">checkMethodName(String)</a> - Static method in class sootup.core.signatures.<a href="sootup/core/signatures/JvmNames.html" title="class in sootup.core.signatures">JvmNames</a></dt>
+<dd>
+<div class="block">Method name: field-name rules, plus <code>&lt; &gt;</code> only as <code>&lt;init&gt;</code> or <code>&lt;clinit&gt;</code>.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/moon/objcollection/CheckStatus.html" class="type-name-link" title="enum class in qilin.pta.toolkits.moon.objcollection">CheckStatus</a> - Enum Class in <a href="qilin/pta/toolkits/moon/objcollection/package-summary.html">qilin.pta.toolkits.moon.objcollection</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/moon/objcollection/CheckTrace.html" class="type-name-link" title="class in qilin.pta.toolkits.moon.objcollection">CheckTrace</a> - Class in <a href="qilin/pta/toolkits/moon/objcollection/package-summary.html">qilin.pta.toolkits.moon.objcollection</a></dt>
@@ -3437,6 +3445,21 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/validation/CheckTypesValidator.html#%3Cinit%3E()" class="member-name-link">CheckTypesValidator()</a> - Constructor for class sootup.core.validation.<a href="sootup/core/validation/CheckTypesValidator.html" title="class in sootup.core.validation">CheckTypesValidator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/model/ClassModifier.html#checkWellFormed(java.util.Set)" class="member-name-link">checkWellFormed(Set&lt;ClassModifier&gt;)</a> - Static method in enum class sootup.core.model.<a href="sootup/core/model/ClassModifier.html" title="enum class in sootup.core.model">ClassModifier</a></dt>
+<dd>
+<div class="block">Rejects combinations no valid class file can hold (JVMS 4.1): more than one access flag, final
+ together with abstract, a final or enum interface, or an annotation that is no interface.</div>
+</dd>
+<dt><a href="sootup/core/model/FieldModifier.html#checkWellFormed(java.util.Set)" class="member-name-link">checkWellFormed(Set&lt;FieldModifier&gt;)</a> - Static method in enum class sootup.core.model.<a href="sootup/core/model/FieldModifier.html" title="enum class in sootup.core.model">FieldModifier</a></dt>
+<dd>
+<div class="block">Rejects combinations no valid class file can hold (JVMS 4.5): more than one access flag, or
+ final together with volatile.</div>
+</dd>
+<dt><a href="sootup/core/model/MethodModifier.html#checkWellFormed(java.util.Set)" class="member-name-link">checkWellFormed(Set&lt;MethodModifier&gt;)</a> - Static method in enum class sootup.core.model.<a href="sootup/core/model/MethodModifier.html" title="enum class in sootup.core.model">MethodModifier</a></dt>
+<dd>
+<div class="block">Rejects combinations no valid class file can hold (JVMS 4.6): more than one access flag, or
+ abstract together with private, static, final, synchronized or native.</div>
+</dd>
 <dt><a href="qilin/util/queue/ChunkedQueue.html" class="type-name-link" title="class in qilin.util.queue">ChunkedQueue</a>&lt;<a href="qilin/util/queue/ChunkedQueue.html" title="type parameter in ChunkedQueue">E</a>&gt; - Class in <a href="qilin/util/queue/package-summary.html">qilin.util.queue</a></dt>
 <dd>
 <div class="block">A queue of Object's.</div>
@@ -14451,6 +14474,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html#%3Cinit%3E(sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature,java.util.List)" class="member-name-link">JVirtualInvokeExpr(Local, MethodSignature, List&lt;Immediate&gt;)</a> - Constructor for class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JVirtualInvokeExpr</a></dt>
 <dd>
 <div class="block">Stores the values to the args array.</div>
+</dd>
+<dt><a href="sootup/core/signatures/JvmNames.html" class="type-name-link" title="class in sootup.core.signatures">JvmNames</a> - Class in <a href="sootup/core/signatures/package-summary.html">sootup.core.signatures</a></dt>
+<dd>
+<div class="block">Unqualified-name rules of JVMS 4.2.2, checked when a signature is interned so no signature with
+ an illegal name exists.</div>
 </dd>
 <dt><a href="sootup/core/jimple/common/expr/JXorExpr.html" class="type-name-link" title="class in sootup.core.jimple.common.expr">JXorExpr</a> - Class in <a href="sootup/core/jimple/common/expr/package-summary.html">sootup.core.jimple.common.expr</a></dt>
 <dd>
