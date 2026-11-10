@@ -38,8 +38,13 @@ import sootup.callgraph.MethodLookup;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.DoubleConstant;
+import sootup.core.jimple.common.constant.FloatConstant;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -53,8 +58,10 @@ import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
@@ -310,8 +317,8 @@ public class CallGraphBuilder {
     Map<Object, InvokableStmt> stmtMap =
         methodToInvokeStmt.computeIfAbsent(callee.method(), k -> new HashMap<>());
     if (!stmtMap.containsKey(heapOrType)) {
-      AbstractInvokeExpr ie =
-          new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
+      MethodSignature calleeSig = callee.method().getSignature();
+      AbstractInvokeExpr ie = new JStaticInvokeExpr(calleeSig, placeholderArgs(calleeSig));
       JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.getNoStmtPositionInfo());
       stmtMap.put(heapOrType, stmt);
       handleCallEdge(
@@ -321,6 +328,28 @@ public class CallGraphBuilder {
               callee,
               kind));
     }
+  }
+
+  /**
+   * Args for a synthetic call whose params are wired by hand: null for references (skipped by
+   * arg-to-param wiring), zero for primitives. Keeps arg count equal to the signature's.
+   */
+  private static List<Immediate> placeholderArgs(MethodSignature sig) {
+    List<Immediate> args = new ArrayList<>(sig.getParameterTypes().size());
+    for (Type t : sig.getParameterTypes()) {
+      if (t instanceof PrimitiveType.LongType) {
+        args.add(LongConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.FloatType) {
+        args.add(FloatConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.DoubleType) {
+        args.add(DoubleConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType) {
+        args.add(IntConstant.getInstance(0));
+      } else {
+        args.add(NullConstant.getInstance());
+      }
+    }
+    return args;
   }
 
   public void addStaticEdge(

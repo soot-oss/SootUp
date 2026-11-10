@@ -1,6 +1,7 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,16 +120,16 @@ public class FieldModifiersValidatorTest {
 
   @Test
   public void testFieldModifiersValidator_fail1() {
+    // illegal modifier combination: rejected when the class/member is built (JVMS)
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
-
-    JavaSootClass javaSootClass =
-        testClassCreatorWithModifiers(
-            EnumSet.of(ClassModifier.PUBLIC),
-            EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
-
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
-
-    assertEquals(1, validationExceptions_fail1.size());
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            fieldModifiersValidator.validate(
+                testClassCreatorWithModifiers(
+                    EnumSet.of(ClassModifier.PUBLIC),
+                    EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE)),
+                validationExceptions_fail1));
   }
 
   @Test

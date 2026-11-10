@@ -74,7 +74,13 @@ public class JavaSootClass implements SootClass, HasAnnotation, HasGenericSignat
     this.classSource = classSource;
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
-    this.lazyModifiers = Suppliers.memoize(classSource::resolveModifiers);
+    this.lazyModifiers =
+        Suppliers.memoize(
+            () -> {
+              Set<ClassModifier> mods = classSource.resolveModifiers();
+              ClassModifier.checkWellFormed(mods);
+              return mods;
+            });
     this.lazyInterfaces = Suppliers.memoize(classSource::resolveInterfaces);
     this.lazySuperclass = Suppliers.memoize(classSource::resolveSuperclass);
     this.lazyOuterClass = Suppliers.memoize(classSource::resolveOuterClass);
@@ -100,6 +106,7 @@ public class JavaSootClass implements SootClass, HasAnnotation, HasGenericSignat
     this.classSignature = classSource.getClassType();
     this._lazyMethods = Suppliers.ofInstance(methods);
     this._lazyFields = Suppliers.ofInstance(fields);
+    ClassModifier.checkWellFormed(modifiers);
     this.lazyModifiers = Suppliers.ofInstance(modifiers);
     this.lazyInterfaces = Suppliers.ofInstance(interfaces);
     this.lazySuperclass = Suppliers.ofInstance(superclass);
