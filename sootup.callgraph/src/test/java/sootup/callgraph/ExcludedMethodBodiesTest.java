@@ -1,21 +1,23 @@
 package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import sootup.callgraph.scope.CallFilter;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.ExcludedCallsCollectingCallResolver;
-import sootup.callgraph.scope.ExplorationVerdict;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
@@ -71,11 +73,9 @@ public class ExcludedMethodBodiesTest {
     assertTrue(cg.callTargetsFrom(main).contains(libraryUse));
     assertTrue(cg.callsFrom(libraryConstructor).isEmpty());
     assertTrue(cg.callsFrom(libraryUse).isEmpty());
-
-    // the library methods were neither loaded nor examined statement by statement
+    // the library methods were not loaded
     Mockito.verify(cha, Mockito.never()).getBody(argThat(this::isLibraryMethod));
-    Mockito.verify(resolver, Mockito.never()).tryAdvance(argThat(this::isLibraryMethod), any());
-    // each reached library method is decided once, as a whole
+    // each reached library method is decided once
     for (MethodSignature libraryMethod : List.of(libraryConstructor, libraryUse)) {
       Mockito.verify(resolver, Mockito.times(1))
           .tryAdvanceMethod(argThat(m -> m != null && m.getSignature().equals(libraryMethod)));
@@ -83,35 +83,36 @@ public class ExcludedMethodBodiesTest {
   }
 
   @Test
-  public void resolverWithoutMethodVerdictExaminesEveryStatement() {
+  public void aStatementFilterExaminesEveryStatement() {
     JavaView view = createLibraryView();
-    // a resolver that only decides per statement must still be asked for each statement
+    // excludes the same calls as the default resolver, but statement by statement
+    List<InvokableStmt> examined = new ArrayList<>();
     CallResolver perStatement =
-        Mockito.spy(
-            new CallResolver() {
-              @Override
-              public ExplorationVerdict tryAdvance(
-                  SootMethod caller, sootup.core.jimple.common.stmt.InvokableStmt statement) {
-                return isLibraryMethod(caller)
-                    ? ExplorationVerdict.STOP_AFTER_CALL
-                    : ExplorationVerdict.EXPLORE_METHOD;
-              }
-            });
-    CallGraph perStatementGraph =
-        new ClassHierarchyAnalysisAlgorithm(view, perStatement)
-            .initialize(Collections.singletonList(main));
+        caller ->
+            CallFilter.of(
+                statement -> {
+                  if (isLibraryMethod(caller)) {
+                    examined.add(statement);
+                    return false;
+                  }
+                  return true;
+                });
+    ClassHierarchyAnalysisAlgorithm cha =
+        Mockito.spy(new ClassHierarchyAnalysisAlgorithm(view, perStatement));
+
+    CallGraph perStatementGraph = cha.initialize(Collections.singletonList(main));
     CallGraph defaultGraph =
         new ClassHierarchyAnalysisAlgorithm(view, new DefaultCallResolver(view))
             .initialize(Collections.singletonList(main));
 
-    Mockito.verify(perStatement, Mockito.atLeastOnce())
-        .tryAdvance(argThat(this::isLibraryMethod), any());
+    Mockito.verify(cha, Mockito.atLeastOnce()).getBody(argThat(this::isLibraryMethod));
+    assertFalse(examined.isEmpty());
     assertEquals(perStatementGraph.getMethodSignatures(), defaultGraph.getMethodSignatures());
     assertEquals(perStatementGraph.callCount(), defaultGraph.callCount());
   }
 
   @Test
-  public void excludedCallsAreStillCollectedPerStatement() {
+  public void excludedMethodsAreCollectedWithoutLoadingTheirBodies() {
     JavaView view = createLibraryView();
     ExcludedCallsCollectingCallResolver resolver = new ExcludedCallsCollectingCallResolver(view);
     ClassHierarchyAnalysisAlgorithm cha =
@@ -119,8 +120,7 @@ public class ExcludedMethodBodiesTest {
 
     cha.initialize(Collections.singletonList(main));
 
-    // the collecting resolver records the excluded methods from their statements
-    assertEquals(2, resolver.getVisitedExcludedMethods().size());
-    Mockito.verify(cha, Mockito.atLeastOnce()).getBody(argThat(this::isLibraryMethod));
+    assertEquals(Set.of(libraryConstructor, libraryUse), resolver.getVisitedExcludedMethods());
+    Mockito.verify(cha, Mockito.never()).getBody(argThat(this::isLibraryMethod));
   }
 }

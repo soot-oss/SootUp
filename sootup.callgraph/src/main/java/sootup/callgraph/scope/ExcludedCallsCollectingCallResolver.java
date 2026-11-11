@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -46,20 +45,13 @@ public class ExcludedCallsCollectingCallResolver extends DefaultCallResolver {
   }
 
   @Override
-  public ExplorationVerdict tryAdvance(
-      @NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    ExplorationVerdict strategy = super.tryAdvance(method, statement);
-    if (strategy != ExplorationVerdict.EXPLORE_METHOD) {
+  @NonNull
+  public CallFilter tryAdvanceMethod(@NonNull SootMethod method) {
+    CallFilter filter = super.tryAdvanceMethod(method);
+    if (filter.resolvesNone()) {
       visitedExcludedMethods.add(method.getSignature());
     }
-    return strategy;
-  }
-
-  /** Examines each method statement by statement, so that excluded methods are recorded. */
-  @Override
-  @NonNull
-  public ExplorationVerdict tryAdvanceMethod(@NonNull SootMethod method) {
-    return ExplorationVerdict.EXPLORE_METHOD;
+    return filter;
   }
 
   /**

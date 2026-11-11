@@ -158,11 +158,12 @@ public class CallGraphScopeTest {
         identifierFactory.getStaticInitializerSignature(
             identifierFactory.getClassType("polarity.WithClinit"));
 
+    // excludes each statement on its own, so that every path checks the statements
     CallResolver resolver =
-        (caller, statement) ->
+        caller ->
             caller.getName().equals("excludedCaller")
-                ? ExplorationVerdict.STOP_AFTER_CALL
-                : ExplorationVerdict.EXPLORE_METHOD;
+                ? CallFilter.of(statement -> false)
+                : CallFilter.all();
 
     ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, resolver);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));

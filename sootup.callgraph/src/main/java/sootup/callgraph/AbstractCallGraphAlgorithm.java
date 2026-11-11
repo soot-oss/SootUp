@@ -38,6 +38,7 @@ import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.CallFilter;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.ExplorationVerdict;
@@ -311,15 +312,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Only {@link ExplorationVerdict#EXPLORE_METHOD} causes a statement's call(s) to be resolved;
-   * {@link ExplorationVerdict#STOP_AFTER_CALL} and {@link ExplorationVerdict#STOP} are equivalent
-   * at the pre-dispatch checkpoint, since no specific callee is known yet.
-   */
-  private static boolean explores(ExplorationVerdict verdict) {
-    return verdict == ExplorationVerdict.EXPLORE_METHOD;
-  }
-
-  /**
    * This method creates the mutable call graph which is used in the call graph algorithm. Overwrite
    * it to change the used mutable call graph
    *
@@ -397,15 +389,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 if (!currentMethod.hasBody()) {
                   return;
                 }
+                CallFilter calls = callResolver.tryAdvanceMethod(currentMethod);
                 // a method whose calls are all excluded is not loaded only to exclude each of them
-                if (!explores(callResolver.tryAdvanceMethod(currentMethod))) {
+                if (calls.resolvesNone()) {
                   return;
                 }
                 // get all call targets of invocations in the method body
-                resolveAllCallsFromSourceMethod(currentMethod, cg, frontier);
+                resolveAllCallsFromSourceMethod(currentMethod, calls, cg, frontier);
 
                 // get all call targets of implicit edges in the method body
-                resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, frontier);
+                resolveAllImplicitCallsFromSourceMethod(currentMethod, calls, cg, frontier);
               });
 
       // set method as processed
@@ -533,11 +526,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param sourceMethod this signature is used to access the statements contained method body of
    *     the specified method
+   * @param calls the statements whose calls are resolved
    * @param cg the call graph that will receive the found calls
    * @param frontier the work-list state that will be updated with found target methods
    */
   protected void resolveAllCallsFromSourceMethod(
-      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
+      @NonNull SootMethod sourceMethod,
+      @NonNull CallFilter calls,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
     Body body = getBody(sourceMethod);
     for (Stmt stmt : body.getStmts()) {
       FunctionalObject.of(stmt, dynamicInvokeResolver, view)
@@ -548,7 +545,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt -> {
-              if (!explores(callResolver.tryAdvance(sourceMethod, stmt))) {
+              if (!calls.resolves(stmt)) {
                 return;
               }
               resolveCall(sourceMethod, stmt)
@@ -648,17 +645,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * It resolves the start-run implicit calls caused by the given source method
    *
    * @param sourceMethod the inspected source method
+   * @param calls the statements whose calls are resolved
    * @param cg implicit start-run calls will be added to the call graph
    * @param frontier new run methods will be added to the work list
    */
   protected void implicitStartRunCall(
-      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
+      @NonNull SootMethod sourceMethod,
+      @NonNull CallFilter calls,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
     for (Stmt stmt : getBody(sourceMethod).getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
       InvokableStmt invokableStmt = stmt.asInvokableStmt();
-      if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
+      if (!calls.resolves(invokableStmt)) {
         continue;
       }
       AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
@@ -701,14 +702,18 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * Resolves all implicit calls caused by the given source method.
    *
    * @param sourceMethod the inspected source method
+   * @param calls the statements whose calls are resolved
    * @param cg the mutable call graph where new calls will be added
    * @param frontier the work-list state in which the new target methods will be added
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
-      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
-    implicitStartRunCall(sourceMethod, cg, frontier);
+      @NonNull SootMethod sourceMethod,
+      @NonNull CallFilter calls,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
+    implicitStartRunCall(sourceMethod, calls, cg, frontier);
     ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls =
-        resolveAllStaticInitializerCalls(sourceMethod);
+        resolveAllStaticInitializerCalls(sourceMethod, calls);
     Stream<Call> staticInitializerCalls =
         postProcessingStaticInitializerCalls(potentialStaticInitializerCalls);
     addStaticInitializerCalls(staticInitializerCalls, cg, frontier);
@@ -725,10 +730,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * pruned to avoid creating duplicate edges.
    *
    * @param sourceMethod the inspected source method
+   * @param calls the statements whose calls are resolved
    * @return a multimap containing the resolved potential static initializer calls
    */
   protected ArrayListMultimap<ClassType, Call> resolveAllStaticInitializerCalls(
-      @NonNull SootMethod sourceMethod) {
+      @NonNull SootMethod sourceMethod, @NonNull CallFilter calls) {
     IdentifierFactory id = view.getIdentifierFactory();
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
     MethodSubSignature sourceMethodSubSignature = sourceMethodSignature.getSubSignature();
@@ -786,7 +792,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                     potentialClinitCalls.putAll(
                         findStaticInitializerCalls(
-                            sourceMethod, targetClass, invokableStmt, table));
+                            sourceMethod, calls, targetClass, invokableStmt, table));
                   }
                 }
                 // static method
@@ -804,7 +810,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                         potentialClinitCalls.putAll(
                             findStaticInitializerCalls(
-                                sourceMethod, newTargetClass, invokableStmt, table));
+                                sourceMethod, calls, newTargetClass, invokableStmt, table));
                       }
                     }
                   }
@@ -824,7 +830,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                         potentialClinitCalls.putAll(
                             findStaticInitializerCalls(
-                                sourceMethod, newTargetClass, invokableStmt, table));
+                                sourceMethod, calls, newTargetClass, invokableStmt, table));
                       }
                     }
                   }
@@ -841,6 +847,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * MultiMap of potential static initializer calls.
    *
    * @param sourceMethod the source method causing the static initializer call
+   * @param calls the statements whose calls are resolved
    * @param targetClass the class that is statically initialized
    * @param invokableStmt the statement causing the call
    * @param clinitCallTable a table tracking initialized classes per block. Rows represent class
@@ -850,12 +857,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected ArrayListMultimap<ClassType, Call> findStaticInitializerCalls(
       SootMethod sourceMethod,
+      CallFilter calls,
       ClassType targetClass,
       InvokableStmt invokableStmt,
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
-    if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
+    if (!calls.resolves(invokableStmt)) {
       return potentialClinitCalls;
     }
 
