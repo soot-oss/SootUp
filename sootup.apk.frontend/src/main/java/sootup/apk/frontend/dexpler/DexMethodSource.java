@@ -31,9 +31,11 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
@@ -48,6 +50,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
 
 public class DexMethodSource implements BodySource {
@@ -128,13 +131,14 @@ public class DexMethodSource implements BodySource {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
     try {
+      // keep this source as delegate, so the parameter annotations stay available
       sootMethod =
           new JavaSootMethod(
-              new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
+              new OverridingBodySource(this).withBody(resolveBody(methodModifiers)),
               getSignature(),
               methodModifiers,
-              Collections.emptyList(),
-              Collections.emptySet(),
+              DexUtil.extractThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+              DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
               NoPositionInformation.getInstance());
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -146,6 +150,30 @@ public class DexMethodSource implements BodySource {
   public Object resolveAnnotationsDefaultValue() {
     // only abstract methods of annotations have default values, and they do not use this source
     return null;
+  }
+
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  /**
+   * Returns the annotations of a parameter. Dex files store BUILD annotations as runtime invisible
+   * and RUNTIME annotations as runtime visible ones.
+   */
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex, String visibility) {
+    List<? extends MethodParameter> parameters = method.getParameters();
+    if (paramIndex < 0 || paramIndex >= parameters.size()) {
+      return Collections.emptyList();
+    }
+    boolean visible = "Any".equals(visibility) || "RuntimeVisible".equals(visibility);
+    boolean invisible = "Any".equals(visibility) || "RuntimeInvisible".equals(visibility);
+    return DexUtil.createAnnotationUsage(
+            parameters.get(paramIndex).getAnnotations(), view.getIdentifierFactory())
+        .stream()
+        .filter(usage -> usage.isRuntimeVisible() ? visible : invisible)
+        .collect(Collectors.toList());
   }
 
   @NonNull

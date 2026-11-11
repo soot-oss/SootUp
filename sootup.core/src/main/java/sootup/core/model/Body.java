@@ -42,6 +42,7 @@ import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.VoidType;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.printer.JimplePrinter;
 
@@ -224,11 +225,7 @@ public class Body implements HasPosition {
    */
   @NonNull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
-    }
-    return stmts;
+    return graph.getStmts();
   }
 
   @NonNull
@@ -525,7 +522,19 @@ public class Body implements HasPosition {
         // e.getCause());
       }
 
+      checkReturnKinds(nodes);
       return new Body(methodSig, locals, graph, position);
+    }
+
+    /** Void method: only {@code return}; non-void: only {@code return x}. */
+    private void checkReturnKinds(@NonNull Collection<Stmt> nodes) {
+      final boolean isVoid = methodSig.getType() instanceof VoidType;
+      for (Stmt stmt : nodes) {
+        if (isVoid ? stmt instanceof JReturnStmt : stmt instanceof JReturnVoidStmt) {
+          throw new IllegalStateException(
+              methodSig + ": '" + stmt + "' does not match return type " + methodSig.getType());
+        }
+      }
     }
 
     @NonNull

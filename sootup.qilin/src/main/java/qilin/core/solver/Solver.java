@@ -170,7 +170,9 @@ public class Solver extends Propagator {
           recordDynamicInvoke(m, s, die);
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
-          Optional<? extends SootMethod> otgt = pta.getView().getMethod(tgtSig);
+          // JVM lookup from the named owner: inherited statics (invokestatic Sub.m, m in Super),
+          // static polymorphic (MethodHandle.linkToStatic)
+          Optional<? extends SootMethod> otgt = cgb.getMethodLookup().find(tgtSig);
           if (otgt.isPresent()) {
             cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
           }

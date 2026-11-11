@@ -45,7 +45,8 @@ public class BottomType extends Type {
 
   @Override
   public <V extends TypeVisitor> V accept(@NonNull V v) {
-    throw new UnsupportedOperationException();
+    v.defaultCaseType();
+    return v;
   }
 
   @Override

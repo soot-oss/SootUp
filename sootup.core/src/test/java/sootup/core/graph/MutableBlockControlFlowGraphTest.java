@@ -1320,4 +1320,83 @@ public class MutableBlockControlFlowGraphTest {
                     new ArrayList<>(List.of(trap))));
     assertTrue(e.getMessage().contains("middle of a Block"), e.getMessage());
   }
+
+  /** builds firstNop -> secondNop -> thirdNop -> return, all protected by a Throwable handler */
+  private MutableBlockControlFlowGraph createSingleProtectedBlockGraph(Stmt returnStmt) {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.addBlock(
+        Arrays.asList(firstNop, secondNop, thirdNop, returnStmt),
+        Collections.singletonMap(throwableSig, firstHandlerStmt));
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(
+        (FallsThroughStmt) firstHandlerStmt,
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo()));
+    return graph;
+  }
+
+  private void assertLinearFlow(MutableBlockControlFlowGraph graph, Stmt... stmts) {
+    for (int i = 0; i + 1 < stmts.length; i++) {
+      assertEquals(Collections.singletonList(stmts[i + 1]), graph.successors(stmts[i]));
+      assertEquals(Collections.singletonList(stmts[i]), graph.predecessors(stmts[i + 1]));
+    }
+  }
+
+  @Test
+  public void removeExceptionalEdgeOfMiddleStmt() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.removeExceptionalEdge(secondNop, throwableSig);
+
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(firstNop).get(throwableSig));
+    assertTrue(graph.exceptionalSuccessors(secondNop).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(thirdNop).get(throwableSig));
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(returnStmt).get(throwableSig));
+    // [firstNop], [secondNop], [thirdNop, return], [handler]
+    assertEquals(4, graph.getBlocks().size());
+    assertEquals(2, graph.getBlockOf(firstHandlerStmt).getPredecessors().size());
+  }
+
+  @Test
+  public void removeExceptionalEdgeOfHeadStmt() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.removeExceptionalEdge(firstNop, throwableSig);
+
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertTrue(graph.exceptionalSuccessors(firstNop).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(secondNop).get(throwableSig));
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(returnStmt).get(throwableSig));
+    // [firstNop], [secondNop, thirdNop, return], [handler]
+    assertEquals(3, graph.getBlocks().size());
+  }
+
+  @Test
+  public void clearExceptionalEdgesOfTailStmtAndMergeBack() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.clearExceptionalEdges(returnStmt);
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertTrue(graph.exceptionalSuccessors(returnStmt).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(thirdNop).get(throwableSig));
+
+    // restoring the exceptional flow merges the blocks again
+    graph.addExceptionalEdge(returnStmt, throwableSig, firstHandlerStmt);
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertEquals(2, graph.getBlocks().size());
+  }
+
+  @Test
+  public void removeNonExistingExceptionalEdgeDoesNotSplit() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> graph.removeExceptionalEdge(secondNop, ioExceptionSig));
+    assertEquals(2, graph.getBlocks().size());
+  }
 }

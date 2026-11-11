@@ -25,6 +25,7 @@ package sootup.java.core;
 import com.google.common.base.Objects;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.PathbasedClassProvider;
@@ -33,7 +34,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 
-public abstract class JavaSootClassSource implements SootClassSource {
+public abstract class JavaSootClassSource implements SootClassSource, HasGenericSignature {
 
   // holds information about the class
   protected final AnalysisInputLocation analysisInputLocation;
@@ -91,6 +92,13 @@ public abstract class JavaSootClassSource implements SootClassSource {
   @NonNull
   public JavaClassFileMetadata getClassFileMetadata() {
     return classFileMetadata;
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return classFileMetadata.getGenericSignature();
   }
 
   protected abstract Iterable<AnnotationUsage> resolveAnnotations();
