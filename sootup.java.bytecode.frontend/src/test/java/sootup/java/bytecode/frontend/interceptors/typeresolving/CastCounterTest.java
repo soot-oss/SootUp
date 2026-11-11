@@ -117,8 +117,10 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
     assertEquals("l2 = (long) 1", actualStmts.get(8));
-    // the casts before a statement are in the order of its uses
-    assertEquals(List.of("#l0 = (int) l2", "#l1 = (Sub2) l3"), actualStmts.subList(12, 14));
+    // the casts before a statement are in the order of its uses; each temp local is named after the
+    // value and the type it is cast to
+    assertEquals(
+        List.of("#l2_int = (int) l2", "#l3_Sub2 = (Sub2) l3"), actualStmts.subList(12, 14));
   }
 
   @RepeatedTest(20)
@@ -138,21 +140,21 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     final Body body = builder.build();
     List<String> actualStmts = Utils.filterJimple(body.toString());
 
-    // the casts and their locals follow the statement order
+    // both casts of l1 to Super1[] use one temp local
     List<String> expected =
         Stream.of(
                 "CastCounterDemos this",
                 "Sub1 $stack3",
                 "Super1 l2",
-                "Super1[] #l0, #l1, l1",
+                "Super1[] #l1_Super1Array, l1",
                 "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
                 "specialinvoke $stack3.<Sub1: void <init>()>()",
-                "#l0 = (Super1[]) l1",
-                "#l0[0] = $stack3",
-                "#l1 = (Super1[]) l1",
-                "l2 = #l1[2]",
+                "#l1_Super1Array = (Super1[]) l1",
+                "#l1_Super1Array[0] = $stack3",
+                "#l1_Super1Array = (Super1[]) l1",
+                "l2 = #l1_Super1Array[2]",
                 "return")
             .collect(Collectors.toList());
     assertEquals(expected, actualStmts);
