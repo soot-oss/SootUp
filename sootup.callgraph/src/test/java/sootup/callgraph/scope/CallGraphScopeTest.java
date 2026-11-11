@@ -131,7 +131,7 @@ public class CallGraphScopeTest {
   }
 
   /**
-   * Regression test for the pre-dispatch {@code tryAdvance} consistency fix: excluding a caller's
+   * Regression test for the pre-dispatch {@code CallResolver} consistency fix: excluding a caller's
    * statements must prune identically regardless of which of the three call-resolution paths in
    * {@code AbstractCallGraphAlgorithm} would have resolved them - an ordinary explicit call, an
    * implicit {@code Thread.start()}/{@code run()} edge, and a static-initializer trigger. Before
