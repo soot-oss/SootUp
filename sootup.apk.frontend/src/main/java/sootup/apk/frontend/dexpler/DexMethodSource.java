@@ -33,6 +33,7 @@ import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.dexlib2.iface.MultiDexContainer;
+import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.apk.frontend.Util.DexUtil;
@@ -61,6 +62,8 @@ public class DexMethodSource implements BodySource {
   private final Method method;
   private final MultiDexContainer.@Nullable DexEntry<? extends DexFile> dexEntry;
   @Nullable private final ClassType declaringClass;
+  // the default value of an annotation method, which is abstract
+  @Nullable private final EncodedValue annotationDefault;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
@@ -74,6 +77,18 @@ public class DexMethodSource implements BodySource {
       Method method,
       List<BodyInterceptor> bodyInterceptors,
       @NonNull View view) {
+    this(locals, methodSignature, mutableControlFlowGraph, method, bodyInterceptors, view, null);
+  }
+
+  /** A body source with the given body and, for a method of an annotation, its default value. */
+  public DexMethodSource(
+      Set<Local> locals,
+      MethodSignature methodSignature,
+      MutableControlFlowGraph mutableControlFlowGraph,
+      Method method,
+      List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view,
+      @Nullable EncodedValue annotationDefault) {
     this.methodSignature = methodSignature;
     this.view = view;
     this.locals = locals;
@@ -82,6 +97,7 @@ public class DexMethodSource implements BodySource {
     this.method = method;
     this.dexEntry = null;
     this.declaringClass = null;
+    this.annotationDefault = annotationDefault;
   }
 
   /** A body source that converts the code of the method when the body is resolved. */
@@ -100,6 +116,7 @@ public class DexMethodSource implements BodySource {
     this.method = method;
     this.dexEntry = dexEntry;
     this.declaringClass = declaringClass;
+    this.annotationDefault = null;
   }
 
   @NonNull
@@ -148,8 +165,9 @@ public class DexMethodSource implements BodySource {
 
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    // only abstract methods of annotations have default values, and they do not use this source
-    return null;
+    return annotationDefault == null
+        ? null
+        : DexUtil.convertAnnotationDefault(annotationDefault, view.getIdentifierFactory());
   }
 
   @Override

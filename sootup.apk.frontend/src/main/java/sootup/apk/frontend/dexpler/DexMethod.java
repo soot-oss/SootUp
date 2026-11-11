@@ -25,10 +25,12 @@ package sootup.apk.frontend.dexpler;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
+import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.graph.MutableBlockControlFlowGraph;
@@ -45,11 +47,21 @@ public class DexMethod {
 
   protected final MultiDexContainer.DexEntry<? extends DexFile> dexEntry;
   protected final ClassType declaringclassType;
+  // the default values of the methods, if the class is an annotation
+  private final Map<String, ? extends EncodedValue> annotationDefaults;
 
   public DexMethod(
       final MultiDexContainer.DexEntry<? extends DexFile> dexFile, final ClassType declaringClass) {
+    this(dexFile, declaringClass, Collections.emptyMap());
+  }
+
+  public DexMethod(
+      final MultiDexContainer.DexEntry<? extends DexFile> dexFile,
+      final ClassType declaringClass,
+      @NonNull final Map<String, ? extends EncodedValue> annotationDefaults) {
     this.dexEntry = dexFile;
     this.declaringclassType = declaringClass;
+    this.annotationDefaults = annotationDefaults;
   }
 
   public JavaSootMethod makeSootMethod(
@@ -76,7 +88,8 @@ public class DexMethod {
               new MutableBlockControlFlowGraph(),
               method,
               bodyInterceptors,
-              view);
+              view,
+              annotationDefaults.get(method.getName()));
       return dexMethodSource.makeSootMethod();
     }
     // the code is converted when the body is requested for the first time
