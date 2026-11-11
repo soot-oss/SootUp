@@ -80,7 +80,7 @@ public class DeadAssignmentEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
@@ -148,7 +148,8 @@ public class DeadAssignmentEliminatorTest {
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
-        identifierFactory.getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature(
+            "ab.c", "test", "java.lang.Object", Collections.emptyList()));
 
     if (essentialOption) {
       FallsThroughStmt newToB =

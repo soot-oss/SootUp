@@ -224,16 +224,17 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
-      actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
+      actualTargetMethod = methodLookup.find(targetMethodSignature).orElse(null);
       // method implementation isn't contained in the view. return the called method as target
       if (actualTargetMethod == null) {
         return Stream.of(targetMethodSignature);
       }
     }
 
-    // special invokes and static invokes can only have one specific target
+    // special, static and signature-polymorphic (final native) invokes have one specific target
     if (MethodModifier.isStatic(actualTargetMethod.getModifiers())
-        || (invokeExpr instanceof JSpecialInvokeExpr)) {
+        || (invokeExpr instanceof JSpecialInvokeExpr)
+        || SignaturePolymorphicMethods.isSignaturePolymorphic(actualTargetMethod)) {
       return Stream.of(actualTargetMethod.getSignature());
     }
 

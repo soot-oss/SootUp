@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.jf.dexlib2.dexbacked.raw.EncodedValue;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
@@ -42,7 +41,6 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
@@ -50,7 +48,6 @@ import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -236,7 +233,8 @@ public class DexClassSource extends JavaSootClassSource {
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     if (classInformation != null) {
-      return convertAnnotation(classInformation.classDefinition.getAnnotations());
+      return DexUtil.createAnnotationUsage(
+          classInformation.classDefinition.getAnnotations(), view.getIdentifierFactory());
     }
     return Collections.emptyList();
   }
@@ -248,44 +246,6 @@ public class DexClassSource extends JavaSootClassSource {
 
   private JavaSootMethod loadMethod(Method method, DexMethod dexMethod) {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
-  }
-
-  protected List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
-    if (annotations.isEmpty()) {
-      return Collections.emptyList();
-    }
-    ArrayList<AnnotationUsage> annotationUsage = new ArrayList<>();
-    /* annotation.getVisibility() returns an integer refer org.jf.dexlib2.AnnotationVisibility.java
-     * 0 -> BUILD
-     * 1 -> RUNTIME
-     * 2 -> SYSTEM
-     * */
-    Map<String, Object> paramMap = new HashMap<>();
-    for (Annotation annotation : annotations) {
-      for (AnnotationElement element : annotation.getElements()) {
-        String name = element.getName();
-        paramMap.put(
-            name,
-            convertAnnotationValue(
-                element.getValue().getValueType(), getView().getIdentifierFactory()));
-      }
-      ClassType at =
-          getView()
-              .getIdentifierFactory()
-              .getClassType(DexUtil.toQualifiedName(annotation.getType()));
-      annotationUsage.add(new AnnotationUsage(at, paramMap));
-    }
-    return annotationUsage;
-  }
-
-  private static Object convertAnnotationValue(
-      Object annotationValue, IdentifierFactory identifierFactory) {
-    if (annotationValue instanceof EncodedValue) {
-      ClassConstant classConstant =
-          JavaJimple.newClassConstant(annotationValue.toString(), identifierFactory);
-      return ConstantUtil.fromObject(classConstant, identifierFactory);
-    }
-    return ConstantUtil.fromObject(annotationValue, identifierFactory);
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -305,7 +265,7 @@ public class DexClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  Collections.emptySet(), // TODO Fix this annotations [PM]
+                  DexUtil.createAnnotationUsage(field.getAnnotations(), signatureFactory),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

@@ -77,6 +77,7 @@ class JavaClassFileMetadataTest {
       assertTrue(clazz.getEnclosingClass().isEmpty());
       assertTrue(clazz.getEnclosingMethod().isEmpty());
       assertTrue(clazz.getInnerClasses().isEmpty());
+      assertTrue(clazz.getGenericSignature().isEmpty());
     }
   }
 
@@ -107,5 +108,16 @@ class JavaClassFileMetadataTest {
     var metadata = new JavaClassFileMetadata(null, null, owner, method, List.of());
     assertEquals(owner, metadata.getEnclosingClass().orElseThrow());
     assertEquals(method, metadata.getEnclosingMethod().orElseThrow());
+  }
+
+  @Test
+  void genericSignatureAttributeIsPreserved() {
+    var signature = "<T:Ljava/lang/Object;>Ljava/lang/Object;";
+    var metadata = new JavaClassFileMetadata(null, null, null, null, List.of(), signature);
+    assertEquals(signature, metadata.getGenericSignature().orElseThrow());
+
+    var defaultMetadata = new JavaClassFileMetadata(null, null, null, null, List.of());
+    assertTrue(defaultMetadata.getGenericSignature().isEmpty());
+    assertTrue(JavaClassFileMetadata.empty().getGenericSignature().isEmpty());
   }
 }

@@ -36,10 +36,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
+import sootup.callgraph.MethodLookup;
 import sootup.callgraph.MutableCallGraph;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.FunctionalObject;
@@ -63,6 +63,7 @@ import sootup.spark.node.Node;
 class Solver {
 
   private View view;
+  private final MethodLookup methodLookup;
   private CallGraph callGraph;
   private PAG pag;
   private List<MethodSignature> entryPoints;
@@ -82,6 +83,7 @@ class Solver {
       ReflectionModel reflectionModel,
       DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
+    this.methodLookup = new MethodLookup(view);
     this.reflectionModel = reflectionModel != null ? reflectionModel : ReflectionModel.none();
     this.dynamicInvokeResolver =
         dynamicInvokeResolver != null
@@ -266,9 +268,8 @@ class Solver {
   /** Resolves a virtual / interface call given the runtime type of the receiver. */
   private Optional<MethodSignature> dispatch(Type allocType, MethodSignature calledSig) {
     if (!(allocType instanceof ClassType ct)) return Optional.empty();
-    MethodSignature lookupSig =
-        view.getIdentifierFactory().getMethodSignature(ct, calledSig.getSubSignature());
-    return AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, lookupSig);
+    // cached per (receiver type, sub-signature), misses included
+    return methodLookup.findConcrete(ct, calledSig.getSubSignature()).map(SootMethod::getSignature);
   }
 
   private record ResolvedVirtualCall(

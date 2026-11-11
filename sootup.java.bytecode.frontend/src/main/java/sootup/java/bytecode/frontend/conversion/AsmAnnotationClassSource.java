@@ -96,7 +96,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                   NoPositionInformation.getInstance(),
                   fieldNode.value == null
                       ? null
-                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory),
+                  fieldNode.signature);
             })
         .collect(Collectors.toSet());
   }
@@ -143,7 +144,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                   modifiers,
                   exceptions,
                   annotations,
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  methodSource.signature);
             });
   }
 
