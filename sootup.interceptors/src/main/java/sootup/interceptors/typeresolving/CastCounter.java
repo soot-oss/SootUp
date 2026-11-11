@@ -22,10 +22,10 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
@@ -55,7 +55,7 @@ import sootup.core.types.Type;
  * locals into the typing as well.
  */
 public class CastCounter extends TypeChecker {
-  private final Map<Stmt, Set<JAssignStmt>> tempAssignments = new HashMap<>();
+  private final Map<Stmt, List<JAssignStmt>> tempAssignments = new HashMap<>();
   private final Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
   private final Map<Local, Type> tempLocalTypes = new HashMap<>();
   // one temp local per value and type: its name then depends on neither the visiting order of the
@@ -87,7 +87,7 @@ public class CastCounter extends TypeChecker {
       getTyping().set(tempLocal.getKey(), tempLocal.getValue());
     }
 
-    for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
+    for (Map.Entry<Stmt, List<JAssignStmt>> casts : tempAssignments.entrySet()) {
       for (JAssignStmt cast : casts.getValue()) {
         // FIXME this also places before labels, which is not correct
         graph.insertBefore(casts.getKey(), cast);
@@ -132,8 +132,9 @@ public class CastCounter extends TypeChecker {
               .computeIfAbsent(stdType, _x -> generateTempLocal((Immediate) value, stdType));
 
       JAssignStmt assignStmt = Jimple.newAssignStmt(tempLocal, cast, stmt.getPositionInfo());
-      // in the order of the uses of the statement
-      tempAssignments.computeIfAbsent(stmt, _x -> new LinkedHashSet<>()).add(assignStmt);
+      // in the order of the uses of the statement; each cast is a new statement, so a set would
+      // never drop one
+      tempAssignments.computeIfAbsent(stmt, _x -> new ArrayList<>()).add(assignStmt);
 
       newStmt = currentStmt.withNewUse(value, tempLocal);
     }
