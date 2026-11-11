@@ -103,6 +103,20 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     calls.add(call);
   }
 
+  @Override
+  public boolean addCallIfAbsent(
+      @NonNull MethodSignature sourceMethod,
+      @NonNull MethodSignature targetMethod,
+      @NonNull InvokableStmt invokableStmt) {
+    Call call = new Call(sourceMethod, targetMethod, invokableStmt);
+    if (!calls.add(call)) {
+      return false;
+    }
+    graph.addLabeledEdge(
+        vertexOrAdd(call.sourceMethodSignature()), vertexOrAdd(call.targetMethodSignature()), call);
+    return true;
+  }
+
   /** Returns the vertex of the given method, adding the method if it is not in the graph yet. */
   private int vertexOrAdd(@NonNull MethodSignature method) {
     int vertex = graph.findVertex(method);
