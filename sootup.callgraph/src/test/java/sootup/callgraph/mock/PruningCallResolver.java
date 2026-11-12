@@ -1,9 +1,8 @@
 package sootup.callgraph.mock;
 
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.scope.CallFilter;
 import sootup.callgraph.scope.DefaultCallResolver;
-import sootup.callgraph.scope.ExplorationVerdict;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
@@ -18,12 +17,11 @@ public class PruningCallResolver extends DefaultCallResolver {
   }
 
   @Override
-  public ExplorationVerdict tryAdvance(
-      @NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    if (super.tryAdvance(method, statement) == ExplorationVerdict.EXPLORE_METHOD
-        && !method.getName().equals("methodB")) {
-      return ExplorationVerdict.EXPLORE_METHOD;
+  @NonNull
+  public CallFilter tryAdvanceMethod(@NonNull SootMethod method) {
+    if (method.getName().equals("methodB")) {
+      return CallFilter.none();
     }
-    return ExplorationVerdict.STOP;
+    return super.tryAdvanceMethod(method);
   }
 }

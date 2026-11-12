@@ -90,7 +90,7 @@ public class DexAnnotationTest {
 
   @BeforeAll
   static void createView() throws IOException {
-    Path apk = writeApk(createClass());
+    Path apk = writeApk(createClass(), createAnnotationClass());
     view =
         new JavaView(
             new ApkAnalysisInputLocation(
@@ -189,11 +189,66 @@ public class DexAnnotationTest {
         List.of(abstractMethod, concreteMethod));
   }
 
-  /** Writes the class into a dex file inside an APK that reuses the manifest of a test APK. */
-  private static Path writeApk(ImmutableClassDef classDef) throws IOException {
+  /**
+   * The annotation Marker, whose methods i, s, a and n have default values; dex keeps them in the
+   * AnnotationDefault system annotation of the class.
+   */
+  private static ImmutableClassDef createAnnotationClass() {
+    int flags = AccessFlags.PUBLIC.getValue() | AccessFlags.ABSTRACT.getValue();
+    List<ImmutableMethod> methods = new ArrayList<>();
+    for (String[] method :
+        List.of(
+            new String[] {"i", "I"},
+            new String[] {"s", "Ljava/lang/String;"},
+            new String[] {"a", "[I"},
+            new String[] {"n", INNER},
+            new String[] {"noDefault", "I"})) {
+      methods.add(
+          new ImmutableMethod(
+              MARKER, method[0], List.of(), method[1], flags, Set.of(), null, null));
+    }
+    ImmutableAnnotation defaults =
+        annotation(
+            AnnotationVisibility.SYSTEM,
+            "Ldalvik/annotation/AnnotationDefault;",
+            new ImmutableAnnotationElement(
+                "value",
+                new ImmutableAnnotationEncodedValue(
+                    MARKER,
+                    Set.of(
+                        new ImmutableAnnotationElement("i", new ImmutableIntEncodedValue(7)),
+                        new ImmutableAnnotationElement("s", new ImmutableStringEncodedValue("x")),
+                        new ImmutableAnnotationElement(
+                            "a",
+                            new ImmutableArrayEncodedValue(
+                                List.of(
+                                    new ImmutableIntEncodedValue(1),
+                                    new ImmutableIntEncodedValue(2)))),
+                        new ImmutableAnnotationElement(
+                            "n",
+                            new ImmutableAnnotationEncodedValue(
+                                INNER,
+                                Set.of(
+                                    new ImmutableAnnotationElement(
+                                        "v", ImmutableBooleanEncodedValue.TRUE_VALUE))))))));
+    return new ImmutableClassDef(
+        MARKER,
+        flags | AccessFlags.INTERFACE.getValue() | AccessFlags.ANNOTATION.getValue(),
+        "Ljava/lang/Object;",
+        List.of("Ljava/lang/annotation/Annotation;"),
+        null,
+        Set.of(defaults),
+        List.of(),
+        methods);
+  }
+
+  /** Writes the classes into a dex file inside an APK that reuses the manifest of a test APK. */
+  private static Path writeApk(ImmutableClassDef... classDefs) throws IOException {
     Path dex = tempDir.resolve("classes.dex");
     DexPool pool = new DexPool(Opcodes.getDefault());
-    pool.internClass(classDef);
+    for (ImmutableClassDef classDef : classDefs) {
+      pool.internClass(classDef);
+    }
     pool.writeTo(new FileDataStore(dex.toFile()));
 
     Path apk = tempDir.resolve("Annotated.apk");
@@ -306,5 +361,25 @@ public class DexAnnotationTest {
         list(clazz.getAnnotations()).stream()
             .filter(a -> a.getAnnotation().getClassName().equals("Hidden"))
             .allMatch(a -> a.getValues().isEmpty()));
+  }
+
+  @Test
+  void annotationDefaultValues() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    JavaSootClass marker = view.getClass(factory.getClassType("example.Marker")).orElseThrow();
+    Map<String, Object> expected = new LinkedHashMap<>();
+    expected.put("i", ConstantUtil.fromObject(7, factory));
+    expected.put("s", ConstantUtil.fromObject("x", factory));
+    expected.put(
+        "a", List.of(ConstantUtil.fromObject(1, factory), ConstantUtil.fromObject(2, factory)));
+    expected.put(
+        "n",
+        new AnnotationUsage(
+            factory.getClassType("example.Inner"),
+            Map.of("v", ConstantUtil.fromObject(true, factory)),
+            true));
+
+    assertEquals(expected, marker.getAnnotationDefaultValues());
+    assertTrue(marker.getMethodsByName("noDefault").iterator().next().getDefaultValue().isEmpty());
   }
 }

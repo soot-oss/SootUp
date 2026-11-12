@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
@@ -241,7 +242,13 @@ public class DexClassSource extends JavaSootClassSource {
 
   private DexMethod createDexMethodFactory(
       MultiDexContainer.DexEntry<? extends DexFile> dexEntry, final ClassType declaringClass) {
-    return new DexMethod(dexEntry, declaringClass);
+    ClassDef classDefinition = classInformation.classDefinition;
+    return new DexMethod(
+        dexEntry,
+        declaringClass,
+        (classDefinition.getAccessFlags() & AccessFlags.ANNOTATION.getValue()) != 0
+            ? DexUtil.getAnnotationDefaults(classDefinition.getAnnotations())
+            : Collections.emptyMap());
   }
 
   private JavaSootMethod loadMethod(Method method, DexMethod dexMethod) {
