@@ -32,7 +32,7 @@ public class FieldModifiersValidator implements ClassValidator {
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
     for (SootField sf : sc.getFields()) {
-      if ((sf.isPrivate() || sf.isProtected()) && (sf.isPublic()) || sf.isProtected()) {
+      if ((sf.isPublic() ? 1 : 0) + (sf.isProtected() ? 1 : 0) + (sf.isPrivate() ? 1 : 0) > 1) {
         exceptions.add(
             new ValidationException(
                 sc,

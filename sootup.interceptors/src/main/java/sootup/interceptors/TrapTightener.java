@@ -4,7 +4,7 @@ package sootup.interceptors;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 John Jorgensen, Zun Wang
+ * Copyright (C) 1997-2026 John Jorgensen, Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,145 +24,122 @@ package sootup.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
-import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.exceptions.ExceptionInferResult.ExceptionType;
+import sootup.java.core.exceptions.StmtExceptionAnalyzer;
 
 /**
+ * Removes exceptional flows that can not be taken at runtime: an exceptional edge of a Stmt to a
+ * handler catching <code>T</code> is removed if no exception the Stmt might throw can be caught as
+ * <code>T</code>. Afterwards trap handlers which became unreachable are removed.
+ *
+ * <p>In Soot, the TrapTightener shrinks the protected range of each Trap so that it begins at the
+ * first and ends after the last unit which might throw an exception caught by the Trap. In SootUp
+ * the Traps are derived from the exceptional flows of the {@link ControlFlowGraph}, so the
+ * exceptional flows are tightened per Stmt instead, which can split a Trap into several ones.
+ *
+ * <p>The exceptions a Stmt might throw are inferred intraprocedurally by the {@link
+ * StmtExceptionAnalyzer}. As every Stmt might throw an asynchronous {@link VirtualMachineError},
+ * flows to catch-all handlers (e.g. the handlers releasing a monitor of a synchronized block) and
+ * handlers of {@link Error} are always kept.
+ *
  * @author Zun Wang
- *     <p>description from Soot: A BodyTransformer that shrinks the protected area covered by each
- *     Trap in the Body so that it begins at the first of the Body's Units which might throw an
- *     exception caught by the Trap and ends just after the last Unit which might throw an exception
- *     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
- *     exception it catches, the Trap's protected area is left completely empty, which will likely
- *     cause the UnreachableCodeEliminator to remove the Trap(handler?) completely (if the
- *     traphandler does not cover another range). The TrapTightener is used to reduce the risk of
- *     unverifiable code which can result from the use of ExceptionalUnitGraphs from which
- *     unrealizable exceptional control flow edges have been removed.
  */
 public class TrapTightener implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-
-    // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
-    // #486
-    if (true) {
-      throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
-    }
-
     MutableControlFlowGraph graph = builder.getControlFlowGraph();
-    List<Stmt> stmtsInPrintOrder = builder.getStmts();
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+    StmtExceptionAnalyzer analyzer = new StmtExceptionAnalyzer(hierarchy);
 
-    // collect stmts
-    Set<Stmt> monitoredStmts = monitoredStmts(graph);
-    Map<Stmt, Collection<ClassType>> toRemove = new HashMap<>();
-    for (BasicBlock<?> block : graph.getBlocks()) {
-      for (Stmt stmt : block.getStmts()) {
-
-        Collection<ClassType> removeForStmt = new ArrayList<>();
-        for (Map.Entry<? extends ClassType, ?> exception :
-            block.getExceptionalSuccessors().entrySet()) {
-
-          // FIXME: check for java9 modules signature, too!
-          boolean isCatchAll =
-              exception.getKey().getFullyQualifiedName().equals("java.lang.Throwable");
-
-          if (
-          /* mightThrow(graph, stmt, trap) || */ (isCatchAll && monitoredStmts.contains(stmt))) {
-            // if it might throw or if trap is a catch-all block and the current stmt has an active
-            // monitor, we need to keep the block
-            removeForStmt.add(exception.getKey());
-            break;
-          }
-        }
-        if (!removeForStmt.isEmpty()) {
-          toRemove.put(stmt, removeForStmt);
+    // collect first, as removing exceptional flows restructures the blocks of the graph
+    Map<Stmt, List<ClassType>> unrealizableFlows = new LinkedHashMap<>();
+    for (Stmt stmt : graph.getStmts()) {
+      Set<ClassType> caughtTypes = graph.exceptionalSuccessors(stmt).keySet();
+      if (caughtTypes.isEmpty()) {
+        continue;
+      }
+      Set<ClassType> thrownTypes = mightThrow(stmt, graph, analyzer);
+      for (ClassType caughtType : caughtTypes) {
+        if (!mightBeCaughtAs(thrownTypes, caughtType, hierarchy)) {
+          unrealizableFlows.computeIfAbsent(stmt, k -> new ArrayList<>()).add(caughtType);
         }
       }
     }
 
-    // remove exceptions for stmts
-    for (Map.Entry<Stmt, Collection<ClassType>> entry : toRemove.entrySet()) {
-      for (ClassType classType : entry.getValue()) {
-        graph.removeExceptionalEdge(entry.getKey(), classType);
-      }
+    if (unrealizableFlows.isEmpty()) {
+      return;
     }
+    unrealizableFlows.forEach(
+        (stmt, caughtTypes) ->
+            caughtTypes.forEach(caughtType -> graph.removeExceptionalEdge(stmt, caughtType)));
 
-    // FIXME: check if there are traphandlers that have no predecessor
-
+    // remove trap handlers that are no longer reachable
+    new UnreachableCodeEliminator().interceptBody(builder, view);
   }
 
   /**
-   * Find out all monitored stmts from a given exceptional graph, collect them into a list
-   *
-   * @param graph a given exceptionalControlFlowGraph
-   * @return a list of monitored stmts
+   * @return the exceptions the given stmt might throw, or {@link ExceptionType#THROWABLE} if it
+   *     might throw any exception.
    */
-  private Set<Stmt> monitoredStmts(@NonNull ControlFlowGraph<?> graph) {
-    Set<Stmt> monitoredStmts = new HashSet<>();
-    Deque<Stmt> queue = new ArrayDeque<>();
-    queue.add(graph.getStartingStmt());
-    Set<Stmt> visitedStmts = new HashSet<>();
+  @NonNull
+  private static Set<ClassType> mightThrow(
+      @NonNull Stmt stmt,
+      @NonNull ControlFlowGraph<?> graph,
+      @NonNull StmtExceptionAnalyzer analyzer) {
+    if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
+      // the analyzer only covers the exceptions of the invoke instruction itself (e.g. resolution
+      // errors) - the invoked method can throw anything.
+      return Collections.singleton(ExceptionType.THROWABLE);
+    }
 
-    while (!queue.isEmpty()) {
-      Stmt stmt = queue.removeFirst();
-      visitedStmts.add(stmt);
-      // enter a monitored block
-      if (stmt instanceof JEnterMonitorStmt) {
-        Deque<Stmt> monitoredQueue = new ArrayDeque<>();
-        monitoredQueue.add(stmt);
-        while (!monitoredQueue.isEmpty()) {
-          Stmt monitoredStmt = monitoredQueue.removeFirst();
-          monitoredStmts.add(monitoredStmt);
-          visitedStmts.add(monitoredStmt);
-          if (monitoredStmt instanceof JExitMonitorStmt) {
-            queue.addAll(graph.getAllSuccessors(monitoredStmt));
-          } else {
-            for (Stmt succ : graph.getAllSuccessors(monitoredStmt)) {
-              if (!visitedStmts.contains(succ)) {
-                monitoredQueue.add(succ);
-              }
-            }
-          }
+    Set<ClassType> thrownTypes = new HashSet<>(analyzer.mightThrowImplicitly(stmt).getExceptions());
+    if (stmt instanceof JThrowStmt) {
+      // athrow itself raises a NullPointerException for a null reference and an
+      // IllegalMonitorStateException for unbalanced monitors.
+      thrownTypes.add(ExceptionType.NUll_POINTER_EXCEPTION);
+      thrownTypes.add(ExceptionType.ILLEGAL_MONITOR_STATE_EXCEPTION);
+      JThrowStmt throwStmt = (JThrowStmt) stmt;
+      if (throwStmt.getOp() instanceof Local) {
+        try {
+          thrownTypes.addAll(analyzer.mightThrowExplicitly(throwStmt, graph).getExceptions());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+          // the type of the thrown exception is unknown to the view -> be conservative
+          return Collections.singleton(ExceptionType.THROWABLE);
         }
-      } else {
-        queue.addAll(graph.getAllSuccessors(stmt));
       }
     }
-    return monitoredStmts;
+    return thrownTypes;
   }
 
   /**
-   * Check whether trap-destinations of the given stmt contain the given trap.
-   *
-   * @param graph is a exceptional ControlFlowGraph
-   * @param stmt is a stmt in the given graph
-   * @param trap is a given trap
-   * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
-   *     return false
+   * An exception of a thrown type might be caught by a handler of caughtType if the thrown type is
+   * a subtype of caughtType or - as the runtime type of the exception might be more specific than
+   * the inferred type - if caughtType is a subtype of the thrown type.
    */
-
-  // FIXME: [ms] makes no sense in that Implementation! ControlFlowGraph is not the legacy
-  // ExceptionalUnitGraph
-  private boolean mightThrow(
-      @NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
-    final BasicBlock<?> block = graph.getBlockOf(stmt);
-
-    for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :
-        block.getExceptionalSuccessors().entrySet()) {
-      final ClassType exceptionType = dest.getKey();
-      final BasicBlock<?> traphandlerBlock = dest.getValue();
-      if (exceptionType.equals(trap.getExceptionType())
-          && traphandlerBlock.getHead().equals(trap.getHandlerStmt())) {
+  private static boolean mightBeCaughtAs(
+      @NonNull Set<ClassType> thrownTypes,
+      @NonNull ClassType caughtType,
+      @NonNull TypeHierarchy hierarchy) {
+    if (!hierarchy.contains(caughtType)) {
+      // be conservative if the type hierarchy is incomplete
+      return true;
+    }
+    for (ClassType thrownType : thrownTypes) {
+      if (thrownType.equals(caughtType)
+          || !hierarchy.contains(thrownType)
+          || hierarchy.isSubtype(caughtType, thrownType)
+          || hierarchy.isSubtype(thrownType, caughtType)) {
         return true;
       }
     }

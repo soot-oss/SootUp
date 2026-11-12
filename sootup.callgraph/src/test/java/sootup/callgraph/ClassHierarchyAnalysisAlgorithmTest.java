@@ -445,4 +445,42 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
       assertEquals(firstCallTargets, repeatedTargets);
     }
   }
+
+  /**
+   * The algorithm adds each call with one lookup in the call graph instead of checking for the call
+   * first and then adding it
+   */
+  @Test
+  public void addsEachCallWithoutCheckingForItFirst() {
+    view = createViewForClassPath("src/test/resources/callgraph/Misc/binary");
+    MethodSignature main =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.Example"),
+            identifierFactory.getMainSubSignature());
+    List<GraphBasedCallGraph> graphs = new ArrayList<>();
+    ClassHierarchyAnalysisAlgorithm cha =
+        new ClassHierarchyAnalysisAlgorithm(view) {
+          @Override
+          protected MutableCallGraph initializeCallGraph(
+              List<MethodSignature> entryPoints, List<MethodSignature> clinits) {
+            GraphBasedCallGraph graph =
+                Mockito.spy((GraphBasedCallGraph) super.initializeCallGraph(entryPoints, clinits));
+            graphs.add(graph);
+            return graph;
+          }
+        };
+
+    CallGraph cg = cha.initialize(Collections.singletonList(main));
+
+    assertTrue(cg.callCount() > 0);
+    assertFalse(graphs.isEmpty());
+    for (GraphBasedCallGraph graph : graphs) {
+      Mockito.verify(graph, Mockito.never())
+          .containsCall(
+              Mockito.any(MethodSignature.class),
+              Mockito.any(MethodSignature.class),
+              Mockito.any(InvokableStmt.class));
+      Mockito.verify(graph, Mockito.never()).containsCall(Mockito.any(Call.class));
+    }
+  }
 }

@@ -85,8 +85,8 @@ public class DexMethod {
             method, dexEntry, declaringclassType, methodSignature, bodyInterceptors, view),
         methodSignature,
         Modifiers.getMethodModifiers(modifierFlags),
-        Collections.emptyList(),
-        Collections.emptySet(),
+        DexUtil.extractThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+        DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
         NoPositionInformation.getInstance());
   }
 }

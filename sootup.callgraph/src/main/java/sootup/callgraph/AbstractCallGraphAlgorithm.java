@@ -83,6 +83,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** The type hierarchy derived from the view. */
   @NonNull protected final TypeHierarchy typeHierarchy;
 
+  /** Cached JVM method lookup, see {@link MethodLookup}. */
+  @NonNull protected final MethodLookup methodLookup;
+
   /** The class type for java.lang.Thread, used for thread start call edge handling. */
   @NonNull protected final ClassType threadType;
 
@@ -247,6 +250,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
+    this.methodLookup = new MethodLookup(view);
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
@@ -465,9 +469,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // promotion: an earlier edge left this target unexpanded, but this edge wants it expanded
       frontier.workList.push(target);
     }
-    if (!cg.containsCall(source, target, invokeStmt)) {
-      cg.addCall(source, target, invokeStmt);
-    }
+    cg.addCallIfAbsent(source, target, invokeStmt);
   }
 
   /**
@@ -513,9 +515,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       cg.addMethod(target);
       workList.push(target);
     }
-    if (!cg.containsCall(source, target, invokeStmt)) {
-      cg.addCall(source, target, invokeStmt);
-    }
+    cg.addCallIfAbsent(source, target, invokeStmt);
   }
 
   /**
@@ -1118,38 +1118,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected static Optional<? extends SootMethod> findConcreteMethod(
       @NonNull View view, @NonNull MethodSignature sig) {
-    SootClass startClass = view.getClass(sig.getDeclClassType()).orElse(null);
-
-    if (startClass == null) {
-      logger.warn(
-          "Could not find \""
-              + sig.getDeclClassType()
-              + "\" of method"
-              + sig
-              + " to resolve the concrete method");
-      return Optional.empty();
-    }
-    MethodSubSignature methodSig = sig.getSubSignature();
-
-    // search method current class and in superclasses
-    Optional<? extends SootMethod> method = findMethodInHierarchy(view, startClass, methodSig);
-    if (method.isPresent()) {
-      return method;
-    }
-
-    // search method in interfaces
-    Optional<? extends SootMethod> defaultMethod = findDefaultMethod(view, startClass, methodSig);
-    if (defaultMethod.isPresent()) {
-      return defaultMethod;
-    }
-
-    logger.warn(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses and interfaces");
-    return Optional.empty();
+    return MethodLookup.lookup(view, sig.getDeclClassType(), sig.getSubSignature());
   }
 
   /**
@@ -1160,25 +1129,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull View view,
       @NonNull SootClass sootClass,
       @NonNull MethodSubSignature targetMethodSignature) {
-    SootMethod target = sootClass.getMethod(targetMethodSignature).orElse(null);
-    // check current class
-    if (target != null) {
-      return Optional.of(target);
-    }
-
-    ClassType superClassType = sootClass.getSuperclass().orElse(null);
-    // does not have a superclass
-    if (superClassType == null) {
-      return Optional.empty();
-    }
-    SootClass superclass = view.getClass(superClassType).orElse(null);
-    // superclass is mot in the view
-    if (superclass == null) {
-      return Optional.empty();
-    }
-
-    // method isn't found, continue with the superclass
-    return findMethodInHierarchy(view, superclass, targetMethodSignature);
+    return MethodLookup.findInSuperclasses(view, sootClass, targetMethodSignature);
   }
 
   /**
@@ -1196,22 +1147,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull View view,
       @NonNull SootClass sootClass,
       @NonNull MethodSubSignature defaultSignature) {
-    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
-    return typeHierarchy
-        .implementedInterfacesOf(sootClass.getType())
-        .flatMap(
-            classType ->
-                view
-                    .getMethod(
-                        view.getIdentifierFactory().getMethodSignature(classType, defaultSignature))
-                    .stream())
-        .reduce(
-            (currentLeastSubMethod, sootMethod) ->
-                typeHierarchy.isSubtype(
-                        currentLeastSubMethod.getDeclaringClassType(),
-                        sootMethod.getDeclaringClassType())
-                    ? sootMethod
-                    : currentLeastSubMethod);
+    return MethodLookup.findDefault(view, sootClass, defaultSignature);
   }
 
   /** Returns true if the given class type represents an interface. */

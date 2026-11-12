@@ -17,7 +17,6 @@ import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.interceptors.StaticSingleAssignmentFormer;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
@@ -42,7 +41,8 @@ public class StaticSingleAssignmentFormerTest {
   JavaClassType refType = factory.getClassType("ref");
   MethodSignature methodSignature =
       new JavaIdentifierFactory()
-          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
+          .getMethodSignature(
+              classType, "test", sootup.core.types.PrimitiveType.getInt(), Collections.emptyList());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
   ClassType exceptionType = factory.getClassType("Exception");
   IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef(factory);
