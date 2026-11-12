@@ -30,6 +30,7 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
@@ -233,6 +234,45 @@ public class DexUtil {
   }
 
   private static final String THROWS_ANNOTATION = "Ldalvik/annotation/Throws;";
+
+  private static final String ANNOTATION_DEFAULT = "Ldalvik/annotation/AnnotationDefault;";
+
+  /**
+   * Returns the default values of the methods of an annotation by method name. Dex keeps them in
+   * the <code>dalvik.annotation.AnnotationDefault</code> system annotation of the annotation class,
+   * as an annotation of that class whose elements are the defaults.
+   */
+  @NonNull
+  public static Map<String, EncodedValue> getAnnotationDefaults(
+      @NonNull Set<? extends Annotation> classAnnotations) {
+    for (Annotation annotation : classAnnotations) {
+      if (!annotation.getType().equals(ANNOTATION_DEFAULT)) {
+        continue;
+      }
+      for (AnnotationElement element : annotation.getElements()) {
+        if (element.getName().equals("value")
+            && element.getValue() instanceof AnnotationEncodedValue) {
+          Map<String, EncodedValue> defaults = new HashMap<>();
+          for (AnnotationElement method :
+              ((AnnotationEncodedValue) element.getValue()).getElements()) {
+            defaults.put(method.getName(), method.getValue());
+          }
+          return defaults;
+        }
+      }
+    }
+    return Collections.emptyMap();
+  }
+
+  /**
+   * Converts the default value of an annotation method like the bytecode frontend does: nested
+   * annotations are runtime visible.
+   */
+  @Nullable
+  public static Object convertAnnotationDefault(
+      @NonNull EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
+    return convertAnnotationValue(value, identifierFactory, true);
+  }
 
   public static ClassType stringToJimpleType(View view, String className) {
     return view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(className));
