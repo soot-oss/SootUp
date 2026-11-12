@@ -118,12 +118,9 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   private List<SootMethod> getEntryPoints() {
+    // application() includes the main class's <clinit> (and its superclasses'). makeFakeMain only
+    // calls them when seedEntryPointClinits is set; otherwise they are resolved on the fly.
     List<SootMethod> ret = new ArrayList<>();
-    if (config.isSeedEntryPointClinits()) {
-      ret.addAll(entryPoints.clinits());
-    }
-    // otherwise, resolve the clinit methods on the fly instead of seeding them upfront.
-
     if (config.isSingleEntry()) {
       List<SootMethod> entries = entryPoints.application();
       if (entries.isEmpty()) {
@@ -325,13 +322,6 @@ public class FakeMainFactory extends ArtificialMethod {
       List<SootMethod> ret = new ArrayList<SootMethod>();
       ret.addAll(application());
       ret.addAll(implicit());
-      return ret;
-    }
-
-    /** Returns a list of all static initializers. */
-    public List<SootMethod> clinits() {
-      List<SootMethod> ret = new ArrayList<>();
-      view.getClasses().forEach(cl -> addMethod(ret, cl, sigClinit));
       return ret;
     }
 
