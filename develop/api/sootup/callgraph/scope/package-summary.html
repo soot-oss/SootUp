@@ -97,34 +97,40 @@ loadScripts(document, 'script');</script>
  (see <a href="../../core/model/SootClass.html#isLibraryClass()"><code>SootClass.isLibraryClass()</code></a>) and delegates every other candidate - including <code>
  &lt;clinit&gt;</code>s of application classes - to a wrapped <a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope"><code>VirtualCallResolver</code></a> (default: <a href="VirtualCallResolver.html#all()"><code>VirtualCallResolver.all()</code></a>).</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">
-<div class="block">Controls which calls (edges) are expanded during call graph construction, at the pre-dispatch
- checkpoint: invoked once per invokable statement of a method that is expanded, <b>before</b>
- dynamic dispatch is resolved for that statement.</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">The calls of a method that a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> lets the call graph algorithm resolve: <a href="CallFilter.html#all()"><code>CallFilter.all()</code></a>, <a href="CallFilter.html#none()"><code>CallFilter.none()</code></a> or those of the statements accepted by a predicate (<a href="CallFilter.html#of(java.util.function.Predicate)"><code>CallFilter.of(java.util.function.Predicate&lt;sootup.core.jimple.common.stmt.InvokableStmt&gt;)</code></a>).</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="DefaultCallResolver.html" title="class in sootup.callgraph.scope">DefaultCallResolver</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">Controls which calls (edges) are expanded during call graph construction, at the pre-dispatch
+ checkpoint: invoked once per method that is expanded, <b>before</b> its body is loaded and before
+ dynamic dispatch is resolved for its statements.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultCallResolver.html" title="class in sootup.callgraph.scope">DefaultCallResolver</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">The default <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a>: excludes calls originating from library classes.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ExcludedCallsCollectingCallResolver.html" title="class in sootup.callgraph.scope">ExcludedCallsCollectingCallResolver</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="ExcludedCallsCollectingCallResolver.html" title="class in sootup.callgraph.scope">ExcludedCallsCollectingCallResolver</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that applies the same filtering as <a href="DefaultCallResolver.html" title="class in sootup.callgraph.scope"><code>DefaultCallResolver</code></a> (excluding
  calls originating from library classes), while additionally recording the signature of every
  method whose calls were excluded, so callers can inspect what was pruned after the call graph has
  been constructed, e.g. to diagnose why an expected method is missing from the call graph.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab3"><a href="ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab3">
-<div class="block">The verdict returned by <a href="CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)"><code>CallResolver.tryAdvance(sootup.core.model.SootMethod, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> and <a href="VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph expansion.</div>
+<div class="col-first odd-row-color class-summary class-summary-tab3"><a href="ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab3">
+<div class="block">The verdict returned by <a href="VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph
+ expansion: <a href="ExplorationVerdict.html#EXPLORE_METHOD"><code>ExplorationVerdict.EXPLORE_METHOD</code></a> admits the edge and expands the callee, <a href="ExplorationVerdict.html#STOP_AFTER_CALL"><code>ExplorationVerdict.STOP_AFTER_CALL</code></a> admits the edge but does not expand the callee via this edge, and <a href="ExplorationVerdict.html#STOP"><code>ExplorationVerdict.STOP</code></a>
+ drops the edge entirely.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SuppressClinitCallResolver.html" title="class in sootup.callgraph.scope">SuppressClinitCallResolver</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SuppressClinitCallResolver.html" title="class in sootup.callgraph.scope">SuppressClinitCallResolver</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A <a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope"><code>VirtualCallResolver</code></a> that drops every <code>&lt;clinit&gt;</code> candidate and delegates every
  other candidate to a wrapped <a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope"><code>VirtualCallResolver</code></a> (default: <a href="VirtualCallResolver.html#all()"><code>VirtualCallResolver.all()</code></a>).</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope">VirtualCallResolver</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope">VirtualCallResolver</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab1">
 <div class="block">Controls which calls (edges) are expanded during call graph construction, at the post-dispatch
  checkpoint: invoked once per dynamic-dispatch candidate <b>after</b> <code>resolveCall</code> has
  resolved it for a statement that passed the <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> checkpoint.</div>

@@ -85,12 +85,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public enum </span><span class="element-name type-name-label">ExplorationVerdict</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;<a href="ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a>&gt;</span></div>
-<div class="block">The verdict returned by <a href="CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)"><code>CallResolver.tryAdvance(sootup.core.model.SootMethod, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> and <a href="VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph expansion.
-
- <p>At the <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> checkpoint only <a href="#EXPLORE_METHOD"><code>EXPLORE_METHOD</code></a> vs. non-<a href="#EXPLORE_METHOD"><code>EXPLORE_METHOD</code></a> matters: <a href="#STOP_AFTER_CALL"><code>STOP_AFTER_CALL</code></a> and <a href="#STOP"><code>STOP</code></a> are equivalent there, since
- no specific callee is known yet. At the <a href="VirtualCallResolver.html" title="interface in sootup.callgraph.scope"><code>VirtualCallResolver</code></a> checkpoint all three verdicts
- are distinct: <a href="#EXPLORE_METHOD"><code>EXPLORE_METHOD</code></a> admits the edge and expands the callee, <a href="#STOP_AFTER_CALL"><code>STOP_AFTER_CALL</code></a> admits the edge but does not expand the callee via this edge, and <a href="#STOP"><code>STOP</code></a>
- drops the edge entirely.</div>
+<div class="block">The verdict returned by <a href="VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph
+ expansion: <a href="#EXPLORE_METHOD"><code>EXPLORE_METHOD</code></a> admits the edge and expands the callee, <a href="#STOP_AFTER_CALL"><code>STOP_AFTER_CALL</code></a> admits the edge but does not expand the callee via this edge, and <a href="#STOP"><code>STOP</code></a>
+ drops the edge entirely. Which calls of a method are resolved at all is decided earlier by the
+ <a href="CallFilter.html" title="class in sootup.callgraph.scope"><code>CallFilter</code></a> of a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

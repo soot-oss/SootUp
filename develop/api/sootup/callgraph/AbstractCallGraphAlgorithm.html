@@ -277,7 +277,8 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
  given class and traversing superclasses.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../core/graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</code></div>
@@ -297,7 +298,8 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
  points</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -342,7 +344,8 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <div class="block">This method enables optional pre-processing of a method in the call graph algorithm</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -351,14 +354,16 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
  call graph algorithm.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </div>
@@ -647,9 +652,10 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 </section>
 </li>
 <li>
-<section class="detail" id="resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
+<section class="detail" id="resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
 <h3>resolveAllCallsFromSourceMethod</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resolveAllCallsFromSourceMethod</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</span></div>
 <div class="block">This method resolves all calls from a given source method. resolveCall is called for each
@@ -660,6 +666,7 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <dt>Parameters:</dt>
 <dd><code>sourceMethod</code> - this signature is used to access the statements contained method body of
      the specified method</dd>
+<dd><code>calls</code> - the statements whose calls are resolved</dd>
 <dd><code>cg</code> - the call graph that will receive the found calls</dd>
 <dd><code>frontier</code> - the work-list state that will be updated with found target methods</dd>
 </dl>
@@ -676,39 +683,44 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 </section>
 </li>
 <li>
-<section class="detail" id="implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
+<section class="detail" id="implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
 <h3>implicitStartRunCall</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">implicitStartRunCall</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</span></div>
 <div class="block">It resolves the start-run implicit calls caused by the given source method</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sourceMethod</code> - the inspected source method</dd>
+<dd><code>calls</code> - the statements whose calls are resolved</dd>
 <dd><code>cg</code> - implicit start-run calls will be added to the call graph</dd>
 <dd><code>frontier</code> - new run methods will be added to the work list</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
+<section class="detail" id="resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)">
 <h3>resolveAllImplicitCallsFromSourceMethod</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resolveAllImplicitCallsFromSourceMethod</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</span></div>
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sourceMethod</code> - the inspected source method</dd>
+<dd><code>calls</code> - the statements whose calls are resolved</dd>
 <dd><code>cg</code> - the mutable call graph where new calls will be added</dd>
 <dd><code>frontier</code> - the work-list state in which the new target methods will be added</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)">
+<section class="detail" id="resolveAllStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter)">
 <h3>resolveAllStaticInitializerCalls</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</span>&nbsp;<span class="element-name">resolveAllStaticInitializerCalls</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</span></div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</span>&nbsp;<span class="element-name">resolveAllStaticInitializerCalls</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls)</span></div>
 <div class="block">Resolves all potential static initializer calls caused by the given source method. This method
  iterates over the sorted blocks of the source method, tracking whether each block contains a
  static initializer (<code>&lt;clinit&gt;</code>) call for a specific class type. If all visited
@@ -720,15 +732,17 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sourceMethod</code> - the inspected source method</dd>
+<dd><code>calls</code> - the statements whose calls are resolved</dd>
 <dt>Returns:</dt>
 <dd>a multimap containing the resolved potential static initializer calls</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)">
+<section class="detail" id="findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)">
 <h3>findStaticInitializerCalls</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</span>&nbsp;<span class="element-name">findStaticInitializerCalls</span><wbr><span class="parameters">(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../core/graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</span></div>
@@ -738,6 +752,7 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>sourceMethod</code> - the source method causing the static initializer call</dd>
+<dd><code>calls</code> - the statements whose calls are resolved</dd>
 <dd><code>targetClass</code> - the class that is statically initialized</dd>
 <dd><code>invokableStmt</code> - the statement causing the call</dd>
 <dd><code>clinitCallTable</code> - a table tracking initialized classes per block. Rows represent class

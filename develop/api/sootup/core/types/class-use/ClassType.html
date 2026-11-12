@@ -401,13 +401,18 @@ loadScripts(document, 'script');</script>
  <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClass)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../apk/frontend/dexpler/DexMethodSource.html#%3Cinit%3E(org.jf.dexlib2.iface.Method,org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,sootup.core.signatures.MethodSignature,java.util.List,sootup.core.views.View)" class="member-name-link">DexMethodSource</a><wbr>(org.jf.dexlib2.iface.Method&nbsp;method,
+<div class="col-second even-row-color"><code><a href="../../../apk/frontend/dexpler/DexMethod.html#%3Cinit%3E(org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,java.util.Map)" class="member-name-link">DexMethod</a><wbr>(org.jf.dexlib2.iface.MultiDexContainer.DexEntry&lt;? extends org.jf.dexlib2.iface.DexFile&gt;&nbsp;dexFile,
+ <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClass,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr>? extends org.jf.dexlib2.iface.value.EncodedValue&gt;&nbsp;annotationDefaults)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../apk/frontend/dexpler/DexMethodSource.html#%3Cinit%3E(org.jf.dexlib2.iface.Method,org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,sootup.core.signatures.MethodSignature,java.util.List,sootup.core.views.View)" class="member-name-link">DexMethodSource</a><wbr>(org.jf.dexlib2.iface.Method&nbsp;method,
  org.jf.dexlib2.iface.MultiDexContainer.DexEntry&lt;? extends org.jf.dexlib2.iface.DexFile&gt;&nbsp;dexEntry,
  <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClass,
  <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">A body source that converts the code of the method when the body is resolved.</div>
 </div>
 </div>
@@ -520,7 +525,8 @@ loadScripts(document, 'script');</script>
 <div class="block">This method is called to collect all instantiation of classes in a given method body.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</code></div>
@@ -528,7 +534,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Collects all potential static initializer calls of the given targetClass.</div>
 </div>
 <div class="col-first even-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </div>
@@ -561,7 +568,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Like <a href="../../../callgraph/MethodLookup.html#find(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)"><code>MethodLookup.find(ClassType, MethodSubSignature)</code></a>, abstract result mapped to empty.</div>
 </div>
 <div class="col-first even-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</code></div>
@@ -595,7 +603,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</code></div>

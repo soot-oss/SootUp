@@ -69,46 +69,31 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">CallResolver.</span><code><a href="../CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Decides whether the call(s) triggered by <code>statement</code> in <code>caller</code> should be resolved
- and expanded at all.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DefaultCallResolver.</span><code><a href="../DefaultCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
- @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ExcludedCallsCollectingCallResolver.</span><code><a href="../ExcludedCallsCollectingCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+<div class="col-second even-row-color"><span class="type-name-label">AppOnlyClinitCallResolver.</span><code><a href="../AppOnlyClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+ @NonNull <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AppOnlyClinitCallResolver.</span><code><a href="../AppOnlyClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+<div class="col-second odd-row-color"><span class="type-name-label">SuppressClinitCallResolver.</span><code><a href="../SuppressClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
  @NonNull <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SuppressClinitCallResolver.</span><code><a href="../SuppressClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+<div class="col-second even-row-color"><span class="type-name-label">VirtualCallResolver.</span><code><a href="../VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
  @NonNull <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VirtualCallResolver.</span><code><a href="../VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
- @NonNull <a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Decides whether a single already-resolved dynamic-dispatch candidate should be admitted as an
  edge in the call graph, and whether the callee should be expanded via this edge.</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ExplorationVerdict.</span><code><a href="../ExplorationVerdict.html#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ExplorationVerdict.</span><code><a href="../ExplorationVerdict.html#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </div>
-<div class="col-first odd-row-color"><code>static <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a>[]</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ExplorationVerdict.</span><code><a href="../ExplorationVerdict.html#values()" class="member-name-link">values</a>()</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static <a href="../ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a>[]</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ExplorationVerdict.</span><code><a href="../ExplorationVerdict.html#values()" class="member-name-link">values</a>()</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
 </div>
