@@ -23,15 +23,11 @@ package sootup.callgraph.scope;
  */
 
 /**
- * The verdict returned by {@link CallResolver#tryAdvance} and {@link
- * VirtualCallResolver#tryAdvanceCall} to control call graph expansion.
- *
- * <p>At the {@link CallResolver} checkpoint only {@link #EXPLORE_METHOD} vs. non-{@link
- * #EXPLORE_METHOD} matters: {@link #STOP_AFTER_CALL} and {@link #STOP} are equivalent there, since
- * no specific callee is known yet. At the {@link VirtualCallResolver} checkpoint all three verdicts
- * are distinct: {@link #EXPLORE_METHOD} admits the edge and expands the callee, {@link
+ * The verdict returned by {@link VirtualCallResolver#tryAdvanceCall} to control call graph
+ * expansion: {@link #EXPLORE_METHOD} admits the edge and expands the callee, {@link
  * #STOP_AFTER_CALL} admits the edge but does not expand the callee via this edge, and {@link #STOP}
- * drops the edge entirely.
+ * drops the edge entirely. Which calls of a method are resolved at all is decided earlier by the
+ * {@link CallFilter} of a {@link CallResolver}.
  */
 public enum ExplorationVerdict {
   EXPLORE_METHOD,
