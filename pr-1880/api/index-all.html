@@ -3677,10 +3677,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Implicit call to static initializer.</div>
 </dd>
-<dt><a href="qilin/core/builder/FakeMainFactory.EntryPoints.html#clinits()" class="member-name-link">clinits()</a> - Method in class qilin.core.builder.<a href="qilin/core/builder/FakeMainFactory.EntryPoints.html" title="class in qilin.core.builder">FakeMainFactory.EntryPoints</a></dt>
-<dd>
-<div class="block">Returns a list of all static initializers.</div>
-</dd>
 <dt><a href="qilin/core/builder/FakeMainFactory.EntryPoints.html#clinitsOf(sootup.core.model.SootClass)" class="member-name-link">clinitsOf(SootClass)</a> - Method in class qilin.core.builder.<a href="qilin/core/builder/FakeMainFactory.EntryPoints.html" title="class in qilin.core.builder">FakeMainFactory.EntryPoints</a></dt>
 <dd>
 <div class="block">Returns a list of all clinits of class cl and its superclasses.</div>
@@ -13275,8 +13271,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="qilin/core/config/PointerAnalysisConfig.html#isSeedEntryPointClinits()" class="member-name-link">isSeedEntryPointClinits()</a> - Method in class qilin.core.config.<a href="qilin/core/config/PointerAnalysisConfig.html" title="class in qilin.core.config">PointerAnalysisConfig</a></dt>
 <dd>
-<div class="block">Whether each entry point's declaring-class <code>&lt;clinit&gt;</code> is eagerly seeded as a root before
- traversal starts, independently of whether the fake-main body actually triggers it.</div>
+<div class="block">Whether the main class's <code>&lt;clinit&gt;</code> - and, as the JVM initializes superclasses first, the
+ <code>&lt;clinit&gt;</code>s of its superclasses - are eagerly seeded as roots before traversal starts,
+ independently of whether the fake-main body actually triggers them.</div>
 </dd>
 <dt><a href="sootup/core/types/PrimitiveType.html#isShortType()" class="member-name-link">isShortType()</a> - Method in class sootup.core.types.<a href="sootup/core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></dt>
 <dd>&nbsp;</dd>
