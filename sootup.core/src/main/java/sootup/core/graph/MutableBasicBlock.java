@@ -22,61 +22,19 @@ package sootup.core.graph;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
+/**
+ * Block of a {@link MutableBlockControlFlowGraph}. Read-only view: modify blocks through the graph,
+ * which keeps both ends of every edge and its stmt index consistent.
+ */
 public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
 
-  void addStmt(@NonNull Stmt newStmt);
-
-  void removeStmt(int idx);
-
-  void removeStmt(@NonNull Stmt stmt);
-
-  void replaceStmt(Stmt oldStmt, Stmt newStmt);
-
-  void addPredecessorBlock(@NonNull MutableBasicBlock block);
-
-  void linkSuccessor(int successorIdx, MutableBasicBlock blockB);
-
-  boolean removePredecessorBlock(@NonNull MutableBasicBlock b);
-
-  void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block);
-
-  void removeFromSuccessorBlocks(@NonNull MutableBasicBlock b);
-
-  void linkExceptionalSuccessorBlock(@NonNull ClassType exception, MutableBasicBlock b);
-
-  void removeExceptionalSuccessorBlock(@NonNull ClassType exception);
-
-  @NonNull MutableBasicBlockImpl splitBlockLinked(int splitIdx);
-
-  void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock);
-
-  MutableBasicBlock splitBlockUnlinked(@NonNull Stmt newTail, @NonNull Stmt newHead);
-
-  MutableBasicBlockImpl splitBlockUnlinked(int splitIdx);
-
-  @NonNull MutableBasicBlock splitBlockLinked(@NonNull Stmt splitStmt, boolean shouldBeNewHead);
-
-  void clearSuccessorBlocks();
-
-  void clearExceptionalSuccessorBlocks();
-
-  void clearPredecessorBlocks();
-
-  List<Integer> replaceSuccessorBlock(
-      @NonNull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock);
-
-  boolean replacePredecessorBlock(MutableBasicBlock oldBlock, MutableBasicBlock newBlock);
-
-  Collection<ClassType> collectExceptionalSuccessorBlocks(@NonNull MutableBasicBlock block);
-
+  /** normal and exceptional predecessors, one entry per edge */
   @NonNull
   @Override
   List<MutableBasicBlock> getPredecessors();
@@ -105,6 +63,4 @@ public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
   @NonNull
   @Override
   Stmt getTail();
-
-  void replaceStmt(int idx, Stmt newStmt);
 }

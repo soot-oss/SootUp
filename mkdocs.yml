@@ -34,7 +34,7 @@ nav:
       - "Example: Taint Analysis (interprocedural, IFDS)": taint-analysis-example.md
       - "From Prototype to Tool": tool_setup.md
       - Incorporate Pointer Analysis: qilin.md
-  #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
+      - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
   #  - Implement an AnalysisTool: write_analysis_tool.md

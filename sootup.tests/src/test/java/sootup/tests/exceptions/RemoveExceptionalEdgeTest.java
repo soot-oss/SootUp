@@ -3,6 +3,7 @@ package sootup.tests.exceptions;
 import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -11,6 +12,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -29,14 +31,21 @@ public class RemoveExceptionalEdgeTest {
       if (!builder.getMethodSignature().equals(methodSignature)) return;
 
       MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
-      List<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks().stream().toList();
-      BasicBlock<?> basicBlock = blocks.get(11);
+      ClassType throwable = view.getIdentifierFactory().getClassType("java.lang.Throwable");
+      // a block with a Throwable trap; do not rely on the iteration order of getBlocks()
+      BasicBlock<?> basicBlock =
+          controlFlowGraph.getBlocks().stream()
+              .filter(b -> b.getExceptionalSuccessors().containsKey(throwable))
+              .findFirst()
+              .orElseThrow();
       Stmt head = basicBlock.getHead();
 
-      controlFlowGraph.removeExceptionalEdge(
-          head, view.getIdentifierFactory().getClassType("java.lang.Throwable"));
-      if (basicBlock.getSuccessors().size() == 0) {
-        controlFlowGraph.removeBlock(basicBlock);
+      controlFlowGraph.removeExceptionalEdge(head, throwable);
+      Assertions.assertFalse(controlFlowGraph.exceptionalSuccessors(head).containsKey(throwable));
+      // the block may have been merged with a neighbour: look it up again
+      BasicBlock<?> blockOfHead = controlFlowGraph.getBlockOf(head);
+      if (blockOfHead.getSuccessors().isEmpty()) {
+        controlFlowGraph.removeBlock(blockOfHead);
       }
     }
   }
