@@ -114,7 +114,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public MutableBlockControlFlowGraph(@NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     Collection<? extends BasicBlock<?>> sourceBlocks = graph.getBlocks();
     for (BasicBlock<?> b : sourceBlocks) {
-      newBlock(b.getStmts());
+      // the blocks of a ControlFlowGraph are valid already
+      newValidatedBlock(b.getStmts());
     }
     for (BasicBlock<?> b : sourceBlocks) {
       final MutableBasicBlockImpl copy = blockOf(b.getHead());
@@ -152,7 +153,9 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       return;
     }
 
-    HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
+    // invalid input is rejected before anything changes
+    validateLegacyBlocks(blocks, successorMap);
+    final Map<Stmt, Integer> trapstmtToIdx = new IdentityHashMap<>();
     PriorityQueue<Trap> trapStart =
         new PriorityQueue<>(
             Comparator.comparingInt((Trap t) -> trapstmtToIdx.get(t.getBeginStmt())));
@@ -161,17 +164,10 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
     Comparator<Trap> trapComparator;
     if (!traps.isEmpty()) {
-      Map<Stmt, Integer> blockIdxMap = new HashMap<>();
-      Set<Stmt> blockStmts = Collections.newSetFromMap(new IdentityHashMap<>());
+      Map<Stmt, Integer> blockIdxMap = new IdentityHashMap<>(blocks.size());
       int i = 0;
       for (List<Stmt> block : blocks) {
         blockIdxMap.put(block.get(0), i++);
-        blockStmts.addAll(block);
-        /*
-        for (int j = 0; j < block.size(); j++) {
-          blockIdxMap.put(block.get(j), i++);
-        }
-         */
       }
 
       traps.forEach(
@@ -183,7 +179,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
             Integer endIdx = blockIdxMap.get(trap.getEndStmt());
             if (endIdx == null) { // The end statement is not the head of any block
-              if (blockStmts.contains(trap.getEndStmt())) {
+              if (containsStmt(blocks, trap.getEndStmt())) {
                 // a Trap can only end where a Block begins; inside a Block it would cover part of
                 // it
                 throw new IllegalArgumentException(
@@ -213,14 +209,38 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       trapComparator = null;
     }
 
-    validateLegacyBlocks(blocks, successorMap);
+    buildFromLegacyBlocks(
+        blocks, successorMap, traps, trapStart, trapEnd, trapComparator, trapstmtToIdx);
+  }
+
+  private void buildFromLegacyBlocks(
+      @NonNull List<List<Stmt>> blocks,
+      @NonNull Map<BranchingStmt, List<Stmt>> successorMap,
+      @NonNull List<Trap> traps,
+      @NonNull PriorityQueue<Trap> trapStart,
+      @NonNull PriorityQueue<Trap> trapEnd,
+      @Nullable Comparator<Trap> trapComparator,
+      @NonNull Map<Stmt, Integer> trapstmtToIdx) {
     final MutableBasicBlockImpl[] newBlocks = new MutableBasicBlockImpl[blocks.size()];
-    final Map<Stmt, MutableBasicBlockImpl> headToBlock = new IdentityHashMap<>();
     for (int b = 0; b < blocks.size(); b++) {
-      newBlocks[b] = newBlock(blocks.get(b));
-      headToBlock.put(blocks.get(b).get(0), newBlocks[b]);
+      newBlocks[b] = newValidatedBlock(blocks.get(b));
     }
     startingStmt = blocks.get(0).get(0);
+
+    // every branch target and trap handler becomes a block head before anything is linked: splits
+    // then need no edge bookkeeping and no block reference can go stale
+    for (List<Stmt> block : blocks) {
+      Stmt tail = block.get(block.size() - 1);
+      if (tail instanceof BranchingStmt) {
+        for (Stmt target : successorMap.get(tail)) {
+          blockStartingAt(target);
+        }
+      }
+    }
+    for (Trap trap : traps) {
+      blockStartingAt(trap.getHandlerStmt());
+    }
+
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> activeTrapMap = new HashMap<>();
     Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
@@ -291,12 +311,21 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
       }
 
-      final MutableBasicBlockImpl current = newBlocks[i];
-      exceptionToHandlerMap.forEach(
-          (type, handler) -> {
-            MutableBasicBlockImpl handlerBlock = headToBlock.get(handler);
-            current.linkExc(type, handlerBlock != null ? handlerBlock : blockStartingAt(handler));
-          });
+      if (!exceptionToHandlerMap.isEmpty()) {
+        if (newBlocks[i].size() == block.size()) {
+          // not split: newBlocks[i] still holds exactly this given block
+          linkExc(newBlocks[i], exceptionToHandlerMap);
+        } else {
+          MutableBasicBlockImpl last = null;
+          for (Stmt s : block) {
+            MutableBasicBlockImpl part = stmtToBlock.get(s);
+            if (part != last) {
+              linkExc(part, exceptionToHandlerMap);
+              last = part;
+            }
+          }
+        }
+      }
     }
 
     // a Trap whose end is in no Block reaches the end of the body, so it is never closed above
@@ -324,9 +353,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
                   + tailStmt
                   + "' falls into the abyss - as there is no following Block!");
         }
-        List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
-        Stmt followingBlocksHead = followingBlock.get(0);
-        blockOf(tailStmt).link(0, headToBlock.get(followingBlocksHead));
+        blockOf(tailStmt).link(0, blockOf(blocks.get(fallsThroughTargetIdx).get(0)));
       } else {
         succIdxOffset = 0;
       }
@@ -351,7 +378,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         for (int k = 0; k < targets.size(); k++) {
           Stmt target = targets.get(k);
           // a possible fallsthrough (e.g. from IfStmt) is not in successorMap
-          blockOf(bStmt).link(k + succIdxOffset, blockStartingAt(target));
+          blockOf(bStmt).link(k + succIdxOffset, blockOf(target));
         }
       }
     }
@@ -364,7 +391,12 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   /** checks the legacy block representation before anything is created */
   private void validateLegacyBlocks(
       @NonNull List<List<Stmt>> blocks, @NonNull Map<BranchingStmt, List<Stmt>> successorMap) {
-    Set<Stmt> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    int stmtCount = 0;
+    for (List<Stmt> block : blocks) {
+      stmtCount += block.size();
+    }
+    // presized: growing it stmt by stmt was a large part of initializeWith
+    final Set<Stmt> seen = Collections.newSetFromMap(new IdentityHashMap<>(stmtCount));
     for (int i = 0; i < blocks.size(); i++) {
       List<Stmt> block = blocks.get(i);
       if (block.isEmpty()) {
@@ -372,7 +404,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       }
       for (int j = 0; j < block.size(); j++) {
         Stmt s = block.get(j);
-        if (stmtToBlock.containsKey(s) || !seen.add(s)) {
+        if (!seen.add(s) || stmtToBlock.containsKey(s)) {
           throw new IllegalArgumentException("Stmt '" + s + "' is contained twice.");
         }
         if (j < block.size() - 1
@@ -410,8 +442,25 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     }
   }
 
+  private static boolean containsStmt(@NonNull List<List<Stmt>> blocks, @NonNull Stmt stmt) {
+    for (List<Stmt> block : blocks) {
+      for (Stmt s : block) {
+        if (s == stmt) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /** links block to the handlers, which are block heads already */
+  private void linkExc(
+      @NonNull MutableBasicBlockImpl block, @NonNull Map<ClassType, Stmt> exceptionToHandler) {
+    exceptionToHandler.forEach((type, handler) -> block.linkExc(type, blockOf(handler)));
+  }
+
   private static int getTrapApplicationComparator(
-      HashMap<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
+      Map<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
     if (trapA.getEndStmt() == trapB.getEndStmt()) {
       if (trapA.getBeginStmt() == trapB.getBeginStmt()) {
         final Integer handlerIdxA = trapstmtToIdx.get(trapA.getHandlerStmt());
@@ -825,6 +874,24 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         handlerBlocks.forEach(block::linkExc);
       }
     }
+  }
+
+  /**
+   * creates one (unlinked) block of already validated stmts in one go: only the last one may branch
+   * or end the flow and none may be in the graph yet
+   */
+  @NonNull
+  private MutableBasicBlockImpl newValidatedBlock(@NonNull List<? extends Stmt> stmts) {
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
+    block.initStmts(stmts);
+    for (Stmt s : stmts) {
+      if (stmtToBlock.put(s, block) != null) {
+        throw new IllegalStateException(
+            "Stmt '" + s + "' was not validated: it is contained twice.");
+      }
+    }
+    blocks.add(block);
+    return block;
   }
 
   /** creates one (unlinked) block of the stmts, which must fall through except the last one */
@@ -1636,9 +1703,16 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public List<Stmt> predecessors(@NonNull Stmt node) {
     MutableBasicBlockImpl block = blockOf(node);
     if (node == block.getHead()) {
-      List<MutableBasicBlock> predecessorBlocks = block.getPredecessors();
-      List<Stmt> preds = new ArrayList<>(predecessorBlocks.size());
-      predecessorBlocks.forEach(p -> preds.add(p.getTail()));
+      // same order as block.getPredecessors(): normal, then exceptional
+      List<MutableBasicBlockImpl> normal = block.normalPredecessors();
+      List<MutableBasicBlockImpl> exceptional = block.exceptionalPredecessors();
+      List<Stmt> preds = new ArrayList<>(normal.size() + exceptional.size());
+      for (int i = 0; i < normal.size(); i++) {
+        preds.add(normal.get(i).getTail());
+      }
+      for (int i = 0; i < exceptional.size(); i++) {
+        preds.add(exceptional.get(i).getTail());
+      }
       return preds;
     }
     return Collections.singletonList(block.get(block.indexOf(node) - 1));
@@ -1690,9 +1764,14 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public List<Stmt> successors(@NonNull Stmt node) {
     MutableBasicBlockImpl block = blockOf(node);
     if (node == block.getTail()) {
-      List<MutableBasicBlock> successorBlocks = block.getSuccessors();
-      List<Stmt> succs = new ArrayList<>(successorBlocks.size());
-      successorBlocks.forEach(p -> succs.add(p.getHead()));
+      final int slots = block.successorSlots();
+      List<Stmt> succs = new ArrayList<>(slots);
+      for (int i = 0; i < slots; i++) {
+        MutableBasicBlockImpl succ = block.successorAt(i);
+        if (succ != null) {
+          succs.add(succ.getHead());
+        }
+      }
       return succs;
     }
     return Collections.singletonList(block.get(block.indexOf(node) + 1));
@@ -1706,8 +1785,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     if (exc.isEmpty()) {
       return new HashMap<>(0);
     }
-    Map<ClassType, Stmt> map = new HashMap<>();
-    exc.forEach((type, handler) -> map.put(type, handler.getHead()));
+    // sized so that it never rehashes
+    Map<ClassType, Stmt> map = new HashMap<>(exc.size() * 4 / 3 + 1);
+    for (Map.Entry<ClassType, MutableBasicBlockImpl> e : exc.entrySet()) {
+      map.put(e.getKey(), e.getValue().getHead());
+    }
     return map;
   }
 

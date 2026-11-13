@@ -221,6 +221,18 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return removed;
   }
 
+  /**
+   * fills an empty block in one go. The caller guarantees that only the last stmt may branch or end
+   * the flow (e.g. it copies a valid block or has validated its input).
+   */
+  void initStmts(@NonNull List<? extends Stmt> initial) {
+    if (!stmts.isEmpty()) {
+      throw new IllegalStateException("block is not empty");
+    }
+    stmts.addAll(0, initial);
+    adjustArity();
+  }
+
   /** appends stmt as new tail; the current tail must fall through and have no successor set */
   void addStmt(@NonNull Stmt newStmt) {
     if (!stmts.isEmpty()) {
@@ -488,7 +500,11 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
    * rebuilt on the next lookup.
    */
   static final class StmtDeque extends AbstractList<Stmt> implements RandomAccess {
-    private static final int INDEX_THRESHOLD = 8;
+    /**
+     * up to this size indexOf scans linearly: for the small blocks of typical methods a scan is
+     * cheaper than building and maintaining the index
+     */
+    private static final int INDEX_THRESHOLD = 32;
 
     private Stmt[] buf = new Stmt[8];
     private int off = 4;
@@ -509,6 +525,12 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     public Stmt get(int i) {
       Objects.checkIndex(i, len);
       return buf[off + i];
+    }
+
+    /** a plain copy of the slots; the inherited version walks an iterator */
+    @Override
+    public Object[] toArray() {
+      return Arrays.copyOfRange(buf, off, off + len, Object[].class);
     }
 
     @Override

@@ -327,3 +327,5 @@ implementations treat both calls as no-ops, so the pattern is always safe.
 | insert/remove in the middle of a block | proportional to the shorter part of the block |
 | split/merge of a block | proportional to the smaller part |
 | `getStmts()` | O(n) copy; the order is cached and survives changes inside a block |
+| copy constructor | O(n) |
+| `initializeWith` | O(n), plus a split for every branch target that is not the head of a given block |

@@ -911,6 +911,66 @@ public class MutableBlockControlFlowGraphBreakTest {
     }
 
     @Test
+    void initializeWithBranchIntoTheFrontOfALaterBlock() {
+      // the target y splits [x, y, z, w, r] before n1 is linked; the front part [x] is the smaller
+      // one and moves to a new block, so n1 must still fall through to x, not to y
+      JIfStmt if1 = ifStmt();
+      JNopStmt n1 = nop(), x = nop(), y = nop(), z = nop(), w = nop();
+      JReturnVoidStmt r = ret();
+      MutableBlockControlFlowGraph g =
+          init(blocks(list(if1), list(n1), list(x, y, z, w, r)), succ(if1, list(y)));
+
+      assertEquals(list(n1, y), g.successors(if1));
+      assertEquals(list(x), g.successors(n1));
+      assertEquals(list(y), g.successors(x));
+      assertEquals(list(n1), g.predecessors(x));
+    }
+
+    @Test
+    void initializeWithBranchIntoTheFrontOfALaterTrappedBlock() {
+      // as above, but the split block is covered by a trap: both parts keep it
+      JIfStmt if1 = ifStmt();
+      JNopStmt n1 = nop(), x = nop(), y = nop(), z = nop(), w = nop();
+      JReturnVoidStmt r = ret(), r2 = ret();
+      JIdentityStmt h = handler(EX_A);
+      MutableBlockControlFlowGraph g =
+          init(
+              blocks(list(if1), list(n1), list(x, y, z, w, r), list(h, r2)),
+              succ(if1, list(y)),
+              new Trap(EX_A, x, h, h));
+
+      assertEquals(list(x), g.successors(n1));
+      assertEquals(map(), g.exceptionalSuccessors(n1));
+      assertEquals(map(EX_A, h), g.exceptionalSuccessors(x));
+      assertEquals(map(EX_A, h), g.exceptionalSuccessors(y));
+      assertEquals(map(EX_A, h), g.exceptionalSuccessors(r));
+    }
+
+    @Test
+    void invalidInitializeWithLeavesTheGraphUnchanged() {
+      JNopStmt a = nop();
+      JReturnVoidStmt r = ret();
+      MutableBlockControlFlowGraph g = new MutableBlockControlFlowGraph();
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> g.initializeWith(blocks(list(a), list(a, r)), succ(), new ArrayList<>()));
+      assertTrue(g.getNodes().isEmpty());
+      assertTrue(g.getBlocks().isEmpty());
+      assertNull(g.getStartingStmt());
+
+      // usable afterwards; a second invalid call does not touch the existing content
+      g.initializeWith(blocks(list(a, r)), succ(), new ArrayList<>());
+      JNopStmt b = nop();
+      JReturnVoidStmt r2 = ret();
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> g.initializeWith(blocks(list(b), list(b, r2)), succ(), new ArrayList<>()));
+      assertEquals(list(a, r), g.getStmts());
+      assertFalse(g.containsNode(b));
+      assertConsistent(g);
+    }
+
+    @Test
     void initializeWithTooFewSwitchTargetsIsRejected() {
       JSwitchStmt sw = switchStmt(2);
       JNopStmt a = nop();

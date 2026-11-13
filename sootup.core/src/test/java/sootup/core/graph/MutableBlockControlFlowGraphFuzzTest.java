@@ -391,6 +391,9 @@ public class MutableBlockControlFlowGraphFuzzTest {
       Set<Integer> leaders = new TreeSet<>();
       leaders.add(0);
       leaders.addAll(handlerIdx);
+      // stmts that are only branch targets need not start a given block: initializeWith has to
+      // split there (frontends that do not cut at every label)
+      Set<Integer> targetLeaders = new TreeSet<>();
       Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
       for (int i = 0; i < n; i++) {
         Stmt s = stmts[i];
@@ -400,14 +403,14 @@ public class MutableBlockControlFlowGraphFuzzTest {
           t[0] = stmts[i + 1];
           t[1] = stmts[target];
           successorMap.put((BranchingStmt) s, list(stmts[target]));
-          leaders.add(target);
+          targetLeaders.add(target);
         } else if (s instanceof BranchingStmt) {
           List<Stmt> targets = new ArrayList<>();
           for (int k = 0; k < t.length; k++) {
             int target = rnd.nextInt(n);
             t[k] = stmts[target];
             targets.add(stmts[target]);
-            leaders.add(target);
+            targetLeaders.add(target);
           }
           successorMap.put((BranchingStmt) s, targets);
         } else if (s instanceof FallsThroughStmt) {
@@ -441,6 +444,9 @@ public class MutableBlockControlFlowGraphFuzzTest {
         }
       }
       // block boundaries where the trap coverage changes are already leaders (b, e)
+      for (int target : targetLeaders) {
+        if (rnd.nextBoolean()) leaders.add(target);
+      }
 
       List<List<Stmt>> blocks = new ArrayList<>();
       List<Integer> ls = new ArrayList<>(leaders);
