@@ -14,7 +14,7 @@
         <link rel="prev" href="../typehierarchy/">
       
       
-        <link rel="next" href="../builtin-analyses/">
+        <link rel="next" href="../callgraph-cha-rta/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Callgraphs - </title>
+        <title>Tutorial - </title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#call-graph-construction" class="md-skip">
+        <a href="#call-graphs-a-step-by-step-tutorial" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Callgraphs
+              Tutorial
             
           </span>
         </div>
@@ -773,6 +773,57 @@
   
   
   
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Call Graphs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Call Graphs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -788,7 +839,7 @@
   <span class="md-ellipsis">
     
   
-    Callgraphs
+    Tutorial
   
 
     
@@ -806,7 +857,7 @@
   <span class="md-ellipsis">
     
   
-    Callgraphs
+    Tutorial
   
 
     
@@ -832,10 +883,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#creating-the-type-hierarchy" class="md-nav__link">
+  <a href="#step-1-load-the-program-into-a-view" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating the Type Hierarchy
+        Step 1: Load the program into a View
       
     </span>
   </a>
@@ -843,10 +894,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-an-entry-method" class="md-nav__link">
+  <a href="#step-2-choose-the-entry-points" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Defining an Entry Method
+        Step 2: Choose the entry points
       
     </span>
   </a>
@@ -854,10 +905,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#scoping-the-call-graph" class="md-nav__link">
+  <a href="#step-3-pick-an-algorithm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Scoping the Call Graph
+        Step 3: Pick an algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Pick an algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-running-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The running example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-build-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Build the call graph
       
     </span>
   </a>
@@ -865,10 +944,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-hierarchy-analysis" class="md-nav__link">
+  <a href="#step-5-shared-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Class Hierarchy Analysis
+        Step 5: Shared options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Shared options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#callresolver-which-methods-get-analyzed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        callResolver: which methods get analyzed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtualcallresolver-which-resolved-targets-to-keep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        virtualCallResolver: which resolved targets to keep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seedentrypointclinits-static-initializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seedEntryPointClinits: static initializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reflectionmodel-reflection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reflectionModel: reflection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamicinvokeresolver-lambdas-and-method-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dynamicInvokeResolver: lambdas and method references
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-family-uses-which-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which family uses which option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-query-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Query the call graph
       
     </span>
   </a>
@@ -876,10 +1038,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rapid-type-analysis" class="md-nav__link">
+  <a href="#step-7-export-to-dot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rapid Type Analysis
+        Step 7: Export to DOT
       
     </span>
   </a>
@@ -887,10 +1049,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exporting-the-call-graph-in-a-dot-format" class="md-nav__link">
+  <a href="#limits-reflection-invokedynamic-and-static-initializers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exporting the call graph in a Dot format
+        Limits: reflection, invokedynamic and static initializers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-soot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from Soot
       
     </span>
   </a>
@@ -900,6 +1073,98 @@
     </ul>
   
 </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraph-cha-rta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CHA & RTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraph-spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spark
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qilin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qilin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -1056,146 +1321,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysis-liveness/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Example: Live Variables (backward)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../analysis-constprop/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Example: Constant Propagation (forward)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../analysis-typestate/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Example: Typestate (interprocedural, IDE)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../taint-analysis-example/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Example: Taint Analysis (interprocedural, IFDS)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tool_setup/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    From Prototype to Tool
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../qilin/" class="md-nav__link">
         
   
@@ -1203,7 +1328,7 @@
   <span class="md-ellipsis">
     
   
-    Incorporate Pointer Analysis
+    Qilin
   
 
     
@@ -1232,6 +1357,34 @@
     
   
     Modify a ControlFlowGraph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
   
 
     
@@ -1282,7 +1435,7 @@
   <span class="md-ellipsis">
     
   
-    Misc & More
+    Examples
   
 
     
@@ -1295,6 +1448,177 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Variables (backwards analysis)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Misc & More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1478,10 +1802,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#creating-the-type-hierarchy" class="md-nav__link">
+  <a href="#step-1-load-the-program-into-a-view" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating the Type Hierarchy
+        Step 1: Load the program into a View
       
     </span>
   </a>
@@ -1489,10 +1813,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-an-entry-method" class="md-nav__link">
+  <a href="#step-2-choose-the-entry-points" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Defining an Entry Method
+        Step 2: Choose the entry points
       
     </span>
   </a>
@@ -1500,10 +1824,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#scoping-the-call-graph" class="md-nav__link">
+  <a href="#step-3-pick-an-algorithm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Scoping the Call Graph
+        Step 3: Pick an algorithm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Pick an algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-running-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The running example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-build-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Build the call graph
       
     </span>
   </a>
@@ -1511,10 +1863,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-hierarchy-analysis" class="md-nav__link">
+  <a href="#step-5-shared-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Class Hierarchy Analysis
+        Step 5: Shared options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Shared options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#callresolver-which-methods-get-analyzed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        callResolver: which methods get analyzed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtualcallresolver-which-resolved-targets-to-keep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        virtualCallResolver: which resolved targets to keep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seedentrypointclinits-static-initializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seedEntryPointClinits: static initializers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reflectionmodel-reflection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reflectionModel: reflection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamicinvokeresolver-lambdas-and-method-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dynamicInvokeResolver: lambdas and method references
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-family-uses-which-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which family uses which option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-query-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Query the call graph
       
     </span>
   </a>
@@ -1522,10 +1957,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rapid-type-analysis" class="md-nav__link">
+  <a href="#step-7-export-to-dot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rapid Type Analysis
+        Step 7: Export to DOT
       
     </span>
   </a>
@@ -1533,10 +1968,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#exporting-the-call-graph-in-a-dot-format" class="md-nav__link">
+  <a href="#limits-reflection-invokedynamic-and-static-initializers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exporting the call graph in a Dot format
+        Limits: reflection, invokedynamic and static initializers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-soot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from Soot
       
     </span>
   </a>
@@ -1563,29 +2009,73 @@
   
 
 
-<h1 id="call-graph-construction">Call Graph Construction</h1>
-<p>A call graph shows the method calling relationship of a program. It is a directed graph, whose nodes represent different <strong>methods</strong>, and edges represent <strong>caller -&gt; callee</strong> relationship.</p>
-<p>SootUp contains several call graph construction algorithms. Below, we show how you can use each of these.</p>
-<h2 id="creating-the-type-hierarchy">Creating the Type Hierarchy</h2>
-<p>All the call graph construction algorithms require the view to access the type hierarchy for resolving method calls based of sub typing relationship.
-Below, we show how to create a type hierarchy:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">SootUp</label><label for="__tabbed_1_2">Soot</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
+<h1 id="call-graphs-a-step-by-step-tutorial">Call Graphs: a Step-by-Step Tutorial</h1>
+<p>A <strong>call graph</strong> records which methods a program may call. Its nodes are methods. Each edge is one
+call: a <em>caller</em>, a <em>callee</em>, and the invoke statement in the caller that makes the call
+(<code>CallGraph.Call</code>). Most interprocedural analyses need a call graph, e.g. the
+<a href="../taint-analysis-example/">taint analysis</a> and the <a href="../analysis-typestate/">typestate analysis</a>.</p>
+<p>The hard part is the <strong>virtual call</strong>. For <code>shape.area()</code> the compiler only knows the static type
+<code>Shape</code>, so a call graph algorithm has to estimate which <code>area()</code> implementations can run there.
+Algorithms differ in how precise that estimate is and how much it costs. This tutorial uses one small
+program to show the difference, then walks through every configuration option.</p>
+<p>All code on this page comes from tests in <code>sootup.examples/src/test/java/sootup/examples/callgraph/</code>.
+It compiles, and it does what the comments say.</p>
+<div class="admonition info">
+<p class="admonition-title">Dependencies</p>
+<p>CHA and RTA are in <code>sootup.callgraph</code>. Spark needs <code>sootup.spark</code>, and Qilin needs <code>sootup.qilin</code>.
+See <a href="../installation/">Installation</a>.</p>
+</div>
+<h2 id="step-1-load-the-program-into-a-view">Step 1: Load the program into a View</h2>
+<p>Every algorithm works on a <a href="../analysisinput/">View</a>. Add the program under analysis as an
+<strong>application</strong> input location, and the Java runtime as a <strong>library</strong> input location:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">cpString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"src/test/resources/Callgraph/binary"</span><span class="p">;</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="p">();</span>
-<span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="n">cpStr</span><span class="p">));</span>
-<span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRuntimeAnalysisInputLocation</span><span class="p">());</span>
-
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+<span class="w">        </span><span class="c1">// the program under analysis: SourceType.Application</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">            </span><span class="s">"src/test/resources/CallgraphComparison/binary"</span><span class="p">,</span><span class="w"> </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">),</span>
+<span class="w">        </span><span class="c1">// the JDK of the running JVM: SourceType.Library</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRuntimeAnalysisInputLocation</span><span class="p">());</span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocations</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
+<p>The runtime is needed because every program calls into the JDK, even if only <code>Object.&lt;init&gt;()</code>.
+Without it, those targets can't be resolved. By default, the algorithms record calls <em>into</em> library
+methods but don't analyze library method bodies. <a href="#callresolver-which-methods-get-analyzed"><code>callResolver</code></a>
+changes that.</p>
+<h2 id="step-2-choose-the-entry-points">Step 2: Choose the entry points</h2>
+<p>A call graph starts at one or more entry methods and contains everything reachable from them. For an
+application, the entry point is usually <code>main</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"Main"</span><span class="p">);</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">mainMethod</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span><span class="n">mainClass</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getMainSubSignature</span><span class="p">());</span>
+</code></pre></div></td></tr></table></div>
+<p>You can also parse the signature from a string:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">MethodSignature</span><span class="w"> </span><span class="n">mainMethod</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Main: void main(java.lang.String[])&gt;"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>Any method can be an entry point, e.g. every public method of a library, or the handler methods of a
+framework. If you pass no entry points, CHA and RTA start from every <code>main(String[])</code> method of the
+application.</p>
+<h2 id="step-3-pick-an-algorithm">Step 3: Pick an algorithm</h2>
+<h3 id="the-running-example">The running example</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Shape</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">area</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>Circle</code>, <code>Square</code>, <code>Triangle</code> and <code>Hexagon</code> implement <code>Shape</code>. Each <code>area()</code> returns a constant.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -1600,121 +2090,98 @@ Below, we show how to create a type hierarchy:</p>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">"user.dir"</span><span class="p">);</span>
-<span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"target"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"test-classes"</span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"lib"</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">"rt.jar"</span><span class="p">;</span>
-<span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">exercise1</span><span class="p">.</span><span class="na">Hierarchy</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
-<span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_whole_program</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_soot_classpath</span><span class="p">(</span><span class="n">sootCp</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_no_bodies_for_excluded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">process_dir</span><span class="p">();</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_allow_phantom_refs</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">"jb"</span><span class="p">,</span><span class="w"> </span><span class="s">"use-original-names:true"</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_prepend_classpath</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-<span class="n">SootClass</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">forceResolve</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">,</span><span class="w"> </span><span class="n">SootClass</span><span class="p">.</span><span class="na">BODIES</span><span class="p">);</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
-<span class="w">    </span><span class="n">c</span><span class="p">.</span><span class="na">setApplicationClass</span><span class="p">();</span>
-<span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">loadNecessaryClasses</span><span class="p">();</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Main</span><span class="w"> </span><span class="p">{</span>
 
-<span class="n">Hierarchy</span><span class="w"> </span><span class="n">hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Hierarchy</span><span class="p">();</span>
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h2 id="defining-an-entry-method">Defining an Entry Method</h2>
-<p>All call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">SootUp (performant)</label><label for="__tabbed_2_2">SootUp (alternative)</label><label for="__tabbed_2_3">Soot</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"packageNameA.A"</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="n">Shape</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="n">Shape</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
-<span class="n">MethodSignature</span><span class="w"> </span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
-<span class="w">            </span><span class="n">classTypeA</span><span class="p">,</span>
-<span class="w">            </span><span class="s">"calc"</span><span class="p">,</span>
-<span class="w">            </span><span class="n">VoidType</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(),</span>
-<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">)</span>
-<span class="w">        </span><span class="p">);</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">methodSigStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"&lt;packageNameA.A: void calc(packageNameA.A)"</span><span class="p">;</span>
-<span class="n">MethodSignature</span><span class="w"> </span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span>
-<span class="w">                    </span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="n">methodSigStr</span><span class="p">));</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"packageNameA.A"</span><span class="p">;</span>
-<span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">"doStuff"</span><span class="p">);</span><span class="w">     </span>
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h2 id="scoping-the-call-graph">Scoping the Call Graph</h2>
-<p>By default, every call graph algorithm stops exploring at library classes
-(classes whose <code>SourceType</code> is <code>Library</code>, e.g. the JDK classes pulled in via <code>DefaultRuntimeAnalysisInputLocation</code>):
-a call <em>into</em> a library method is still recorded as an edge, but the library method's own body is never analyzed, so it never gets outgoing edges of its own.</p>
-<p>This behavior is controlled by a <code>CallGraphScope</code>. <code>CallGraphScope.filter(SootClass, MethodSignature)</code> is asked once per method before its calls are resolved;
-returning <code>true</code> excludes the method from expansion. The method still shows up as a node in the resulting call graph:
-it simply has no outgoing edges, since its body is never analyzed.
-The default scope (<code>DefaultCallGraphScope</code>) is exactly the "skip library classes" behavior described above.</p>
-<p>You can pass a custom <code>CallGraphScope</code> to <code>ClassHierarchyAnalysisAlgorithm</code>/<code>RapidTypeAnalysisAlgorithm</code> to change what gets explored, e.g. to also cut off a specific package:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">SootUp (custom scope)</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphScope</span><span class="w"> </span><span class="n">skipTestPackage</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="p">(</span><span class="n">sc</span><span class="p">,</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="na">isLibraryClass</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="na">getType</span><span class="p">().</span><span class="na">getFullyQualifiedName</span><span class="p">().</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"com.example.tests"</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Shape</span><span class="w"> </span><span class="n">circle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Circle</span><span class="p">();</span>
+<span class="w">    </span><span class="n">circle</span><span class="p">.</span><span class="na">area</span><span class="p">();</span><span class="w"> </span><span class="c1">// call site 1</span>
 
-<span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">skipTestPackage</span><span class="p">);</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Shape</span><span class="w"> </span><span class="n">triangle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Triangle</span><span class="p">());</span><span class="w"> </span><span class="c1">// the result is never used</span>
+<span class="w">    </span><span class="n">Shape</span><span class="w"> </span><span class="n">square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Square</span><span class="p">());</span>
+<span class="w">    </span><span class="n">square</span><span class="p">.</span><span class="na">area</span><span class="p">();</span><span class="w"> </span><span class="c1">// call site 2</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p>At run time, call site 1 (line 9) calls <code>Circle.area()</code> and call site 2 (line 13) calls
+<code>Square.area()</code>. Nothing else is ever called. This is what each algorithm computes:</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Call site 1 <code>circle.area()</code></th>
+<th>Call site 2 <code>square.area()</code></th>
+<th>Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CHA</strong></td>
+<td>Circle, Square, Triangle, Hexagon</td>
+<td>Circle, Square, Triangle, Hexagon</td>
+<td>Every class that implements <code>Shape</code></td>
+</tr>
+<tr>
+<td><strong>RTA</strong></td>
+<td>Circle, Square, Triangle</td>
+<td>Circle, Square, Triangle</td>
+<td>Only classes that the program instantiates with <code>new</code> somewhere. <code>Hexagon</code> is gone</td>
+</tr>
+<tr>
+<td><strong>Spark</strong>, <strong>Qilin</strong> <code>insensitive()</code></td>
+<td>Circle</td>
+<td>Square, Triangle</td>
+<td>Only objects that can actually <em>flow</em> into the variable. Both <code>new Triangle()</code> and <code>new Square()</code> pass through <code>id()</code>, which is analyzed once, so its return value may be either</td>
+</tr>
+<tr>
+<td><strong>Qilin</strong> <code>callSite(1)</code></td>
+<td>Circle</td>
+<td>Square</td>
+<td><code>id()</code> is analyzed separately for each call site, so <code>id(new Square())</code> returns only a <code>Square</code>. Exact</td>
+</tr>
+</tbody>
+</table>
+<p>From top to bottom, the algorithms get more expensive and more precise. Every algorithm
+<strong>over-approximates</strong>: it may report calls that never happen, but it doesn't miss calls the program
+makes (within the <a href="#limits-reflection-invokedynamic-and-static-initializers">limits of static analysis</a>).
+Every extra edge makes the analyses built on top of the call graph slower and less precise. For
+example, a taint analysis on the CHA graph would also track flows through <code>Hexagon.area()</code>.</p>
+<p><code>CallGraphComparisonTest</code> asserts exactly this table.</p>
+<div class="admonition note">
+<p class="admonition-title">More context is not automatically more precision</p>
+<p>Which kind of context helps depends on the code. <code>id()</code> is static, so it has no receiver object.
+An <em>object-sensitive</em> analysis (<code>ContextSensitivity.objectSensitive(2, 1)</code>) therefore has no
+context to tell the two <code>id(...)</code> calls apart, and reports Square and Triangle at call site 2,
+just like the context-insensitive analysis. A <em>call-site-sensitive</em> analysis distinguishes the
+two calls by their call sites. For code that routes objects through instance methods (getters,
+containers, builders), object sensitivity is usually the better choice.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Which one should I use?</p>
+<ul>
+<li><strong>CHA</strong>: start here. Fast and simple, and it needs no knowledge about objects. Also the base
+  graph for Spark.</li>
+<li><strong>RTA</strong>: almost as fast as CHA, and usually noticeably smaller. A good default for whole-program
+  analyses.</li>
+<li><strong>Spark</strong>: context-insensitive points-to analysis. Use it when you also need points-to sets, or
+  when RTA is too imprecise.</li>
+<li><strong>Qilin</strong>: the full range of context-sensitive points-to analyses. Use it when precision matters
+  more than run time.</li>
+</ul>
 </div>
-</div>
-<p>If you need to know <em>what</em> got excluded, e.g. to diagnose why an expected method is missing from the call graph, use <code>ExcludedCallsCollectingCallGraphScope</code>, which applies the default library-class filtering while recording every excluded method signature:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">SootUp (diagnosing exclusions)</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ExcludedCallsCollectingCallGraphScope</span><span class="w"> </span><span class="n">scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ExcludedCallsCollectingCallGraphScope</span><span class="p">();</span>
-<span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">scope</span><span class="p">);</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
-
-<span class="n">scope</span><span class="p">.</span><span class="na">getVisitedExcludedMethods</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);</span>
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<div class="admonition info">
-<p class="admonition-title">Scope prunes expansion, not existing edges</p>
-<p>A <code>CallGraphScope</code> only decides whether a method's <em>own</em> calls get resolved. It does not remove edges that other, non-excluded methods already call into it -- those calls are still part of the call graph.</p>
-</div>
-<h2 id="class-hierarchy-analysis">Class Hierarchy Analysis</h2>
-<p>Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in SootUp. It soundly includes all implementers of an interface, when resolving a method call on an interface.
-You can construct a call graph with CHA as follows:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">SootUp</label><label for="__tabbed_5_2">Soot</label></div>
+<p>Each family has its own page with all of its options:</p>
+<ul>
+<li><a href="../callgraph-cha-rta/">SootUp CHA &amp; RTA</a></li>
+<li><a href="../callgraph-spark/">Spark</a></li>
+<li><a href="../qilin/">Qilin</a></li>
+</ul>
+<h2 id="step-4-build-the-call-graph">Step 4: Build the call graph</h2>
+<p><code>CallGraphConfig.builder()</code> gives every algorithm the same shape. Set the shared properties, choose the
+family, set the family's own options (if any), then call <code>build()</code> and <code>computeCallGraph()</code>:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">CHA</label><label for="__tabbed_1_2">RTA</label><label for="__tabbed_1_3">Spark</label><label for="__tabbed_1_4">Qilin (context-insensitive)</label><label for="__tabbed_1_5">Qilin (1-call-site)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1722,12 +2189,30 @@ You can construct a call graph with CHA as follows:</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
-
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
-
-<span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">tgt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" may call "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">rta</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
@@ -1738,35 +2223,14 @@ You can construct a call graph with CHA as follows:</p>
 <span class="normal">5</span>
 <span class="normal">6</span>
 <span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CHATransformer</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">transform</span><span class="p">();</span>
-<span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">"doStuff"</span><span class="p">);</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getCallGraph</span><span class="p">();</span>
-<span class="n">Iterator</span><span class="o">&lt;</span><span class="n">MethodOrMethodContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Targets</span><span class="p">(</span><span class="n">cg</span><span class="p">.</span><span class="na">edgesOutOf</span><span class="p">(</span><span class="n">src</span><span class="p">));</span>
-<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">targets</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SootMethod</span><span class="p">)</span><span class="n">targets</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" may call "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h2 id="rapid-type-analysis">Rapid Type Analysis</h2>
-<p>Rapid Type Analysis (RTA) algorithm constructs a rather precise version of the call graph that the CHA constructs. It refines CHA by considering only the instantiated implementers of an interface, when resolving a method call on an interface.
-You can construct a call graph with RTA as follows:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">SootUp</label><label for="__tabbed_6_2">Soot</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">rta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RapidTypeAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
-
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rta</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
-
-<span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">tgt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" may call "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">SparkCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">sparkOptions</span><span class="p">(</span><span class="n">SparkOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">onFlyCallGraph</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
@@ -1782,49 +2246,23 @@ You can construct a call graph with RTA as follows:</p>
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Transform</span><span class="w"> </span><span class="n">sparkConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Transform</span><span class="p">(</span><span class="s">"cg.spark"</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"enabled:true"</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"rta:true"</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"on-fly-cg:false"</span><span class="p">);</span>
-<span class="n">Map</span><span class="w"> </span><span class="n">phaseOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPhaseOptions</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">);</span>
-<span class="n">SparkTransformer</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">transform</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">.</span><span class="na">getPhaseName</span><span class="p">(),</span><span class="w"> </span><span class="n">phaseOptions</span><span class="p">);</span>
-<span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">"doStuff"</span><span class="p">);</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getCallGraph</span><span class="p">();</span>
-<span class="n">Iterator</span><span class="o">&lt;</span><span class="n">MethodOrMethodContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Targets</span><span class="p">(</span><span class="n">cg</span><span class="p">.</span><span class="na">edgesOutOf</span><span class="p">(</span><span class="n">src</span><span class="p">));</span>
-<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">targets</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SootMethod</span><span class="p">)</span><span class="n">targets</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" may call "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
-<span class="p">}</span><span class="w">  </span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">QilinCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">mainClass</span><span class="p">(</span><span class="n">mainClass</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pointerAnalysisConfig</span><span class="p">(</span>
+<span class="w">            </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">insensitive</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="c1">// only main(), no JVM start-up model</span>
+<span class="w">                </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">))</span><span class="w"> </span><span class="c1">// skip the statistics printout</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
-</div>
-</div>
-<!--
-## Variable Type Analysis
-(**WIP!**)
-
-Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
-When considering assignments, we usually need to consider **pointer** (points-to) relationship.
-
-!!! info "WIP"
-
-    VTA algorithm will be implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
-    A reimplementation of Spark in SootUp is currently under development.
-
-Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:
-
-=== "SootUp"
-
-    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Spark</span><span class="w"> </span><span class="n">spark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Spark</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">callGraph</span><span class="p">).</span><span class="na">vta</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
-<span class="n">spark</span><span class="p">.</span><span class="na">analyze</span><span class="p">();</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">vtaCAllGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spark</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
-</code></pre></div></td></tr></table></div>
-
-=== "Soot"
-
-    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -1836,36 +2274,133 @@ Spark requires an initial call graph to begin with. You can use one of the call 
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Transform</span><span class="w"> </span><span class="n">sparkConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Transform</span><span class="p">(</span><span class="s">"cg.spark"</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"enabled:true"</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"vta:true"</span><span class="p">);</span>
-<span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">,</span><span class="w"> </span><span class="s">"on-fly-cg:false"</span><span class="p">);</span>
-<span class="n">Map</span><span class="w"> </span><span class="n">phaseOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PhaseOptions</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPhaseOptions</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">);</span>
-<span class="n">SparkTransformer</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">transform</span><span class="p">(</span><span class="n">sparkConfig</span><span class="p">.</span><span class="na">getPhaseName</span><span class="p">(),</span><span class="w"> </span><span class="n">phaseOptions</span><span class="p">);</span>
-<span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">"doStuff"</span><span class="p">);</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getCallGraph</span><span class="p">();</span>
-<span class="n">Iterator</span><span class="o">&lt;</span><span class="n">MethodOrMethodContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Targets</span><span class="p">(</span><span class="n">cg</span><span class="p">.</span><span class="na">edgesOutOf</span><span class="p">(</span><span class="n">src</span><span class="p">));</span>
-<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">targets</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SootMethod</span><span class="p">)</span><span class="n">targets</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" may call "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
-<span class="p">}</span><span class="w">    </span>
-</code></pre></div></td></tr></table></div>
-
--->
-<h2 id="exporting-the-call-graph-in-a-dot-format">Exporting the call graph in a Dot format</h2>
-<p>This guide describes how to export a <strong>call graph</strong> created by one of the call graph algorithms to a <code>.dot</code> format for visualization with tools like <a href="https://graphviz.org/">Graphviz</a>.<br />
-The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.<br />
-In this example, the call graph was created using <strong>CHA</strong>.<br />
-The exported call graph can be sorted by providing a <code>Comparator</code> for <strong>Calls</strong>.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">unsorted</label><label for="__tabbed_7_2">sorted</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">))</span>
-<span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">QilinCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">mainClass</span><span class="p">(</span><span class="n">mainClass</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pointerAnalysisConfig</span><span class="p">(</span>
+<span class="w">            </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">callSite</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// 1-call-site-sensitive</span>
+<span class="w">                </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
-<div class="tabbed-block">
+</div>
+</div>
+<p><code>.cha()</code> and <code>.rta()</code> are built in. Spark and Qilin are in their own modules, so you enter them with
+<code>.into(SparkCallGraphConfig::from)</code> and <code>.into(QilinCallGraphConfig::from)</code>.</p>
+<p>You can also create the algorithm objects yourself, see
+<a href="../callgraph-cha-rta/#using-the-algorithm-objects-directly">SootUp CHA &amp; RTA</a>.</p>
+<h2 id="step-5-shared-options">Step 5: Shared options</h2>
+<p>These options go on <code>CallGraphConfig.builder()</code> before you choose the family. The examples use CHA.
+The other families support the same options, with the exceptions listed in
+<a href="#which-family-uses-which-option">Which family uses which option</a>.</p>
+<h3 id="callresolver-which-methods-get-analyzed"><code>callResolver</code>: which methods get analyzed</h3>
+<p>A <code>CallResolver</code> is asked once for every method the algorithm reaches, <em>before</em> the method's body is
+loaded. It returns a <code>CallFilter</code> that decides which calls in the method get resolved:</p>
+<ul>
+<li><code>CallFilter.all()</code>: every call.</li>
+<li><code>CallFilter.none()</code>: no call. The body is not even loaded. The method stays in the call graph as a
+  node, but has no outgoing edges.</li>
+<li><code>CallFilter.of(stmt -&gt; ...)</code>: only the calls in statements the predicate accepts.</li>
+</ul>
+<p>The default is <code>DefaultCallResolver</code>. It returns <code>none()</code> for library methods, so the JDK is not
+analyzed:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">callResolver</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">))</span><span class="w"> </span><span class="c1">// the default: don't look into the JDK</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>To analyze library methods too (this can make the graph, and the run time, much bigger):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">callResolver</span><span class="p">(</span><span class="n">CallResolver</span><span class="p">.</span><span class="na">all</span><span class="p">())</span><span class="w"> </span><span class="c1">// also expand library (JDK) methods</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>To find out which methods were reached but not analyzed, e.g. when you're looking for an expected
+method that is missing:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ExcludedCallsCollectingCallResolver</span><span class="w"> </span><span class="n">resolver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ExcludedCallsCollectingCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">callResolver</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+
+<span class="c1">// which methods were reached but not expanded? -&gt; &lt;java.lang.Object: void &lt;init&gt;()&gt;</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">notExpanded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resolver</span><span class="p">.</span><span class="na">getVisitedExcludedMethods</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Your own resolver can cut off a class or package, and fall back to the default for everything else:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallResolver</span><span class="w"> </span><span class="n">libraryDefault</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+<span class="n">CallResolver</span><span class="w"> </span><span class="n">skipCircle</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">caller</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">caller</span><span class="p">.</span><span class="na">getDeclaringClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"Circle"</span><span class="p">)</span>
+<span class="w">            </span><span class="o">?</span><span class="w"> </span><span class="n">CallFilter</span><span class="p">.</span><span class="na">none</span><span class="p">()</span><span class="w"> </span><span class="c1">// Circle's methods: body is not even loaded</span>
+<span class="w">            </span><span class="p">:</span><span class="w"> </span><span class="n">libraryDefault</span><span class="p">.</span><span class="na">tryAdvanceMethod</span><span class="p">(</span><span class="n">caller</span><span class="p">);</span><span class="w"> </span><span class="c1">// everything else: default behaviour</span>
+
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">callResolver</span><span class="p">(</span><span class="n">skipCircle</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Or decide per statement:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -1886,31 +2421,659 @@ The exported call graph can be sorted by providing a <code>Comparator</code> for
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">))</span>
-<span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">(</span>
-<span class="w">    </span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparing</span><span class="p">(</span>
-<span class="w">        </span><span class="p">(</span><span class="n">Call</span><span class="w"> </span><span class="n">call</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getFullyQualifiedName</span><span class="p">())</span>
-<span class="w">    </span><span class="c1">// src method name</span>
-<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getName</span><span class="p">())</span>
-<span class="w">    </span><span class="c1">// src parameter list</span>
-<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
-<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getParameterTypes</span><span class="p">().</span><span class="na">toString</span><span class="p">())</span>
-<span class="w">    </span><span class="c1">// target class name</span>
-<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
-<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">())</span>
-<span class="w">    </span><span class="c1">// target method name</span>
-<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getName</span><span class="p">())</span>
-<span class="w">    </span><span class="c1">// target parameter list</span>
-<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
-<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getParameterTypes</span><span class="p">().</span><span class="na">toString</span><span class="p">()))</span>
-<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);;</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// resolve only those calls whose target is not declared in java.*</span>
+<span class="n">CallResolver</span><span class="w"> </span><span class="n">noJdkCalls</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">caller</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">CallFilter</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+<span class="w">            </span><span class="n">stmt</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="n">stmt</span><span class="p">.</span><span class="na">getInvokeExpr</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">map</span><span class="p">(</span>
+<span class="w">                        </span><span class="n">invoke</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                            </span><span class="o">!</span><span class="n">invoke</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">()</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">getDeclClassType</span><span class="p">()</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">getPackageName</span><span class="p">()</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">getName</span><span class="p">()</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"java."</span><span class="p">))</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">orElse</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">callResolver</span><span class="p">(</span><span class="n">noJdkCalls</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition info">
+<p class="admonition-title">Excluding a method only removes its outgoing edges</p>
+<p>A <code>CallResolver</code> only decides whether a method's <em>own</em> calls get resolved. Calls <em>into</em> the method
+from other methods stay in the call graph.</p>
+</div>
+<h3 id="virtualcallresolver-which-resolved-targets-to-keep"><code>virtualCallResolver</code>: which resolved targets to keep</h3>
+<p>A <code>VirtualCallResolver</code> is asked <em>after</em> a call has been resolved, once per possible target. That
+includes the static initializers (<code>&lt;clinit&gt;</code>) that the call triggers. It returns an
+<code>ExplorationVerdict</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Edge added?</th>
+<th>Callee analyzed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EXPLORE_METHOD</code> (default)</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>STOP_AFTER_CALL</code></td>
+<td>yes</td>
+<td>not via this edge</td>
+</tr>
+<tr>
+<td><code>STOP</code></td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">VirtualCallResolver</span><span class="w"> </span><span class="n">resolver</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="p">(</span><span class="n">caller</span><span class="p">,</span><span class="w"> </span><span class="n">callee</span><span class="p">,</span><span class="w"> </span><span class="n">stmt</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">String</span><span class="w"> </span><span class="n">targetClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">callee</span><span class="p">.</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">();</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">targetClass</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">"Hexagon"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ExplorationVerdict</span><span class="p">.</span><span class="na">STOP</span><span class="p">;</span><span class="w"> </span><span class="c1">// no edge at all</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">targetClass</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">"Triangle"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ExplorationVerdict</span><span class="p">.</span><span class="na">STOP_AFTER_CALL</span><span class="p">;</span><span class="w"> </span><span class="c1">// edge, but callee is not expanded</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">ExplorationVerdict</span><span class="p">.</span><span class="na">EXPLORE_METHOD</span><span class="p">;</span><span class="w"> </span><span class="c1">// edge, callee is expanded (default)</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">virtualCallResolver</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>The default is <code>VirtualCallResolver.all()</code>. <code>SuppressClinitCallResolver</code> and
+<code>AppOnlyClinitCallResolver</code> handle static initializers, see the next section. Both take an optional
+second resolver, which decides about all other targets:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">VirtualCallResolver</span><span class="w"> </span><span class="n">noHelper</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="p">(</span><span class="n">caller</span><span class="p">,</span><span class="w"> </span><span class="n">callee</span><span class="p">,</span><span class="w"> </span><span class="n">stmt</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">callee</span><span class="p">.</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"Helper"</span><span class="p">)</span>
+<span class="w">            </span><span class="o">?</span><span class="w"> </span><span class="n">ExplorationVerdict</span><span class="p">.</span><span class="na">STOP</span>
+<span class="w">            </span><span class="p">:</span><span class="w"> </span><span class="n">ExplorationVerdict</span><span class="p">.</span><span class="na">EXPLORE_METHOD</span><span class="p">;</span>
+<span class="c1">// first drop JDK &lt;clinit&gt;s, then ask noHelper about everything else</span>
+<span class="n">VirtualCallResolver</span><span class="w"> </span><span class="n">resolver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AppOnlyClinitCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">noHelper</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="seedentrypointclinits-static-initializers"><code>seedEntryPointClinits</code>: static initializers</h3>
+<p>The JVM runs a class's static initializer (<code>&lt;clinit&gt;</code>) before the class is first used. The second
+example program has two of them:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">App</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">LOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="p">();</span><span class="w"> </span><span class="c1">// static field initializer: App.&lt;clinit&gt;</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Registry</span><span class="p">.</span><span class="na">register</span><span class="p">();</span><span class="w"> </span><span class="c1">// runs Registry.&lt;clinit&gt; first</span>
+
+<span class="w">    </span><span class="n">Runnable</span><span class="w"> </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">.</span><span class="na">work</span><span class="p">();</span><span class="w"> </span><span class="c1">// invokedynamic: lambda</span>
+<span class="w">    </span><span class="n">task</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">Plugin</span><span class="w"> </span><span class="n">plugin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Plugin</span><span class="p">)</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">"MyPlugin"</span><span class="p">).</span><span class="na">newInstance</span><span class="p">();</span><span class="w"> </span><span class="c1">// reflection</span>
+<span class="w">    </span><span class="n">plugin</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Registry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">init</span><span class="p">();</span><span class="w"> </span><span class="c1">// static initializer: Registry.&lt;clinit&gt;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">register</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>Registry.register()</code> triggers <code>Registry.&lt;clinit&gt;</code>, and the algorithm finds this call while it walks
+through <code>main</code>. <code>App.&lt;clinit&gt;</code> is different: the JVM runs it before <code>main</code>, so no statement in the
+program calls it. <code>seedEntryPointClinits(true)</code> adds the <code>&lt;clinit&gt;</code> of each entry point's class as an
+extra root.</p>
+<p>Together, the seed flag and the <code>virtualCallResolver</code> reproduce the four classic <code>&lt;clinit&gt;</code> modes of
+Soot and Qilin:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th><code>seedEntryPointClinits</code></th>
+<th><code>virtualCallResolver</code></th>
+<th><code>App.&lt;clinit&gt;</code></th>
+<th><code>Registry.&lt;clinit&gt;</code></th>
+<th>JDK <code>&lt;clinit&gt;</code>s (e.g. <code>Class.&lt;clinit&gt;</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FULL</td>
+<td><code>true</code></td>
+<td><code>new SuppressClinitCallResolver(view)</code></td>
+<td>yes</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>ON_THE_FLY</td>
+<td><code>false</code></td>
+<td><code>VirtualCallResolver.all()</code></td>
+<td>–</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>APP</td>
+<td><code>false</code></td>
+<td><code>new AppOnlyClinitCallResolver(view)</code></td>
+<td>–</td>
+<td>yes</td>
+<td>–</td>
+</tr>
+<tr>
+<td>NONE</td>
+<td><code>false</code></td>
+<td><code>new SuppressClinitCallResolver(view)</code></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<p>CHA, RTA and Spark default to <code>true</code> + <code>all()</code>, so they include all of them. Qilin defaults to
+ON_THE_FLY.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Default (CHA/RTA)</label><label for="__tabbed_2_2">No seeding</label><label for="__tabbed_2_3">FULL</label><label for="__tabbed_2_4">APP</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span><span class="w"> </span><span class="c1">// = seedEntryPointClinits(true) + VirtualCallResolver.all()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">seedEntryPointClinits</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// App.&lt;clinit&gt; is no longer a root</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">seedEntryPointClinits</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">virtualCallResolver</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SuppressClinitCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">))</span><span class="w"> </span><span class="c1">// drop discovered &lt;clinit&gt;s</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">seedEntryPointClinits</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">virtualCallResolver</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AppOnlyClinitCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">))</span><span class="w"> </span><span class="c1">// drop JDK &lt;clinit&gt;s only</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
 </div>
+<h3 id="reflectionmodel-reflection"><code>reflectionModel</code>: reflection</h3>
+<p>In general, static analysis can't know which class <code>Class.forName("MyPlugin")</code> loads. With the default,
+<code>ReflectionModel.none()</code>, reflective calls are treated as ordinary library calls, so in the example
+above <code>MyPlugin.&lt;init&gt;()</code> is never reached:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">reflectionModel</span><span class="p">(</span><span class="n">ReflectionModel</span><span class="p">.</span><span class="na">none</span><span class="p">())</span><span class="w"> </span><span class="c1">// the default</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p><a href="https://github.com/secure-software-engineering/tamiflex">TamiFlex</a> records the reflective calls of a
+real run in a log. <code>TamiflexReflectionModel</code> rewrites each logged call into plain Jimple (here:
+<code>new MyPlugin</code> and the constructor call) before the call graph algorithm sees the body:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// refl.log, recorded by running App with the TamiFlex Play-Out agent:</span>
+<span class="c1">//   Class.forName;MyPlugin;App.main;11;;</span>
+<span class="c1">//   Class.newInstance;MyPlugin;App.main;11;;</span>
+<span class="n">ReflectionModel</span><span class="w"> </span><span class="n">tamiflex</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">TamiflexReflectionModel</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"src/test/resources/CallgraphFeatures/refl.log"</span><span class="p">));</span>
+
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">reflectionModel</span><span class="p">(</span><span class="n">tamiflex</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p><code>ReflectionModel</code> is a functional interface, so you can wrap a model or write your own. A model must
+return the same body every time it is asked about the same method: CHA, RTA, Spark and Qilin may ask
+more than once. To model more reflective APIs, extend <code>AbstractReflectionModel</code>. It finds the
+reflective calls, caches the rewritten bodies, and calls one hook per API (<code>transformClassForName</code>,
+<code>transformMethodInvoke</code>, ...).</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// a ReflectionModel maps (method, body) to a body in which reflective calls are preceded by</span>
+<span class="c1">// plain Jimple; here: apply the TamiFlex model to application methods only</span>
+<span class="n">ReflectionModel</span><span class="w"> </span><span class="n">appOnly</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">getDeclaringClassType</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">SootClass</span><span class="p">::</span><span class="n">isApplicationClass</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElse</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">            </span><span class="o">?</span><span class="w"> </span><span class="n">tamiflex</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="p">)</span>
+<span class="w">            </span><span class="p">:</span><span class="w"> </span><span class="n">body</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="dynamicinvokeresolver-lambdas-and-method-references"><code>dynamicInvokeResolver</code>: lambdas and method references</h3>
+<p>Lambdas and method references compile to <code>invokedynamic</code>. The default resolver,
+<code>DynamicInvokeResolver.bootstrapMethodHandles()</code>, reads the target method from the bootstrap
+arguments. A lambda body (<code>lambda$main$0</code>) is reached through the functional object: in the example,
+<code>task.run()</code> calls it.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Default</label><label for="__tabbed_3_2">Off</label><label for="__tabbed_3_3">Creation-site edges</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dynamicInvokeResolver</span><span class="p">(</span><span class="n">DynamicInvokeResolver</span><span class="p">.</span><span class="na">bootstrapMethodHandles</span><span class="p">())</span><span class="w"> </span><span class="c1">// the default</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dynamicInvokeResolver</span><span class="p">(</span><span class="n">DynamicInvokeResolver</span><span class="p">.</span><span class="na">none</span><span class="p">())</span><span class="w"> </span><span class="c1">// lambdas are never called</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">appMain</span><span class="p">))</span>
+<span class="w">        </span><span class="c1">// additionally: invokedynamic stmt -&gt; lambda body, for code that never calls the lambda</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dynamicInvokeResolver</span><span class="p">(</span>
+<span class="w">            </span><span class="n">DynamicInvokeResolver</span><span class="p">.</span><span class="na">bootstrapMethodHandles</span><span class="p">().</span><span class="na">withCreationSiteEdges</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">cha</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p><code>withCreationSiteEdges()</code> also adds an edge from the <code>invokedynamic</code> statement to the lambda body.
+This helps when the view doesn't contain the code that calls the lambda, e.g. a lambda that is passed
+to a library you don't analyze.</p>
+<h3 id="which-family-uses-which-option">Which family uses which option</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>CHA</th>
+<th>RTA</th>
+<th>Spark (CHA-seeded)</th>
+<th>Spark (on-the-fly)</th>
+<th>Qilin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>callResolver</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓ (through CHA)</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>virtualCallResolver</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓ (through CHA)</td>
+<td>–</td>
+<td><code>&lt;clinit&gt;</code> calls only</td>
+</tr>
+<tr>
+<td><code>seedEntryPointClinits</code></td>
+<td>✓ (default <code>true</code>)</td>
+<td>✓ (default <code>true</code>)</td>
+<td>✓ (through CHA)</td>
+<td>–</td>
+<td>✓ (default <code>false</code>)</td>
+</tr>
+<tr>
+<td><code>reflectionModel</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓ (overrides <code>reflectionLogPath</code>)</td>
+</tr>
+<tr>
+<td><code>dynamicInvokeResolver</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h2 id="step-6-query-the-call-graph">Step 6: Query the call graph</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">getEntryMethods</span><span class="p">();</span><span class="w"> </span><span class="c1">// [&lt;Main: void main(java.lang.String[])&gt;]</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">getMethodSignatures</span><span class="p">();</span><span class="w"> </span><span class="c1">// every reachable method</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">edges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callCount</span><span class="p">();</span>
+
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">callees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callTargetsFrom</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">);</span><span class="w"> </span><span class="c1">// methods main may call</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">callers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callSourcesTo</span><span class="p">(</span><span class="n">squareArea</span><span class="p">);</span><span class="w"> </span><span class="c1">// methods that may call it</span>
+
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">);</span><span class="w"> </span><span class="c1">// edges incl. the calling stmt</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outInOrder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">sortedCallsFrom</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">);</span><span class="w"> </span><span class="c1">// in stmt order</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callsTo</span><span class="p">(</span><span class="n">squareArea</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="w"> </span><span class="n">call</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span>
+<span class="w">      </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">()</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="s">" line "</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">getLineNumber</span><span class="p">()</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="s">": "</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">invokableStmt</span><span class="p">()</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="s">" -&gt; "</span>
+<span class="w">          </span><span class="o">+</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="kt">boolean</span><span class="w"> </span><span class="n">reachable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">containsMethod</span><span class="p">(</span><span class="n">squareArea</span><span class="p">);</span>
+<span class="kt">boolean</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">containsCall</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">,</span><span class="w"> </span><span class="n">squareArea</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="na">iterator</span><span class="p">().</span><span class="na">next</span><span class="p">().</span><span class="na">invokableStmt</span><span class="p">());</span>
+
+<span class="n">MutableCallGraph</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">copy</span><span class="p">();</span><span class="w"> </span><span class="c1">// independent copy you may modify</span>
+</code></pre></div></td></tr></table></div>
+<p>The <code>area()</code> targets per call site in Step 3 come from this helper:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">areaTargets</span><span class="p">(</span><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">line</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">      </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">getLineNumber</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">line</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="p">::</span><span class="n">targetMethodSignature</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"area"</span><span class="p">))</span>
+<span class="w">      </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">())</span>
+<span class="w">      </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toCollection</span><span class="p">(</span><span class="n">TreeSet</span><span class="p">::</span><span class="k">new</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>To compare two call graphs, use <code>diff</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphDifference</span><span class="w"> </span><span class="n">difference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chaGraph</span><span class="p">.</span><span class="na">diff</span><span class="p">(</span><span class="n">rtaGraph</span><span class="p">);</span>
+<span class="c1">// methods only CHA considers reachable</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">MethodSignature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">onlyInCha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">difference</span><span class="p">.</span><span class="na">uniqueBaseGraphMethods</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p><code>CallGraphDifference</code> also has <code>uniqueOtherGraphMethods()</code>, <code>intersectedMethods()</code>, and the
+corresponding methods for calls.</p>
+<h2 id="step-7-export-to-dot">Step 7: Export to DOT</h2>
+<p><code>exportAsDot()</code> writes the graph in <a href="https://graphviz.org/">Graphviz</a> format. The nodes are method
+signatures, and the edge labels are the line numbers of the calls:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Unsorted</label><label for="__tabbed_4_2">Sorted (stable output)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">dot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">().</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">joining</span><span class="p">(</span><span class="s">"\n"</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">sortedDot</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">(</span>
+<span class="w">            </span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparing</span><span class="p">(</span>
+<span class="w">                    </span><span class="p">(</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="w"> </span><span class="n">call</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">toString</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">toString</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">CallGraph</span><span class="p">.</span><span class="na">Call</span><span class="p">::</span><span class="n">getLineNumber</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">joining</span><span class="p">(</span><span class="s">"\n"</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>Render it with <code>dot -Tsvg callgraph.dot -o callgraph.svg</code>.</p>
+<h2 id="limits-reflection-invokedynamic-and-static-initializers">Limits: reflection, invokedynamic and static initializers</h2>
+<p>A call graph is only as complete as its model of the program. Calls that don't appear in the bytecode
+need extra help:</p>
+<ul>
+<li>Reflection: <a href="#reflectionmodel-reflection"><code>reflectionModel</code></a>.</li>
+<li>Lambdas and method references: <a href="#dynamicinvokeresolver-lambdas-and-method-references"><code>dynamicInvokeResolver</code></a>.</li>
+<li>Static initializers: <a href="#seedentrypointclinits-static-initializers"><code>seedEntryPointClinits</code></a>.</li>
+<li>Native methods: Qilin models a fixed set of JDK natives. CHA, RTA and Spark treat them as calls
+  without a body.</li>
+<li>Code that isn't in the view, e.g. callbacks from a framework: add the callback methods as entry
+  points, or use RTA's <a href="../callgraph-cha-rta/#rta-preinstantiatedclasses"><code>preInstantiatedClasses</code></a>.</li>
+</ul>
+<h2 id="coming-from-soot">Coming from Soot</h2>
+<table>
+<thead>
+<tr>
+<th>Soot</th>
+<th>SootUp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CHATransformer.v().transform()</code></td>
+<td><code>CallGraphConfig.builder()...cha()</code></td>
+</tr>
+<tr>
+<td><code>cg.spark</code> with <code>rta:true</code></td>
+<td><code>CallGraphConfig.builder()...rta()</code></td>
+</tr>
+<tr>
+<td><code>cg.spark</code> with <code>on-fly-cg:true</code></td>
+<td><code>.into(SparkCallGraphConfig::from)</code> with <code>onFlyCallGraph(true)</code></td>
+</tr>
+<tr>
+<td><code>Scene.v().getCallGraph()</code></td>
+<td>the returned <code>CallGraph</code>. There is no global state</td>
+</tr>
+<tr>
+<td><code>cg.edgesOutOf(m)</code></td>
+<td><code>cg.callsFrom(signature)</code></td>
+</tr>
+<tr>
+<td><code>set_whole_program(true)</code>, <code>loadNecessaryClasses()</code></td>
+<td>not needed: the <code>View</code> loads classes on demand</td>
+</tr>
+</tbody>
+</table>
+<p>See also <a href="../migrating/">Migration Help</a>.</p>
 
 
 
