@@ -445,26 +445,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns only the application entry points, not including entry points invoked implicitly by
  the VM.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FakeMainFactory.EntryPoints.</span><code><a href="../../../../qilin/core/builder/FakeMainFactory.EntryPoints.html#clinits()" class="member-name-link">clinits</a>()</code></div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FakeMainFactory.EntryPoints.</span><code><a href="../../../../qilin/core/builder/FakeMainFactory.EntryPoints.html#clinitsOf(sootup.core.model.SootClass)" class="member-name-link">clinitsOf</a><wbr>(<a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;cl)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Returns a list of all static initializers.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FakeMainFactory.EntryPoints.</span><code><a href="../../../../qilin/core/builder/FakeMainFactory.EntryPoints.html#clinitsOf(sootup.core.model.SootClass)" class="member-name-link">clinitsOf</a><wbr>(<a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;cl)</code></div>
-<div class="col-last odd-row-color">
 <div class="block">Returns a list of all clinits of class cl and its superclasses.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">MethodNodeFactory.</span><code><a href="../../../../qilin/core/builder/MethodNodeFactory.html#clinitsOf(sootup.core.model.SootClass)" class="member-name-link">clinitsOf</a><wbr>(<a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;cl)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../../qilin/util/queue/QueueReader.html" title="class in qilin.util.queue">QueueReader</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">CallGraphBuilder.</span><code><a href="../../../../qilin/core/builder/CallGraphBuilder.html#dispatch(sootup.core.types.Type,qilin.core.pag.VirtualCallSite)" class="member-name-link">dispatch</a><wbr>(<a href="../../types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
- <a href="../../../../qilin/core/pag/VirtualCallSite.html" title="class in qilin.core.pag">VirtualCallSite</a>&nbsp;site)</code></div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">MethodNodeFactory.</span><code><a href="../../../../qilin/core/builder/MethodNodeFactory.html#clinitsOf(sootup.core.model.SootClass)" class="member-name-link">clinitsOf</a><wbr>(<a href="../SootClass.html" title="interface in sootup.core.model">SootClass</a>&nbsp;cl)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FakeMainFactory.EntryPoints.</span><code><a href="../../../../qilin/core/builder/FakeMainFactory.EntryPoints.html#implicit()" class="member-name-link">implicit</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-first even-row-color"><code><a href="../../../../qilin/util/queue/QueueReader.html" title="class in qilin.util.queue">QueueReader</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">CallGraphBuilder.</span><code><a href="../../../../qilin/core/builder/CallGraphBuilder.html#dispatch(sootup.core.types.Type,qilin.core.pag.VirtualCallSite)" class="member-name-link">dispatch</a><wbr>(<a href="../../types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
+ <a href="../../../../qilin/core/pag/VirtualCallSite.html" title="class in qilin.core.pag">VirtualCallSite</a>&nbsp;site)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FakeMainFactory.EntryPoints.</span><code><a href="../../../../qilin/core/builder/FakeMainFactory.EntryPoints.html#implicit()" class="member-name-link">implicit</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Returns only the entry points invoked implicitly by the VM.</div>
 </div>
 </div>

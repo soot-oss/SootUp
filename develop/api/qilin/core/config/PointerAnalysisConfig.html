@@ -207,8 +207,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSeedEntryPointClinits()" class="member-name-link">isSeedEntryPointClinits</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Whether each entry point's declaring-class <code>&lt;clinit&gt;</code> is eagerly seeded as a root before
- traversal starts, independently of whether the fake-main body actually triggers it.</div>
+<div class="block">Whether the main class's <code>&lt;clinit&gt;</code> - and, as the JVM initializes superclasses first, the
+ <code>&lt;clinit&gt;</code>s of its superclasses - are eagerly seeded as roots before traversal starts,
+ independently of whether the fake-main body actually triggers them.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSingleEntry()" class="member-name-link">isSingleEntry</a>()</code></div>
@@ -261,8 +262,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isSeedEntryPointClinits()">
 <h3>isSeedEntryPointClinits</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isSeedEntryPointClinits</span>()</div>
-<div class="block">Whether each entry point's declaring-class <code>&lt;clinit&gt;</code> is eagerly seeded as a root before
- traversal starts, independently of whether the fake-main body actually triggers it. See <a href="../../../sootup/callgraph/AbstractCallGraphAlgorithm.html#%3Cinit%3E(sootup.core.views.View,sootup.callgraph.scope.CallResolver,sootup.callgraph.scope.VirtualCallResolver,boolean)"><code>AbstractCallGraphAlgorithm(sootup.core.views.View, sootup.callgraph.scope.CallResolver, VirtualCallResolver, boolean)</code></a> for the four classic
+<div class="block">Whether the main class's <code>&lt;clinit&gt;</code> - and, as the JVM initializes superclasses first, the
+ <code>&lt;clinit&gt;</code>s of its superclasses - are eagerly seeded as roots before traversal starts,
+ independently of whether the fake-main body actually triggers them. The <code>&lt;clinit&gt;</code>s of
+ other classes are never seeded; they are discovered on the fly. See <a href="../../../sootup/callgraph/AbstractCallGraphAlgorithm.html#%3Cinit%3E(sootup.core.views.View,sootup.callgraph.scope.CallResolver,sootup.callgraph.scope.VirtualCallResolver,boolean)"><code>AbstractCallGraphAlgorithm(sootup.core.views.View, sootup.callgraph.scope.CallResolver, VirtualCallResolver, boolean)</code></a> for the four classic
  static-initializer handling modes this, combined with <a href="#getClinitVirtualCallResolver()"><code>getClinitVirtualCallResolver()</code></a>,
  reproduces: <code>FULL</code> = <code>true</code> + <code>new SuppressClinitCallResolver(view)</code>; <code>
  ON_THE_FLY</code> (default) = <code>false</code> + <a href="../../../sootup/callgraph/scope/VirtualCallResolver.html#all()"><code>VirtualCallResolver.all()</code></a>; <code>APP</code> = <code>
