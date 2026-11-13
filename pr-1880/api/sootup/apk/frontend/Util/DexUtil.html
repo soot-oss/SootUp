@@ -106,25 +106,37 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#convertAnnotationDefault(org.jf.dexlib2.iface.value.EncodedValue,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotationDefault</a><wbr>(@NonNull org.jf.dexlib2.iface.value.EncodedValue&nbsp;value,
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Converts the default value of an annotation method like the bytecode frontend does: nested
+ annotations are runtime visible.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+ @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Converts the annotations of a dex class, field, method or parameter.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#dottedClassName(java.lang.String)" class="member-name-link">dottedClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeDescriptor)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#extractThrownExceptions(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">extractThrownExceptions</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#dottedClassName(java.lang.String)" class="member-name-link">dottedClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeDescriptor)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#extractThrownExceptions(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">extractThrownExceptions</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Extracts the declared exceptions of a method from its <code>dalvik.annotation.Throws</code>
  system annotation.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../main/AndroidVersionInfo.html" title="class in sootup.apk.frontend.main">AndroidVersionInfo</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAndroidVersionInfo()" class="member-name-link">getAndroidVersionInfo</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../main/AndroidVersionInfo.html" title="class in sootup.apk.frontend.main">AndroidVersionInfo</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAndroidVersionInfo()" class="member-name-link">getAndroidVersionInfo</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr>org.jf.dexlib2.iface.value.EncodedValue&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getAnnotationDefaults(java.util.Set)" class="member-name-link">getAnnotationDefaults</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;classAnnotations)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns the default values of the methods of an annotation by method name.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getClassTypeFromClassName(java.lang.String,sootup.core.IdentifierFactory)" class="member-name-link">getClassTypeFromClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
@@ -210,6 +222,24 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</span></div>
 <div class="block">Extracts the declared exceptions of a method from its <code>dalvik.annotation.Throws</code>
  system annotation.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getAnnotationDefaults(java.util.Set)">
+<h3>getAnnotationDefaults</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr>org.jf.dexlib2.iface.value.EncodedValue&gt;</span>&nbsp;<span class="element-name">getAnnotationDefaults</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;classAnnotations)</span></div>
+<div class="block">Returns the default values of the methods of an annotation by method name. Dex keeps them in
+ the <code>dalvik.annotation.AnnotationDefault</code> system annotation of the annotation class,
+ as an annotation of that class whose elements are the defaults.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="convertAnnotationDefault(org.jf.dexlib2.iface.value.EncodedValue,sootup.core.IdentifierFactory)">
+<h3>convertAnnotationDefault</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">convertAnnotationDefault</span><wbr><span class="parameters">(@NonNull org.jf.dexlib2.iface.value.EncodedValue&nbsp;value,
+ @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</span></div>
+<div class="block">Converts the default value of an annotation method like the bytecode frontend does: nested
+ annotations are runtime visible.</div>
 </section>
 </li>
 <li>

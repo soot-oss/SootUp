@@ -107,7 +107,7 @@ extends <a href="CallGraph.html" title="interface in sootup.callgraph">CallGraph
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -125,9 +125,16 @@ extends <a href="CallGraph.html" title="interface in sootup.callgraph">CallGraph
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method enables to add calls that are edges in the call graph.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#addMethod(sootup.core.signatures.MethodSignature)" class="member-name-link">addMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;calledMethod)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#addCallIfAbsent(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCallIfAbsent</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+ @NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethod,
+ @NonNull <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Adds the given call unless the call graph already contains it.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#addMethod(sootup.core.signatures.MethodSignature)" class="member-name-link">addMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;calledMethod)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method enables to add method that are nodes in the call graph.</div>
 </div>
 </div>
@@ -181,6 +188,23 @@ extends <a href="CallGraph.html" title="interface in sootup.callgraph">CallGraph
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>call</code> - this parameter defines the call that is transformed to the edge in the call graph.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addCallIfAbsent(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)">
+<h3>addCallIfAbsent</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">addCallIfAbsent</span><wbr><span class="parameters">(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+ @NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethod,
+ @NonNull <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</span></div>
+<div class="block">Adds the given call unless the call graph already contains it.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sourceMethod</code> - the source node of the edge in the call graph.</dd>
+<dd><code>targetMethod</code> - the target node of the edge in the call graph.</dd>
+<dd><code>invokableStmt</code> - the invoke statement of the edge in the call graph.</dd>
+<dt>Returns:</dt>
+<dd>whether the call was added</dd>
 </dl>
 </section>
 </li>

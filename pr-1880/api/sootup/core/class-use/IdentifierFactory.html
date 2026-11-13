@@ -155,28 +155,35 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+<div class="col-first even-row-color"><code>static @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#convertAnnotationDefault(org.jf.dexlib2.iface.value.EncodedValue,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotationDefault</a><wbr>(@NonNull org.jf.dexlib2.iface.value.EncodedValue&nbsp;value,
  @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Converts the annotations of a dex class, field, method or parameter.</div>
+<div class="block">Converts the default value of an annotation method like the bytecode frontend does: nested
+ annotations are runtime visible.</div>
 </div>
-<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#extractThrownExceptions(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">extractThrownExceptions</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+<div class="col-first odd-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
  @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Converts the annotations of a dex class, field, method or parameter.</div>
+</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#extractThrownExceptions(java.util.Set,sootup.core.IdentifierFactory)" class="member-name-link">extractThrownExceptions</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends org.jf.dexlib2.iface.Annotation&gt;&nbsp;annotations,
+ @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Extracts the declared exceptions of a method from its <code>dalvik.annotation.Throws</code>
  system annotation.</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#getClassTypeFromClassName(java.lang.String,sootup.core.IdentifierFactory)" class="member-name-link">getClassTypeFromClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static <a href="../types/Type.html" title="class in sootup.core.types">Type</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#toSootType(java.lang.String,int,sootup.core.IdentifierFactory)" class="member-name-link">toSootType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeDescriptor,
- int&nbsp;pos,
+<div class="col-first odd-row-color"><code>static <a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#getClassTypeFromClassName(java.lang.String,sootup.core.IdentifierFactory)" class="member-name-link">getClassTypeFromClassName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../types/Type.html" title="class in sootup.core.types">Type</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DexUtil.</span><code><a href="../../apk/frontend/Util/DexUtil.html#toSootType(java.lang.String,int,sootup.core.IdentifierFactory)" class="member-name-link">toSootType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeDescriptor,
+ int&nbsp;pos,
+ @NonNull <a href="../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

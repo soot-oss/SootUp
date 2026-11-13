@@ -1870,7 +1870,8 @@ loadScripts(document, 'script');</script>
 <div class="block">This method is called to collect all instantiation of classes in a given method body.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls</a><wbr>(<a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  <a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;targetClass,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt,
  com.google.common.collect.Table&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;clinitCallTable)</code></div>
@@ -1884,7 +1885,8 @@ loadScripts(document, 'script');</script>
  <a href="../../../callgraph/reflection/ReflectionModel.html" title="interface in sootup.callgraph.reflection"><code>ReflectionModel</code></a>.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last odd-row-color">
@@ -1912,7 +1914,8 @@ loadScripts(document, 'script');</script>
 <div class="block">A constructor reference (<code>Foo::new</code>) instantiates its class.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last odd-row-color">
@@ -1921,14 +1924,16 @@ loadScripts(document, 'script');</script>
  call graph algorithm.</div>
 </div>
 <div class="col-first even-row-color"><code>protected void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls,
  @NonNull <a href="../../../callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 </div>
 <div class="col-first odd-row-color"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../callgraph/CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+ @NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a>&nbsp;calls)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </div>
@@ -2033,38 +2038,36 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">CallResolver.</span><code><a href="../../../callgraph/scope/CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Decides whether the call(s) triggered by <code>statement</code> in <code>caller</code> should be resolved
- and expanded at all.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DefaultCallResolver.</span><code><a href="../../../callgraph/scope/DefaultCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
- @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ExcludedCallsCollectingCallResolver.</span><code><a href="../../../callgraph/scope/ExcludedCallsCollectingCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+<div class="col-second even-row-color"><span class="type-name-label">AppOnlyClinitCallResolver.</span><code><a href="../../../callgraph/scope/AppOnlyClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+ @NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">AppOnlyClinitCallResolver.</span><code><a href="../../../callgraph/scope/AppOnlyClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+<div class="col-second odd-row-color"><span class="type-name-label">SuppressClinitCallResolver.</span><code><a href="../../../callgraph/scope/SuppressClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
  @NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SuppressClinitCallResolver.</span><code><a href="../../../callgraph/scope/SuppressClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
+<div class="col-second even-row-color"><span class="type-name-label">VirtualCallResolver.</span><code><a href="../../../callgraph/scope/VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
  @NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
  @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="../../../callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VirtualCallResolver.</span><code><a href="../../../callgraph/scope/VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;callee,
- @NonNull <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Decides whether a single already-resolved dynamic-dispatch candidate should be admitted as an
  edge in the call graph, and whether the callee should be expanded via this edge.</div>
 </div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">CallResolver.</span><code><a href="../../../callgraph/scope/CallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Decides which calls of <code>caller</code> are resolved and expanded.</div>
+</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DefaultCallResolver.</span><code><a href="../../../callgraph/scope/DefaultCallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Excludes the calls of library methods as a whole, so that their bodies are not loaded.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="../../../callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ExcludedCallsCollectingCallResolver.</span><code><a href="../../../callgraph/scope/ExcludedCallsCollectingCallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

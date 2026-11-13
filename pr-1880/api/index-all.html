@@ -666,6 +666,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="qilin/util/CallDetails.html#addCalleeToContextAndCaller(sootup.core.model.SootMethod,java.lang.Object,sootup.core.model.SootMethod)" class="member-name-link">addCalleeToContextAndCaller(SootMethod, Object, SootMethod)</a> - Method in class qilin.util.<a href="qilin/util/CallDetails.html" title="class in qilin.util">CallDetails</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/GraphBasedCallGraph.html#addCallIfAbsent(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCallIfAbsent(MethodSignature, MethodSignature, InvokableStmt)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MutableCallGraph.html#addCallIfAbsent(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCallIfAbsent(MethodSignature, MethodSignature, InvokableStmt)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a></dt>
+<dd>
+<div class="block">Adds the given call unless the call graph already contains it.</div>
+</dd>
 <dt><a href="qilin/core/pag/MethodPAG.html#addCallStmt(sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCallStmt(InvokableStmt)</a> - Method in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#addCallToCG(sootup.callgraph.CallGraph.Call,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">addCallToCG(CallGraph.Call, MutableCallGraph, Deque&lt;MethodSignature&gt;)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
@@ -1004,9 +1010,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns all the entry points.</div>
 </dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html#all()" class="member-name-link">all()</a> - Static method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></dt>
+<dd>
+<div class="block">Resolves the calls of every statement.</div>
+</dd>
 <dt><a href="sootup/callgraph/scope/CallResolver.html#all()" class="member-name-link">all()</a> - Static method in interface sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></dt>
 <dd>
-<div class="block">Returns a <a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that explores every statement.</div>
+<div class="block">Returns a <a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that resolves every call.</div>
 </dd>
 <dt><a href="sootup/callgraph/scope/VirtualCallResolver.html#all()" class="member-name-link">all()</a> - Static method in interface sootup.callgraph.scope.<a href="sootup/callgraph/scope/VirtualCallResolver.html" title="interface in sootup.callgraph.scope">VirtualCallResolver</a></dt>
 <dd>
@@ -2244,6 +2254,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/builder/CallGraphBuilder.html#calledges" class="member-name-link">calledges</a> - Variable in class qilin.core.builder.<a href="qilin/core/builder/CallGraphBuilder.html" title="class in qilin.core.builder">CallGraphBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html" class="type-name-link" title="class in sootup.callgraph.scope">CallFilter</a> - Class in <a href="sootup/callgraph/scope/package-summary.html">sootup.callgraph.scope</a></dt>
+<dd>
+<div class="block">The calls of a method that a <a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> lets the call graph algorithm resolve: <a href="sootup/callgraph/scope/CallFilter.html#all()"><code>CallFilter.all()</code></a>, <a href="sootup/callgraph/scope/CallFilter.html#none()"><code>CallFilter.none()</code></a> or those of the statements accepted by a predicate (<a href="sootup/callgraph/scope/CallFilter.html#of(java.util.function.Predicate)"><code>CallFilter.of(java.util.function.Predicate&lt;sootup.core.jimple.common.stmt.InvokableStmt&gt;)</code></a>).</div>
+</dd>
 <dt><a href="qilin/core/PTA.html#callGraph" class="member-name-link">callGraph</a> - Variable in class qilin.core.<a href="qilin/core/PTA.html" title="class in qilin.core">PTA</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/conch/AbstractPAG.html#callGraph" class="member-name-link">callGraph</a> - Variable in class qilin.pta.toolkits.conch.<a href="qilin/pta/toolkits/conch/AbstractPAG.html" title="class in qilin.pta.toolkits.conch">AbstractPAG</a></dt>
@@ -2292,8 +2306,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/callgraph/scope/CallResolver.html" class="type-name-link" title="interface in sootup.callgraph.scope">CallResolver</a> - Interface in <a href="sootup/callgraph/scope/package-summary.html">sootup.callgraph.scope</a></dt>
 <dd>
 <div class="block">Controls which calls (edges) are expanded during call graph construction, at the pre-dispatch
- checkpoint: invoked once per invokable statement of a method that is expanded, <b>before</b>
- dynamic dispatch is resolved for that statement.</div>
+ checkpoint: invoked once per method that is expanded, <b>before</b> its body is loaded and before
+ dynamic dispatch is resolved for its statements.</div>
 </dd>
 <dt><a href="qilin/core/builder/callgraph/OnFlyCallGraph.html#calls" class="member-name-link">calls</a> - Variable in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/OnFlyCallGraph.html" title="class in qilin.core.builder.callgraph">OnFlyCallGraph</a></dt>
 <dd>&nbsp;</dd>
@@ -4354,6 +4368,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#convertAnnotation(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotation(List&lt;AnnotationNode&gt;, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/Util/DexUtil.html#convertAnnotationDefault(org.jf.dexlib2.iface.value.EncodedValue,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotationDefault(EncodedValue, IdentifierFactory)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
+<dd>
+<div class="block">Converts the default value of an annotation method like the bytecode frontend does: nested
+ annotations are runtime visible.</div>
+</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#convertAnnotationValue(java.lang.Object,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotationValue(Object, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/main/DexBody.html#convertMultimap(com.google.common.collect.LinkedListMultimap)" class="member-name-link">convertMultimap(LinkedListMultimap&lt;BranchingStmt, List&lt;Stmt&gt;&gt;)</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexBody.html" title="class in sootup.apk.frontend.main">DexBody</a></dt>
@@ -5005,10 +5024,16 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethod.html#%3Cinit%3E(org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType)" class="member-name-link">DexMethod(MultiDexContainer.DexEntry&lt;? extends DexFile&gt;, ClassType)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethod.html" title="class in sootup.apk.frontend.dexpler">DexMethod</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/dexpler/DexMethod.html#%3Cinit%3E(org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,java.util.Map)" class="member-name-link">DexMethod(MultiDexContainer.DexEntry&lt;? extends DexFile&gt;, ClassType, Map&lt;String, ? extends EncodedValue&gt;)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethod.html" title="class in sootup.apk.frontend.dexpler">DexMethod</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html" class="type-name-link" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a> - Class in <a href="sootup/apk/frontend/dexpler/package-summary.html">sootup.apk.frontend.dexpler</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html#%3Cinit%3E(java.util.Set,sootup.core.signatures.MethodSignature,sootup.core.graph.MutableControlFlowGraph,org.jf.dexlib2.iface.Method,java.util.List,sootup.core.views.View)" class="member-name-link">DexMethodSource(Set&lt;Local&gt;, MethodSignature, MutableControlFlowGraph, Method, List&lt;BodyInterceptor&gt;, View)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethodSource.html" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html#%3Cinit%3E(java.util.Set,sootup.core.signatures.MethodSignature,sootup.core.graph.MutableControlFlowGraph,org.jf.dexlib2.iface.Method,java.util.List,sootup.core.views.View,org.jf.dexlib2.iface.value.EncodedValue)" class="member-name-link">DexMethodSource(Set&lt;Local&gt;, MethodSignature, MutableControlFlowGraph, Method, List&lt;BodyInterceptor&gt;, View, EncodedValue)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethodSource.html" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a></dt>
+<dd>
+<div class="block">A body source with the given body and, for a method of an annotation, its default value.</div>
+</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethodSource.html#%3Cinit%3E(org.jf.dexlib2.iface.Method,org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,sootup.core.signatures.MethodSignature,java.util.List,sootup.core.views.View)" class="member-name-link">DexMethodSource(Method, MultiDexContainer.DexEntry&lt;? extends DexFile&gt;, ClassType, MethodSignature, List&lt;BodyInterceptor&gt;, View)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethodSource.html" title="class in sootup.apk.frontend.dexpler">DexMethodSource</a></dt>
 <dd>
 <div class="block">A body source that converts the code of the method when the body is resolved.</div>
@@ -7028,7 +7053,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/callgraph/scope/ExplorationVerdict.html" class="type-name-link" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a> - Enum Class in <a href="sootup/callgraph/scope/package-summary.html">sootup.callgraph.scope</a></dt>
 <dd>
-<div class="block">The verdict returned by <a href="sootup/callgraph/scope/CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)"><code>CallResolver.tryAdvance(sootup.core.model.SootMethod, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> and <a href="sootup/callgraph/scope/VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph expansion.</div>
+<div class="block">The verdict returned by <a href="sootup/callgraph/scope/VirtualCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)"><code>VirtualCallResolver.tryAdvanceCall(sootup.core.model.SootMethod, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.stmt.InvokableStmt)</code></a> to control call graph
+ expansion: <a href="sootup/callgraph/scope/ExplorationVerdict.html#EXPLORE_METHOD"><code>ExplorationVerdict.EXPLORE_METHOD</code></a> admits the edge and expands the callee, <a href="sootup/callgraph/scope/ExplorationVerdict.html#STOP_AFTER_CALL"><code>ExplorationVerdict.STOP_AFTER_CALL</code></a> admits the edge but does not expand the callee via this edge, and <a href="sootup/callgraph/scope/ExplorationVerdict.html#STOP"><code>ExplorationVerdict.STOP</code></a>
+ drops the edge entirely.</div>
 </dd>
 <dt><a href="sootup/callgraph/scope/ExplorationVerdict.html#EXPLORE_METHOD" class="member-name-link">EXPLORE_METHOD</a> - Enum constant in enum class sootup.callgraph.scope.<a href="sootup/callgraph/scope/ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></dt>
 <dd>&nbsp;</dd>
@@ -7475,7 +7502,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/moon/traversal/StoredVarTraverser.html#findSourceOfVarStoredIn(qilin.core.pag.AllocNode,qilin.core.pag.LocalVarNode,int,qilin.core.pag.SparkField)" class="member-name-link">findSourceOfVarStoredIn(AllocNode, LocalVarNode, int, SparkField)</a> - Method in class qilin.pta.toolkits.moon.traversal.<a href="qilin/pta/toolkits/moon/traversal/StoredVarTraverser.html" title="class in qilin.pta.toolkits.moon.traversal">StoredVarTraverser</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls(SootMethod, ClassType, InvokableStmt, Table&lt;ClassType, BasicBlock&lt;?&gt;, Boolean&gt;)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#findStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.InvokableStmt,com.google.common.collect.Table)" class="member-name-link">findStaticInitializerCalls(SootMethod, CallFilter, ClassType, InvokableStmt, Table&lt;ClassType, BasicBlock&lt;?&gt;, Boolean&gt;)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">Collects all potential static initializer calls of the given targetClass.</div>
 </dd>
@@ -7811,6 +7838,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/AnnotationUsage.html#getAnnotation()" class="member-name-link">getAnnotation()</a> - Method in class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/Util/DexUtil.html#getAnnotationDefaults(java.util.Set)" class="member-name-link">getAnnotationDefaults(Set&lt;? extends Annotation&gt;)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
+<dd>
+<div class="block">Returns the default values of the methods of an annotation by method name.</div>
+</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#getAnnotationDefaultValues()" class="member-name-link">getAnnotationDefaultValues()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
 <dd>
 <div class="block">Resturns the default values of methods in Annotations</div>
@@ -11860,7 +11891,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns only the entry points invoked implicitly by the VM.</div>
 </dd>
-<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall(SootMethod, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#implicitStartRunCall(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">implicitStartRunCall(SootMethod, CallFilter, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">It resolves the start-run implicit calls caused by the given source method</div>
 </dd>
@@ -16054,6 +16085,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Model that resolves nothing - the default everywhere.</div>
 </dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html#none()" class="member-name-link">none()</a> - Static method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></dt>
+<dd>
+<div class="block">Resolves no call; the body of the method is not loaded.</div>
+</dd>
 <dt><a href="sootup/analysis/intraprocedural/UniverseSortedPriorityQueue.html#noneOf(java.util.List)" class="member-name-link">noneOf(List&lt;? extends E&gt;)</a> - Static method in class sootup.analysis.intraprocedural.<a href="sootup/analysis/intraprocedural/UniverseSortedPriorityQueue.html" title="class in sootup.analysis.intraprocedural">UniverseSortedPriorityQueue</a></dt>
 <dd>
 <div class="block">Creates a new empty priority queue</div>
@@ -16302,6 +16337,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the unique <a href="sootup/java/core/signatures/ModulePackageName.html" title="class in sootup.java.core.signatures"><code>ModulePackageName</code></a> for the given package and module, so that equal
  module-scoped package names are the same instance and may be compared with <code>==</code>.</div>
+</dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html#of(java.util.function.Predicate)" class="member-name-link">of(Predicate&lt;InvokableStmt&gt;)</a> - Static method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></dt>
+<dd>
+<div class="block">Resolves the calls of the statements accepted by <code>resolvesStatement</code>, which is asked once
+ per invokable statement of the loaded body.</div>
 </dd>
 <dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#of(sootup.callgraph.CallGraph)" class="member-name-link">of(CallGraph)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
 <dd>
@@ -18101,17 +18141,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/exceptions/ExceptionInferResult.ErrorType.html#RESOLVE_FIELD_ERROR" class="member-name-link">RESOLVE_FIELD_ERROR</a> - Static variable in class sootup.java.core.exceptions.<a href="sootup/java/core/exceptions/ExceptionInferResult.ErrorType.html" title="class in sootup.java.core.exceptions">ExceptionInferResult.ErrorType</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod(SootMethod, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod(SootMethod, CallFilter, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">This method resolves all calls from a given source method. resolveCall is called for each
  invokable statements in the body of the source method that is implemented in the corresponding
  call graph algorithm.</div>
 </dd>
-<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod(SootMethod, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod(SootMethod, CallFilter, MutableCallGraph, AbstractCallGraphAlgorithm.Frontier)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 </dd>
-<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls(SootMethod)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
+<dt><a href="sootup/callgraph/AbstractCallGraphAlgorithm.html#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod,sootup.callgraph.scope.CallFilter)" class="member-name-link">resolveAllStaticInitializerCalls(SootMethod, CallFilter)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></dt>
 <dd>
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </dd>
@@ -18287,6 +18327,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolvePosition()" class="member-name-link">resolvePosition()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html#resolves(sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolves(InvokableStmt)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></dt>
+<dd>
+<div class="block">Whether the calls of <code>statement</code> are resolved.</div>
+</dd>
+<dt><a href="sootup/callgraph/scope/CallFilter.html#resolvesNone()" class="member-name-link">resolvesNone()</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></dt>
+<dd>
+<div class="block">Whether no call of the method is resolved, so that its body need not be loaded.</div>
+</dd>
 <dt><a href="qilin/core/VirtualCalls.html#resolveSpecial(sootup.core.jimple.common.expr.JSpecialInvokeExpr,sootup.core.signatures.MethodSubSignature,sootup.core.model.SootMethod)" class="member-name-link">resolveSpecial(JSpecialInvokeExpr, MethodSubSignature, SootMethod)</a> - Method in class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/VirtualCalls.html#resolveSpecial(sootup.core.jimple.common.expr.JSpecialInvokeExpr,sootup.core.signatures.MethodSubSignature,sootup.core.model.SootMethod,boolean)" class="member-name-link">resolveSpecial(JSpecialInvokeExpr, MethodSubSignature, SootMethod, boolean)</a> - Method in class qilin.core.<a href="qilin/core/VirtualCalls.html" title="class in qilin.core">VirtualCalls</a></dt>
@@ -21040,15 +21088,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/JIfStmt.html#TRUE_BRANCH_IDX" class="member-name-link">TRUE_BRANCH_IDX</a> - Static variable in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/JIfStmt.html" title="class in sootup.core.jimple.common.stmt">JIfStmt</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/callgraph/scope/CallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance(SootMethod, InvokableStmt)</a> - Method in interface sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></dt>
-<dd>
-<div class="block">Decides whether the call(s) triggered by <code>statement</code> in <code>caller</code> should be resolved
- and expanded at all.</div>
-</dd>
-<dt><a href="sootup/callgraph/scope/DefaultCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance(SootMethod, InvokableStmt)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/DefaultCallResolver.html" title="class in sootup.callgraph.scope">DefaultCallResolver</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/callgraph/scope/ExcludedCallsCollectingCallResolver.html#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance(SootMethod, InvokableStmt)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/ExcludedCallsCollectingCallResolver.html" title="class in sootup.callgraph.scope">ExcludedCallsCollectingCallResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/scope/AppOnlyClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall(SootMethod, MethodSignature, InvokableStmt)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/AppOnlyClinitCallResolver.html" title="class in sootup.callgraph.scope">AppOnlyClinitCallResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/scope/SuppressClinitCallResolver.html#tryAdvanceCall(sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvanceCall(SootMethod, MethodSignature, InvokableStmt)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/SuppressClinitCallResolver.html" title="class in sootup.callgraph.scope">SuppressClinitCallResolver</a></dt>
@@ -21058,6 +21097,16 @@ loadScripts(document, 'script');</script>
 <div class="block">Decides whether a single already-resolved dynamic-dispatch candidate should be admitted as an
  edge in the call graph, and whether the callee should be expanded via this edge.</div>
 </dd>
+<dt><a href="sootup/callgraph/scope/CallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod(SootMethod)</a> - Method in interface sootup.callgraph.scope.<a href="sootup/callgraph/scope/CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></dt>
+<dd>
+<div class="block">Decides which calls of <code>caller</code> are resolved and expanded.</div>
+</dd>
+<dt><a href="sootup/callgraph/scope/DefaultCallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod(SootMethod)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/DefaultCallResolver.html" title="class in sootup.callgraph.scope">DefaultCallResolver</a></dt>
+<dd>
+<div class="block">Excludes the calls of library methods as a whole, so that their bodies are not loaded.</div>
+</dd>
+<dt><a href="sootup/callgraph/scope/ExcludedCallsCollectingCallResolver.html#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod(SootMethod)</a> - Method in class sootup.callgraph.scope.<a href="sootup/callgraph/scope/ExcludedCallsCollectingCallResolver.html" title="class in sootup.callgraph.scope">ExcludedCallsCollectingCallResolver</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="qilin/core/config/ContextSensitivity.html#tunnelingCallSite(int,int)" class="member-name-link">tunnelingCallSite(int, int)</a> - Static method in class qilin.core.config.<a href="qilin/core/config/ContextSensitivity.html" title="class in qilin.core.config">ContextSensitivity</a></dt>
 <dd>
 <div class="block">Tunneling k-callsite-sensitivity.</div>

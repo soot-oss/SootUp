@@ -2254,6 +2254,14 @@ implementations treat both calls as no-ops, so the pattern is always safe.</p>
 <td><code>getStmts()</code></td>
 <td>O(n) copy; the order is cached and survives changes inside a block</td>
 </tr>
+<tr>
+<td>copy constructor</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td><code>initializeWith</code></td>
+<td>O(n), plus a split for every branch target that is not the head of a given block</td>
+</tr>
 </tbody>
 </table>
 

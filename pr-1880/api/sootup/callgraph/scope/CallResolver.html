@@ -85,12 +85,11 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/FunctionalInterface.html" title="class or interface in java.lang" class="external-link">@FunctionalInterface</a>
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">CallResolver</span></div>
 <div class="block">Controls which calls (edges) are expanded during call graph construction, at the pre-dispatch
- checkpoint: invoked once per invokable statement of a method that is expanded, <b>before</b>
- dynamic dispatch is resolved for that statement. No specific callee is known yet, so only <a href="ExplorationVerdict.html#EXPLORE_METHOD"><code>ExplorationVerdict.EXPLORE_METHOD</code></a> vs. anything else matters here: <a href="ExplorationVerdict.html#STOP_AFTER_CALL"><code>ExplorationVerdict.STOP_AFTER_CALL</code></a> and <a href="ExplorationVerdict.html#STOP"><code>ExplorationVerdict.STOP</code></a> are equivalent at this
- checkpoint (both mean "do not resolve this statement's call(s)"). Excluding every statement of a
- method has the effect of pruning that method's expansion entirely: the method still appears as a
- node in the resulting call graph if it is reached as a target, it simply ends up with no outgoing
- edges, since none of its calls are resolved.</div>
+ checkpoint: invoked once per method that is expanded, <b>before</b> its body is loaded and before
+ dynamic dispatch is resolved for its statements. The returned <a href="CallFilter.html" title="class in sootup.callgraph.scope"><code>CallFilter</code></a> decides for the
+ whole method (<a href="CallFilter.html#all()"><code>CallFilter.all()</code></a>, <a href="CallFilter.html#none()"><code>CallFilter.none()</code></a>) or per invokable statement
+ (<a href="CallFilter.html#of(java.util.function.Predicate)"><code>CallFilter.of(java.util.function.Predicate&lt;sootup.core.jimple.common.stmt.InvokableStmt&gt;)</code></a>). A method whose calls are all excluded still appears as a node in the
+ resulting call graph if it is reached as a target, it simply ends up with no outgoing edges.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,14 +107,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static @NonNull <a href="CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#all()" class="member-name-link">all</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
-<div class="block">Returns a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that explores every statement.</div>
+<div class="block">Returns a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that resolves every call.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>@NonNull <a href="ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">tryAdvance</a><wbr>(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>@NonNull <a href="CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#tryAdvanceMethod(sootup.core.model.SootMethod)" class="member-name-link">tryAdvanceMethod</a><wbr>(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Decides whether the call(s) triggered by <code>statement</code> in <code>caller</code> should be resolved
- and expanded at all.</div>
+<div class="block">Decides which calls of <code>caller</code> are resolved and expanded.</div>
 </div>
 </div>
 </div>
@@ -132,19 +129,16 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="tryAdvance(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)">
-<h3>tryAdvance</h3>
-<div class="member-signature"><span class="return-type">@NonNull <a href="ExplorationVerdict.html" title="enum class in sootup.callgraph.scope">ExplorationVerdict</a></span>&nbsp;<span class="element-name">tryAdvance</span><wbr><span class="parameters">(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller,
- @NonNull <a href="../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;statement)</span></div>
-<div class="block">Decides whether the call(s) triggered by <code>statement</code> in <code>caller</code> should be resolved
- and expanded at all.</div>
+<section class="detail" id="tryAdvanceMethod(sootup.core.model.SootMethod)">
+<h3>tryAdvanceMethod</h3>
+<div class="member-signature"><span class="return-type">@NonNull <a href="CallFilter.html" title="class in sootup.callgraph.scope">CallFilter</a></span>&nbsp;<span class="element-name">tryAdvanceMethod</span><wbr><span class="parameters">(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;caller)</span></div>
+<div class="block">Decides which calls of <code>caller</code> are resolved and expanded.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>caller</code> - the source (caller) method</dd>
-<dd><code>statement</code> - the invokable statement causing the call</dd>
+<dd><code>caller</code> - the method whose calls are about to be resolved</dd>
 <dt>Returns:</dt>
-<dd>the verdict for this statement; only <a href="ExplorationVerdict.html#EXPLORE_METHOD"><code>ExplorationVerdict.EXPLORE_METHOD</code></a> vs.
-     non-<a href="ExplorationVerdict.html#EXPLORE_METHOD"><code>ExplorationVerdict.EXPLORE_METHOD</code></a> is significant here</dd>
+<dd>the calls to resolve; with <a href="CallFilter.html#none()"><code>CallFilter.none()</code></a> the body of <code>caller</code> is not
+     loaded</dd>
 </dl>
 </section>
 </li>
@@ -152,7 +146,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="all()">
 <h3>all</h3>
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type">@NonNull <a href="CallResolver.html" title="interface in sootup.callgraph.scope">CallResolver</a></span>&nbsp;<span class="element-name">all</span>()</div>
-<div class="block">Returns a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that explores every statement.</div>
+<div class="block">Returns a <a href="CallResolver.html" title="interface in sootup.callgraph.scope"><code>CallResolver</code></a> that resolves every call.</div>
 </section>
 </li>
 </ul>
