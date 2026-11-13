@@ -101,6 +101,10 @@
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
+         <loc>https://soot-oss.github.io/SootUp/pr-1887/mutable_controlflowgraph/</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
          <loc>https://soot-oss.github.io/SootUp/pr-1887/pointer_analysis/</loc>
          <lastmod>2026-11-13</lastmod>
     </url>

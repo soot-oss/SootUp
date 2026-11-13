@@ -166,7 +166,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>interface&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../MutableBasicBlock.html" class="type-name-link" title="interface in sootup.core.graph">MutableBasicBlock</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Block of a <a href="../MutableBlockControlFlowGraph.html" title="class in sootup.core.graph"><code>MutableBlockControlFlowGraph</code></a>.</div>
+</div>
 </div>
 <div class="caption"><span>Classes in <a href="../package-summary.html">sootup.core.graph</a> that implement <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a></span></div>
 <div class="summary-table three-column-summary">
@@ -187,7 +189,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><code>class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../MutableBasicBlockImpl.html" class="type-name-link" title="class in sootup.core.graph">MutableBasicBlockImpl</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Block of a <a href="../MutableBlockControlFlowGraph.html" title="class in sootup.core.graph"><code>MutableBlockControlFlowGraph</code></a>.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">sootup.core.graph</a> that return <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a></span></div>
 <div class="summary-table three-column-summary">
@@ -280,68 +284,73 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getBlockIterator()" class="member-name-link">getBlockIterator</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getBlockIterator()" class="member-name-link">getBlockIterator</a>()</code></div>
+<div class="col-last odd-row-color">
+<div class="block">blocks in linearized order; iterates a snapshot, the graph may change meanwhile</div>
+</div>
+<div class="col-first even-row-color"><code>abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BackwardsControlFlowGraph.</span><code><a href="../BackwardsControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getBlocks()" class="member-name-link">getBlocks</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BackwardsControlFlowGraph.</span><code><a href="../BackwardsControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getBlockToIdx()" class="member-name-link">getBlockToIdx</a>()</code></div>
+<div class="col-first even-row-color"><code>abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BlockTraversalStrategy.</span><code><a href="../BlockTraversalStrategy.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
-<div class="col-last odd-row-color">
-<div class="block">This method returns a list of Blocks ordered by the traversal sequence.</div>
-</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PostOrderBlockTraversal.</span><code><a href="../PostOrderBlockTraversal.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ReversePostOrderBlockTraversal.</span><code><a href="../ReversePostOrderBlockTraversal.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DominanceTree.</span><code><a href="../DominanceTree.html#getChildren(sootup.core.graph.BasicBlock)" class="member-name-link">getChildren</a><wbr>(@NonNull <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getBlocksSorted()" class="member-name-link">getBlocksSorted</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getDominanceFrontiers(sootup.core.graph.BasicBlock)" class="member-name-link">getDominanceFrontiers</a><wbr>(@NonNull <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getIdxToBlock()" class="member-name-link">getIdxToBlock</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PostOrderBlockTraversal.</span><code><a href="../PostOrderBlockTraversal.html#getOrder()" class="member-name-link">getOrder</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ReversePostOrderBlockTraversal.</span><code><a href="../ReversePostOrderBlockTraversal.html#getOrder()" class="member-name-link">getOrder</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getBlockToIdx()" class="member-name-link">getBlockToIdx</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-second even-row-color"><span class="type-name-label">BlockTraversalStrategy.</span><code><a href="../BlockTraversalStrategy.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">This method returns a list of Blocks ordered by the traversal sequence.</div>
+</div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ImmutableBlockControlFlowGraph.</span><code><a href="../ImmutableBlockControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PostOrderBlockTraversal.</span><code><a href="../PostOrderBlockTraversal.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ReversePostOrderBlockTraversal.</span><code><a href="../ReversePostOrderBlockTraversal.html#getBlockTraversal()" class="member-name-link">getBlockTraversal</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DominanceTree.</span><code><a href="../DominanceTree.html#getChildren(sootup.core.graph.BasicBlock)" class="member-name-link">getChildren</a><wbr>(@NonNull <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getDominanceFrontiers(sootup.core.graph.BasicBlock)" class="member-name-link">getDominanceFrontiers</a><wbr>(@NonNull <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DominanceFinder.</span><code><a href="../DominanceFinder.html#getIdxToBlock()" class="member-name-link">getIdxToBlock</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PostOrderBlockTraversal.</span><code><a href="../PostOrderBlockTraversal.html#getOrder()" class="member-name-link">getOrder</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ReversePostOrderBlockTraversal.</span><code><a href="../ReversePostOrderBlockTraversal.html#getOrder()" class="member-name-link">getOrder</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ControlFlowGraph.</span><code><a href="../ControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ForwardingControlFlowGraph.</span><code><a href="../ForwardingControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ImmutableBlockControlFlowGraph.</span><code><a href="../ImmutableBlockControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">MutableBlockControlFlowGraph.</span><code><a href="../MutableBlockControlFlowGraph.html#getTailStmtBlocks()" class="member-name-link">getTailStmtBlocks</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">sootup.core.graph</a> with parameters of type <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a></span></div>
 <div class="summary-table three-column-summary">
@@ -403,7 +412,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../MutableBlockControlFlowGraph.html#%3Cinit%3E(sootup.core.graph.ControlFlowGraph)" class="member-name-link">MutableBlockControlFlowGraph</a><wbr>(@NonNull <a href="../ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;? extends <a href="../BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;&nbsp;graph)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">copies a ControlFlowGraph into this Mutable instance</div>
+<div class="block">copies a ControlFlowGraph into this Mutable instance, block by block</div>
 </div>
 </div>
 </section>
