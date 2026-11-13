@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
@@ -45,14 +44,14 @@ public class MutableBlockControlFlowGraphStmtsTest {
         }
       };
 
-  /** Counts the walks of {@link #iterator()}, which compute the statement order */
+  /** Counts the walks of the graph, which compute the block order */
   private static class CountingGraph extends MutableBlockControlFlowGraph {
     int walks = 0;
 
     @Override
-    public Iterator<Stmt> iterator() {
+    List<BasicBlock<?>> computeBlockOrder() {
       walks++;
-      return super.iterator();
+      return super.computeBlockOrder();
     }
   }
 
@@ -85,9 +84,14 @@ public class MutableBlockControlFlowGraphStmtsTest {
     first.clear();
     assertEquals(List.of(a, b, r), graph.getStmts());
 
+    // in place: the block order stays valid
     graph.insertBefore(r, c);
-
     assertEquals(List.of(a, b, c, r), graph.getStmts());
+    assertEquals(1, graph.walks);
+
+    // structural change: walks again
+    graph.removeEdge(c, r);
+    graph.getStmts();
     assertEquals(2, graph.walks);
   }
 

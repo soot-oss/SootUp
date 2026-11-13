@@ -392,11 +392,11 @@ public class MutableBlockControlFlowGraphTest {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     assertEquals(0, graph.getBlocks().size());
 
-    MutableBasicBlock blockA = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstGoto);
-    MutableBasicBlock blockB = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -410,11 +410,11 @@ public class MutableBlockControlFlowGraphTest {
   public void linkDirectlyAddedBlocks() {
 
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock blockA = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstNop);
-    MutableBasicBlock blockB = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -489,7 +489,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockAddStmt() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
   }
@@ -526,7 +526,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraphDirectManiupaltionAfterwards() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     graph.addNode(firstNop);
     graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(firstNop); // BAD! don't do that!
@@ -535,7 +535,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockStmtValidity() {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
 
     assertThrows(
         IllegalArgumentException.class,
@@ -785,8 +785,9 @@ public class MutableBlockControlFlowGraphTest {
       // stmt2..stmt3
       assertEquals(3, traps.size());
       assertEquals(6, graph6.getBlocks().size());
+      // stmt1's block reaches catchStmt1 via two exception types: listed once
       assertEquals(
-          "[Block [goto], Block [goto], Block [goto]]",
+          "[Block [goto], Block [goto]]",
           graph6.exceptionalPredecessorBlocks(graph6.getBlockOf(catchStmt1)).toString());
     }
 
