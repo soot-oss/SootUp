@@ -33,6 +33,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
@@ -63,6 +64,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   private final List<BodyInterceptor> bodyInterceptors;
 
+  private final Set<AnalysisExtendedScope> extendedScope;
+
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
    * path.
@@ -74,8 +77,20 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   }
 
   public JavaClassPathAnalysisInputLocation(
+      @NonNull String classPath, @NonNull Set<AnalysisExtendedScope> extendedScope) {
+    this(classPath, SourceType.Application, extendedScope);
+  }
+
+  public JavaClassPathAnalysisInputLocation(
       @NonNull String classPath, @NonNull SourceType srcType) {
     this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
+  }
+
+  public JavaClassPathAnalysisInputLocation(
+      @NonNull String classPath,
+      @NonNull SourceType srcType,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
+    this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors(), extendedScope);
   }
 
   /**
@@ -89,14 +104,32 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       @NonNull String classPath,
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors) {
+    this(classPath, srcType, bodyInterceptors, Collections.emptySet());
+  }
+
+  public JavaClassPathAnalysisInputLocation(
+      @NonNull String classPath,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
     this.srcType = srcType;
     this.bodyInterceptors = bodyInterceptors;
+    this.extendedScope =
+        extendedScope.isEmpty()
+            ? Collections.emptySet()
+            : Collections.unmodifiableSet(EnumSet.copyOf(extendedScope));
 
     cpEntries = classPath.length() <= 0 ? Collections.emptyList() : explodeClassPath(classPath);
     if (cpEntries.isEmpty()) {
       throw new IllegalArgumentException(
           "The given classpath does not point to any existing directory/directories.");
     }
+  }
+
+  @Override
+  @NonNull
+  public Set<AnalysisExtendedScope> getExtendedScope() {
+    return extendedScope;
   }
 
   @Override
@@ -197,7 +230,9 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @NonNull
   private Optional<AnalysisInputLocation> inputLocationForPath(@NonNull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType, bodyInterceptors));
+      return Optional.of(
+          PathBasedAnalysisInputLocation.create(
+              path, srcType, bodyInterceptors, Collections.emptyList(), extendedScope));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
