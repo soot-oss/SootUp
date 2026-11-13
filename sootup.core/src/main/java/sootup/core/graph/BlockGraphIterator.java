@@ -44,7 +44,8 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
   public BlockGraphIterator(ControlFlowGraph<?> controlFlowGraph) {
     this.controlFlowGraph = controlFlowGraph;
     final Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
-    iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
+    // only contains/add/size are used: no need for a linked set
+    iteratedBlocks = new HashSet<>(blocks.size() * 4 / 3 + 1);
     Stmt startingStmt = controlFlowGraph.getStartingStmt();
     if (startingStmt != null) {
       final BasicBlock<?> startingBlock = controlFlowGraph.getStartingStmtBlock();
@@ -121,29 +122,21 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         // create the longest FallsThroughStmt sequence possible
         final BasicBlock<?> successorBlock = successors.get(i);
         BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
-        // guards against fall-through cycles, which would loop forever
-        final Set<BasicBlock<?>> visitedLeaders =
-            Collections.newSetFromMap(new IdentityHashMap<>());
-        while (visitedLeaders.add(leaderOfFallsthroughBlocks)) {
-          final List<? extends BasicBlock<?>> itPreds =
-              leaderOfFallsthroughBlocks.getPredecessors();
-
-          BasicBlock<?> finalLeaderOfFallsthroughBlocks = leaderOfFallsthroughBlocks;
-          final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
-              itPreds.stream()
-                  .filter(
-                      b ->
-                          b.getTail().fallsThrough()
-                              && b.getSuccessors().get(0) == finalLeaderOfFallsthroughBlocks)
-                  .findAny();
-          if (!fallsthroughPredOpt.isPresent()) {
+        // guards against fall-through cycles, which would loop forever; most chains have length
+        // one, so the set is only created once the chain grows
+        Set<BasicBlock<?>> visitedLeaders = null;
+        while (true) {
+          final BasicBlock<?> predecessorBlock =
+              fallsThroughPredecessor(leaderOfFallsthroughBlocks);
+          if (predecessorBlock == null) {
             break;
           }
-          BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
-          if (predecessorBlock.getTail().fallsThrough()
-              && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
-            leaderOfFallsthroughBlocks = predecessorBlock;
-          } else {
+          if (visitedLeaders == null) {
+            visitedLeaders = Collections.newSetFromMap(new IdentityHashMap<>());
+            visitedLeaders.add(successorBlock);
+          }
+          leaderOfFallsthroughBlocks = predecessorBlock;
+          if (!visitedLeaders.add(leaderOfFallsthroughBlocks)) {
             break;
           }
         }
@@ -157,7 +150,7 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         // remember branching successors
         if (tailStmt instanceof JGotoStmt) {
           if (leaderOfFallsthroughBlocks == successorBlock
-              && successorBlock.getPredecessors().stream().allMatch(pred -> pred == currentBlock)
+              && onlyReachedFrom(successorBlock, currentBlock)
               && sharesTrap(currentBlock, successorBlock)) {
             // the target sequence is exclusively reachable via this goto and covered by the same
             // trap -> continue with it to keep the trap range contiguous
@@ -180,12 +173,42 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
     }
   }
 
+  /** the first predecessor of block that falls through into it, or null */
+  @Nullable
+  private static BasicBlock<?> fallsThroughPredecessor(@NonNull BasicBlock<?> block) {
+    for (BasicBlock<?> pred : block.getPredecessors()) {
+      if (pred.getTail().fallsThrough() && pred.getSuccessors().get(0) == block) {
+        return pred;
+      }
+    }
+    return null;
+  }
+
+  private static boolean onlyReachedFrom(
+      @NonNull BasicBlock<?> block, @NonNull BasicBlock<?> from) {
+    for (BasicBlock<?> pred : block.getPredecessors()) {
+      if (pred != from) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /** true if both blocks have an exceptional flow of the same type to the same handler */
   private static boolean sharesTrap(@NonNull BasicBlock<?> a, @NonNull BasicBlock<?> b) {
+    final Map<? extends ClassType, ? extends BasicBlock<?>> exceptionsOfA =
+        a.getExceptionalSuccessors();
+    if (exceptionsOfA.isEmpty()) {
+      return false;
+    }
     final Map<? extends ClassType, ? extends BasicBlock<?>> exceptionsOfB =
         b.getExceptionalSuccessors();
-    return a.getExceptionalSuccessors().entrySet().stream()
-        .anyMatch(e -> exceptionsOfB.get(e.getKey()) == e.getValue());
+    for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> e : exceptionsOfA.entrySet()) {
+      if (exceptionsOfB.get(e.getKey()) == e.getValue()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
