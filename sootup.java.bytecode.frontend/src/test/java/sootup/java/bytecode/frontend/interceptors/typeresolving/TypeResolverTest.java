@@ -219,7 +219,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         Jimple.newLocal("l0", ArrayType.createArrayType(TopType.getInstance(), 1)),
-        Jimple.newLocal("#l0", objectType));
+        Jimple.newLocal("#0_Object", objectType));
   }
 
   @Test
@@ -232,7 +232,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         Jimple.newLocal("l0", objectType),
-        Jimple.newLocal("#l0", ArrayType.createArrayType(objectType, 1)),
+        Jimple.newLocal("#l0_ObjectArray", ArrayType.createArrayType(objectType, 1)),
         Jimple.newLocal("l1", objectType));
   }
 
@@ -256,7 +256,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         Jimple.newLocal("l0", PrimitiveType.getInt()),
-        Jimple.newLocal("#l0", PrimitiveType.getByte()),
+        Jimple.newLocal("#l0_byte", PrimitiveType.getByte()),
         Jimple.newLocal("l1", ArrayType.createArrayType(PrimitiveType.getByte(), 1)));
   }
 
@@ -267,12 +267,12 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   public void testCastInStaticFieldStore() {
     assertEquals(
         Stream.of(
-                "byte #l0",
+                "byte #l0_byte",
                 "int l0",
                 "l0 = 65537",
                 "l0 = 1",
-                "#l0 = (byte) l0",
-                "<CastInStore: byte staticField> = #l0",
+                "#l0_byte = (byte) l0",
+                "<CastInStore: byte staticField> = #l0_byte",
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(getCastInStoreBody("staticFieldStore").toString()));
@@ -283,13 +283,13 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertEquals(
         Stream.of(
                 "CastInStore this",
-                "byte #l0",
+                "byte #l1_byte",
                 "int l1",
                 "this := @this: CastInStore",
                 "l1 = 65537",
                 "l1 = 1",
-                "#l0 = (byte) l1",
-                "this.<CastInStore: byte instanceField> = #l0",
+                "#l1_byte = (byte) l1",
+                "this.<CastInStore: byte instanceField> = #l1_byte",
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(getCastInStoreBody("instanceFieldStore").toString()));
@@ -299,14 +299,14 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   public void testCastInArrayStore() {
     assertEquals(
         Stream.of(
-                "byte #l0",
+                "byte #l0_byte",
                 "byte[] l1",
                 "int l0",
                 "l0 = 65537",
                 "l0 = 1",
                 "l1 = newarray (byte)[1]",
-                "#l0 = (byte) l0",
-                "l1[0] = #l0",
+                "#l0_byte = (byte) l0",
+                "l1[0] = #l0_byte",
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(getCastInStoreBody("arrayStore").toString()));
@@ -322,7 +322,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         body,
         Jimple.newLocal("l0", PrimitiveType.getInt()),
         Jimple.newLocal("l1", TopType.getInstance()),
-        Jimple.newLocal("#l0", PrimitiveType.getBoolean()));
+        Jimple.newLocal("#l1_boolean", PrimitiveType.getBoolean()));
   }
 
   @Test
@@ -332,7 +332,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         Jimple.newLocal("l0", TopType.getInstance()),
-        Jimple.newLocal("#l0", PrimitiveType.getBoolean()));
+        Jimple.newLocal("#l0_boolean", PrimitiveType.getBoolean()));
   }
 
   @Test
@@ -342,7 +342,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         Jimple.newLocal("l0", objectType),
-        Jimple.newLocal("#l0", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
+        Jimple.newLocal(
+            "#l0_doubleArray", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
   }
 
   @Test
@@ -350,7 +351,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final Body body = getMiscBody("testStringDefaultMethodsTest");
     assertLocals(
         body,
-        Jimple.newLocal("#l0", charSequenceType),
+        Jimple.newLocal("#_abc__CharSequence", charSequenceType),
         Jimple.newLocal("l0", stringType),
         Jimple.newLocal("l1", PrimitiveType.getBoolean()));
   }
@@ -404,8 +405,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         body2,
         Jimple.newLocal("this", miscType),
         Jimple.newLocal("l1", dateType),
-        Jimple.newLocal("#l0", illegalArgumentType),
-        Jimple.newLocal("#l1", throwableType),
+        Jimple.newLocal("#$stack3_IllegalArgumentException", illegalArgumentType),
+        Jimple.newLocal("#$stack3_Throwable", throwableType),
         Jimple.newLocal("l2", dateType),
         Jimple.newLocal("$stack3", objectType));
   }
