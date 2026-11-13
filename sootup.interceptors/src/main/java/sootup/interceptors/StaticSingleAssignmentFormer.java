@@ -309,8 +309,10 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           phis.remove(cphi);
         }
       }
-      for (FallsThroughStmt phi : phis) {
-        BasicBlock<?> updatedBlock = blockGraph.insertBefore(block.getHead(), phi);
+      if (!phis.isEmpty()) {
+        // one insertion keeps the phis in iteration order
+        BasicBlock<?> updatedBlock =
+            blockGraph.insertBefore(block.getHead(), new ArrayList<>(phis), Collections.emptyMap());
         if (!updatedBlock.equals(block)) {
           old2UpdatedBlock.put(block, updatedBlock);
         }
