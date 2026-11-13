@@ -1,0 +1,2368 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/pr-1887/qilin/">
+      
+      
+        <link rel="prev" href="../callgraph-spark/">
+      
+      
+        <link rel="next" href="../builtin-analyses/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../img/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Qilin - </title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/customizetheme.css">
+    
+      <link rel="stylesheet" href="../css/hint.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#qilin-pointer-analysis-and-call-graphs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="" class="md-header__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Qilin
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="" class="md-nav__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysisinput/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple IR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-stmts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Statements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-values/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Values
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bodyinterceptors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BodyInterceptors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typehierarchy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeHierarchy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Call Graphs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Call Graphs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraph-cha-rta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CHA & RTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraph-spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spark
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qilin
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qilin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to create a pointer analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolving-reflection-native-methods-and-invokedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolving reflection, native methods, and invokedynamic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use pointer analysis results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Full list of Pointer Analyses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qilin-call-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qilin call graphs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Qilin call graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-via-callgraphconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building via CallGraphConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-analysis-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the analysis directly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#every-pointeranalysisconfig-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every PointerAnalysisConfig option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtin-analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BuiltIn Analyses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codepropertygraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Property Graphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to..
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How to..
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../write_analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Misc & More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Misc & More
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Announcements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Javadoc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to create a pointer analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolving-reflection-native-methods-and-invokedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolving reflection, native methods, and invokedynamic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use pointer analysis results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Full list of Pointer Analyses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qilin-call-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qilin call graphs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Qilin call graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-via-callgraphconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building via CallGraphConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-analysis-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the analysis directly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#every-pointeranalysisconfig-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every PointerAnalysisConfig option
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="qilin-pointer-analysis-and-call-graphs">Qilin Pointer Analysis and Call Graphs</h1>
+<p><a href="https://github.com/QilinPTA/Qilin">Qilin</a> is a framework of context-sensitive points-to analyses. Like
+<a href="../callgraph-spark/">Spark</a>, it builds the call graph on the fly together with the points-to sets. With
+context sensitivity, the call graph can be more precise than Spark's, see the
+<a href="../callgraphs/#the-running-example">comparison in the call graph tutorial</a>. For the options that all
+call graph algorithms share, read the <a href="../callgraphs/">tutorial</a> first.</p>
+<h3 id="dependencies">Dependencies</h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
+    &lt;artifactId&gt;sootup.qilin&lt;/artifactId&gt;
+    &lt;version&gt;2.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">compile</span><span class="w"> </span><span class="s2">"org.soot-oss:sootup.qilin:2.0.0"</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="how-to-create-a-pointer-analysis">How to create a pointer analysis</h3>
+<p>For the core context-sensitivity variants (insensitive, call-site, object, type, and their
+hybrid variants), use the type-safe <code>PointerAnalysisFactory</code> - no singletons, no string patterns,
+and independent <code>View</code>s (or repeated calls against the same <code>View</code>) can be analyzed concurrently
+since nothing is cached on <code>View</code> or held in JVM-global state:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Java</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"dacapo.antlr.Main"</span><span class="p">);</span>
+<span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">objectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// 2-object-sensitive, 1-level heap ctx</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">entrypoint</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+<span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>Other <code>ContextSensitivity</code> factory methods: <code>insensitive()</code>, <code>callSite(k[, hk])</code>,
+<code>objectSensitive(k[, hk])</code>, <code>typeSensitive(k, hk)</code>, <code>hybridObjectSensitive(k, hk)</code>,
+<code>hybridTypeSensitive(k, hk)</code>.</p>
+<p>The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, data-driven,
+tunneling, context debloating) go through the same <code>PointerAnalysisFactory</code>/<code>ContextSensitivity</code>
+pair - see the table below for their factory methods.</p>
+<h3 id="resolving-reflection-native-methods-and-invokedynamic">Resolving reflection, native methods, and invokedynamic</h3>
+<p>Some call targets can't be derived from a method's own bytecode. Qilin resolves these through a
+shared <code>qilin.core.effect.MethodEffectModel</code> hook, applied once per method just before its body is
+turned into constraints:</p>
+<ul>
+<li><strong>Reflection</strong> (<code>Class.forName</code>, <code>Method.invoke</code>, ...) - off by default; set
+  <code>PointerAnalysisConfig.builder().reflectionLogPath(path)</code> to a Tamiflex trace log to resolve it.</li>
+<li><strong>Native methods</strong> - a fixed table of simulated JDK natives (<code>Object.clone</code>, <code>Thread.start0</code>,
+  ...); unrecognized natives are left unmodeled.</li>
+<li><strong>invokedynamic (lambdas/method references)</strong> - on by default
+  (<code>PointerAnalysisConfig.isResolveDynamicInvoke()</code>). Resolves the common case - a lambda body or
+  method reference whose target is a plain static method - directly from the bootstrap's
+  <code>MethodHandle</code> constant, no log needed. Captured (closure) lambdas, constructor references
+  (<code>Foo::new</code>), and unbound instance method references are not yet resolved.</li>
+</ul>
+<h3 id="how-to-use-pointer-analysis-results">How to use pointer analysis results</h3>
+<p>First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Second, we can use it to get the points-to results for some interested local variables, fields, etc.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">);</span>
+<span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
+</code></pre></div></td></tr></table></div>
+<p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
+whether there is an object that exists in both of their points-to sets:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">boolean</span><span class="w"> </span><span class="n">mayAlias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">isMayAlias</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p><code>isMayAlias</code> also special-cases <code>null</code>/String/class constants (e.g. two <code>null</code> constants always
+may-alias, a <code>null</code> never may-aliases a non-null value). It accepts <code>Local</code> references plus those
+constants; passing any other <code>Value</code> kind throws <code>IllegalArgumentException</code>.</p>
+<h3 id="a-full-list-of-pointer-analyses">A Full list of Pointer Analyses</h3>
+<p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
+<p>Note that <strong>k</strong> used below is a concrete small constant like 1 or 2, and <code>hk</code> the heap-context
+depth (defaults vary by variant - see <code>ContextSensitivity</code>'s Javadoc for each factory method).</p>
+<table>
+<thead>
+<tr>
+<th><code>ContextSensitivity</code> factory method</th>
+<th>Description</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>insensitive()</code></td>
+<td>Andersen's context-insensitive analysis</td>
+<td><a href="https://link.springer.com/chapter/10.1007/3-540-36579-6_12">Paper</a></td>
+</tr>
+<tr>
+<td><code>callSite(k[, hk])</code></td>
+<td><strong>k</strong>-callsite-sensitive pointer analysis (denoted <strong>k</strong>CFA).</td>
+<td><a href="https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf">Paper</a></td>
+</tr>
+<tr>
+<td><code>objectSensitive(k[, hk])</code></td>
+<td><strong>k</strong>-object-sensitive pointer analysis (denoted <strong>k</strong>OBJ).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1044834.1044835">Paper</a></td>
+</tr>
+<tr>
+<td><code>typeSensitive(k, hk)</code></td>
+<td><strong>k</strong>-type-sensitive pointer analysis (denoted <strong>k</strong>TYPE).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1926385.1926390">Paper</a></td>
+</tr>
+<tr>
+<td><code>hybridObjectSensitive(k, hk)</code></td>
+<td>hybrid <strong>k</strong>-object-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
+</tr>
+<tr>
+<td><code>hybridTypeSensitive(k, hk)</code></td>
+<td>hybrid <strong>k</strong>-type-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
+</tr>
+<tr>
+<td><code>beanObjectSensitive()</code></td>
+<td>BEAN-guided 2OBJ. Only k=2 is supported.</td>
+<td><a href="https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24">Paper</a></td>
+</tr>
+<tr>
+<td><code>dataDrivenObjectSensitive()</code></td>
+<td>Data-driven 2OBJ. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td><code>dataDrivenCallSite()</code></td>
+<td>Data-driven 2CFA. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td><code>dataDrivenHybridObjectSensitive()</code></td>
+<td>Data-driven hybrid-2OBJ. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td><code>mahjongObjectSensitive(k, hk)</code></td>
+<td>MAHJONG-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
+</tr>
+<tr>
+<td><code>mahjongCallSite(k, hk)</code></td>
+<td>MAHJONG-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
+</tr>
+<tr>
+<td><code>eagleObjectSensitive(k)</code></td>
+<td>EAGLE-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3360574">Paper</a></td>
+</tr>
+<tr>
+<td><code>turnerObjectSensitive(k)</code></td>
+<td>TURNER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://drops.dagstuhl.de/opus/volltexte/2021/14059/">Paper</a></td>
+</tr>
+<tr>
+<td><code>zipperObjectSensitive(k, hk)</code></td>
+<td>ZIPPER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
+</tr>
+<tr>
+<td><code>zipperCallSite(k, hk)</code></td>
+<td>ZIPPER-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
+</tr>
+<tr>
+<td><code>tunnelingObjectSensitive/CallSite/TypeSensitive/HybridObjectSensitive(k, hk)</code></td>
+<td>Tunneling context sensitivity, per underlying variant.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>selectxCallSite(k)</code></td>
+<td>SELECTX-guided <strong>k</strong>CFA.</td>
+<td><a href="https://doi.org/10.1007/978-3-030-88806-0_13">Paper</a></td>
+</tr>
+</tbody>
+</table>
+<p>Context debloating is a config toggle layered on top of an object-sensitive variant (the default
+k-obj, or <code>zipperObjectSensitive</code>/<code>mahjongObjectSensitive</code>/<code>eagleObjectSensitive</code>), not a separate
+factory method: set <code>PointerAnalysisConfig.builder().ctxDebloating(true)</code> and pick a
+<code>debloatApproach</code> (<code>CONCH</code>, <code>DEBLOATERX</code>, <code>COLLECTION</code> for the Zipper-cd algorithm, or <code>MOON</code>).
+<a href="https://doi.org/10.1109/ASE51524.2021.9678880">Debloating paper</a>,
+<a href="https://dl.acm.org/doi/10.1145/3622832">DebloaterX paper</a>.</p>
+<h2 id="qilin-call-graphs">Qilin call graphs</h2>
+<h3 id="building-via-callgraphconfig">Building via <code>CallGraphConfig</code></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">QilinCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">mainClass</span><span class="p">(</span><span class="n">mainClass</span><span class="p">)</span><span class="w"> </span><span class="c1">// required: Qilin analyzes exactly one main class</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pointerAnalysisConfig</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="c1">// optional, default: PointerAnalysisConfig.builder()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Qilin analyzes exactly one main class, so <code>mainClass(...)</code> is required. Unless you set
+<code>singleEntry(true)</code>, Qilin also models the JVM's start-up code. That model references JDK 8 internals,
+so with a JDK 9+ runtime in the view (e.g. <code>DefaultRuntimeAnalysisInputLocation</code>), set
+<code>singleEntry(true)</code>.</p>
+<p>Shared settings on <code>CallGraphConfig.builder()</code> take precedence over the matching
+<code>PointerAnalysisConfig</code> settings:</p>
+<table>
+<thead>
+<tr>
+<th>Shared option</th>
+<th><code>PointerAnalysisConfig</code> option it overrides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seedEntryPointClinits</code> (default for Qilin: <code>false</code>)</td>
+<td><code>seedEntryPointClinits</code></td>
+</tr>
+<tr>
+<td><code>virtualCallResolver</code></td>
+<td><code>clinitVirtualCallResolver</code>. Qilin only consults it for <code>&lt;clinit&gt;</code> calls</td>
+</tr>
+<tr>
+<td><code>reflectionModel</code> (only if set)</td>
+<td><code>reflectionModel</code> / <code>reflectionLogPath</code></td>
+</tr>
+<tr>
+<td><code>dynamicInvokeResolver</code> (only if set)</td>
+<td><code>dynamicInvokeResolver</code></td>
+</tr>
+<tr>
+<td><code>callResolver</code></td>
+<td>not used by Qilin</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">CallGraphConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">entryPoints</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">mainMethod</span><span class="p">))</span>
+<span class="w">        </span><span class="c1">// these overwrite the matching PointerAnalysisConfig settings:</span>
+<span class="w">        </span><span class="p">.</span><span class="na">seedEntryPointClinits</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">virtualCallResolver</span><span class="p">(</span>
+<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">SuppressClinitCallResolver</span><span class="p">(</span><span class="n">view</span><span class="p">))</span><span class="w"> </span><span class="c1">// -&gt; clinitVirtualCallResolver</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dynamicInvokeResolver</span><span class="p">(</span><span class="n">DynamicInvokeResolver</span><span class="p">.</span><span class="na">none</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">QilinCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">mainClass</span><span class="p">(</span><span class="n">mainClass</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pointerAnalysisConfig</span><span class="p">(</span>
+<span class="w">            </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">callSite</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="running-the-analysis-directly">Running the analysis directly</h3>
+<p>You get the same call graph from the <code>PTA</code> object, together with all points-to queries shown above:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">callSite</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">mainClass</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+<span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+<span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span><span class="w"> </span><span class="c1">// implements sootup.callgraph.CallGraph</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="every-pointeranalysisconfig-option">Every <code>PointerAnalysisConfig</code> option</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">Builder</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="c1">// what to analyze and how precisely</span>
+<span class="w">        </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">objectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// default: insensitive()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">heapAbstractionPolicy</span><span class="p">(</span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">HeapAbstractionPolicy</span><span class="p">.</span><span class="na">ALLOC_SITE</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="c1">// default false: also model JVM start-up (needs a JDK 8 rt)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">preciseArrayElement</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">stringConstants</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// true: one object per string constant</span>
+<span class="w">        </span><span class="p">.</span><span class="na">preciseExceptions</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">enforceEmptyContextForIgnoreTypes</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">// &lt;clinit&gt; modelling, see the call graph tutorial</span>
+<span class="w">        </span><span class="p">.</span><span class="na">seedEntryPointClinits</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">clinitVirtualCallResolver</span><span class="p">(</span><span class="n">VirtualCallResolver</span><span class="p">.</span><span class="na">all</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// reflection and invokedynamic</span>
+<span class="w">        </span><span class="p">.</span><span class="na">reflectionLogPath</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="c1">// path to a TamiFlex refl.log</span>
+<span class="w">        </span><span class="p">.</span><span class="na">reflectionModel</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="c1">// or any sootup.callgraph.reflection.ReflectionModel</span>
+<span class="w">        </span><span class="p">.</span><span class="na">resolveDynamicInvoke</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dynamicInvokeResolver</span><span class="p">(</span><span class="n">DynamicInvokeResolver</span><span class="p">.</span><span class="na">bootstrapMethodHandles</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// guided / debloated analyses</span>
+<span class="w">        </span><span class="p">.</span><span class="na">preAnalysisOnly</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// only run the pre-analysis of a guided analysis</span>
+<span class="w">        </span><span class="p">.</span><span class="na">ctxDebloating</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">debloatApproach</span><span class="p">(</span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">DebloatApproach</span><span class="p">.</span><span class="na">CONCH</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">turnerConfig</span><span class="p">(</span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">TurnerConfig</span><span class="p">.</span><span class="na">DEFAULT</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">// output</span>
+<span class="w">        </span><span class="p">.</span><span class="na">analysisName</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="c1">// name used for the output directory</span>
+<span class="w">        </span><span class="p">.</span><span class="na">outputDirectory</span><span class="p">(</span><span class="s">""</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dumpJimple</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// currently has no effect</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dumpPointsToSet</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dumpLibraryPointsToSet</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">dumpStats</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span><span class="w"> </span><span class="c1">// default true: compute and print statistics afterwards</span>
+</code></pre></div></td></tr></table></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contextSensitivity</code></td>
+<td><code>insensitive()</code></td>
+<td>The analysis variant, see the <a href="#a-full-list-of-pointer-analyses">full list</a></td>
+</tr>
+<tr>
+<td><code>heapAbstractionPolicy</code></td>
+<td><code>ALLOC_SITE</code></td>
+<td><code>ALLOC_SITE</code>: one abstract object per <code>new</code> statement. <code>HEURISTIC_MERGE</code>: one object per type for <code>StringBuffer</code>, <code>StringBuilder</code> and all <code>Throwable</code>s</td>
+</tr>
+<tr>
+<td><code>singleEntry</code></td>
+<td><code>false</code></td>
+<td><code>true</code>: only the main method is an entry point. <code>false</code>: also model the JVM start-up (needs a JDK 8 runtime)</td>
+</tr>
+<tr>
+<td><code>seedEntryPointClinits</code></td>
+<td><code>false</code></td>
+<td>Add the main class's <code>&lt;clinit&gt;</code> (and its superclasses') as roots. See <a href="../callgraphs/#seedentrypointclinits-static-initializers">static initializers</a></td>
+</tr>
+<tr>
+<td><code>clinitVirtualCallResolver</code></td>
+<td><code>VirtualCallResolver.all()</code></td>
+<td>Decides which discovered <code>&lt;clinit&gt;</code> calls are modeled</td>
+</tr>
+<tr>
+<td><code>preciseArrayElement</code></td>
+<td><code>false</code></td>
+<td>Give array-element nodes the array's element type instead of <code>Object</code>, so type filtering applies</td>
+</tr>
+<tr>
+<td><code>stringConstants</code></td>
+<td><code>false</code></td>
+<td><code>true</code>: one abstract object per string constant. <code>false</code>: one object for all string constants</td>
+</tr>
+<tr>
+<td><code>preciseExceptions</code></td>
+<td><code>false</code></td>
+<td>Track thrown exceptions per method. <code>false</code>: all exceptions flow through one global node</td>
+</tr>
+<tr>
+<td><code>enforceEmptyContextForIgnoreTypes</code></td>
+<td><code>false</code></td>
+<td>Analyze the methods of certain types (e.g. <code>StringBuilder</code>) without context</td>
+</tr>
+<tr>
+<td><code>reflectionLogPath</code></td>
+<td><code>null</code></td>
+<td>A TamiFlex <code>refl.log</code> to resolve reflection with</td>
+</tr>
+<tr>
+<td><code>reflectionModel</code></td>
+<td><code>null</code></td>
+<td>Any <code>ReflectionModel</code>. Takes precedence over <code>reflectionLogPath</code></td>
+</tr>
+<tr>
+<td><code>resolveDynamicInvoke</code></td>
+<td><code>true</code></td>
+<td>Resolve <code>invokedynamic</code> (lambdas, method references)</td>
+</tr>
+<tr>
+<td><code>dynamicInvokeResolver</code></td>
+<td><code>bootstrapMethodHandles()</code></td>
+<td>How <code>invokedynamic</code> is resolved. See <a href="../callgraphs/#dynamicinvokeresolver-lambdas-and-method-references">invokedynamic</a></td>
+</tr>
+<tr>
+<td><code>preAnalysisOnly</code></td>
+<td><code>false</code></td>
+<td>Guided and debloated analyses: only run the pre-analysis</td>
+</tr>
+<tr>
+<td><code>ctxDebloating</code></td>
+<td><code>false</code></td>
+<td>Context debloating on top of an object-sensitive variant</td>
+</tr>
+<tr>
+<td><code>debloatApproach</code></td>
+<td><code>CONCH</code></td>
+<td><code>CONCH</code>, <code>DEBLOATERX</code>, <code>COLLECTION</code> (Zipper-cd) or <code>MOON</code></td>
+</tr>
+<tr>
+<td><code>turnerConfig</code></td>
+<td><code>DEFAULT</code></td>
+<td>For <code>turnerObjectSensitive</code>: <code>DEFAULT</code>, or only <code>PHASE_ONE</code> / <code>PHASE_TWO</code> of Turner's pre-analysis</td>
+</tr>
+<tr>
+<td><code>analysisName</code></td>
+<td><code>null</code></td>
+<td>Name used for the statistics and output files</td>
+</tr>
+<tr>
+<td><code>outputDirectory</code></td>
+<td><code>""</code></td>
+<td>Where the dumps and statistics are written</td>
+</tr>
+<tr>
+<td><code>dumpJimple</code></td>
+<td><code>false</code></td>
+<td><em>Accepted, but currently has no effect</em></td>
+</tr>
+<tr>
+<td><code>dumpPointsToSet</code></td>
+<td><code>false</code></td>
+<td>Write the points-to sets of the application's locals</td>
+</tr>
+<tr>
+<td><code>dumpLibraryPointsToSet</code></td>
+<td><code>false</code></td>
+<td>Also write the points-to sets of library locals</td>
+</tr>
+<tr>
+<td><code>dumpStats</code></td>
+<td><code>false</code></td>
+<td>Write the statistics. Implies <code>evaluate</code></td>
+</tr>
+<tr>
+<td><code>evaluate</code></td>
+<td><code>true</code></td>
+<td>Compute and print statistics after the analysis. Turn it off when you only need the results: the alias statistics are quadratic in the number of locals</td>
+</tr>
+</tbody>
+</table>
+<p>Two examples, merged heap objects and context debloating:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Heap abstraction</label><label for="__tabbed_3_2">Context debloating</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">Builder</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">insensitive</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// one object per type for StringBuffer, StringBuilder and Throwables</span>
+<span class="w">        </span><span class="p">.</span><span class="na">heapAbstractionPolicy</span><span class="p">(</span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">HeapAbstractionPolicy</span><span class="p">.</span><span class="na">HEURISTIC_MERGE</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">Builder</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">objectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">ctxDebloating</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="c1">// only on object-sensitive variants</span>
+<span class="w">        </span><span class="p">.</span><span class="na">debloatApproach</span><span class="p">(</span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">DebloatApproach</span><span class="p">.</span><span class="na">DEBLOATERX</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">singleEntry</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">evaluate</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>Next: <a href="../callgraph-spark/">Spark</a> · <a href="../callgraph-cha-rta/">CHA &amp; RTA</a> · back to the <a href="../callgraphs/">tutorial</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2024 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Footer -->
+<footer class="md-footer">
+
+    <!-- Link to previous and/or next page -->
+    
+
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <span id="developedBy">
+            Developed & Maintained by <a href="https://www.hni.uni-paderborn.de/sse">Secure Software Engineering Group </a>, Paderborn University
+            </span>
+        </div>
+    </div>
+
+
+    <!-- Further information -->
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+
+            <!-- Social links -->
+            
+        </div>
+    </div>
+
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
