@@ -579,6 +579,11 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.spark</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.qilin</artifactId>
             <version>${project.version}</version>
         </dependency>
