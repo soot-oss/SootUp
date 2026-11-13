@@ -1,0 +1,2362 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/mutable_controlflowgraph/">
+      
+      
+        <link rel="prev" href="../qilin/">
+      
+      
+        <link rel="next" href="../announcement/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../img/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Modify a ControlFlowGraph - </title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/customizetheme.css">
+    
+      <link rel="stylesheet" href="../css/hint.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modify-a-controlflowgraph" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="" class="md-header__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Modify a ControlFlowGraph
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="" class="md-nav__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysisinput/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple IR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-stmts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Statements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-values/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Values
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bodyinterceptors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BodyInterceptors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typehierarchy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeHierarchy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Callgraphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtin-analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BuiltIn Analyses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codepropertygraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Property Graphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to..
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How to..
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../write_analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qilin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incorporate Pointer Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modify a ControlFlowGraph
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modify a ControlFlowGraph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-0-load-the-method-and-look-at-its-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — Load the method and look at its graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-get-a-mutable-copy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Get a mutable copy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-insert-log-every-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Insert: log every call
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-replace-swap-the-insecure-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Replace: swap the insecure check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-remove-drop-the-debug-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Remove: drop the debug output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-change-the-flow-a-guard-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Change the flow: a guard clause
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-exceptional-flow-catch-a-runtimeexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Exceptional flow: catch a RuntimeException
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-build-the-new-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Build the new body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-automate-it-a-bodyinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Automate it: a BodyInterceptor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8 — Automate it: a BodyInterceptor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#many-edits-batch-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Many edits: batch mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rules-of-the-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules of the graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Misc & More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Misc & More
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Announcements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Javadoc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-0-load-the-method-and-look-at-its-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — Load the method and look at its graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-get-a-mutable-copy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Get a mutable copy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-insert-log-every-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Insert: log every call
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-replace-swap-the-insecure-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Replace: swap the insecure check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-remove-drop-the-debug-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Remove: drop the debug output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-change-the-flow-a-guard-clause" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Change the flow: a guard clause
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-exceptional-flow-catch-a-runtimeexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Exceptional flow: catch a RuntimeException
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-build-the-new-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Build the new body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-automate-it-a-bodyinterceptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Automate it: a BodyInterceptor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8 — Automate it: a BodyInterceptor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#many-edits-batch-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Many edits: batch mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rules-of-the-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules of the graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="modify-a-controlflowgraph">Modify a ControlFlowGraph</h1>
+<h2 id="the-goal">The goal</h2>
+<p>The (fictional) bank <em>SootBank</em> ships a class <code>Vault</code> whose <code>withdraw</code> method was written in a hurry:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cm">/** A fictional vault whose withdraw method gets hardened in the "Modify a ControlFlowGraph" docs. */</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Vault</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">withdraw</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Legacy</span><span class="p">.</span><span class="na">check</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span>
+<span class="w">    </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">amount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">balance</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>An audit lists four problems, and nobody has access to the sources any more, only to the
+<code>.class</code> files. We will fix all of them in the <a href="../glossary/">ControlFlowGraph</a> of the method:</p>
+<ol>
+<li>every call must be <strong>logged</strong>: <code>Audit.log(amount)</code> at the very beginning,</li>
+<li><code>Legacy.check</code> is insecure and must be <strong>replaced</strong> by <code>Secure.check</code>,</li>
+<li>the leftover debug output <code>System.out.println</code> must be <strong>removed</strong>,</li>
+<li>non-positive amounts must be <strong>rejected</strong> (<code>return -1</code>),</li>
+<li>a <code>RuntimeException</code> during the withdrawal must be <strong>caught</strong>, reported via
+   <code>Audit.failed(e)</code> and answered with <code>return -1</code>.</li>
+</ol>
+<p>Each requirement needs a different kind of modification, so step by step this chapter walks
+through the API of <code>MutableControlFlowGraph</code>. At the end we pack everything into a
+<a href="../bodyinterceptors/">BodyInterceptor</a>, so every view loads the hardened method automatically.</p>
+<p>All code on this page is taken from
+<code>sootup.examples/src/test/java/sootup/examples/mutatingCFG</code>, which is run as a test on every
+pull request.</p>
+<hr />
+<h2 id="step-0-load-the-method-and-look-at-its-graph">Step 0 — Load the method and look at its graph</h2>
+<p>We load the example classes with SootUp's default body interceptors, which turn bytecode into
+readable Jimple:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">static</span><span class="w"> </span><span class="n">JavaView</span><span class="w"> </span><span class="nf">loadView</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">BodyInterceptor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extraInterceptors</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">BodyInterceptor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">interceptors</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">());</span>
+<span class="w">  </span><span class="n">interceptors</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">extraInterceptors</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">PathBasedAnalysisInputLocation</span><span class="p">.</span><span class="na">create</span><span class="p">(</span>
+<span class="w">          </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">BINARY</span><span class="p">),</span><span class="w"> </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span><span class="w"> </span><span class="n">interceptors</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loadView</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">emptyList</span><span class="p">());</span>
+<span class="n">JavaIdentifierFactory</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">();</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">withdrawSig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Vault: int withdraw(int)&gt;"</span><span class="p">);</span>
+<span class="n">SootMethod</span><span class="w"> </span><span class="n">withdraw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">withdrawSig</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">withdraw</span><span class="p">.</span><span class="na">getBody</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>This is the Jimple of <code>withdraw</code>:</p>
+<p>```jimple
+{
+    Vault this;
+    int $stack3, $stack4, $stack5, l1;
+    java.io.PrintStream $stack2;</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>this := @this: Vault;
+l1 := @parameter0: int;
+staticinvoke &lt;Legacy: void check(int)&gt;(l1);
+$stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+virtualinvoke $stack2.&lt;java.io.PrintStream: void println(int)&gt;(l1);
+$stack3 = this.&lt;Vault: int balance&gt;;
+$stack4 = $stack3 - l1;
+this.&lt;Vault: int balance&gt; = $stack4;
+$stack5 = this.&lt;Vault: int balance&gt;;
+
+return $stack5;
+</code></pre></div></td></tr></table></div>
+<p>}
+```</p>
+<p>A <code>ControlFlowGraph</code> can be read on two levels:</p>
+<ul>
+<li><strong>Stmts</strong>: <code>successors(stmt)</code>, <code>predecessors(stmt)</code>, <code>exceptionalSuccessors(stmt)</code>,
+  <code>getStmts()</code> (in Jimple order), <code>getStartingStmt()</code>, <code>containsNode(stmt)</code>.</li>
+<li><strong>Blocks</strong>: a <a href="../glossary/">BasicBlock</a> is a maximal sequence of stmts that is always executed
+  from head to tail. Only the tail may branch, and all stmts of a block share the same exceptional
+  successors. <code>getBlocks()</code>, <code>getBlockOf(stmt)</code>, <code>getBlocksSorted()</code>.</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ControlFlowGraph</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">cfg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getControlFlowGraph</span><span class="p">();</span>
+<span class="c1">// the stmts in linearized (Jimple) order</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">getStmts</span><span class="p">();</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">getStartingStmt</span><span class="p">();</span>
+<span class="c1">// stmt-level flow</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">first</span><span class="p">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">previous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">next</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="c1">// block-level view: maximal sequences of stmts without inner branching</span>
+<span class="n">Collection</span><span class="o">&lt;?</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BasicBlock</span><span class="o">&lt;?&gt;&gt;</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">getBlocks</span><span class="p">();</span>
+<span class="n">BasicBlock</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">blockOfFirst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">getBlockOf</span><span class="p">(</span><span class="n">first</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p><code>withdraw</code> has no branches and no traps, so its graph is a single block.</p>
+<div class="admonition info">
+<p class="admonition-title">Falls through or branches?</p>
+<p>Every <a href="../jimple-stmts/">Stmt</a> is either a <code>FallsThroughStmt</code> (it continues with the next stmt,
+e.g. an assignment or an invoke), a <code>BranchingStmt</code> (<code>goto</code>, <code>switch</code>) or it ends the flow
+(<code>return</code>, <code>throw</code>). <code>JIfStmt</code> is both: its successor <code>0</code> is the fall-through flow, its successor
+<code>1</code> the branch target. Many modification methods only accept one of these kinds, and the types
+in their signatures say which.</p>
+</div>
+<hr />
+<h2 id="step-1-get-a-mutable-copy">Step 1 — Get a mutable copy</h2>
+<p>The graph of a loaded <code>Body</code> is unmodifiable. <code>Body.builder(body, modifiers)</code> copies the body
+into a <code>BodyBuilder</code>, whose graph is a <code>MutableBlockControlFlowGraph</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Body</span><span class="p">.</span><span class="na">BodyBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Body</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="n">body</span><span class="p">,</span><span class="w"> </span><span class="n">withdraw</span><span class="p">.</span><span class="na">getModifiers</span><span class="p">());</span>
+<span class="n">MutableControlFlowGraph</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">getControlFlowGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>The copy shares the <code>Stmt</code> objects with the original body, but not the graph. Whatever we change
+from now on leaves <code>body</code> untouched.</p>
+<hr />
+<h2 id="step-2-insert-log-every-call">Step 2 — Insert: log every call</h2>
+<p><code>insertBefore(existing, stmts...)</code> puts new stmts in front of <code>existing</code>. All flows that reached
+<code>existing</code> now reach the first new stmt. <code>insertAfter(existing, stmts...)</code> works the other way
+round. Both accept only <code>FallsThroughStmt</code>s that are no <code>JIfStmt</code>, because the inserted stmts
+always continue into <code>existing</code> or into its old successor.</p>
+<p>The log call has to come after the identity stmts (<code>this := @this</code>, <code>l1 := @parameter0</code>), which
+must stay at the beginning of a body:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Local</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getParameterLocal</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">auditLog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Audit: void log(int)&gt;"</span><span class="p">);</span>
+<span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">logCall</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newInvokeStmt</span><span class="p">(</span><span class="n">Jimple</span><span class="p">.</span><span class="na">newStaticInvokeExpr</span><span class="p">(</span><span class="n">auditLog</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="c1">// before the first "real" stmt, i.e. after this := @this and amount := @parameter0</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">firstNonIdentity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getFirstNonIdentityStmt</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">insertBefore</span><span class="p">(</span><span class="n">firstNonIdentity</span><span class="p">,</span><span class="w"> </span><span class="n">logCall</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>Both methods also take a list of stmts and a trap map <code>Map&lt;ClassType, Stmt&gt;</code> (exception type →
+handler stmt) for the new stmts. The single-stmt overloads used here pass an empty map, so the new
+stmts are covered by no trap. Pass the traps of the neighbouring stmt
+(<code>graph.exceptionalSuccessors(existing)</code>) if the new stmts belong into the same <code>try</code> block.</p>
+<hr />
+<h2 id="step-3-replace-swap-the-insecure-check">Step 3 — Replace: swap the insecure check</h2>
+<p><code>replaceNode(old, new)</code> puts <code>new</code> at the place of <code>old</code>. All flows into and out of <code>old</code> move to
+<code>new</code>, and so do its traps.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">legacyCheck</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">invokeOf</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="w"> </span><span class="s">"check"</span><span class="p">);</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">secureCheck</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Secure: void check(int)&gt;"</span><span class="p">);</span>
+<span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">secureCall</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newInvokeStmt</span><span class="p">(</span>
+<span class="w">        </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newStaticInvokeExpr</span><span class="p">(</span><span class="n">secureCheck</span><span class="p">,</span><span class="w"> </span><span class="n">legacyCheck</span><span class="p">.</span><span class="na">getInvokeExpr</span><span class="p">().</span><span class="na">get</span><span class="p">().</span><span class="na">getArgs</span><span class="p">()),</span>
+<span class="w">        </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">replaceNode</span><span class="p">(</span><span class="n">legacyCheck</span><span class="p">,</span><span class="w"> </span><span class="n">secureCall</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">One stmt, one place</p>
+<p>Stmts are compared by identity, and a stmt object can be in a graph only once. Always create
+a new stmt instead of reusing one: <code>replaceNode</code> and all insert methods reject a stmt that is
+already in the graph.</p>
+</div>
+<p><code>replaceNode</code> can also change the kind of a stmt, e.g. <code>goto</code> → <code>nop</code> or <code>nop</code> → <code>goto</code>. When the
+new stmt expects fewer successors than the old one still has, it throws. Flows that are missing
+after the replacement (e.g. the target of a new <code>goto</code>) are added with the edge methods of step 5.</p>
+<hr />
+<h2 id="step-4-remove-drop-the-debug-output">Step 4 — Remove: drop the debug output</h2>
+<p><code>removeNode(stmt)</code> removes a stmt and <strong>keeps the flow</strong>: its predecessors now continue with its
+successor. <code>removeNode(stmt, false)</code> removes the stmt together with its flows, which may leave a
+part of the graph unreachable. Keeping the flow is impossible for a <code>BranchingStmt</code> with more
+than one successor.</p>
+<p><code>println</code> needs a second stmt that loads <code>System.out</code>, so we remove both. The local that held
+<code>System.out</code> is unused afterwards, and we remove it from the builder as well:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">println</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">invokeOf</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="w"> </span><span class="s">"println"</span><span class="p">);</span>
+<span class="c1">// the stmt that loads System.out into a local for the println call</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">loadSystemOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">println</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">removeNode</span><span class="p">(</span><span class="n">println</span><span class="p">);</span><span class="w"> </span><span class="c1">// keeps the flow: predecessors now reach its successor</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">removeNode</span><span class="p">(</span><span class="n">loadSystemOut</span><span class="p">);</span>
+<span class="c1">// the local that held System.out is unused now</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashSet</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="na">getLocals</span><span class="p">());</span>
+<span class="n">locals</span><span class="p">.</span><span class="na">remove</span><span class="p">(((</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">loadSystemOut</span><span class="p">).</span><span class="na">getLeftOp</span><span class="p">());</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">setLocals</span><span class="p">(</span><span class="n">locals</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>To remove a whole block, use <code>removeBlock(block)</code>.</p>
+<hr />
+<h2 id="step-5-change-the-flow-a-guard-clause">Step 5 — Change the flow: a guard clause</h2>
+<p>Now the method needs a branch: <code>if l1 &lt;= 0 goto reject</code>, where <code>reject</code> is a new <code>return -1</code>.
+This is a job for the edge methods:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>putEdge(FallsThroughStmt from, Stmt to)</code></td>
+<td><code>from</code> falls through into <code>to</code>. A <code>to</code> that is not in the graph yet is added, with the traps of <code>from</code>.</td>
+</tr>
+<tr>
+<td><code>putEdge(BranchingStmt from, int idx, Stmt to)</code></td>
+<td>sets successor <code>idx</code> of <code>from</code></td>
+</tr>
+<tr>
+<td><code>setEdges(BranchingStmt from, Stmt... targets)</code></td>
+<td>sets all successors of <code>from</code> at once, in order</td>
+</tr>
+<tr>
+<td><code>removeEdge(Stmt from, Stmt to)</code></td>
+<td>removes all flows <code>from</code> → <code>to</code> and returns their successor indices</td>
+</tr>
+<tr>
+<td><code>replaceSuccessorEdge(Stmt from, Stmt oldTo, Stmt newTo)</code></td>
+<td>redirects all flows <code>from</code> → <code>oldTo</code> to <code>newTo</code></td>
+</tr>
+<tr>
+<td><code>addNode(Stmt)</code> / <code>addNode(Stmt, traps)</code></td>
+<td>adds a stmt without any flow</td>
+</tr>
+<tr>
+<td><code>addBlock(List&lt;Stmt&gt;)</code> / <code>addBlock(List&lt;Stmt&gt;, traps)</code></td>
+<td>adds a whole sequence of stmts</td>
+</tr>
+<tr>
+<td><code>setStartingStmt(Stmt)</code></td>
+<td>sets the entry of the method</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>FallsThroughStmt</code> has exactly one fall-through successor, so before the log call can fall
+through into the guard, we cut its current flow:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// if amount &lt;= 0 goto reject;  reject: return -1</span>
+<span class="n">JIfStmt</span><span class="w"> </span><span class="n">guard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newIfStmt</span><span class="p">(</span><span class="n">Jimple</span><span class="p">.</span><span class="na">newLeExpr</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">IntConstant</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="n">JReturnStmt</span><span class="w"> </span><span class="n">reject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newReturnStmt</span><span class="p">(</span><span class="n">IntConstant</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+
+<span class="n">Stmt</span><span class="w"> </span><span class="n">afterLog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">logCall</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">removeEdge</span><span class="p">(</span><span class="n">logCall</span><span class="p">,</span><span class="w"> </span><span class="n">afterLog</span><span class="p">);</span><span class="w"> </span><span class="c1">// cut the fall-through flow</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">putEdge</span><span class="p">(</span><span class="n">logCall</span><span class="p">,</span><span class="w"> </span><span class="n">guard</span><span class="p">);</span><span class="w"> </span><span class="c1">// logCall falls through into the new guard</span>
+<span class="c1">// successor 0 of an if is its fall-through flow, successor 1 its branch target</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">putEdge</span><span class="p">(</span><span class="n">guard</span><span class="p">,</span><span class="w"> </span><span class="n">JIfStmt</span><span class="p">.</span><span class="na">FALSE_BRANCH_IDX</span><span class="p">,</span><span class="w"> </span><span class="n">afterLog</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">putEdge</span><span class="p">(</span><span class="n">guard</span><span class="p">,</span><span class="w"> </span><span class="n">JIfStmt</span><span class="p">.</span><span class="na">TRUE_BRANCH_IDX</span><span class="p">,</span><span class="w"> </span><span class="n">reject</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>The two <code>putEdge(guard, ...)</code> calls could also be written as <code>graph.setEdges(guard, afterLog, reject)</code>.
+For a <code>switch</code>, the successor indices follow the order of its cases, and the default target comes
+last.</p>
+<p>The method now consists of three blocks: entry up to the guard, the withdrawal, and <code>reject</code>.</p>
+<hr />
+<h2 id="step-6-exceptional-flow-catch-a-runtimeexception">Step 6 — Exceptional flow: catch a RuntimeException</h2>
+<p>In a <code>ControlFlowGraph</code> an exceptional flow goes from a stmt to the handler stmt for one
+exception type. A handler is a block that starts with <code>e := @caughtexception</code>. The trap ranges
+(<code>catch ... from ... to ... with ...</code>) you see in Jimple are computed from these flows when the
+body is printed or serialized.</p>
+<p>We add the handler as a new block, then give every stmt after the guard an exceptional flow into
+it:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">runtimeException</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"java.lang.RuntimeException"</span><span class="p">);</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">auditFailed</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">factory</span><span class="p">.</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Audit: void failed(java.lang.RuntimeException)&gt;"</span><span class="p">);</span>
+
+<span class="c1">// the handler:  e := @caughtexception; Audit.failed(e); return -1</span>
+<span class="n">Local</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newLocal</span><span class="p">(</span><span class="s">"e"</span><span class="p">,</span><span class="w"> </span><span class="n">runtimeException</span><span class="p">);</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">addLocal</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+<span class="n">JIdentityStmt</span><span class="w"> </span><span class="n">caught</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newIdentityStmt</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JCaughtExceptionRef</span><span class="p">(</span><span class="n">runtimeException</span><span class="p">),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">reportFailure</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newInvokeStmt</span><span class="p">(</span><span class="n">Jimple</span><span class="p">.</span><span class="na">newStaticInvokeExpr</span><span class="p">(</span><span class="n">auditFailed</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="n">JReturnStmt</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newReturnStmt</span><span class="p">(</span><span class="n">IntConstant</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">NO_POS</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">addBlock</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="n">caught</span><span class="p">,</span><span class="w"> </span><span class="n">reportFailure</span><span class="p">,</span><span class="w"> </span><span class="n">failed</span><span class="p">));</span>
+
+<span class="c1">// every stmt between the guard and the return may throw into the handler</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">debit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">afterLog</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">debit</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JReturnStmt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Stmt</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">debit</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">graph</span><span class="p">.</span><span class="na">addExceptionalEdge</span><span class="p">(</span><span class="n">debit</span><span class="p">,</span><span class="w"> </span><span class="n">runtimeException</span><span class="p">,</span><span class="w"> </span><span class="n">caught</span><span class="p">);</span>
+<span class="w">  </span><span class="n">debit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">following</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Note the <code>following</code> variable: we read the successor <em>before</em> changing the graph, because the
+graph may restructure its blocks while we edit (see the rules below).</p>
+<p>The way back works at three granularities:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// drop the exceptional flow of one stmt ...</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">someStmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">exceptionalPredecessors</span><span class="p">(</span><span class="n">handler</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">removeExceptionalEdge</span><span class="p">(</span><span class="n">someStmt</span><span class="p">,</span><span class="w"> </span><span class="n">runtimeException</span><span class="p">);</span>
+<span class="c1">// ... or all exceptional flows of a stmt</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">clearExceptionalEdges</span><span class="p">(</span><span class="n">graph</span><span class="p">.</span><span class="na">exceptionalPredecessors</span><span class="p">(</span><span class="n">handler</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="c1">// ... or every flow of that type into the handler</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">removeExceptionalFlowFromAllBlocks</span><span class="p">(</span><span class="n">runtimeException</span><span class="p">,</span><span class="w"> </span><span class="n">handler</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="step-7-build-the-new-body">Step 7 — Build the new body</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Body</span><span class="w"> </span><span class="n">hardened</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p><code>build()</code> checks that every stmt has the right number of flows for its kind. The hardened method:</p>
+<p>```jimple
+{
+    Vault this;
+    int $stack3, $stack4, $stack5, l1;
+    java.lang.RuntimeException e;</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>this := @this: Vault;
+l1 := @parameter0: int;
+staticinvoke &lt;Audit: void log(int)&gt;(l1);
+
+if l1 &lt;= 0 goto label4;
+</code></pre></div></td></tr></table></div>
+<p>label1:
+    staticinvoke <Secure: void check(int)>(l1);
+    $stack3 = this.<Vault: int balance>;
+    $stack4 = $stack3 - l1;
+    this.<Vault: int balance> = $stack4;
+    $stack5 = this.<Vault: int balance>;</p>
+<p>label2:
+    return $stack5;</p>
+<p>label3:
+    e := @caughtexception;
+    staticinvoke <Audit: void failed(java.lang.RuntimeException)>(e);</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>return -1;
+</code></pre></div></td></tr></table></div>
+<p>label4:
+    return -1;</p>
+<p>catch java.lang.RuntimeException from label1 to label2 with label3;
+}
+```</p>
+<p>All five requirements are met.</p>
+<hr />
+<h2 id="step-8-automate-it-a-bodyinterceptor">Step 8 — Automate it: a BodyInterceptor</h2>
+<p>A <code>Body</code> built by hand lives only in our variable. To make <em>every</em> view load the hardened method,
+we do the same work in a <a href="../bodyinterceptors/">BodyInterceptor</a>. It receives the <code>BodyBuilder</code> of
+each method while the method is loaded:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VaultHardeningInterceptor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">BodyInterceptor</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">StmtPositionInfo</span><span class="w"> </span><span class="n">NO_POS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">StmtPositionInfo</span><span class="p">.</span><span class="na">getNoStmtPositionInfo</span><span class="p">();</span>
+
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">interceptBody</span><span class="p">(</span><span class="n">Body</span><span class="p">.</span><span class="nd">@NonNull</span><span class="w"> </span><span class="n">BodyBuilder</span><span class="w"> </span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="nd">@NonNull</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="n">view</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">MethodSignature</span><span class="w"> </span><span class="n">sig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">sig</span><span class="p">.</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getFullyQualifiedName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"Vault"</span><span class="p">)</span>
+<span class="w">        </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">sig</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"withdraw"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">MutableControlFlowGraph</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">getControlFlowGraph</span><span class="p">();</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="na">beginBatch</span><span class="p">();</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">harden</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span><span class="w"> </span><span class="n">graph</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">graph</span><span class="p">.</span><span class="na">endBatch</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// harden(...) contains the steps 2 – 6 from above</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>It is registered on the input location after the default interceptors:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loadView</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">VaultHardeningInterceptor</span><span class="p">()));</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="many-edits-batch-mode">Many edits: batch mode</h3>
+<p>The interceptor wraps its edits in <code>beginBatch()</code> / <code>endBatch()</code> of <code>MutableControlFlowGraph</code>.
+After each edit, a <code>MutableBlockControlFlowGraph</code> merges blocks that became mergeable, so that blocks stay maximal.
+During a sequence of edits that often means splitting and merging the same blocks again and
+again. Inside a batch, merging is postponed until the outermost <code>endBatch()</code>. The stmt-level flows
+are exact during the batch, only <code>getBlocks()</code> may return more, smaller blocks than necessary.
+Batches can be nested. Put <code>endBatch()</code> in a <code>finally</code> block. Other <code>MutableControlFlowGraph</code>
+implementations treat both calls as no-ops, so the pattern is always safe.</p>
+<div class="admonition tip">
+<p class="admonition-title">Changing a single method without an interceptor</p>
+<p>To replace the body of one <code>SootMethod</code> in an existing view, wrap the new body into an
+<code>OverridingBodySource</code> and create a new method with <code>withOverridingMethodSource</code>; see
+<code>sootup.examples/.../mutatingSootClass/MutatingTest.java</code>.</p>
+</div>
+<hr />
+<h2 id="rules-of-the-graph">Rules of the graph</h2>
+<ul>
+<li><strong>Only a block's tail may branch.</strong> Stmts inside a block fall through. The graph splits and
+  merges blocks for you.</li>
+<li><strong>One fall-through successor.</strong> A <code>FallsThroughStmt</code> falls through into exactly one stmt. For
+  the body to be printable as linear code, a stmt should also be the fall-through target of at
+  most one stmt; connect further predecessors with a <code>goto</code>. A fall-through cycle (<code>a</code> falls into
+  <code>b</code>, <code>b</code> into <code>a</code>) can never be linearized and is rejected.</li>
+<li><strong>New stmts, always.</strong> A stmt object can be in a graph only once.</li>
+<li><strong>The starting stmt is a block head.</strong> It changes with <code>setStartingStmt</code>, or when you insert
+  before or remove the first stmt.</li>
+<li><strong>Keep <code>Stmt</code>s, not <code>BasicBlock</code>s.</strong> Blocks are split and merged by almost every modification,
+  so a block you got before an edit may be outdated after it. Look it up again with
+  <code>getBlockOf(stmt)</code>.</li>
+<li><strong>Iterate over a copy.</strong> <code>getStmts()</code> returns a new list, so you can change the graph while you
+  loop over it. When you walk along <code>successors(...)</code>, read the next stmt before you change the
+  current one (see step 6).</li>
+<li><strong>Invalid arguments fail early.</strong> An invalid edit throws an <code>IllegalArgumentException</code> and does
+  not change the graph. <code>MutableBlockControlFlowGraph.validateBlocks()</code> checks the internal
+  consistency, which is handy while debugging your own transformation.</li>
+</ul>
+<h2 id="costs">Costs</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getBlockOf</code>, <code>successors</code>, <code>predecessors</code>, <code>containsNode</code></td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>insert/remove at the head or tail of a block, <code>replaceNode</code></td>
+<td>O(1) plus the edge changes</td>
+</tr>
+<tr>
+<td>insert/remove in the middle of a block</td>
+<td>proportional to the shorter part of the block</td>
+</tr>
+<tr>
+<td>split/merge of a block</td>
+<td>proportional to the smaller part</td>
+</tr>
+<tr>
+<td><code>getStmts()</code></td>
+<td>O(n) copy; the order is cached and survives changes inside a block</td>
+</tr>
+<tr>
+<td>copy constructor</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td><code>initializeWith</code></td>
+<td>O(n), plus a split for every branch target that is not the head of a given block</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2024 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Footer -->
+<footer class="md-footer">
+
+    <!-- Link to previous and/or next page -->
+    
+
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <span id="developedBy">
+            Developed & Maintained by <a href="https://www.hni.uni-paderborn.de/sse">Secure Software Engineering Group </a>, Paderborn University
+            </span>
+        </div>
+    </div>
+
+
+    <!-- Further information -->
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+
+            <!-- Social links -->
+            
+        </div>
+    </div>
+
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

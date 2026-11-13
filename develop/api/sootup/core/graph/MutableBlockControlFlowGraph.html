@@ -87,6 +87,27 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">MutableBlockControlFlowGraph</span>
 <span class="extends-implements">extends <a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></span></div>
+<div class="block">Control flow graph that stores Stmts in maximal basic blocks.
+
+ <p>Every mutation is built from three structural primitives on top of the edge primitives of
+ <a href="MutableBasicBlockImpl.html" title="class in sootup.core.graph"><code>MutableBasicBlockImpl</code></a>:
+
+ <ul>
+   <li><code>split(sootup.core.graph.MutableBasicBlockImpl, int)</code>: cut a block so that a given stmt becomes the head of a block,
+   <li><code>merge(sootup.core.graph.MutableBasicBlockImpl, sootup.core.graph.MutableBasicBlockImpl)</code>: join a block with its only, fall-through successor,
+   <li><code>normalize(sootup.core.graph.MutableBasicBlockImpl)</code>: merge a block with its neighbours where possible.
+ </ul>
+
+ Operations validate their arguments first, split what they need, change edges, then normalize, so
+ blocks stay maximal. Within <a href="#beginBatch()"><code>beginBatch()</code></a>/<a href="#endBatch()"><code>endBatch()</code></a> merging is deferred.
+
+ <p>Costs: a stmt index (<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/IdentityHashMap.html" title="class or interface in java.util" class="external-link"><code>IdentityHashMap</code></a>) maps stmts to blocks; blocks store stmts in a
+ deque with a position cache, so lookups and head/tail changes are O(1) and a split or merge moves
+ the smaller part. The linearized block order is cached and survives changes inside a block.</div>
+<dl class="notes">
+<dt>Author:</dt>
+<dd>Markus Schmidt</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -106,7 +127,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(sootup.core.graph.ControlFlowGraph)" class="member-name-link">MutableBlockControlFlowGraph</a><wbr>(@NonNull <a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;? extends <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;&nbsp;graph)</code></div>
 <div class="col-last even-row-color">
-<div class="block">copies a ControlFlowGraph into this Mutable instance</div>
+<div class="block">copies a ControlFlowGraph into this Mutable instance, block by block</div>
 </div>
 </div>
 </section>
@@ -126,8 +147,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addBlock(java.util.List,java.util.Map)" class="member-name-link">addBlock</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&nbsp;stmts,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&nbsp;trapMap)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The list of Stmts must contain only fallsthrough Stmts; A flow manipulating Stmt
- (BranchingStmt, return, throw) is only allowed at the Tail.</div>
+<div class="block">Adds a block.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addExceptionalEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">addExceptionalEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt,
@@ -143,45 +163,47 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">inserts a "stmt" with exceptional flows "traps" into the ControlFlowGraph</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected org.apache.commons.lang3.tuple.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addNodeToBlock(sootup.core.graph.MutableBasicBlock,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">addNodeToBlock</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;block,
- @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#beginBatch()" class="member-name-link">beginBatch</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a Stmt to the end of a block i.e. stmt will become the new tail.</div>
+<div class="block">Starts a batch of changes: blocks that become mergeable are not merged until the matching
+ <a href="#endBatch()"><code>endBatch()</code></a>, which saves repeated split/merge work in a sequence of edits.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearBlockFromAllExceptionalBlocks(sootup.core.graph.MutableBasicBlock)" class="member-name-link">clearBlockFromAllExceptionalBlocks</a><wbr>(<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;blockOfRemovedStmt)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearExceptionalEdges(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">clearExceptionalEdges</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearExceptionalEdges(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">clearExceptionalEdges</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Modifications of exceptional flows removes all exceptional flows from "stmt"</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsNode(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">containsNode</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @NonNull org.apache.commons.lang3.tuple.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createStmtsBlock(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">createStmtsBlock</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">creates a Block and inserts the given Stmt.</div>
-</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsNode(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">containsNode</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createUnmodifiableControlFlowGraph(sootup.core.graph.ControlFlowGraph)" class="member-name-link">createUnmodifiableControlFlowGraph</a><wbr>(<a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;?&gt;&nbsp;controlFlowGraph)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessorBlocks(sootup.core.graph.BasicBlock)" class="member-name-link">exceptionalPredecessorBlocks</a><wbr>(@NonNull <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessors(sootup.core.graph.MutableBasicBlock)" class="member-name-link">exceptionalPredecessors</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;block)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">exceptionalPredecessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#endBatch()" class="member-name-link">endBatch</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">ends a batch; the outermost one merges the blocks touched since its <a href="#beginBatch()"><code>beginBatch()</code></a></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessorBlocks(sootup.core.graph.BasicBlock)" class="member-name-link">exceptionalPredecessorBlocks</a><wbr>(@NonNull <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessors(sootup.core.graph.MutableBasicBlock)" class="member-name-link">exceptionalPredecessors</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;block)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalPredecessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">exceptionalPredecessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">it is possible to reach traphandlers through inline code i.e. without any exceptional flow</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalSuccessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">exceptionalSuccessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exceptionalSuccessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">exceptionalSuccessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBlockIterator()" class="member-name-link">getBlockIterator</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">blocks in linearized order; iterates a snapshot, the graph may change meanwhile</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBlockOf(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getBlockOf</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -240,37 +262,28 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/FallsThroughStmt.html" title="interface in sootup.core.jimple.common.stmt">FallsThroughStmt</a>&gt;&nbsp;stmts,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&nbsp;exceptionMap)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMergeable(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)" class="member-name-link">isMergeable</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;followingBlock)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outDegree(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">outDegree</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outDegree(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">outDegree</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">returns the amount of flows that start from node</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#predecessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">predecessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#predecessors(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">predecessors</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;node)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">returns the ingoing flows to node as an List with no reliable/specific order and possibly
  duplicate entries i.e. if a JSwitchStmt has multiple cases that brnach to `node`</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putEdge(sootup.core.jimple.common.stmt.BranchingStmt,int,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">putEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/BranchingStmt.html" title="interface in sootup.core.jimple.common.stmt">BranchingStmt</a>&nbsp;stmtA,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putEdge(sootup.core.jimple.common.stmt.BranchingStmt,int,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">putEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/BranchingStmt.html" title="interface in sootup.core.jimple.common.stmt">BranchingStmt</a>&nbsp;stmtA,
  int&nbsp;succesorIdx,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtB)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putEdge(sootup.core.jimple.common.stmt.FallsThroughStmt,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">putEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/FallsThroughStmt.html" title="interface in sootup.core.jimple.common.stmt">FallsThroughStmt</a>&nbsp;stmtA,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putEdge(sootup.core.jimple.common.stmt.FallsThroughStmt,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">putEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/FallsThroughStmt.html" title="interface in sootup.core.jimple.common.stmt">FallsThroughStmt</a>&nbsp;stmtA,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtB)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Modifications of unexceptional flows</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#putEdge_internal(sootup.core.jimple.common.stmt.Stmt,int,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">putEdge_internal</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtA,
- int&nbsp;succesorIdx,
- @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtB)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeBlock(sootup.core.graph.BasicBlock)" class="member-name-link">removeBlock</a><wbr>(<a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&nbsp;block)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -311,11 +324,11 @@ loadScripts(document, 'script');</script>
  the same as well)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#replaceSucessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replaceSucessorEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;from,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#replaceSuccessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replaceSuccessorEdge</a><wbr>(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;from,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;oldTo,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;newTo)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Replaces all SuccessorEdge(s) of from to oldTo by mewTo</div>
+<div class="block">Replaces all SuccessorEdge(s) of from to oldTo by newTo</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEdges(sootup.core.jimple.common.stmt.BranchingStmt,java.util.List)" class="member-name-link">setEdges</a><wbr>(@NonNull <a href="../jimple/common/stmt/BranchingStmt.html" title="interface in sootup.core.jimple.common.stmt">BranchingStmt</a>&nbsp;fromStmt,
@@ -331,31 +344,23 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">returns the outgoing flows of node as ordered List.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryMergeBlocks(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)" class="member-name-link">tryMergeBlocks</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;followingBlock)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">trys to merge the second block into the first one if possible</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;?&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unmodifiableControlFlowGraph()" class="member-name-link">unmodifiableControlFlowGraph</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateIndexRangeAfterMerge(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)" class="member-name-link">updateIndexRangeAfterMerge</a><wbr>(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;secondBlock)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unmodifiableControlFlowGraph()" class="member-name-link">unmodifiableControlFlowGraph</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validateBlocks()" class="member-name-link">validateBlocks</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">checks the internal consistency; throws an IllegalStateException on a violation</div>
+</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-sootup.core.graph.MutableControlFlowGraph">Methods inherited from class&nbsp;sootup.core.graph.<a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></h3>
-<code><a href="MutableControlFlowGraph.html#addBlock(java.util.List)">addBlock</a>, <a href="MutableControlFlowGraph.html#addNode(sootup.core.jimple.common.stmt.Stmt)">addNode</a>, <a href="MutableControlFlowGraph.html#insertAfter(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.FallsThroughStmt)">insertAfter</a>, <a href="MutableControlFlowGraph.html#insertBefore(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.FallsThroughStmt)">insertBefore</a>, <a href="MutableControlFlowGraph.html#setEdges(sootup.core.jimple.common.stmt.BranchingStmt,sootup.core.jimple.common.stmt.Stmt...)">setEdges</a></code></div>
+<code><a href="MutableControlFlowGraph.html#addBlock(java.util.List)">addBlock</a>, <a href="MutableControlFlowGraph.html#addNode(sootup.core.jimple.common.stmt.Stmt)">addNode</a>, <a href="MutableControlFlowGraph.html#insertAfter(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.FallsThroughStmt)">insertAfter</a>, <a href="MutableControlFlowGraph.html#insertBefore(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.FallsThroughStmt)">insertBefore</a>, <a href="MutableControlFlowGraph.html#replaceSucessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">replaceSucessorEdge</a>, <a href="MutableControlFlowGraph.html#setEdges(sootup.core.jimple.common.stmt.BranchingStmt,sootup.core.jimple.common.stmt.Stmt...)">setEdges</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-sootup.core.graph.ControlFlowGraph">Methods inherited from class&nbsp;sootup.core.graph.<a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a></h3>
-<code><a href="ControlFlowGraph.html#degree(sootup.core.jimple.common.stmt.Stmt)">degree</a>, <a href="ControlFlowGraph.html#equals(java.lang.Object)">equals</a>, <a href="ControlFlowGraph.html#getAllSuccessors(sootup.core.jimple.common.stmt.Stmt)">getAllSuccessors</a>, <a href="ControlFlowGraph.html#getBlockIterator()">getBlockIterator</a>, <a href="ControlFlowGraph.html#getBranchTargetsOf(sootup.core.jimple.common.stmt.BranchingStmt)">getBranchTargetsOf</a>, <a href="ControlFlowGraph.html#getEntrypoints()">getEntrypoints</a>, <a href="ControlFlowGraph.html#getExtendedBasicBlockPathBetween(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">getExtendedBasicBlockPathBetween</a>, <a href="ControlFlowGraph.html#getTails()">getTails</a>, <a href="ControlFlowGraph.html#hashCode()">hashCode</a>, <a href="ControlFlowGraph.html#isStmtBranchTarget(sootup.core.jimple.common.stmt.Stmt)">isStmtBranchTarget</a>, <a href="ControlFlowGraph.html#iterator()">iterator</a>, <a href="ControlFlowGraph.html#toString()">toString</a>, <a href="ControlFlowGraph.html#validateStmtConnectionsInGraph()">validateStmtConnectionsInGraph</a></code></div>
+<code><a href="ControlFlowGraph.html#degree(sootup.core.jimple.common.stmt.Stmt)">degree</a>, <a href="ControlFlowGraph.html#equals(java.lang.Object)">equals</a>, <a href="ControlFlowGraph.html#getAllSuccessors(sootup.core.jimple.common.stmt.Stmt)">getAllSuccessors</a>, <a href="ControlFlowGraph.html#getBranchTargetsOf(sootup.core.jimple.common.stmt.BranchingStmt)">getBranchTargetsOf</a>, <a href="ControlFlowGraph.html#getEntrypoints()">getEntrypoints</a>, <a href="ControlFlowGraph.html#getExtendedBasicBlockPathBetween(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">getExtendedBasicBlockPathBetween</a>, <a href="ControlFlowGraph.html#getTails()">getTails</a>, <a href="ControlFlowGraph.html#hashCode()">hashCode</a>, <a href="ControlFlowGraph.html#isStmtBranchTarget(sootup.core.jimple.common.stmt.Stmt)">isStmtBranchTarget</a>, <a href="ControlFlowGraph.html#iterator()">iterator</a>, <a href="ControlFlowGraph.html#toString()">toString</a>, <a href="ControlFlowGraph.html#validateStmtConnectionsInGraph()">validateStmtConnectionsInGraph</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -391,7 +396,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(sootup.core.graph.ControlFlowGraph)">
 <h3>MutableBlockControlFlowGraph</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">MutableBlockControlFlowGraph</span><wbr><span class="parameters">(@NonNull <a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;? extends <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;&nbsp;graph)</span></div>
-<div class="block">copies a ControlFlowGraph into this Mutable instance</div>
+<div class="block">copies a ControlFlowGraph into this Mutable instance, block by block</div>
 </section>
 </li>
 </ul>
@@ -415,6 +420,31 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../jimple/common/stmt/BranchingStmt.html" title="interface in sootup.core.jimple.common.stmt">BranchingStmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&gt;&nbsp;successorMap,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&nbsp;traps)</span></div>
 <div class="block">Creates a Graph representation from the 'legacy' representation i.e. a List of Stmts and Traps.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="beginBatch()">
+<h3>beginBatch</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">beginBatch</span>()</div>
+<div class="block">Starts a batch of changes: blocks that become mergeable are not merged until the matching
+ <a href="#endBatch()"><code>endBatch()</code></a>, which saves repeated split/merge work in a sequence of edits. Within a
+ batch the graph is consistent and its stmt-level flows are exact, only blocks may be smaller
+ than necessary. Batches nest.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="MutableControlFlowGraph.html#beginBatch()">beginBatch</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="endBatch()">
+<h3>endBatch</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">endBatch</span>()</div>
+<div class="block">ends a batch; the outermost one merges the blocks touched since its <a href="#beginBatch()"><code>beginBatch()</code></a></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="MutableControlFlowGraph.html#endBatch()">endBatch</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -458,6 +488,22 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">
+<h3>removeExceptionalFlowFromAllBlocks</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeExceptionalFlowFromAllBlocks</span><wbr><span class="parameters">(@NonNull <a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;exceptionType,
+ @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;exceptionHandlerStmt)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="ControlFlowGraph.html#removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">ControlFlowGraph</a></code></span></div>
+<div class="block">Removes the specified exceptional flow from all blocks.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ControlFlowGraph.html#removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">removeExceptionalFlowFromAllBlocks</a></code>&nbsp;in class&nbsp;<code><a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>exceptionType</code> - The class type of the exceptional flow.</dd>
+<dd><code>exceptionHandlerStmt</code> - The handler statement of the exceptional flow.</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getBlocks()">
 <h3>getBlocks</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;? extends <a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">getBlocks</span>()</div>
@@ -478,12 +524,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="getBlockIterator()">
+<h3>getBlockIterator</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">getBlockIterator</span>()</div>
+<div class="block">blocks in linearized order; iterates a snapshot, the graph may change meanwhile</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="ControlFlowGraph.html#getBlockIterator()">getBlockIterator</a></code>&nbsp;in class&nbsp;<code><a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="addBlock(java.util.List,java.util.Map)">
 <h3>addBlock</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addBlock</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&nbsp;stmts,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&nbsp;trapMap)</span></div>
-<div class="block">The list of Stmts must contain only fallsthrough Stmts; A flow manipulating Stmt
- (BranchingStmt, return, throw) is only allowed at the Tail. (like the conditions of a Block)</div>
+<div class="block">Adds a block. Its Stmts must be new to the graph, except: the first one may be an existing
+ single-Stmt block without successors, the last one may be the head of an existing block (it is
+ then linked as successor). Only the last Stmt may branch or end the flow.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MutableControlFlowGraph.html#addBlock(java.util.List,java.util.Map)">addBlock</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
@@ -511,47 +569,6 @@ loadScripts(document, 'script');</script>
 <dt>Specified by:</dt>
 <dd><code><a href="MutableControlFlowGraph.html#addNode(sootup.core.jimple.common.stmt.Stmt,java.util.Map)">addNode</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="updateIndexRangeAfterMerge(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)">
-<h3>updateIndexRangeAfterMerge</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateIndexRangeAfterMerge</span><wbr><span class="parameters">(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;secondBlock)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="isMergeable(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)">
-<h3>isMergeable</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isMergeable</span><wbr><span class="parameters">(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;followingBlock)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="tryMergeBlocks(sootup.core.graph.MutableBasicBlock,sootup.core.graph.MutableBasicBlock)">
-<h3>tryMergeBlocks</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">tryMergeBlocks</span><wbr><span class="parameters">(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;firstBlock,
- @NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;followingBlock)</span></div>
-<div class="block">trys to merge the second block into the first one if possible</div>
-</section>
-</li>
-<li>
-<section class="detail" id="createStmtsBlock(sootup.core.jimple.common.stmt.Stmt)">
-<h3>createStmtsBlock</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">@NonNull org.apache.commons.lang3.tuple.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</span>&nbsp;<span class="element-name">createStmtsBlock</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</span></div>
-<div class="block">creates a Block and inserts the given Stmt.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>-1 if Stmt is already in the graph!</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="addNodeToBlock(sootup.core.graph.MutableBasicBlock,sootup.core.jimple.common.stmt.Stmt)">
-<h3>addNodeToBlock</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">org.apache.commons.lang3.tuple.Pair&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</span>&nbsp;<span class="element-name">addNodeToBlock</span><wbr><span class="parameters">(@NonNull <a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;block,
- @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</span></div>
-<div class="block">Adds a Stmt to the end of a block i.e. stmt will become the new tail.</div>
 </section>
 </li>
 <li>
@@ -588,12 +605,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="clearBlockFromAllExceptionalBlocks(sootup.core.graph.MutableBasicBlock)">
-<h3>clearBlockFromAllExceptionalBlocks</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">clearBlockFromAllExceptionalBlocks</span><wbr><span class="parameters">(<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&nbsp;blockOfRemovedStmt)</span></div>
-</section>
-</li>
-<li>
 <section class="detail" id="replaceNode(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">
 <h3>replaceNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">replaceNode</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;oldStmt,
@@ -611,6 +622,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="validateBlocks()">
 <h3>validateBlocks</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">validateBlocks</span>()</div>
+<div class="block">checks the internal consistency; throws an IllegalStateException on a violation</div>
 </section>
 </li>
 <li>
@@ -638,15 +650,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="replaceSucessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">
-<h3>replaceSucessorEdge</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">replaceSucessorEdge</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;from,
+<section class="detail" id="replaceSuccessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">
+<h3>replaceSuccessorEdge</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">replaceSuccessorEdge</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;from,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;oldTo,
  @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;newTo)</span></div>
-<div class="block">Replaces all SuccessorEdge(s) of from to oldTo by mewTo</div>
+<div class="block">Replaces all SuccessorEdge(s) of from to oldTo by newTo</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="MutableControlFlowGraph.html#replaceSucessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">replaceSucessorEdge</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
+<dd><code><a href="MutableControlFlowGraph.html#replaceSuccessorEdge(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">replaceSuccessorEdge</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
+<dt>Returns:</dt>
+<dd>false if there is no such flow</dd>
 </dl>
 </section>
 </li>
@@ -678,14 +692,6 @@ loadScripts(document, 'script');</script>
 <dt>Specified by:</dt>
 <dd><code><a href="MutableControlFlowGraph.html#putEdge(sootup.core.jimple.common.stmt.BranchingStmt,int,sootup.core.jimple.common.stmt.Stmt)">putEdge</a></code>&nbsp;in class&nbsp;<code><a href="MutableControlFlowGraph.html" title="class in sootup.core.graph">MutableControlFlowGraph</a></code></dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="putEdge_internal(sootup.core.jimple.common.stmt.Stmt,int,sootup.core.jimple.common.stmt.Stmt)">
-<h3>putEdge_internal</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">putEdge_internal</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtA,
- int&nbsp;succesorIdx,
- @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmtB)</span></div>
 </section>
 </li>
 <li>
@@ -907,22 +913,6 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="ControlFlowGraph.html#hasEdgeConnecting(sootup.core.jimple.common.stmt.Stmt,sootup.core.jimple.common.stmt.Stmt)">hasEdgeConnecting</a></code>&nbsp;in class&nbsp;<code><a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">
-<h3>removeExceptionalFlowFromAllBlocks</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeExceptionalFlowFromAllBlocks</span><wbr><span class="parameters">(@NonNull <a href="../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;exceptionType,
- @NonNull <a href="../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;exceptionHandlerStmt)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="ControlFlowGraph.html#removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">ControlFlowGraph</a></code></span></div>
-<div class="block">Removes the specified exceptional flow from all blocks.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="ControlFlowGraph.html#removeExceptionalFlowFromAllBlocks(sootup.core.types.ClassType,sootup.core.jimple.common.stmt.Stmt)">removeExceptionalFlowFromAllBlocks</a></code>&nbsp;in class&nbsp;<code><a href="ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;<a href="MutableBasicBlock.html" title="interface in sootup.core.graph">MutableBasicBlock</a>&gt;</code></dd>
-<dt>Parameters:</dt>
-<dd><code>exceptionType</code> - The class type of the exceptional flow.</dd>
-<dd><code>exceptionHandlerStmt</code> - The handler statement of the exceptional flow.</dd>
 </dl>
 </section>
 </li>

@@ -93,6 +93,10 @@
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/mutable_controlflowgraph/</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
          <loc>https://soot-oss.github.io/SootUp/develop/pointer_analysis/</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
