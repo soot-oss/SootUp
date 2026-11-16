@@ -22,22 +22,28 @@ nav:
   - Advanced Topics:
       - BodyInterceptors: bodyinterceptors.md
       - TypeHierarchy: typehierarchy.md
-      - Callgraphs: callgraphs.md
+      - Call Graphs:
+          - Tutorial: callgraphs.md
+          - CHA & RTA: callgraph-cha-rta.md
+          - Spark: callgraph-spark.md
+          - Qilin: qilin.md
       - BuiltIn Analyses: builtin-analyses.md
       - Code Property Graphs: codepropertygraphs.md
 
   - How to..:
+  #  - Implement an AnalysisTool: write_analysis_tool.md
       - Write a Dataflow Analysis: write_analyses.md
-      - "Example: Live Variables (backward)": analysis-liveness.md
-      - "Example: Constant Propagation (forward)": analysis-constprop.md
-      - "Example: Typestate (interprocedural, IDE)": analysis-typestate.md
-      - "Example: Taint Analysis (interprocedural, IFDS)": taint-analysis-example.md
-      - "From Prototype to Tool": tool_setup.md
       - Incorporate Pointer Analysis: qilin.md
       - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
-  #  - Implement an AnalysisTool: write_analysis_tool.md
+      - "From Prototype to Tool": tool_setup.md
+
+  - Examples:
+      - "Constant Propagation (forward)": analysis-constprop.md
+      - "Live Variables (backwards analysis)": analysis-liveness.md
+      - "Typestate (interprocedural, IDE)": analysis-typestate.md
+      - "Taint Analysis (interprocedural, IFDS)": taint-analysis-example.md
 
   - Misc & More:
       - Announcements: announcement.md
