@@ -1,6 +1,7 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +22,10 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -90,20 +91,13 @@ public class FieldModifiersValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(dummyField),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withFields(Collections.singleton(dummyField))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 
@@ -126,16 +120,16 @@ public class FieldModifiersValidatorTest {
 
   @Test
   public void testFieldModifiersValidator_fail1() {
+    // illegal modifier combination: rejected when the class/member is built (JVMS)
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
-
-    JavaSootClass javaSootClass =
-        testClassCreatorWithModifiers(
-            EnumSet.of(ClassModifier.PUBLIC),
-            EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
-
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
-
-    assertEquals(1, validationExceptions_fail1.size());
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            fieldModifiersValidator.validate(
+                testClassCreatorWithModifiers(
+                    EnumSet.of(ClassModifier.PUBLIC),
+                    EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE)),
+                validationExceptions_fail1));
   }
 
   @Test

@@ -25,15 +25,17 @@ import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.FakeMainMethods;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 
 /**
  * Part of a pointer assignment graph for a single method.
@@ -63,19 +65,21 @@ public class MethodPAG {
   protected final PTAScene ptaScene;
   protected final PointerAnalysisConfig config;
   SootMethod method;
-  /*
-   * List[i-1] is wrappered in List[i].
-   * We have to extend the following structure from Map<Node, List<Trap>> to
-   * Map<Node, Map<Stmt, List<Trap>>> because there exists cases where the same
-   * node are thrown more than once and lies in different catch blocks.
-   * */
-  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps;
-  public final Map<PagNode, Map<Stmt, List<Trap>>> node2wrapperedTraps;
+
+  /**
+   * Every statement of this method that may raise an exception which the pointer analysis tracks
+   * (an explicit {@code throw}, or a call whose callee may let one escape), mapped to the handlers
+   * that are in scope for it: caught exception type -&gt; the handler's first statement. A
+   * statement with no enclosing {@code try} is still registered, with an empty map - membership in
+   * this map is what makes a statement a throw site for {@code Solver.recordThrowStmts}, and an
+   * uncaught throw still has to reach {@code MethodNodeFactory.caseMethodThrow()}. Only filled when
+   * {@link PointerAnalysisConfig#isPreciseExceptions()} is set; see {@link #buildException()}.
+   */
+  public final Map<Stmt, Map<ClassType, Stmt>> stmt2Handlers;
 
   {
     exceptionEdges = new HashMap<>();
-    stmt2wrapperedTraps = new HashMap<>();
-    node2wrapperedTraps = new HashMap<>();
+    stmt2Handlers = new HashMap<>();
   }
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
@@ -133,22 +137,43 @@ public class MethodPAG {
     }
   }
 
+  /**
+   * Collects this method's throw sites and the catch handlers in scope for each of them into {@link
+   * #stmt2Handlers}, from which {@code Solver.recordThrowStmts()} creates the throw sites and
+   * {@code ExceptionHandler.dispatch()} routes each thrown object to a handler.
+   *
+   * <p>We use the same logic as doop (library/exceptions/precise.logic): only explicit {@code
+   * throw}s and exceptions propagated out of callees are modelled, never implicit ones (NPE,
+   * ArrayIndexOutOfBounds, ...).
+   *
+   * <p>Unlike Soot, SootUp has no ordered exception table to read back: traps are stored in the
+   * block graph as {@link ControlFlowGraph#exceptionalSuccessors(Stmt)}, an unordered map keyed by
+   * caught type. Handler priority is therefore re-derived at dispatch time by preferring the most
+   * specific matching type, which reproduces the bytecode order for handlers of one {@code try}
+   * (Java rejects catching a subtype after its supertype there).
+   */
   protected void buildException() {
-    // we use the same logic as doop (library/exceptions/precise.logic).
     if (!config.isPreciseExceptions()) {
       return;
     }
-    // List<Trap> traps = body.getTraps();
-    // //    List<Stmt> units = body.getStmts();
-    // Set<Stmt> inTraps = DataFactory.createSet();
-  }
-
-  private void addStmtTrap(PagNode src, Stmt stmt, Trap trap) {
-    Map<Stmt, List<Trap>> stmt2Traps =
-        node2wrapperedTraps.computeIfAbsent(src, k -> new HashMap<>());
-    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> new ArrayList<>());
-    trapList.add(trap);
-    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> new ArrayList<>()).add(trap);
+    ControlFlowGraph<?> cfg = body.getControlFlowGraph();
+    for (Stmt stmt : body.getStmts()) {
+      PagNode src;
+      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
+        // note, method.getExceptions() does not return implicit exceptions.
+        src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
+      } else if (stmt instanceof JThrowStmt) {
+        src = nodeFactory.getNode(((JThrowStmt) stmt).getOp());
+      } else {
+        continue;
+      }
+      if (src == null) {
+        // `throw null`: no node can carry objects here, and registering it would make the Solver
+        // cast a null node to VarNode.
+        continue;
+      }
+      stmt2Handlers.put(stmt, new HashMap<>(cfg.exceptionalSuccessors(stmt)));
+    }
   }
 
   protected void addMiscEdges() {

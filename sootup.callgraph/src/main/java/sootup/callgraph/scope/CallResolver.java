@@ -23,38 +23,31 @@ package sootup.callgraph.scope;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 
 /**
  * Controls which calls (edges) are expanded during call graph construction, at the pre-dispatch
- * checkpoint: invoked once per invokable statement of a method that is expanded, <b>before</b>
- * dynamic dispatch is resolved for that statement. No specific callee is known yet, so only {@link
- * ExplorationVerdict#EXPLORE_METHOD} vs. anything else matters here: {@link
- * ExplorationVerdict#STOP_AFTER_CALL} and {@link ExplorationVerdict#STOP} are equivalent at this
- * checkpoint (both mean "do not resolve this statement's call(s)"). Excluding every statement of a
- * method has the effect of pruning that method's expansion entirely: the method still appears as a
- * node in the resulting call graph if it is reached as a target, it simply ends up with no outgoing
- * edges, since none of its calls are resolved.
+ * checkpoint: invoked once per method that is expanded, <b>before</b> its body is loaded and before
+ * dynamic dispatch is resolved for its statements. The returned {@link CallFilter} decides for the
+ * whole method ({@link CallFilter#all()}, {@link CallFilter#none()}) or per invokable statement
+ * ({@link CallFilter#of}). A method whose calls are all excluded still appears as a node in the
+ * resulting call graph if it is reached as a target, it simply ends up with no outgoing edges.
  */
 @FunctionalInterface
 public interface CallResolver {
 
   /**
-   * Decides whether the call(s) triggered by {@code statement} in {@code caller} should be resolved
-   * and expanded at all.
+   * Decides which calls of {@code caller} are resolved and expanded.
    *
-   * @param caller the source (caller) method
-   * @param statement the invokable statement causing the call
-   * @return the verdict for this statement; only {@link ExplorationVerdict#EXPLORE_METHOD} vs.
-   *     non-{@link ExplorationVerdict#EXPLORE_METHOD} is significant here
+   * @param caller the method whose calls are about to be resolved
+   * @return the calls to resolve; with {@link CallFilter#none()} the body of {@code caller} is not
+   *     loaded
    */
-  @NonNull ExplorationVerdict tryAdvance(
-      @NonNull SootMethod caller, @NonNull InvokableStmt statement);
+  @NonNull CallFilter tryAdvanceMethod(@NonNull SootMethod caller);
 
-  /** Returns a {@link CallResolver} that explores every statement. */
+  /** Returns a {@link CallResolver} that resolves every call. */
   @NonNull
   static CallResolver all() {
-    return (caller, statement) -> ExplorationVerdict.EXPLORE_METHOD;
+    return caller -> CallFilter.all();
   }
 }

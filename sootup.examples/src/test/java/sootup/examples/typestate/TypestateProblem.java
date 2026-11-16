@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import sootup.analysis.interprocedural.ide.DefaultJimpleIDETabulationProblem;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -70,7 +71,7 @@ public class TypestateProblem
    */
   @Override
   protected Value createZeroValue() {
-    return new Local("<<zero>>", NullType.getInstance());
+    return Jimple.newLocal("<<zero>>", NullType.getInstance());
   }
 
   /** Where the analysis starts: the zero fact, at the first statement of the entry method. */

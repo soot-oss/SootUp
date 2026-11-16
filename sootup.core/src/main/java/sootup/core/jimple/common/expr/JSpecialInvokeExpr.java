@@ -39,6 +39,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   public JSpecialInvokeExpr(
       @NonNull Local base, @NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[0]));
+    rejectName(method, "<clinit>", "specialinvoke");
   }
 
   @Override

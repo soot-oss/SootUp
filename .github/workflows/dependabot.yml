@@ -19,6 +19,6 @@ jobs:
       pull-requests: write
     steps:
       - name: Auto approve Dependabot PR
-        uses: secure-software-engineering/actions/dependabot@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
+        uses: secure-software-engineering/actions/dependabot@c98577761faae44108ba0ec2de7ebd67ddd4b40b # develop
         with:
           token: ${{ secrets.AUTO_MERGE_PAT }}

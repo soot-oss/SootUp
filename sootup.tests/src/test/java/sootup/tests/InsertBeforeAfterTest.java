@@ -74,10 +74,11 @@ public class InsertBeforeAfterTest {
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setLocals(newLocals);
     builder.setMethodSignature(methodSignature);
-    Assertions.assertEquals(8, graph.getBlocks().size());
-    Assertions.assertEquals(2, newBlock.getStmtCount());
+    // blocks stay maximal: the new trap-free stmts join the trap-free entry block
+    Assertions.assertEquals(7, graph.getBlocks().size());
+    Assertions.assertEquals(4, newBlock.getStmtCount());
     Assertions.assertEquals(2, graph.getBlockOf(beforeStmt).getStmtCount());
-    Assertions.assertTrue(newBlock.getHead() == assign1tol5);
+    Assertions.assertSame(newBlock, graph.getBlockOf(assign1tol5));
     Assertions.assertTrue(newBlock.getTail() == assign2tol6);
     Assertions.assertEquals(0, newBlock.getExceptionalSuccessors().size());
     String expectedBody =

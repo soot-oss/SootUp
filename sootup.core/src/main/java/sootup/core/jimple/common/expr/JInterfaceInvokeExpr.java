@@ -46,6 +46,8 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   public JInterfaceInvokeExpr(
       @NonNull Local base, @NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[0]));
+    rejectName(method, "<init>", "interfaceinvoke");
+    rejectName(method, "<clinit>", "interfaceinvoke");
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available

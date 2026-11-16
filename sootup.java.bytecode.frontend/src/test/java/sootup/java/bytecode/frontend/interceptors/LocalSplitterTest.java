@@ -7,14 +7,25 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.VoidType;
 import sootup.interceptors.LocalSplitter;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JrtFileSystemAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class LocalSplitterTest {
@@ -687,6 +698,57 @@ public class LocalSplitterTest {
             + "return l1;\n"
             + "\n"
             + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * Dex code can keep dead code, e.g. the handlers javac generates for try-with-resources: no
+   * statement and no handler leads to {@code l2 = l1}, so no definition of l1 reaches its use,
+   * which gets a local of its own.
+   */
+  @Test
+  public void testUseInDeadCode() {
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
+    JavaClassType classType = factory.getClassType("Test");
+    StmtPositionInfo noPosition = StmtPositionInfo.getNoStmtPositionInfo();
+    Local l0 = JavaJimple.newLocal("l0", classType);
+    Local l1 = JavaJimple.newLocal("l1", PrimitiveType.getInt());
+    Local l2 = JavaJimple.newLocal("l2", PrimitiveType.getInt());
+
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(
+        factory.getMethodSignature(
+            classType, "test", VoidType.getInstance(), Collections.emptyList()));
+    builder.setLocals(new LinkedHashSet<>(Arrays.asList(l0, l1, l2)));
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    FallsThroughStmt start =
+        JavaJimple.newIdentityStmt(l0, JavaJimple.newThisRef(classType), noPosition);
+    FallsThroughStmt first = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noPosition);
+    FallsThroughStmt second = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(2), noPosition);
+    Stmt ret = JavaJimple.newReturnStmt(l1, noPosition);
+    FallsThroughStmt deadUse = JavaJimple.newAssignStmt(l2, l1, noPosition);
+    Stmt deadRet = JavaJimple.newReturnVoidStmt(noPosition);
+
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
+    graph.putEdge(start, first);
+    graph.putEdge(first, second);
+    graph.putEdge(second, ret);
+    graph.putEdge(deadUse, deadRet);
+    graph.setStartingStmt(start);
+
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "l0 := @this: Test;\n"
+            + "l1#0 = 1;\n"
+            + "l1#1 = 2;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "l2 = l1#2;\n"
+            + "\n"
+            + "return;";
     assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 }

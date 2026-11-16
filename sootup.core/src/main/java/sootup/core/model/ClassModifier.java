@@ -102,6 +102,28 @@ public enum ClassModifier {
   }
 
   /**
+   * Rejects combinations no valid class file can hold (JVMS 4.1): more than one access flag, final
+   * together with abstract, a final or enum interface, or an annotation that is no interface.
+   *
+   * @throws IllegalArgumentException on an illegal combination
+   */
+  public static void checkWellFormed(@NonNull Set<ClassModifier> m) {
+    if ((isPublic(m) ? 1 : 0) + (isPrivate(m) ? 1 : 0) + (isProtected(m) ? 1 : 0) > 1) {
+      throw new IllegalArgumentException(
+          "Class may have at most one of public, protected, private: " + m);
+    }
+    if (isFinal(m) && isAbstract(m)) {
+      throw new IllegalArgumentException("Class may not be both final and abstract: " + m);
+    }
+    if (isInterface(m) && (isFinal(m) || isEnum(m))) {
+      throw new IllegalArgumentException("Interface may not be final or enum: " + m);
+    }
+    if (isAnnotation(m) && !isInterface(m)) {
+      throw new IllegalArgumentException("Annotation must be an interface: " + m);
+    }
+  }
+
+  /**
    * Converts the given modifiers to their string representation, in canonical form.
    *
    * @param m a modifier set

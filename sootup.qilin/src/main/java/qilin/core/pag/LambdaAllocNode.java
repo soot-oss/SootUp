@@ -18,42 +18,28 @@
 
 package qilin.core.pag;
 
-import sootup.core.jimple.common.constant.MethodHandle;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 
 /**
  * An allocation site standing in for the object a {@code LambdaMetafactory}-bootstrapped
  * invokedynamic call site produces (a lambda or method reference). Unlike a plain {@link
- * AllocNode}, its true implementation is known statically from the bootstrap's {@link MethodHandle}
- * constant - {@link #getTargetMethod()}/{@link #getTargetKind()} let call-dispatch resolve calls on
- * it directly instead of through the (nonexistent) functional-interface vtable.
+ * AllocNode}, its implementation is known statically: calls on it that {@link
+ * FunctionalObject#answers answer} the {@link #getFunctionalObject() functional object} dispatch
+ * straight to that implementation instead of through the (nonexistent) functional-interface vtable.
  */
 public class LambdaAllocNode extends AllocNode {
 
-  /** The resolved target of a lambda/method-reference alloc, as read off its bootstrap args. */
-  public record Target(MethodSignature method, MethodHandle.Kind kind) {}
-
-  private final MethodSignature targetMethod;
-  private final MethodHandle.Kind targetKind;
+  private final FunctionalObject functionalObject;
 
   public LambdaAllocNode(
-      Object newExpr,
-      Type type,
-      SootMethod m,
-      MethodSignature targetMethod,
-      MethodHandle.Kind targetKind) {
+      Object newExpr, Type type, SootMethod m, FunctionalObject functionalObject) {
     super(newExpr, type, m);
-    this.targetMethod = targetMethod;
-    this.targetKind = targetKind;
+    this.functionalObject = functionalObject;
   }
 
-  public MethodSignature getTargetMethod() {
-    return targetMethod;
-  }
-
-  public MethodHandle.Kind getTargetKind() {
-    return targetKind;
+  public FunctionalObject getFunctionalObject() {
+    return functionalObject;
   }
 }

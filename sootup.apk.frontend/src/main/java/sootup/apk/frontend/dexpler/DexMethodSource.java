@@ -29,8 +29,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MethodParameter;
+import org.jf.dexlib2.iface.MultiDexContainer;
+import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.apk.frontend.Util.DexUtil;
+import sootup.apk.frontend.main.DexBody;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
@@ -41,15 +48,22 @@ import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
 
 public class DexMethodSource implements BodySource {
 
-  private final Set<Local> locals;
-  private final MutableControlFlowGraph mutableControlFlowGraph;
+  // null until the code is converted, for a method whose body is resolved lazily
+  @Nullable private final Set<Local> locals;
+  @Nullable private final MutableControlFlowGraph mutableControlFlowGraph;
   private final Method method;
+  private final MultiDexContainer.@Nullable DexEntry<? extends DexFile> dexEntry;
+  @Nullable private final ClassType declaringClass;
+  // the default value of an annotation method, which is abstract
+  @Nullable private final EncodedValue annotationDefault;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
@@ -63,22 +77,63 @@ public class DexMethodSource implements BodySource {
       Method method,
       List<BodyInterceptor> bodyInterceptors,
       @NonNull View view) {
+    this(locals, methodSignature, mutableControlFlowGraph, method, bodyInterceptors, view, null);
+  }
+
+  /** A body source with the given body and, for a method of an annotation, its default value. */
+  public DexMethodSource(
+      Set<Local> locals,
+      MethodSignature methodSignature,
+      MutableControlFlowGraph mutableControlFlowGraph,
+      Method method,
+      List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view,
+      @Nullable EncodedValue annotationDefault) {
     this.methodSignature = methodSignature;
     this.view = view;
     this.locals = locals;
     this.bodyInterceptors = bodyInterceptors;
     this.mutableControlFlowGraph = mutableControlFlowGraph;
     this.method = method;
+    this.dexEntry = null;
+    this.declaringClass = null;
+    this.annotationDefault = annotationDefault;
+  }
+
+  /** A body source that converts the code of the method when the body is resolved. */
+  public DexMethodSource(
+      Method method,
+      MultiDexContainer.DexEntry<? extends DexFile> dexEntry,
+      ClassType declaringClass,
+      MethodSignature methodSignature,
+      List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
+    this.methodSignature = methodSignature;
+    this.view = view;
+    this.locals = null;
+    this.bodyInterceptors = bodyInterceptors;
+    this.mutableControlFlowGraph = null;
+    this.method = method;
+    this.dexEntry = dexEntry;
+    this.declaringClass = declaringClass;
+    this.annotationDefault = null;
   }
 
   @NonNull
   @Override
   public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException {
+    Set<Local> locals = this.locals;
+    MutableControlFlowGraph graph = mutableControlFlowGraph;
+    if (graph == null) {
+      DexBody dexBody = new DexBody(method, dexEntry, declaringClass, view);
+      graph = dexBody.buildGraph(methodSignature);
+      locals = dexBody.getLocals();
+    }
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
     Body.BodyBuilder bodyBuilder =
-        Body.builder(mutableControlFlowGraph)
+        Body.builder(graph)
             .setModifiers(modifiersSet)
             .setMethodSignature(getSignature())
             .setPosition(NoPositionInformation.getInstance())
@@ -93,13 +148,14 @@ public class DexMethodSource implements BodySource {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
     try {
+      // keep this source as delegate, so the parameter annotations stay available
       sootMethod =
           new JavaSootMethod(
-              new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
+              new OverridingBodySource(this).withBody(resolveBody(methodModifiers)),
               getSignature(),
               methodModifiers,
-              Collections.emptyList(),
-              Collections.emptySet(),
+              DexUtil.extractThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+              DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
               NoPositionInformation.getInstance());
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -109,7 +165,33 @@ public class DexMethodSource implements BodySource {
 
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    throw new UnsupportedOperationException("TODO");
+    return annotationDefault == null
+        ? null
+        : DexUtil.convertAnnotationDefault(annotationDefault, view.getIdentifierFactory());
+  }
+
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  /**
+   * Returns the annotations of a parameter. Dex files store BUILD annotations as runtime invisible
+   * and RUNTIME annotations as runtime visible ones.
+   */
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex, String visibility) {
+    List<? extends MethodParameter> parameters = method.getParameters();
+    if (paramIndex < 0 || paramIndex >= parameters.size()) {
+      return Collections.emptyList();
+    }
+    boolean visible = "Any".equals(visibility) || "RuntimeVisible".equals(visibility);
+    boolean invisible = "Any".equals(visibility) || "RuntimeInvisible".equals(visibility);
+    return DexUtil.createAnnotationUsage(
+            parameters.get(paramIndex).getAnnotations(), view.getIdentifierFactory())
+        .stream()
+        .filter(usage -> usage.isRuntimeVisible() ? visible : invisible)
+        .collect(Collectors.toList());
   }
 
   @NonNull

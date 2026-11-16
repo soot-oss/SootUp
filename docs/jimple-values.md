@@ -131,7 +131,7 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
 
 #### Constant
-represents an actual value itself like `42` or `"This is a String"`.
+Represents an actual value itself like `42` or `"This is a String"`.
 Constants are usually assigned to `Local`s or `Ref`s.
 There exists a constant entity for every [Primitive Type](jimple-types.md).
 

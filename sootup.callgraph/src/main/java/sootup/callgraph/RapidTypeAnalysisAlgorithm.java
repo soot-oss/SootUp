@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -312,15 +313,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
-      actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
+      actualTargetMethod = methodLookup.find(targetMethodSignature).orElse(null);
       // method implementation isn't contained in the view. return the called method as target
       if (actualTargetMethod == null) {
         return Stream.of(targetMethodSignature);
       }
     }
-    // special invokes and static invokes can only have one specific target
+    // special, static and signature-polymorphic (final native) invokes have one specific target.
+    // polymorphic: MethodHandle/VarHandle impls are created inside the JDK, so no instantiation
+    // check
     if (MethodModifier.isStatic(actualTargetMethod.getModifiers())
-        || (invokeExpr instanceof JSpecialInvokeExpr)) {
+        || (invokeExpr instanceof JSpecialInvokeExpr)
+        || SignaturePolymorphicMethods.isSignaturePolymorphic(actualTargetMethod)) {
       return Stream.of(actualTargetMethod.getSignature());
     }
 
@@ -491,6 +495,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                         }));
   }
 
+  /** A constructor reference ({@code Foo::new}) instantiates its class. */
+  @Override
+  protected void onFunctionalObject(
+      @NonNull SootMethod creator,
+      @NonNull FunctionalObject fo,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
+    ClassType created = fo.implementationMethod().getDeclClassType();
+    if (fo.isConstructorReference() && instantiatedClasses.add(created)) {
+      includeIgnoredCallsToClass(created, cg, workList);
+    }
+  }
+
   /**
    * This method will add all saved ignored calls from a given class to the call graph. All new
    * targets will be added to the worklist
@@ -507,7 +524,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         .filter(Objects::nonNull)
         .flatMap(
             call ->
-                findConcreteMethod(view, call.targetMethodSignature()).stream()
+                methodLookup.find(call.targetMethodSignature()).stream()
                     .map(
                         sootMethod ->
                             new Call(

@@ -148,7 +148,7 @@ public class Solver extends Propagator {
             sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
       }
       recordCallStmts(momc, mpag.getInvokeStmts());
-      recordThrowStmts(momc, mpag.stmt2wrapperedTraps.keySet());
+      recordThrowStmts(momc, mpag.stmt2Handlers.keySet());
     }
   }
 
@@ -170,7 +170,9 @@ public class Solver extends Propagator {
           recordDynamicInvoke(m, s, die);
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
-          Optional<? extends SootMethod> otgt = pta.getView().getMethod(tgtSig);
+          // JVM lookup from the named owner: inherited statics (invokestatic Sub.m, m in Super),
+          // static polymorphic (MethodHandle.linkToStatic)
+          Optional<? extends SootMethod> otgt = cgb.getMethodLookup().find(tgtSig);
           if (otgt.isPresent()) {
             cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
           }
@@ -180,18 +182,16 @@ public class Solver extends Propagator {
   }
 
   /**
-   * Calls every target of the shared {@link DynamicInvokeResolver} from the invokedynamic
-   * statement, except those {@link LambdaMetafactoryModel} models precisely via a {@link
-   * LambdaAllocNode}.
+   * Calls the {@link DynamicInvokeResolver#creationSiteTargets creation-site targets} from the
+   * invokedynamic statement. Lambda bodies are called where their object is called ({@link
+   * LambdaMetafactoryModel}, {@code CallGraphBuilder#dispatch}).
    */
   private void recordDynamicInvoke(ContextMethod m, InvokableStmt s, JDynamicInvokeExpr die) {
     if (!pta.getConfig().isResolveDynamicInvoke()) {
       return;
     }
-    for (DynamicInvokeTarget target : pta.getConfig().getDynamicInvokeResolver().resolve(die)) {
-      if (LambdaMetafactoryModel.handles(s, target)) {
-        continue;
-      }
+    for (DynamicInvokeTarget target :
+        pta.getConfig().getDynamicInvokeResolver().creationSiteTargets(die)) {
       MethodSignature sig =
           AbstractCallGraphAlgorithm.resolveConcreteDispatch(pta.getView(), target.method())
               .orElse(target.method());

@@ -12,6 +12,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 
 class JDynamicInvokeExprTest {
@@ -52,10 +53,16 @@ class JDynamicInvokeExprTest {
   void testWithersPreserveTagAndMethodSignature() {
     MethodSignature dummyMethod =
         SignatureInterner.getMethodSignature(
-            dummyClassType(), "call", Collections.emptyList(), VoidType.getInstance());
+            dummyClassType(),
+            "call",
+            Collections.singletonList(PrimitiveType.getInt()),
+            VoidType.getInstance());
     MethodSignature dummyMethod2 =
         SignatureInterner.getMethodSignature(
-            dummyClassType(), "call2", Collections.emptyList(), VoidType.getInstance());
+            dummyClassType(),
+            "call2",
+            Collections.singletonList(PrimitiveType.getInt()),
+            VoidType.getInstance());
     MethodSignature bootstrapSig = TestUtil.createDummyMethodSignature();
     MethodSignature bootstrapSig2 =
         SignatureInterner.getMethodSignature(

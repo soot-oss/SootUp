@@ -88,6 +88,22 @@ public enum FieldModifier {
   }
 
   /**
+   * Rejects combinations no valid class file can hold (JVMS 4.5): more than one access flag, or
+   * final together with volatile.
+   *
+   * @throws IllegalArgumentException on an illegal combination
+   */
+  public static void checkWellFormed(@NonNull Set<FieldModifier> m) {
+    if ((isPublic(m) ? 1 : 0) + (isPrivate(m) ? 1 : 0) + (isProtected(m) ? 1 : 0) > 1) {
+      throw new IllegalArgumentException(
+          "Field may have at most one of public, protected, private: " + m);
+    }
+    if (isFinal(m) && isVolatile(m)) {
+      throw new IllegalArgumentException("Field may not be both final and volatile: " + m);
+    }
+  }
+
+  /**
    * Converts the given modifiers to their string representation, in canonical form.
    *
    * @param m a modifier set

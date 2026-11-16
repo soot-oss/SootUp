@@ -26,6 +26,7 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
+import qilin.core.invokedynamic.LambdaMetafactoryModel;
 import qilin.core.pag.*;
 import qilin.util.CallDetails;
 import qilin.util.JavaTypes;
@@ -33,21 +34,34 @@ import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
+import sootup.callgraph.MethodLookup;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.DoubleConstant;
+import sootup.core.jimple.common.constant.FloatConstant;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
@@ -63,7 +77,16 @@ public class CallGraphBuilder {
   protected final PAG pag;
   protected final PTAScene ptaScene;
   protected final VirtualCalls virtualCalls;
+
+  /** The object a constructor reference creates per call site (see {@link #addLambdaEdge}). */
+  private final Map<InvokableStmt, JNewExpr> constructorRefAllocs = new HashMap<>();
+
   protected OnFlyCallGraph cicg;
+
+  /** Shared cached JVM method lookup (dispatch and static resolution). */
+  public MethodLookup getMethodLookup() {
+    return virtualCalls.getMethodLookup();
+  }
 
   public CallGraphBuilder(PTA pta) {
     this.pta = pta;
@@ -71,7 +94,7 @@ public class CallGraphBuilder {
     this.ptaScene = pta.getScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
-    receiverToSites = new HashMap<>((int) ptaScene.getView().getClasses().count());
+    receiverToSites = new HashMap<>();
     methodToInvokeStmt = new HashMap<>();
     reachMethods = new HashSet<>();
     calledges = new HashSet<>();
@@ -163,13 +186,14 @@ public class CallGraphBuilder {
   protected void dispatch(AllocNode receiverNode, VirtualCallSite site) {
     // context-sensitive variants wrap alloc nodes in ContextAllocNode; base() unwraps to the
     // original (a no-op under context-insensitive analysis, where base() just returns itself).
-    if (receiverNode.base() instanceof LambdaAllocNode lambdaNode) {
-      // Only static targets reach here (see LambdaMetafactoryModel) - a plain static edge, no
-      // receiver/this binding needed.
+    if (receiverNode.base() instanceof LambdaAllocNode lambdaNode
+        && lambdaNode
+            .getFunctionalObject()
+            .answers(site.iie().getMethodSignature(), pta.getView().getTypeHierarchy())) {
+      FunctionalObject fo = lambdaNode.getFunctionalObject();
       pta.getView()
-          .getMethod(lambdaNode.getTargetMethod())
-          .ifPresent(
-              target -> addStaticEdge(site.container(), site.getUnit(), target, site.kind()));
+          .getMethod(fo.dispatchedImplementation(pta.getView()))
+          .ifPresent(target -> addLambdaEdge(site, target, fo, receiverNode));
       return;
     }
     Type type = receiverNode.getType();
@@ -184,6 +208,91 @@ public class CallGraphBuilder {
       }
       addVirtualEdge(site.container(), site.getUnit(), target, site.kind(), receiverNode);
     }
+  }
+
+  /**
+   * Adds an edge from a call on a {@code LambdaMetafactory} object to its implementation {@code
+   * callee}. Binds the call's arguments as {@link FunctionalObject#samArgumentIndex} says, the
+   * values captured at creation (loaded from the receiver, see {@link LambdaMetafactoryModel}), and
+   * the result: the implementation's return value or, for a constructor reference, a fresh object
+   * (also the constructor's receiver).
+   */
+  private void addLambdaEdge(
+      VirtualCallSite site, SootMethod callee, FunctionalObject fo, AllocNode receiverNode) {
+    ContextMethod caller = site.container();
+    InvokableStmt callStmt = site.getUnit();
+    Context tgtContext =
+        pta.createCalleeContext(caller, receiverNode, new CallSite(callStmt), callee);
+    ContextMethod cstarget = pta.parameterize(callee, tgtContext);
+    Edge edge = new Edge(caller, callStmt, cstarget, Kind.LAMBDA);
+    if (!calledges.add(edge)) {
+      return;
+    }
+    if (reachMethods.add(cstarget)) {
+      rmQueue.add(cstarget);
+    }
+    ptaScene.getCallDetails().addCalleeToContextAndCaller(callee, receiverNode, caller.method());
+
+    MethodNodeFactory srcnf = pag.getMethodPAG(caller.method()).nodeFactory();
+    MethodNodeFactory tgtnf = pag.getMethodPAG(callee).nodeFactory();
+    AbstractInstanceInvokeExpr ie = site.iie();
+    for (int j = 0; j < ie.getArgCount(); j++) {
+      Value arg = ie.getArg(j);
+      if (arg.getType() instanceof ReferenceType && !(arg instanceof NullConstant)) {
+        bindParameter(srcnf.getNode(arg), caller, callee, cstarget, fo.samArgumentIndex(j), tgtnf);
+      }
+    }
+    for (int i = 0; i < fo.captureCount(); i++) {
+      FieldSignature field = LambdaMetafactoryModel.captureField(pta.getView(), fo, i);
+      if (field.getType() instanceof ReferenceType) {
+        PagNode capture = srcnf.getNode(new JInstanceFieldRef(ie.getBase(), field));
+        int index = fo.implementation().captureParameterIndex(i);
+        bindParameter(capture, caller, callee, cstarget, index, tgtnf);
+      }
+    }
+    PagNode result = null;
+    if (fo.isConstructorReference()) {
+      JNewExpr created =
+          constructorRefAllocs.computeIfAbsent(
+              callStmt, k -> new JNewExpr(callee.getDeclaringClassType()));
+      result = pag.makeAllocNode(created, created.getType(), caller.method());
+      bindParameter(result, caller, callee, cstarget, DynamicInvokeTarget.RECEIVER, tgtnf);
+    } else if (callee.getReturnType() instanceof ReferenceType) {
+      result = pta.parameterize(tgtnf.caseRet(), cstarget.context());
+    }
+    if (result != null
+        && callStmt instanceof JAssignStmt assign
+        && assign.getLeftOp().getType() instanceof ReferenceType) {
+      if (fo.isConstructorReference()) {
+        result = pta.parameterize(result, caller.context());
+      }
+      pag.addEdge(result, pta.parameterize(srcnf.getNode(assign.getLeftOp()), caller.context()));
+    }
+  }
+
+  /**
+   * {@code src} (a node of {@code caller}) flows to parameter {@code index} or ({@link
+   * DynamicInvokeTarget#RECEIVER}) the receiver of {@code callee}, if that is a reference.
+   */
+  private void bindParameter(
+      PagNode src,
+      ContextMethod caller,
+      SootMethod callee,
+      ContextMethod cstarget,
+      int index,
+      MethodNodeFactory tgtnf) {
+    PagNode param;
+    if (index == DynamicInvokeTarget.RECEIVER && !callee.isStatic()) {
+      param = tgtnf.caseThis();
+    } else if (index >= 0
+        && index < callee.getParameterCount()
+        && callee.getParameterType(index) instanceof ReferenceType) {
+      param = tgtnf.caseParm(index);
+    } else {
+      return;
+    }
+    pag.addEdge(
+        pta.parameterize(src, caller.context()), pta.parameterize(param, cstarget.context()));
   }
 
   private void addVirtualEdge(
@@ -208,8 +317,8 @@ public class CallGraphBuilder {
     Map<Object, InvokableStmt> stmtMap =
         methodToInvokeStmt.computeIfAbsent(callee.method(), k -> new HashMap<>());
     if (!stmtMap.containsKey(heapOrType)) {
-      AbstractInvokeExpr ie =
-          new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
+      MethodSignature calleeSig = callee.method().getSignature();
+      AbstractInvokeExpr ie = new JStaticInvokeExpr(calleeSig, placeholderArgs(calleeSig));
       JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.getNoStmtPositionInfo());
       stmtMap.put(heapOrType, stmt);
       handleCallEdge(
@@ -219,6 +328,28 @@ public class CallGraphBuilder {
               callee,
               kind));
     }
+  }
+
+  /**
+   * Args for a synthetic call whose params are wired by hand: null for references (skipped by
+   * arg-to-param wiring), zero for primitives. Keeps arg count equal to the signature's.
+   */
+  private static List<Immediate> placeholderArgs(MethodSignature sig) {
+    List<Immediate> args = new ArrayList<>(sig.getParameterTypes().size());
+    for (Type t : sig.getParameterTypes()) {
+      if (t instanceof PrimitiveType.LongType) {
+        args.add(LongConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.FloatType) {
+        args.add(FloatConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType.DoubleType) {
+        args.add(DoubleConstant.getInstance(0));
+      } else if (t instanceof PrimitiveType) {
+        args.add(IntConstant.getInstance(0));
+      } else {
+        args.add(NullConstant.getInstance());
+      }
+    }
+    return args;
   }
 
   public void addStaticEdge(

@@ -44,7 +44,24 @@ public abstract class AbstractInvokeExpr implements Expr {
         throw new IllegalArgumentException("arg may not be null");
       }
     }
+    if (args.length != method.getParameterTypes().size()) {
+      throw new IllegalArgumentException(
+          "Invoke of "
+              + method
+              + " has "
+              + args.length
+              + " args, signature expects "
+              + method.getParameterTypes().size());
+    }
     this.args = args;
+  }
+
+  /** Throws if {@code method} has the given name; e.g. {@code <init>} only via specialinvoke. */
+  static void rejectName(
+      @NonNull MethodSignature method, @NonNull String name, @NonNull String invokeKind) {
+    if (method.getName().equals(name)) {
+      throw new IllegalArgumentException(invokeKind + " may not target " + method);
+    }
   }
 
   @NonNull

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.DoubleConstant;
@@ -168,19 +168,13 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(new JXorExpr(stringConstant, stringConstant));
     listWithAllValues.add(
         new JSpecialInvokeExpr(
-            new Local("a", StringClass),
-            toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JVirtualInvokeExpr(
-            new Local("a", StringClass),
-            toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JInterfaceInvokeExpr(
-            new Local("a", StringClass),
-            toStringMethod,
-            Collections.singletonList(stringConstant)));
+            Jimple.newLocal("a", StringClass), toStringMethod, Collections.emptyList()));
     listWithAllValues.add(
         new JDynamicInvokeExpr(
             toStringMethod,
@@ -190,19 +184,20 @@ public class InstantiateClassValueVisitorTest {
                     identifierFactory.getClassType(
                         JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
                     toStringMethod.getSubSignature()),
-            Collections.singletonList(stringConstant)));
+            Collections.emptyList()));
     listWithAllValues.add(new JCastExpr(stringConstant, StringClass));
     listWithAllValues.add(new JInstanceOfExpr(stringConstant, StringClass));
     listWithAllValues.add(new JLengthExpr(stringConstant));
     listWithAllValues.add(new JNegExpr(stringConstant));
     listWithAllValues.add(new JStaticFieldRef(stringField));
-    listWithAllValues.add(new JInstanceFieldRef(new Local("a", StringClass), stringField));
-    listWithAllValues.add(new JArrayRef(new Local("a", StringClass), stringConstant));
+    listWithAllValues.add(new JInstanceFieldRef(Jimple.newLocal("a", StringClass), stringField));
+    listWithAllValues.add(new JArrayRef(Jimple.newLocal("a", StringClass), stringConstant));
     listWithAllValues.add(new JParameterRef(StringClass, 3));
     listWithAllValues.add(new JCaughtExceptionRef(StringClass));
     listWithAllValues.add(new JThisRef(StringClass));
-    listWithAllValues.add(new Local("a", StringClass));
+    listWithAllValues.add(Jimple.newLocal("a", StringClass));
     listWithAllValues.add(
-        new JPhiExpr(Collections.singletonList(new Local("a", StringClass)), new HashMap<>()));
+        new JPhiExpr(
+            Collections.singletonList(Jimple.newLocal("a", StringClass)), new HashMap<>()));
   }
 }

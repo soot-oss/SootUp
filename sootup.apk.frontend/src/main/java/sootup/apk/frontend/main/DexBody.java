@@ -39,11 +39,9 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
-import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBlockControlFlowGraph;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -57,7 +55,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -349,18 +346,16 @@ public class DexBody {
         + parameterNames;
   }
 
-  public JavaSootMethod makeSootMethod(
-      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
+  /** The locals of the converted code; complete after {@link #buildGraph(MethodSignature)} */
+  public Set<Local> getLocals() {
+    return locals;
+  }
+
+  /** Converts the code of the method into a statement graph. */
+  public MutableBlockControlFlowGraph buildGraph(MethodSignature methodSignature) {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType,
-                method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0, identifierFactory),
-                parameterTypes);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
     Set<Stmt> blockEnd = new HashSet<>();
@@ -408,9 +403,7 @@ public class DexBody {
     removeUnreachableBlocks(listList, branchingStmtListMap);
     checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
-    DexMethodSource dexMethodSource =
-        new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
-    return dexMethodSource.makeSootMethod();
+    return graph;
   }
 
   /**
@@ -805,6 +798,12 @@ public class DexBody {
       Stmt endStmt =
           endAddress >= codeEndAddress ? endOfCode : instructionAtAddress(endAddress).getStmt();
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
+      // The handlers of a try block are tried in order, so a handler behind one that catches
+      // Throwable or the same type never runs for this range, e.g. the catch-all that dx emits for
+      // the finally of a try-with-resources behind its catch (Throwable). No Trap leads to it then,
+      // so removeUnreachableBlocks drops its code unless another range reaches it.
+      Set<ClassType> caughtTypes = new HashSet<>();
+      boolean throwableCaught = false;
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
         if (exceptionType == null) {
@@ -816,6 +815,10 @@ public class DexBody {
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
           ClassType type = (ClassType) t;
+          if (throwableCaught || !caughtTypes.add(type)) {
+            continue;
+          }
+          throwableCaught = type.getFullyQualifiedName().equals("java.lang.Throwable");
           DexLibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {

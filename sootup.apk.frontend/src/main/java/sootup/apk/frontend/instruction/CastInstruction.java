@@ -26,6 +26,7 @@ import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.TwoRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
+import sootup.apk.frontend.main.DexCastExpr;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.expr.JCastExpr;
@@ -40,12 +41,40 @@ public class CastInstruction extends DexLibAbstractInstruction {
     int dest = i.getRegisterA();
     int source = i.getRegisterB();
     Type targetType = getTargetType();
-    JCastExpr jCastExpr = Jimple.newCastExpr(body.getRegisterLocal(source), targetType);
+    JCastExpr jCastExpr =
+        new DexCastExpr(body.getRegisterLocal(source), targetType, getSourceType());
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest), jCastExpr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
+  }
+
+  /** The type the conversion converts from, which only the opcode tells */
+  private Type getSourceType() {
+    switch (instruction.getOpcode()) {
+      case INT_TO_BYTE:
+      case INT_TO_CHAR:
+      case INT_TO_SHORT:
+      case INT_TO_LONG:
+      case INT_TO_FLOAT:
+      case INT_TO_DOUBLE:
+        return PrimitiveType.IntType.getInstance();
+      case LONG_TO_INT:
+      case LONG_TO_FLOAT:
+      case LONG_TO_DOUBLE:
+        return PrimitiveType.LongType.getInstance();
+      case FLOAT_TO_INT:
+      case FLOAT_TO_LONG:
+      case FLOAT_TO_DOUBLE:
+        return PrimitiveType.FloatType.getInstance();
+      case DOUBLE_TO_INT:
+      case DOUBLE_TO_LONG:
+      case DOUBLE_TO_FLOAT:
+        return PrimitiveType.DoubleType.getInstance();
+      default:
+        throw new IllegalStateException("Invalid Opcode: " + instruction.getOpcode());
+    }
   }
 
   private Type getTargetType() {

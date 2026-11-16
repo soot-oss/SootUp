@@ -142,4 +142,37 @@ public class JimpleStringAnalysisInputLocationTest {
     assertTrue(secondViewAccess.isPresent());
     assertNotSame(firstViewAccess.get(), secondViewAccess.get());
   }
+
+  @Test
+  public void testTrapUntilEndOfBody() {
+    // the JimplePrinter appends a labeled nop to denote the end of a Trap covering the last Stmt
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n"
+            + "  java.lang.Object foo() {\n"
+            + "    DummyClass this;\n"
+            + "    java.lang.Throwable e;\n"
+            + "    this := @this: DummyClass;\n"
+            + "  label1:\n"
+            + "    return this;\n"
+            + "  label2:\n"
+            + "    e := @caughtexception;\n"
+            + "    throw e;\n"
+            + "  label3:\n"
+            + "    nop;\n"
+            + "  catch java.lang.Exception from label1 to label2 with label2;\n"
+            + "  catch java.lang.Throwable from label2 to label3 with label2;\n"
+            + "  }\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(
+            methodStr, SourceType.Application, Collections.emptyList());
+    View view = new JavaView(Collections.singletonList(analysisInputLocation));
+    ClassType dummyClass = view.getIdentifierFactory().getClassType("DummyClass");
+    MethodSignature methodSig =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                dummyClass, "foo", "java.lang.Object", Collections.<String>emptyList());
+    assertEquals(4, view.getMethod(methodSig).get().getBody().getStmts().size());
+  }
 }

@@ -15,7 +15,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.interceptors.LocalLivenessAnalyser;
 import sootup.java.core.JavaIdentifierFactory;
@@ -35,7 +34,8 @@ public class LocalLivenessAnalyserTest {
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new JavaIdentifierFactory()
-          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
+          .getMethodSignature(
+              classType, "test", sootup.core.types.PrimitiveType.getInt(), Collections.emptyList());
 
   // build locals
   Local a = JavaJimple.newLocal("a", intType);

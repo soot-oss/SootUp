@@ -68,6 +68,16 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
+  public boolean equals(Object o) {
+    return super.equals(o) && base.equals(((JInstanceFieldRef) o).base);
+  }
+
+  @Override
+  public int hashCode() {
+    return 31 * super.hashCode() + base.hashCode();
+  }
+
+  @Override
   public void collectUses(List<Value> collector) {
     base.collectUses(collector);
     collector.add(base);

@@ -18,6 +18,10 @@
 			<artifactId>sootup.core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.soot-oss</groupId>
+			<artifactId>sootup.interceptors</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.graph4j</groupId>
 			<artifactId>graph4j</artifactId>
 		</dependency>

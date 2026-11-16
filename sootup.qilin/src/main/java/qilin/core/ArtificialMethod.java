@@ -137,16 +137,24 @@ public abstract class ArtificialMethod {
     return JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
   }
 
+  /** Constructors via specialinvoke (JVMS), else interface/virtual dispatch. */
+  private static AbstractInvokeExpr instanceInvoke(
+      SootClass clazz, Local receiver, MethodSignature methodSig, List<Immediate> argsL) {
+    if (methodSig.getName().equals("<init>")) {
+      return Jimple.newSpecialInvokeExpr(receiver, methodSig, argsL);
+    }
+    return clazz.isInterface()
+        ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
+        : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
+  }
+
   /** add an instance invocation receiver.sig(args) */
   protected void addInvoke(Local receiver, String sig, Immediate... args) {
     MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
     SootMethod method = view.getMethod(methodSig).get();
     SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
-    AbstractInvokeExpr invoke =
-        clazz.isInterface()
-            ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
-            : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
+    AbstractInvokeExpr invoke = instanceInvoke(clazz, receiver, methodSig, argsL);
     Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(stmt);
   }
@@ -161,10 +169,7 @@ public abstract class ArtificialMethod {
     SootMethod method = view.getMethod(methodSig).get();
     SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
-    Value invoke =
-        clazz.isInterface()
-            ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
-            : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
+    Value invoke = instanceInvoke(clazz, receiver, methodSig, argsL);
     Local rx = getNextLocal(method.getReturnType());
     addAssign(rx, invoke);
     return rx;

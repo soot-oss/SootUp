@@ -29,13 +29,11 @@ import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.QilinFrameworkTests;
-import qilin.util.ViewFactory;
 import sootup.callgraph.scope.SuppressClinitCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
 
 /**
  * Verifies that {@link PointerAnalysisConfig#getClinitVirtualCallResolver()} actually gates
@@ -48,13 +46,13 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
   private static final String TRIGGERED_CLASS = "qilin.microben.core.clinit.ClinitStaticLoad$A";
 
   private PTA run(VirtualCallResolver clinitVirtualCallResolver) {
-    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(MAIN_CLASS);
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
             .contextSensitivity(ContextSensitivity.insensitive())
             .singleEntry(true)
             .clinitVirtualCallResolver(clinitVirtualCallResolver)
+            .evaluate(false)
             .build();
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.run();
@@ -84,9 +82,56 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
 
   @Test
   public void testSuppressClinitCallResolverDropsDiscoveredClinit() {
-    PTA pta = run(new SuppressClinitCallResolver(ViewFactory.createView(appPath, null)));
+    PTA pta = run(new SuppressClinitCallResolver(view));
     assertFalse(
         triggeredClinitIsReachable(pta),
         "a suppressing resolver must prevent Solver#processStmts from injecting the <clinit> edge");
+  }
+
+  private static final String ENTRY_CLASS = "qilin.microben.core.clinit.ClinitEntryClass";
+  private static final String UNRELATED_CLASS =
+      "qilin.microben.core.clinit.ClinitEntryClass$Unrelated";
+
+  /** FULL mode: seed the entry class's {@code <clinit>}, admit no discovered one. */
+  private Set<MethodSignature> reachableInFullMode() {
+    ClassType mainClassType = view.getIdentifierFactory().getClassType(ENTRY_CLASS);
+    PointerAnalysisConfig config =
+        PointerAnalysisConfig.builder()
+            .contextSensitivity(ContextSensitivity.insensitive())
+            .singleEntry(true)
+            .seedEntryPointClinits(true)
+            .clinitVirtualCallResolver(new SuppressClinitCallResolver(view))
+            .evaluate(false)
+            .build();
+    PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
+    pta.run();
+    return pta.getNakedReachableMethods().stream()
+        .map(SootMethod::getSignature)
+        .collect(Collectors.toSet());
+  }
+
+  private MethodSignature clinitOf(String className) {
+    return view.getIdentifierFactory()
+        .getStaticInitializerSignature(view.getIdentifierFactory().getClassType(className));
+  }
+
+  @Test
+  public void testSeedEntryPointClinitsSeedsTheEntryClassClinit() {
+    assertTrue(reachableInFullMode().contains(clinitOf(ENTRY_CLASS)));
+  }
+
+  @Test
+  public void testSeedEntryPointClinitsDoesNotSeedOtherClinits() {
+    Set<MethodSignature> reachable = reachableInFullMode();
+    assertFalse(
+        reachable.contains(clinitOf(UNRELATED_CLASS)),
+        "only the entry class's <clinit> may be seeded, not every <clinit> in the view");
+    assertTrue(
+        reachable.stream()
+            .noneMatch(
+                m ->
+                    m.getName().equals("<clinit>")
+                        && m.getDeclClassType().getPackageName().getName().startsWith("java.")),
+        "no JDK <clinit> may be seeded: " + reachable);
   }
 }

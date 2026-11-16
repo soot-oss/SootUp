@@ -28,6 +28,7 @@ import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.ControlFlowGraph;
@@ -83,8 +84,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     this(true);
   }
 
+  /**
+   * Data flow solvers query the ICFG concurrently, while statements may be registered with {@link
+   * #setOwnerStatement(Stmt, Body)}. Statements are compared by identity, so a concurrent hash map
+   * keeps the identity semantics.
+   */
   protected Map<Stmt, Body> createStmtToOwnerMap() {
-    return new IdentityHashMap<>();
+    return new ConcurrentHashMap<>();
   }
 
   protected AbstractJimpleBasedICFG(boolean enableExceptions) {

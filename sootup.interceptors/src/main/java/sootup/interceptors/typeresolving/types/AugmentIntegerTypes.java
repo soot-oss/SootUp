@@ -24,7 +24,6 @@ package sootup.interceptors.typeresolving.types;
 
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.PrimitiveType;
 
 public abstract class AugmentIntegerTypes {
@@ -61,11 +60,6 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@NonNull V v) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected boolean isInteger1Type() {
       return true;
     }
@@ -95,11 +89,6 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@NonNull V v) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected boolean isInteger127Type() {
       return true;
     }
@@ -126,11 +115,6 @@ public abstract class AugmentIntegerTypes {
 
     public static Integer32767Type getInstance() {
       return INSTANCE;
-    }
-
-    @Override
-    public <V extends TypeVisitor> V accept(@NonNull V v) {
-      throw new UnsupportedOperationException();
     }
 
     @Override

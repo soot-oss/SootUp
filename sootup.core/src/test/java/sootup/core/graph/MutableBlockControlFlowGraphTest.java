@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -73,12 +74,12 @@ public class MutableBlockControlFlowGraphTest {
 
   Stmt firstHandlerStmt =
       new JIdentityStmt(
-          new Local("ex", throwableSig),
+          Jimple.newLocal("ex", throwableSig),
           new JCaughtExceptionRef(throwableSig),
           StmtPositionInfo.getNoStmtPositionInfo());
   Stmt secondHandlerStmt =
       new JIdentityStmt(
-          new Local("ex2", throwableSig),
+          Jimple.newLocal("ex2", throwableSig),
           new JCaughtExceptionRef(ioExceptionSig),
           StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -391,11 +392,11 @@ public class MutableBlockControlFlowGraphTest {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     assertEquals(0, graph.getBlocks().size());
 
-    MutableBasicBlock blockA = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstGoto);
-    MutableBasicBlock blockB = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -409,11 +410,11 @@ public class MutableBlockControlFlowGraphTest {
   public void linkDirectlyAddedBlocks() {
 
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock blockA = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstNop);
-    MutableBasicBlock blockB = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -488,7 +489,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockAddStmt() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
   }
@@ -525,7 +526,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraphDirectManiupaltionAfterwards() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     graph.addNode(firstNop);
     graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(firstNop); // BAD! don't do that!
@@ -534,7 +535,7 @@ public class MutableBlockControlFlowGraphTest {
   @Test
   public void testBlockStmtValidity() {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
-    MutableBasicBlock block = new MutableBasicBlockImpl();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
 
     assertThrows(
         IllegalArgumentException.class,
@@ -592,7 +593,7 @@ public class MutableBlockControlFlowGraphTest {
           }
         };
 
-    Local exc = new Local("ex", UnknownType.getInstance());
+    Local exc = Jimple.newLocal("ex", UnknownType.getInstance());
     // hint: applied types make no sense in this test!
     Stmt catchStmt1 =
         new JIdentityStmt(
@@ -623,10 +624,11 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph0);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
-      assertEquals(stmt2, traps.get(1).getBeginStmt());
-      assertEquals(returnStmt, traps.get(1).getEndStmt());
-      assertEquals(catchStmt1, traps.get(1).getHandlerStmt());
+      // stmt2 is exclusively reachable via stmt1 -> serialized directly after it -> one trap
+      assertEquals(1, traps.size());
+      assertEquals(stmt1, traps.get(0).getBeginStmt());
+      assertEquals(catchStmt1, traps.get(0).getEndStmt());
+      assertEquals(catchStmt1, traps.get(0).getHandlerStmt());
     }
 
     // test merging traps from sequential blocks with the same trap
@@ -703,7 +705,8 @@ public class MutableBlockControlFlowGraphTest {
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     briefStmtPrinter.buildTraps(graph4);
-    assertEquals(3, briefStmtPrinter.getTraps().size());
+    // stmt1..stmt3 serialized contiguous: exception1 merged, exception2 only stmt1
+    assertEquals(2, briefStmtPrinter.getTraps().size());
 
     // mixed 2
     MutableBlockControlFlowGraph graph5 = new MutableBlockControlFlowGraph();
@@ -739,7 +742,9 @@ public class MutableBlockControlFlowGraphTest {
 
     {
       briefStmtPrinter.buildTraps(graph5);
-      assertEquals(6, briefStmtPrinter.getTraps().size());
+      // exception2->catch1: stmt1..stmt3, exception1->catch1: stmt1, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, briefStmtPrinter.getTraps().size());
       assertEquals(6, graph5.getBlocks().size());
     }
 
@@ -776,10 +781,13 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph6);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(5, traps.size());
+      // exception1->catch1: stmt1, exception2->catch1: stmt1..stmt2, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, traps.size());
       assertEquals(6, graph6.getBlocks().size());
+      // stmt1's block reaches catchStmt1 via two exception types: listed once
       assertEquals(
-          "[Block [goto], Block [goto], Block [goto]]",
+          "[Block [goto], Block [goto]]",
           graph6.exceptionalPredecessorBlocks(graph6.getBlockOf(catchStmt1)).toString());
     }
 
@@ -1046,7 +1054,7 @@ public class MutableBlockControlFlowGraphTest {
     JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt handlerStmt =
         new JIdentityStmt(
-            new Local("ex", throwableSig),
+            Jimple.newLocal("ex", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1084,13 +1092,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1131,13 +1139,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1312,5 +1320,84 @@ public class MutableBlockControlFlowGraphTest {
                     Collections.emptyMap(),
                     new ArrayList<>(List.of(trap))));
     assertTrue(e.getMessage().contains("middle of a Block"), e.getMessage());
+  }
+
+  /** builds firstNop -> secondNop -> thirdNop -> return, all protected by a Throwable handler */
+  private MutableBlockControlFlowGraph createSingleProtectedBlockGraph(Stmt returnStmt) {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.addBlock(
+        Arrays.asList(firstNop, secondNop, thirdNop, returnStmt),
+        Collections.singletonMap(throwableSig, firstHandlerStmt));
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(
+        (FallsThroughStmt) firstHandlerStmt,
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo()));
+    return graph;
+  }
+
+  private void assertLinearFlow(MutableBlockControlFlowGraph graph, Stmt... stmts) {
+    for (int i = 0; i + 1 < stmts.length; i++) {
+      assertEquals(Collections.singletonList(stmts[i + 1]), graph.successors(stmts[i]));
+      assertEquals(Collections.singletonList(stmts[i]), graph.predecessors(stmts[i + 1]));
+    }
+  }
+
+  @Test
+  public void removeExceptionalEdgeOfMiddleStmt() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.removeExceptionalEdge(secondNop, throwableSig);
+
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(firstNop).get(throwableSig));
+    assertTrue(graph.exceptionalSuccessors(secondNop).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(thirdNop).get(throwableSig));
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(returnStmt).get(throwableSig));
+    // [firstNop], [secondNop], [thirdNop, return], [handler]
+    assertEquals(4, graph.getBlocks().size());
+    assertEquals(2, graph.getBlockOf(firstHandlerStmt).getPredecessors().size());
+  }
+
+  @Test
+  public void removeExceptionalEdgeOfHeadStmt() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.removeExceptionalEdge(firstNop, throwableSig);
+
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertTrue(graph.exceptionalSuccessors(firstNop).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(secondNop).get(throwableSig));
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(returnStmt).get(throwableSig));
+    // [firstNop], [secondNop, thirdNop, return], [handler]
+    assertEquals(3, graph.getBlocks().size());
+  }
+
+  @Test
+  public void clearExceptionalEdgesOfTailStmtAndMergeBack() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    graph.clearExceptionalEdges(returnStmt);
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertTrue(graph.exceptionalSuccessors(returnStmt).isEmpty());
+    assertEquals(firstHandlerStmt, graph.exceptionalSuccessors(thirdNop).get(throwableSig));
+
+    // restoring the exceptional flow merges the blocks again
+    graph.addExceptionalEdge(returnStmt, throwableSig, firstHandlerStmt);
+    assertLinearFlow(graph, firstNop, secondNop, thirdNop, returnStmt);
+    assertEquals(2, graph.getBlocks().size());
+  }
+
+  @Test
+  public void removeNonExistingExceptionalEdgeDoesNotSplit() {
+    Stmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    MutableBlockControlFlowGraph graph = createSingleProtectedBlockGraph(returnStmt);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> graph.removeExceptionalEdge(secondNop, ioExceptionSig));
+    assertEquals(2, graph.getBlocks().size());
   }
 }

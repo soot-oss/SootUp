@@ -147,7 +147,7 @@ public abstract class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
               for (JimpleParser.ImmediateContext immediate : immediates) {
                 if (immediate != null && immediate.local != null) {
                   String localname = immediate.local.getText();
-                  locals.put(localname, new Local(localname, localtype));
+                  locals.put(localname, Jimple.newLocal(localname, localtype));
                 } else {
                   throw new ResolveException(
                       "Thats not a Local in the Local Declaration.",
@@ -171,33 +171,17 @@ public abstract class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
               locals);
       StmtVisitor stmtVisitor = new StmtVisitor(state);
       final JimpleParser.StatementsContext statements = method_body_contentsContext.statements();
+      final BlockBuilder blockBuilder = new BlockBuilder(blocks, unresolvedBranches);
       if (statements != null && statements.statement() != null) {
-        List<Stmt> currentStmtList = new ArrayList<>();
         for (JimpleParser.StatementContext stmtCtx : statements.statement()) {
           Stmt newestStmt = stmtVisitor.visitStatement(stmtCtx);
           if (stmtCtx.label_name != null) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
             final String labelname = stmtCtx.label_name.getText();
             labeledStmts.put(labelname, newestStmt);
           }
-
-          currentStmtList.add(newestStmt);
-
-          if (newestStmt.branches()) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
-          }
+          blockBuilder.add(newestStmt, stmtCtx.label_name != null);
         }
-
-        // check for dangling Block
-        if (!currentStmtList.isEmpty()) {
-          blocks.add(currentStmtList);
-        }
+        blockBuilder.finish();
       }
 
       // catch_clause
@@ -209,6 +193,8 @@ public abstract class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
           String beginLabel = it.from.getText();
           String toLabel = it.to.getText();
           if (beginLabel.equals(toLabel)) continue;
+          // the Trap covers only omitted i.e. unreachable Stmts
+          if (blockBuilder.isOmitted(labeledStmts.get(beginLabel))) continue;
 
           String handlerLabel = it.with.getText();
           traps.add(

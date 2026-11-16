@@ -59,6 +59,13 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
 
   protected final MutableControlFlowGraph graph;
 
+  /**
+   * The definitions of each local in statement order, so that "the first allocation of an array" is
+   * the same in every run; computed on first use, as the checkers do not change the graph while
+   * they visit it.
+   */
+  @Nullable private Map<LValue, Collection<Stmt>> defs = null;
+
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
   public TypeChecker(
@@ -108,8 +115,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
         // allocation site.
         if (Type.isObjectLikeType(type_base)
             || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
-          Collection<Stmt> defStmts = defs.get(base);
+          Collection<Stmt> defStmts = getDefs().get(base);
           boolean findDef = false;
           if (defStmts != null) {
             for (Stmt defStmt : defStmts) {
@@ -171,7 +177,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
+          Map<LValue, Collection<Stmt>> defs = getDefs();
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
@@ -328,6 +334,14 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
       visit(op1, type, stmt);
       visit(op2, type, stmt);
     }
+  }
+
+  @NonNull
+  private Map<LValue, Collection<Stmt>> getDefs() {
+    if (defs == null) {
+      defs = Body.collectDefs(graph.getStmts());
+    }
+    return defs;
   }
 
   // select the type with bigger bit size

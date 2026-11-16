@@ -41,6 +41,15 @@ public abstract class MutableControlFlowGraph extends ControlFlowGraph<MutableBa
 
   public abstract void setStartingStmt(@NonNull Stmt firstStmt);
 
+  /**
+   * Starts a batch of changes; an implementation may defer internal restructuring until the
+   * matching {@link #endBatch()}. Flows are exact within a batch. Batches nest. Default: no-op.
+   */
+  public void beginBatch() {}
+
+  /** ends a batch started by {@link #beginBatch()}. Default: no-op. */
+  public void endBatch() {}
+
   /** inserts a "stmt" into the ControlFlowGraph */
   public void addNode(@NonNull Stmt stmt) {
     addNode(stmt, Collections.emptyMap());
@@ -108,8 +117,21 @@ public abstract class MutableControlFlowGraph extends ControlFlowGraph<MutableBa
 
   public abstract void putEdge(@NonNull BranchingStmt from, int successorIdx, @NonNull Stmt to);
 
-  public abstract boolean replaceSucessorEdge(
+  /**
+   * replaces every flow from "from" to "oldTo" by a flow to "newTo"
+   *
+   * @return false if there is no such flow
+   */
+  public abstract boolean replaceSuccessorEdge(
       @NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo);
+
+  /**
+   * @deprecated misspelled, use {@link #replaceSuccessorEdge(Stmt, Stmt, Stmt)}
+   */
+  @Deprecated
+  public boolean replaceSucessorEdge(@NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo) {
+    return replaceSuccessorEdge(from, oldTo, newTo);
+  }
 
   /** replaces the current outgoing flows of "from" to "targets" */
   public abstract void setEdges(@NonNull BranchingStmt from, @NonNull List<Stmt> targets);

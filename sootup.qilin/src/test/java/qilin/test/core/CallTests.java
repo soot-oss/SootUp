@@ -36,4 +36,14 @@ public class CallTests extends QilinFrameworkTests {
   public void testStaticCall() {
     checkAssertions(run("qilin.microben.core.call.StaticCall"));
   }
+
+  @Test
+  public void testDefaultMethodCall() {
+    checkAssertions(run("qilin.microben.core.call.DefaultMethodCall"));
+  }
+
+  @Test
+  public void testInheritedStaticCall() {
+    checkAssertions(run("qilin.microben.core.call.InheritedStaticCall"));
+  }
 }
