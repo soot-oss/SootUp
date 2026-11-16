@@ -178,4 +178,28 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
     assertTrue(actualStmts.equals(variant1) || actualStmts.equals(variant2));
   }
+  @Test
+  public void testCastNumberingIsDeterministic() {
+    String baseDir = "src/test/resources/TypeResolverTestSuite/CastCounterTest/";
+    String first = null;
+    for (int i = 0; i < 10; i++) {
+      buildView(baseDir, "CastCounterDemos"); // new view → body parsed again → new Stmt objects
+      AugEvalFunction fn = new AugEvalFunction(view);
+      BytecodeHierarchy hier = new BytecodeHierarchy(view);
+
+      Map<String, Type> map = new HashMap<>();
+      map.put("this", classType);
+      map.put("l1", view.getIdentifierFactory().getClassType("java.lang.Object"));
+      map.put("l2", view.getIdentifierFactory().getClassType("Super1"));
+      map.put("$stack3", view.getIdentifierFactory().getClassType("Sub1"));
+
+      Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
+      Typing typing = createTyping(builder.getLocals(), map);
+      new CastCounter(builder, fn, hier, typing).insertCastStmts();
+      String jimple = builder.build().toString();
+
+      if (first == null) first = jimple;
+      else assertEquals(first, jimple, "run " + i);
+    }
+  }
 }
