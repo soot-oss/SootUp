@@ -22,10 +22,7 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
@@ -52,7 +49,7 @@ import sootup.core.types.Type;
  * locals into the typing as well.
  */
 public class CastCounter extends TypeChecker {
-  private final Map<Stmt, Set<JAssignStmt>> tempAssignments = new HashMap<>();
+  private final Map<Stmt, LinkedHashSet<JAssignStmt>> tempAssignments = new HashMap<>();
   private final Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
   private final Map<Local, Type> tempLocalTypes = new HashMap<>();
 
@@ -67,7 +64,7 @@ public class CastCounter extends TypeChecker {
     super(builder, evalFunction, hierarchy);
     setTyping(typing);
 
-    for (Stmt stmt : graph.getNodes()) {
+    for (Stmt stmt : graph.getStmts()) {
       stmt.accept(this);
     }
   }
@@ -82,7 +79,7 @@ public class CastCounter extends TypeChecker {
       getTyping().set(tempLocal.getKey(), tempLocal.getValue());
     }
 
-    for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
+    for (Map.Entry<Stmt, LinkedHashSet<JAssignStmt>> casts : tempAssignments.entrySet()) {
       for (JAssignStmt cast : casts.getValue()) {
         // FIXME this also places before labels, which is not correct
         graph.insertBefore(casts.getKey(), cast);
@@ -121,7 +118,7 @@ public class CastCounter extends TypeChecker {
       tempLocalTypes.put(tempLocal, stdType);
 
       JAssignStmt assignStmt = Jimple.newAssignStmt(tempLocal, cast, stmt.getPositionInfo());
-      tempAssignments.computeIfAbsent(stmt, _x -> new HashSet<>()).add(assignStmt);
+      tempAssignments.computeIfAbsent(stmt, _x -> new LinkedHashSet<>()).add(assignStmt);
 
       newStmt = currentStmt.withNewUse(value, tempLocal);
     }
