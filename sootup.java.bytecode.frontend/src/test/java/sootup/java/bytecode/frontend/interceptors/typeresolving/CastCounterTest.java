@@ -178,6 +178,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
     assertTrue(actualStmts.equals(variant1) || actualStmts.equals(variant2));
   }
+
   @Test
   public void testCastNumberingIsDeterministic() {
     String baseDir = "src/test/resources/TypeResolverTestSuite/CastCounterTest/";
