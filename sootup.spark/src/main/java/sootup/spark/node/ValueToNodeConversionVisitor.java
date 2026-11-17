@@ -389,17 +389,22 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
       // field, independent of the index and of the static type of the array, so that a[0] and a[i]
       // as well as an Object[] and a String[] view of the same array refer to the same elements.
       if (ref.getType() instanceof ReferenceType) {
-        this.node = arrayElements(ref.getBase().getName(), (ArrayType) type);
+        this.node = arrayElements(ref.getBase().getName(), type, ref.getType());
       }
     }
   }
 
   /**
-   * Returns the node for the elements of the arrays that the variable of the given name and array
-   * type in the containing method points to.
+   * Returns the node for the elements of the arrays that the variable with the given name and type
+   * in the containing method points to.
+   *
+   * @param baseName the name of the variable
+   * @param baseType the type of the variable, so that the base is the node of that variable
+   * @param elementType the type of the elements
    */
   @NonNull
-  public InstanceFieldRefNode arrayElements(@NonNull String baseName, @NonNull ArrayType baseType) {
+  public InstanceFieldRefNode arrayElements(
+      @NonNull String baseName, @NonNull Type baseType, @NonNull Type elementType) {
     val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
     val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
     val base =
@@ -411,7 +416,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     return InstanceFieldRefNode.builder()
         .base(base)
         .field(arrayElementField)
-        .type(baseType.getElementType())
+        .type(elementType)
         .containingMethodSig(baseMethodSig)
         .build();
   }

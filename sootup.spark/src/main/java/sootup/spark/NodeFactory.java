@@ -37,6 +37,7 @@ import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
@@ -85,6 +86,8 @@ public class NodeFactory {
         new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
     List<Map.Entry<Node, Node>> edges = new ArrayList<>();
     String enclosingName = target.getName();
+    // the base of the first store is the node of the target local, so it has the local's type
+    Type enclosingVariableType = target.getType();
     ArrayType enclosingType = (ArrayType) expr.getType();
     while (enclosingType.getElementType() instanceof ArrayType innerType) {
       AllocationNode inner = visitor.allocation(innerType);
@@ -97,8 +100,10 @@ public class NodeFactory {
       edges.add(new SimpleImmutableEntry<>(inner, innerVariable));
       edges.add(
           new SimpleImmutableEntry<>(
-              innerVariable, visitor.arrayElements(enclosingName, enclosingType)));
+              innerVariable,
+              visitor.arrayElements(enclosingName, enclosingVariableType, innerType)));
       enclosingName = innerVariable.getName();
+      enclosingVariableType = innerType;
       enclosingType = innerType;
     }
     return edges;
