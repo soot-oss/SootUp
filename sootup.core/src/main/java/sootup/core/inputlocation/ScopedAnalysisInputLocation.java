@@ -24,6 +24,7 @@ package sootup.core.inputlocation;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
@@ -33,10 +34,40 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * Base class for filtering ClassSources returned from the underlying AnalysisInputLocation you need
- * to override the filter function - e.g. override it in an anonymous class
+ * Base class for filtering ClassSources returned from the underlying AnalysisInputLocation. Either
+ * override the filter function - e.g. in an anonymous class - or use {@link
+ * #of(AnalysisInputLocation, Predicate)}.
+ *
+ * <p>Scoping is useful to analyze only parts of a large input, or to treat parts of one input
+ * differently, e.g. to load selected packages of a runtime library as application classes:
+ *
+ * <pre>
+ * Predicate&lt;ClassType&gt; included = type -&gt; type.getPackageName().getName().startsWith("java.util");
+ * List&lt;AnalysisInputLocation&gt; locations = Arrays.asList(
+ *     ScopedAnalysisInputLocation.of(new JavaClassPathAnalysisInputLocation(rtJar, SourceType.Application), included),
+ *     ScopedAnalysisInputLocation.of(new JavaClassPathAnalysisInputLocation(rtJar, SourceType.Library), included.negate()));
+ * </pre>
  */
-abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
+public abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
+
+  /**
+   * Creates an input location that only provides the classes of the given input location which
+   * match the given filter.
+   *
+   * @param inputLocation the input location to filter
+   * @param filter returns true for the class types to keep
+   * @return the scoped input location
+   */
+  @NonNull
+  public static ScopedAnalysisInputLocation of(
+      @NonNull AnalysisInputLocation inputLocation, @NonNull Predicate<ClassType> filter) {
+    return new ScopedAnalysisInputLocation(inputLocation) {
+      @Override
+      protected boolean filter(@NonNull ClassType type) {
+        return filter.test(type);
+      }
+    };
+  }
 
   @NonNull private final AnalysisInputLocation inputLocation;
 
