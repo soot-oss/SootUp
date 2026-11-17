@@ -81,8 +81,10 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
         (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
-    // the hierarchy cannot remove types, so it is rebuilt on its next use
-    resetTypeHierarchy();
+    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
+    if (typeHierarchy instanceof MutableTypeHierarchy) {
+      ((MutableTypeHierarchy) typeHierarchy).removeType(classType);
+    }
     this.fireRemoval(removedClass);
   }
 

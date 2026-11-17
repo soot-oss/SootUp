@@ -530,6 +530,20 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Override
+  public void removeType(@NonNull ClassType type) {
+    RawAdjacency raw = lazyRaw.get();
+    Integer id = raw.idOf.get(type);
+    if (id == null) {
+      return;
+    }
+    raw.removeDeclaration(id);
+    typeHierarchyBacking = null;
+    subtypeClassesCache.clear();
+    lcaCache.clear();
+    modificationCount++;
+  }
+
+  @Override
   public void updateType(@NonNull SootClass sootClass) {
     subtypeClassesCache.clear();
     modificationCount++;
@@ -736,7 +750,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Arrays.fill(rangeStart, NOT_IN_CLASS_TREE);
     int classCount = 0;
     for (int i = 0; i < total; i++) {
-      if (!raw.isInterface.get(i)) {
+      if (!raw.isInterface.get(i) && !raw.removed.get(i)) {
         classCount++;
       }
     }
@@ -748,6 +762,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     for (int root = 0; root < total; root++) {
       if (raw.isInterface.get(root)
+          || raw.removed.get(root)
           || visited[root]
           || raw.superClassId.get(root) != NO_SUPERCLASS) {
         continue;
@@ -787,7 +802,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Arrays.fill(denseOfInterfaceId, NOT_AN_INTERFACE);
     int[] interfaceIdOfDenseTmp = new int[total];
     for (int i = 0; i < total; i++) {
-      if (raw.isInterface.get(i)) {
+      if (raw.isInterface.get(i) && !raw.removed.get(i)) {
         denseOfInterfaceId[i] = interfaceCount;
         interfaceIdOfDenseTmp[interfaceCount] = i;
         interfaceCount++;
@@ -918,6 +933,11 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       data[index] = value;
     }
 
+    /** Removes and returns the last value. */
+    int removeLast() {
+      return data[--size];
+    }
+
     /** Removes all occurrences of the given value. */
     void remove(int value) {
       int kept = 0;
@@ -972,6 +992,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
      */
     final BitSet scanned = new BitSet();
 
+    /**
+     * Bit {@code id} set while that id is free: its type was removed and is neither declared nor
+     * referenced by any other type, so the id is no longer in {@link #idOf}, has no edges and is
+     * skipped when the encoding is derived. {@link #getOrCreateId} reuses free ids before it
+     * creates new ones.
+     */
+    final BitSet removed = new BitSet();
+
+    /** The ids in {@link #removed}, to be reused. */
+    final IntArrayList freeIds = new IntArrayList();
+
     // class tree (single inheritance) - classes only
     /**
      * Direct superclass id per class id, or {@link #NO_SUPERCLASS} if none (root, or unresolved).
@@ -1005,6 +1036,15 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       if (existing != null) {
         return existing;
       }
+      if (freeIds.size() > 0) {
+        // the edge lists of a free id are empty and its superclass is NO_SUPERCLASS
+        int id = freeIds.removeLast();
+        removed.clear(id);
+        classTypeOf.set(id, type);
+        idOf.put(type, id);
+        isInterface.set(id, asInterface);
+        return id;
+      }
       int id = classTypeOf.size();
       classTypeOf.add(type);
       idOf.put(type, id);
@@ -1022,6 +1062,42 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     int size() {
       return classTypeOf.size();
+    }
+
+    /**
+     * Removes the edges that the declaration of the type with the given id recorded. If other types
+     * still name it as their superclass or interface, it stays as such a reference, as if it had
+     * never been declared; otherwise it is removed.
+     */
+    void removeDeclaration(int id) {
+      int superId = superClassId.get(id);
+      if (superId != NO_SUPERCLASS) {
+        directSubclasses.get(superId).remove(id);
+        superClassId.set(id, NO_SUPERCLASS);
+      }
+      IntArrayList implemented = directImplementedInterfaces.get(id);
+      for (int i = 0; i < implemented.size(); i++) {
+        directImplementers.get(implemented.get(i)).remove(id);
+      }
+      directImplementedInterfaces.set(id, new IntArrayList());
+      IntArrayList extended = directExtendedInterfaces.get(id);
+      for (int i = 0; i < extended.size(); i++) {
+        directSubinterfaces.get(extended.get(i)).remove(id);
+      }
+      directExtendedInterfaces.set(id, new IntArrayList());
+      scanned.clear(id);
+
+      boolean referenced =
+          directSubclasses.get(id).size() > 0
+              || directImplementers.get(id).size() > 0
+              || directSubinterfaces.get(id).size() > 0;
+      if (!referenced) {
+        idOf.remove(classTypeOf.get(id));
+        classTypeOf.set(id, null);
+        isInterface.clear(id);
+        removed.set(id);
+        freeIds.add(id);
+      }
     }
 
     /**

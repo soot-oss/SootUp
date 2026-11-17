@@ -14,6 +14,7 @@ import sootup.core.model.FullPosition;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.TypeHierarchy;
+import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.InMemoryJavaClassSource;
@@ -49,21 +50,49 @@ public class MutableViewTypeHierarchyTest {
   }
 
   private JavaSootClass newSubclass(String name, JavaClassType superClass) {
+    return newClass(name, superClass, Collections.emptySet(), EnumSet.noneOf(ClassModifier.class));
+  }
+
+  private JavaSootClass newClass(
+      String name,
+      JavaClassType superClass,
+      Set<JavaClassType> interfaces,
+      EnumSet<ClassModifier> modifiers) {
     return new InMemoryJavaClassSource(
             location,
             JAR,
             view.getIdentifierFactory().getClassType(name),
             superClass,
-            Collections.emptySet(),
+            interfaces,
             null,
             Collections.emptySet(),
             Collections.emptySet(),
             new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(ClassModifier.class),
+            modifiers,
             Collections.emptySet(),
             Collections.emptySet(),
             Collections.emptySet())
         .buildClass(SourceType.Application);
+  }
+
+  /**
+   * Checks that the hierarchy of the view, updated in place, answers like a hierarchy built from
+   * scratch on the current classes of the view.
+   */
+  private void assertSameAsRebuilt(ClassType... types) {
+    TypeHierarchy updated = view.getTypeHierarchy();
+    TypeHierarchy rebuilt = new ViewTypeHierarchy(view);
+    for (ClassType type : types) {
+      assertEquals(
+          rebuilt.subtypesOf(type).collect(Collectors.toSet()),
+          updated.subtypesOf(type).collect(Collectors.toSet()),
+          "subtypes of " + type);
+      assertEquals(rebuilt.superClassOf(type), updated.superClassOf(type), "superclass of " + type);
+    }
+  }
+
+  private ClassType object() {
+    return view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   @Test
@@ -83,9 +112,86 @@ public class MutableViewTypeHierarchyTest {
   public void removedClassDisappearsFromAnExistingHierarchy() {
     assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
 
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+
     view.removeClass(employee);
 
+    // updated in place, not discarded and rebuilt
+    assertSame(hierarchy, view.getTypeHierarchy());
     assertEquals(Collections.singleton(department), subtypesOfAbstractDs());
+    assertSameAsRebuilt(object(), abstractDs, department);
+  }
+
+  @Test
+  public void removedSuperclassRemainsTheSupertypeOfItsSubclasses() {
+    assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
+
+    view.removeClass(abstractDs);
+
+    // like in a hierarchy built without it: its subclasses still name it as their superclass
+    assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
+    assertEquals(Optional.of(abstractDs), view.getTypeHierarchy().superClassOf(department));
+    assertFalse(view.getTypeHierarchy().subtypesOf(object()).anyMatch(abstractDs::equals));
+    assertSameAsRebuilt(object(), abstractDs, department, employee);
+  }
+
+  @Test
+  public void removedClassCanBeAddedAgain() {
+    JavaSootClass oldEmployee = view.getClass(employee).get();
+    assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
+
+    view.removeClass(employee);
+    view.addClass(oldEmployee);
+
+    assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
+    assertSameAsRebuilt(object(), abstractDs, department, employee);
+  }
+
+  @Test
+  public void anotherClassTakesTheIdOfARemovedClass() {
+    assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
+
+    view.removeClass(employee);
+    JavaSootClass manager = newSubclass("ds.Manager", abstractDs);
+    view.addClass(manager);
+
+    assertEquals(
+        new HashSet<>(Arrays.asList(department, manager.getType())), subtypesOfAbstractDs());
+    assertSameAsRebuilt(object(), abstractDs, department, manager.getType());
+  }
+
+  @Test
+  public void removedImplementerAndInterfaceLeaveTheHierarchy() {
+    view.getTypeHierarchy().subtypesOf(object());
+    JavaSootClass named =
+        newClass(
+            "ds.Named",
+            (JavaClassType) object(),
+            Collections.emptySet(),
+            EnumSet.of(ClassModifier.INTERFACE, ClassModifier.ABSTRACT));
+    JavaSootClass namedDepartment =
+        newClass(
+            "ds.NamedDepartment",
+            department,
+            Collections.singleton((JavaClassType) named.getType()),
+            EnumSet.noneOf(ClassModifier.class));
+    view.addClass(named);
+    view.addClass(namedDepartment);
+    assertEquals(
+        Collections.singleton(namedDepartment.getType()),
+        view.getTypeHierarchy().implementersOf(named.getType()).collect(Collectors.toSet()));
+
+    view.removeClass(namedDepartment.getType());
+
+    assertEquals(
+        Collections.emptySet(),
+        view.getTypeHierarchy().implementersOf(named.getType()).collect(Collectors.toSet()));
+    assertSameAsRebuilt(object(), abstractDs, department, named.getType());
+
+    view.removeClass(named.getType());
+
+    assertFalse(view.getTypeHierarchy().contains(named.getType()));
+    assertSameAsRebuilt(object(), abstractDs, department);
   }
 
   @Test

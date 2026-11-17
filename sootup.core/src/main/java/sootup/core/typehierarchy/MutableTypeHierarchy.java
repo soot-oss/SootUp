@@ -22,6 +22,7 @@ package sootup.core.typehierarchy;
  * #L%
  */
 import sootup.core.model.SootClass;
+import sootup.core.types.ClassType;
 
 /** For internal use only. */
 public interface MutableTypeHierarchy extends TypeHierarchy {
@@ -42,4 +43,13 @@ public interface MutableTypeHierarchy extends TypeHierarchy {
    * <p>For internal use only.
    */
   void updateType(SootClass sootClass);
+
+  /**
+   * Removes the declaration of the given type, e.g. because its class was removed from the view.
+   * The hierarchy then answers like one built without that class: a type that other types still
+   * name as their superclass or interface remains as such a reference, any other type is gone.
+   *
+   * <p>For internal use only.
+   */
+  void removeType(ClassType type);
 }

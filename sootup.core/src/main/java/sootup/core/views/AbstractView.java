@@ -61,11 +61,6 @@ public abstract class AbstractView implements View {
     return typeHierarchy;
   }
 
-  /** Discards the type hierarchy, so that it is rebuilt from the view on its next use. */
-  protected void resetTypeHierarchy() {
-    typeHierarchy = null;
-  }
-
   /**
    * resolve and check for accessibility of the class from a given package * TODO: incorporate
    * AccessUtil @NonNull public synchronized Optional&lt;T&gt; getClass( @NonNull PackageName
