@@ -22,10 +22,10 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
@@ -35,6 +35,9 @@ import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.Type;
 
 /**
@@ -52,12 +55,14 @@ import sootup.core.types.Type;
  * locals into the typing as well.
  */
 public class CastCounter extends TypeChecker {
-  private final Map<Stmt, Set<JAssignStmt>> tempAssignments = new HashMap<>();
+  private final Map<Stmt, List<JAssignStmt>> tempAssignments = new HashMap<>();
   private final Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
   private final Map<Local, Type> tempLocalTypes = new HashMap<>();
+  // one temp local per value and type: its name then depends on neither the visiting order of the
+  // statements nor how often the value is cast
+  private final Map<Immediate, Map<Type, Local>> tempLocals = new HashMap<>();
 
   private int castCount = 0;
-  private int newLocalsCount = 0;
 
   public CastCounter(
       Body.@NonNull BodyBuilder builder,
@@ -82,7 +87,7 @@ public class CastCounter extends TypeChecker {
       getTyping().set(tempLocal.getKey(), tempLocal.getValue());
     }
 
-    for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
+    for (Map.Entry<Stmt, List<JAssignStmt>> casts : tempAssignments.entrySet()) {
       for (JAssignStmt cast : casts.getValue()) {
         // FIXME this also places before labels, which is not correct
         graph.insertBefore(casts.getKey(), cast);
@@ -115,17 +120,21 @@ public class CastCounter extends TypeChecker {
 
     // Jimple allows a cast expression only as the whole right-hand side of an assignment to a local
     // (`l = (T) v`). Anywhere else, e.g. the stored value of a field or array store, the cast goes
-    // into a fresh temp local instead (`#l0 = (T) v; x.f = #l0`).
+    // into a fresh temp local instead (`#v_T = (T) v; x.f = #v_T`).
     Stmt newStmt =
         isCastableInPlace(currentStmt, value) ? currentStmt.withNewUse(value, cast) : null;
 
     // This happens when the use of `value` in currentStatement can't be replaced with a cast.
     if (newStmt == null || newStmt == currentStmt) {
-      Local tempLocal = generateTempLocal(stdType);
-      tempLocalTypes.put(tempLocal, stdType);
+      Local tempLocal =
+          tempLocals
+              .computeIfAbsent((Immediate) value, _x -> new HashMap<>())
+              .computeIfAbsent(stdType, _x -> generateTempLocal((Immediate) value, stdType));
 
       JAssignStmt assignStmt = Jimple.newAssignStmt(tempLocal, cast, stmt.getPositionInfo());
-      tempAssignments.computeIfAbsent(stmt, _x -> new HashSet<>()).add(assignStmt);
+      // in the order of the uses of the statement; each cast is a new statement, so a set would
+      // never drop one
+      tempAssignments.computeIfAbsent(stmt, _x -> new ArrayList<>()).add(assignStmt);
 
       newStmt = currentStmt.withNewUse(value, tempLocal);
     }
@@ -146,8 +155,46 @@ public class CastCounter extends TypeChecker {
         && ((JAssignStmt) stmt).getRightOp() == value;
   }
 
-  private Local generateTempLocal(@NonNull Type type) {
-    String name = "#l" + newLocalsCount++;
-    return Jimple.newLocal(name, type);
+  /**
+   * Names the temp local after the value and the type it is cast to, e.g. {@code #l1_String}; a
+   * number is appended if the name is taken.
+   */
+  private Local generateTempLocal(@NonNull Immediate value, @NonNull Type type) {
+    String baseName = "#" + nameOf(value) + "_" + nameOf(type);
+    String name = baseName;
+    for (int i = 1; isTaken(name); i++) {
+      name = baseName + "_" + i;
+    }
+    Local tempLocal = Jimple.newLocal(name, type);
+    tempLocalTypes.put(tempLocal, type);
+    return tempLocal;
+  }
+
+  /** Locals are equal by name, so any local of that name says whether the name is taken. */
+  private boolean isTaken(@NonNull String name) {
+    Local probe = Jimple.newLocal(name, NullType.getInstance());
+    return builder.getLocals().contains(probe) || tempLocalTypes.containsKey(probe);
+  }
+
+  @NonNull
+  private static String nameOf(@NonNull Immediate value) {
+    return value instanceof Local ? ((Local) value).getName() : sanitize(value.toString());
+  }
+
+  @NonNull
+  private static String nameOf(@NonNull Type type) {
+    if (type instanceof ArrayType) {
+      ArrayType arrayType = (ArrayType) type;
+      return nameOf(arrayType.getBaseType()) + "Array".repeat(arrayType.getDimension());
+    }
+    if (type instanceof ClassType) {
+      return ((ClassType) type).getClassName();
+    }
+    return sanitize(type.toString());
+  }
+
+  @NonNull
+  private static String sanitize(@NonNull String name) {
+    return name.replaceAll("[^\\p{L}0-9$_]", "_");
   }
 }
