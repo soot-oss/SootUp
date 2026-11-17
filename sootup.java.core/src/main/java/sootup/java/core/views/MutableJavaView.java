@@ -32,8 +32,6 @@ import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.MutableTypeHierarchy;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
 import sootup.core.views.ViewChangeListener;
@@ -101,10 +99,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     removedClasses.remove(classType);
     // the type may have been looked up - and recorded as absent - before it was added here
     forgetAbsence(classType);
-    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
-    if (typeHierarchy instanceof MutableTypeHierarchy) {
-      ((MutableTypeHierarchy) typeHierarchy).addType(clazz);
-    }
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.addType(clazz));
     this.fireAddition(clazz);
   }
 
@@ -115,10 +110,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     JavaSootClass removedClass =
         (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
     removedClasses.add(classType);
-    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
-    if (typeHierarchy instanceof MutableTypeHierarchy) {
-      ((MutableTypeHierarchy) typeHierarchy).removeType(classType);
-    }
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.removeType(classType));
     this.fireRemoval(removedClass);
   }
 
@@ -147,10 +139,7 @@ public class MutableJavaView extends JavaView implements MutableView {
         (JavaSootClass) ((MutableClassCache) this.cache).removeClass(oldType);
     this.fireRemoval(removedClass);
     this.cache.putClass(newType, newClass);
-    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
-    if (typeHierarchy instanceof MutableTypeHierarchy) {
-      ((MutableTypeHierarchy) typeHierarchy).updateType(newClass);
-    }
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.updateType(newClass));
     this.fireAddition(newClass);
   }
 

@@ -23,6 +23,7 @@ package sootup.core.views;
  */
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.model.SootClass;
@@ -30,6 +31,7 @@ import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.typehierarchy.MutableTypeHierarchy;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 
@@ -53,12 +55,15 @@ public abstract class AbstractView implements View {
   }
 
   /**
-   * Returns the type hierarchy if it has already been built, so that changes to the view can be
-   * applied to it.
+   * Applies a change of this view's classes to its type hierarchy. If the hierarchy has not been
+   * built yet, nothing is to be done: it is built from the changed classes on its first use.
+   *
+   * @param change the update of the hierarchy, e.g. adding the type of an added class
    */
-  @Nullable
-  protected TypeHierarchy getTypeHierarchyIfBuilt() {
-    return typeHierarchy;
+  protected void updateTypeHierarchy(@NonNull Consumer<MutableTypeHierarchy> change) {
+    if (typeHierarchy instanceof MutableTypeHierarchy mutableTypeHierarchy) {
+      change.accept(mutableTypeHierarchy);
+    }
   }
 
   /**
