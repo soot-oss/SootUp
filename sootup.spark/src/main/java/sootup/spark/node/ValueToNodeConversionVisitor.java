@@ -326,7 +326,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
-    // models the outermost array; the arrays it contains are not modeled
+    // the outermost array; NodeFactory#createInnerArrayEdges models the arrays it contains
     allocate(expr.getType());
   }
 
@@ -336,12 +336,18 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   private void allocate(@NonNull Type type) {
+    this.node = allocation(type);
+  }
+
+  /** Returns a new allocation node of the given type in the containing method. */
+  @NonNull
+  public AllocationNode allocation(@NonNull Type type) {
     AllocationNode.AllocationNodeBuilder<?, ?> builder =
         AllocationNode.builder().type(type).containingMethodSig(containingMethodSig);
     if (!sparkOptions.isTypesForSites()) {
       builder.allocationSite(Engine.incrementAndGetAllocCount());
     }
-    this.node = builder.build();
+    return builder.build();
   }
 
   @Override
@@ -383,26 +389,31 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
       // field, independent of the index and of the static type of the array, so that a[0] and a[i]
       // as well as an Object[] and a String[] view of the same array refer to the same elements.
       if (ref.getType() instanceof ReferenceType) {
-        val field = arrayElementField;
-        val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-        val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
-        val baseName =
-            fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
-        val base =
-            VariableNode.builder()
-                .name(baseName)
-                .type(ref.getBase().getType())
-                .containingMethodSig(baseMethodSig)
-                .build();
-        this.node =
-            InstanceFieldRefNode.builder()
-                .base(base)
-                .field(field)
-                .type(ref.getType())
-                .containingMethodSig(baseMethodSig)
-                .build();
+        this.node = arrayElements(ref.getBase().getName(), (ArrayType) type);
       }
     }
+  }
+
+  /**
+   * Returns the node for the elements of the arrays that the variable of the given name and array
+   * type in the containing method points to.
+   */
+  @NonNull
+  public InstanceFieldRefNode arrayElements(@NonNull String baseName, @NonNull ArrayType baseType) {
+    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
+    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
+    val base =
+        VariableNode.builder()
+            .name(fieldBasedScope ? baseType.toString() : baseName)
+            .type(baseType)
+            .containingMethodSig(baseMethodSig)
+            .build();
+    return InstanceFieldRefNode.builder()
+        .base(base)
+        .field(arrayElementField)
+        .type(baseType.getElementType())
+        .containingMethodSig(baseMethodSig)
+        .build();
   }
 
   @Override

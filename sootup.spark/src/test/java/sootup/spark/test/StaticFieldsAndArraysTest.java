@@ -90,11 +90,32 @@ public class StaticFieldsAndArraysTest {
   }
 
   @Test
+  public void objectsFlowThroughTheInnerArraysOfMultiDimensionalArrays() {
+    for (boolean onTheFly : new boolean[] {false, true}) {
+      Engine.resetAllocCount();
+      PointsToAnalysis pta = solve(onTheFly).getPointsToAnalysis();
+      assertEquals(
+          Collections.singleton("StaticAndArrays$Shape[][]"),
+          reachingTypes(pta, "grid"),
+          "onTheFly=" + onTheFly);
+      assertEquals(
+          Collections.singleton("StaticAndArrays$Triangle"),
+          reachingTypes(pta, "fromGrid"),
+          "onTheFly=" + onTheFly);
+      assertEquals(
+          Collections.singleton("StaticAndArrays$Triangle"),
+          reachingTypes(pta, "fromCube"),
+          "onTheFly=" + onTheFly);
+    }
+  }
+
+  @Test
   public void onTheFlyCallGraphResolvesCallsOnSuchObjects() {
     CallGraph cg = solve(true).getCallGraph();
     assertEquals(
         new java.util.HashSet<>(
-            java.util.Arrays.asList("StaticAndArrays$Circle", "StaticAndArrays$Square")),
+            java.util.Arrays.asList(
+                "StaticAndArrays$Circle", "StaticAndArrays$Square", "StaticAndArrays$Triangle")),
         nameTargets(cg));
   }
 }
