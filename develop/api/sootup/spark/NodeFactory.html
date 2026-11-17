@@ -108,10 +108,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="node/Node.html" title="class in sootup.spark.node">Node</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createNode(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">createNode</a><wbr>(@NonNull <a href="../core/jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
- <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.Entry.html" title="class or interface in java.util" class="external-link">Map.Entry</a>&lt;<a href="node/Node.html" title="class in sootup.spark.node">Node</a>,<wbr><a href="node/Node.html" title="class in sootup.spark.node">Node</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createInnerArrayEdges(sootup.core.jimple.common.expr.JNewMultiArrayExpr,sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature)" class="member-name-link">createInnerArrayEdges</a><wbr>(@NonNull <a href="../core/jimple/common/expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a>&nbsp;expr,
+ @NonNull <a href="../core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;target,
+ @NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the edges that model the inner arrays of <code>target = new T[n1][n2]...</code>: like Soot,
+ each dimension below the outermost one gets an allocation, which is stored into the elements of
+ the enclosing array, also for dimensions without a given size.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="node/Node.html" title="class in sootup.spark.node">Node</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createNode(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">createNode</a><wbr>(@NonNull <a href="../core/jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
+ <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">creates a PAG node for a given Jimple value</div>
 </div>
 </div>
@@ -158,6 +167,28 @@ loadScripts(document, 'script');</script>
 <dd><code>value</code> - a jimple value, typically a local, field ref, or an allocation expression</dd>
 <dt>Returns:</dt>
 <dd>a PAG node</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createInnerArrayEdges(sootup.core.jimple.common.expr.JNewMultiArrayExpr,sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature)">
+<h3>createInnerArrayEdges</h3>
+<div class="member-signature"><span class="annotations">@NonNull
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.Entry.html" title="class or interface in java.util" class="external-link">Map.Entry</a>&lt;<a href="node/Node.html" title="class in sootup.spark.node">Node</a>,<wbr><a href="node/Node.html" title="class in sootup.spark.node">Node</a>&gt;&gt;</span>&nbsp;<span class="element-name">createInnerArrayEdges</span><wbr><span class="parameters">(@NonNull
+ @NonNull <a href="../core/jimple/common/expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a>&nbsp;expr,
+ @NonNull
+ @NonNull <a href="../core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;target,
+ @NonNull
+ @NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</span></div>
+<div class="block">Returns the edges that model the inner arrays of <code>target = new T[n1][n2]...</code>: like Soot,
+ each dimension below the outermost one gets an allocation, which is stored into the elements of
+ the enclosing array, also for dimensions without a given size.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>expr</code> - the multi-dimensional array creation</dd>
+<dd><code>target</code> - the local that the outermost array is assigned to</dd>
+<dt>Returns:</dt>
+<dd>the edges, from source to target</dd>
 </dl>
 </section>
 </li>

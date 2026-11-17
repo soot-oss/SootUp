@@ -472,6 +472,19 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the value of the <code>field</code> record component.</div>
 </div>
 </div>
+<div class="caption"><span>Methods in <a href="../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../spark/node/AllocationNode.html" title="class in sootup.spark.node">AllocationNode</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PointsToAnalysis.</span><code><a href="../../../spark/PointsToAnalysis.html#reachingObjects(java.util.Set,sootup.core.signatures.FieldSignature)" class="member-name-link">reachingObjects</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../spark/node/AllocationNode.html" title="class in sootup.spark.node">AllocationNode</a>&gt;&nbsp;objects,
+ @NonNull <a href="../FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a>&nbsp;field)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the set of allocation sites that the given field of the given objects may point to,
+ i.e. the union of <code>heap[o, field]</code> over each <code>o</code> in <code>objects</code>.</div>
+</div>
+</div>
 <div class="caption"><span>Constructors in <a href="../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier</div>

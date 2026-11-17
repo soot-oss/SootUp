@@ -1637,43 +1637,52 @@ loadScripts(document, 'script');</script>
  set shares at least one allocation with <code>reachingObjects(value, containingMethodSig)</code> —
  i.e. nodes that may refer to a common run-time object.</div>
 </div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NodeFactory.</span><code><a href="../../../spark/NodeFactory.html#createNode(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">createNode</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
- <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.Entry.html" title="class or interface in java.util" class="external-link">Map.Entry</a>&lt;<a href="../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>,<wbr><a href="../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NodeFactory.</span><code><a href="../../../spark/NodeFactory.html#createInnerArrayEdges(sootup.core.jimple.common.expr.JNewMultiArrayExpr,sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature)" class="member-name-link">createInnerArrayEdges</a><wbr>(@NonNull <a href="../../jimple/common/expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a>&nbsp;expr,
+ @NonNull <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;target,
+ @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Returns the edges that model the inner arrays of <code>target = new T[n1][n2]...</code>: like Soot,
+ each dimension below the outermost one gets an allocation, which is stored into the elements of
+ the enclosing array, also for dimensions without a given size.</div>
+</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NodeFactory.</span><code><a href="../../../spark/NodeFactory.html#createNode(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">createNode</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
+ <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
+<div class="col-last even-row-color">
 <div class="block">creates a PAG node for a given Jimple value</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../spark/MethodPAGStmtVisitor.html#installCallEdges(sootup.core.jimple.common.expr.AbstractInvokeExpr,java.util.Optional,sootup.core.signatures.MethodSignature)" class="member-name-link">installCallEdges</a><wbr>(<a href="../../jimple/common/expr/AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a>&nbsp;expr,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../spark/MethodPAGStmtVisitor.html#installCallEdges(sootup.core.jimple.common.expr.AbstractInvokeExpr,java.util.Optional,sootup.core.signatures.MethodSignature)" class="member-name-link">installCallEdges</a><wbr>(<a href="../../jimple/common/expr/AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a>&nbsp;expr,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
  <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Installs the receiver/parameter/return PAG edges connecting one call site to one resolved
  target method.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../spark/MethodPAGStmtVisitor.html#installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)" class="member-name-link">installLambdaCallEdges</a><wbr>(<a href="../../jimple/common/expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../spark/MethodPAGStmtVisitor.html#installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)" class="member-name-link">installLambdaCallEdges</a><wbr>(<a href="../../jimple/common/expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
  <a href="../../jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
  <a href="../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
  <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Installs the PAG edges of a call that reaches the body of <code>fo</code> (<code>targetMethodSig</code>):
  the call's arguments go to the parameters / receiver <a href="../../../callgraph/invokedynamic/FunctionalObject.html#samArgumentIndex(int)"><code>FunctionalObject.samArgumentIndex(int)</code></a>
  names; the result flows to <code>lhs</code>: the body's return value or, for a constructor
  reference, a fresh object (also bound to the constructor's receiver).</div>
 </div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../spark/node/AllocationNode.html" title="class in sootup.spark.node">AllocationNode</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PointsToAnalysis.</span><code><a href="../../../spark/PointsToAnalysis.html#reachingObjects(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">reachingObjects</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../spark/node/AllocationNode.html" title="class in sootup.spark.node">AllocationNode</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PointsToAnalysis.</span><code><a href="../../../spark/PointsToAnalysis.html#reachingObjects(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">reachingObjects</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
  @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Returns the set of allocation sites that <code>value</code> may point to within <code>
  containingMethodSig</code>.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../types/Type.html" title="class in sootup.core.types">Type</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PointsToAnalysis.</span><code><a href="../../../spark/PointsToAnalysis.html#reachingTypes(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">reachingTypes</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../types/Type.html" title="class in sootup.core.types">Type</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PointsToAnalysis.</span><code><a href="../../../spark/PointsToAnalysis.html#reachingTypes(sootup.core.jimple.common.Value,sootup.core.signatures.MethodSignature)" class="member-name-link">reachingTypes</a><wbr>(@NonNull <a href="../../jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value,
  @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Returns the set of run-time types that the points-to set of <code>value</code> may induce within
  <code>containingMethodSig</code>.</div>
 </div>

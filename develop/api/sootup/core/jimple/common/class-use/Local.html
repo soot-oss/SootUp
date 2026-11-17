@@ -108,8 +108,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#sootup.jimple.frontend">sootup.jimple.frontend</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.spark.node">sootup.spark.node</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.spark">sootup.spark</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.spark.node">sootup.spark.node</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -1318,6 +1320,26 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="../Local.html" title="interface in sootup.core.jimple.common">Local</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JimpleBodyConverterState.</span><code><a href="../../../../jimple/frontend/JimpleBodyConverterState.html#getLocals()" class="member-name-link">getLocals</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.spark">
+<h2>Uses of <a href="../Local.html" title="interface in sootup.core.jimple.common">Local</a> in <a href="../../../../spark/package-summary.html">sootup.spark</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../Local.html" title="interface in sootup.core.jimple.common">Local</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.Entry.html" title="class or interface in java.util" class="external-link">Map.Entry</a>&lt;<a href="../../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>,<wbr><a href="../../../../spark/node/Node.html" title="class in sootup.spark.node">Node</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NodeFactory.</span><code><a href="../../../../spark/NodeFactory.html#createInnerArrayEdges(sootup.core.jimple.common.expr.JNewMultiArrayExpr,sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature)" class="member-name-link">createInnerArrayEdges</a><wbr>(@NonNull <a href="../expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a>&nbsp;expr,
+ @NonNull <a href="../Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;target,
+ @NonNull <a href="../../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;containingMethodSig)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the edges that model the inner arrays of <code>target = new T[n1][n2]...</code>: like Soot,
+ each dimension below the outermost one gets an allocation, which is stored into the elements of
+ the enclosing array, also for dimensions without a given size.</div>
+</div>
 </div>
 </section>
 </li>
