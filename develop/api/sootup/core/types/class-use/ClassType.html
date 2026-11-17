@@ -1119,16 +1119,38 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">AnalysisInputLocation.</span><code><a href="../../inputlocation/AnalysisInputLocation.html#getClassSource(sootup.core.types.ClassType,sootup.core.views.View)" class="member-name-link">getClassSource</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type,
- @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-first even-row-color"><code>protected abstract boolean</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ScopedAnalysisInputLocation.</span><code><a href="../../inputlocation/ScopedAnalysisInputLocation.html#filter(sootup.core.types.ClassType)" class="member-name-link">filter</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Override this method.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AnalysisInputLocation.</span><code><a href="../../inputlocation/AnalysisInputLocation.html#getClassSource(sootup.core.types.ClassType,sootup.core.views.View)" class="member-name-link">getClassSource</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Create or find a class source for a given type.</div>
 </div>
-<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">EagerInputLocation.</span><code><a href="../../inputlocation/EagerInputLocation.html#getClassSource(sootup.core.types.ClassType,sootup.core.views.View)" class="member-name-link">getClassSource</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type,
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">EagerInputLocation.</span><code><a href="../../inputlocation/EagerInputLocation.html#getClassSource(sootup.core.types.ClassType,sootup.core.views.View)" class="member-name-link">getClassSource</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type,
  @Nullable <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ScopedAnalysisInputLocation.</span><code><a href="../../inputlocation/ScopedAnalysisInputLocation.html#getClassSource(sootup.core.types.ClassType,sootup.core.views.View)" class="member-name-link">getClassSource</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;type,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Method parameters in <a href="../../inputlocation/package-summary.html">sootup.core.inputlocation</a> with type arguments of type <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="../../inputlocation/ScopedAnalysisInputLocation.html" title="class in sootup.core.inputlocation">ScopedAnalysisInputLocation</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ScopedAnalysisInputLocation.</span><code><a href="../../inputlocation/ScopedAnalysisInputLocation.html#of(sootup.core.inputlocation.AnalysisInputLocation,java.util.function.Predicate)" class="member-name-link">of</a><wbr>(@NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;&nbsp;filter)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates an input location that only provides the classes of the given input location which
+ match the given filter.</div>
+</div>
 </div>
 <div class="caption"><span>Constructor parameters in <a href="../../inputlocation/package-summary.html">sootup.core.inputlocation</a> with type arguments of type <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a></span></div>
 <div class="summary-table three-column-summary">
