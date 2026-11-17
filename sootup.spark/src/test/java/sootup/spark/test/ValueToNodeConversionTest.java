@@ -26,6 +26,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -35,6 +36,7 @@ import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.StaticFieldRefNode;
+import sootup.spark.node.ValueToNodeConversionVisitor;
 import sootup.spark.node.VariableNode;
 
 class ValueToNodeConversionTest {
@@ -105,8 +107,13 @@ class ValueToNodeConversionTest {
     assertTrue(sRefNode instanceof StaticFieldRefNode);
     val staticRefNode = (StaticFieldRefNode) sRefNode;
     assertEquals(fieldSig, staticRefNode.getField());
-    assertEquals(aType, staticRefNode.getType());
-    assertEquals("\"test{B A.f}\"", staticRefNode.toString());
+    // the node has the type of the field and is global: a static field is one variable that all
+    // methods share
+    assertEquals(fieldSig.getType(), staticRefNode.getType());
+    assertEquals("\"GLOBAL_SCOPE{B A.f}\"", staticRefNode.toString());
+    val otherMethodSig =
+        identifierFactory.getMethodSignature(aType, "other", "void", Collections.emptyList());
+    assertEquals(staticRefNode, nodeFactory.createNode(staticFieldRef, otherMethodSig).get());
   }
 
   @Test
@@ -121,9 +128,15 @@ class ValueToNodeConversionTest {
     val arrayRefNode = (InstanceFieldRefNode) arrayNode;
     assertEquals(arrayType, arrayRefNode.getBase().getType());
     assertEquals("array", arrayRefNode.getBase().getName());
-    assertEquals("42", arrayRefNode.getField().getName());
+    // all elements of an array are one pseudo field, independent of the index
+    assertEquals(
+        ValueToNodeConversionVisitor.ARRAY_ELEMENT_FIELD_NAME, arrayRefNode.getField().getName());
     assertEquals(aType, arrayRef.getType());
-    assertEquals("\"test{A (A[] array).42}\"", arrayRefNode.toString());
+    assertEquals("\"test{java.lang.Object (A[] array).<arrayElement>}\"", arrayRefNode.toString());
+    val otherIndex =
+        new JArrayRef(
+            Jimple.newLocal("array", arrayType), Jimple.newLocal("i", PrimitiveType.getInt()));
+    assertEquals(arrayRefNode, nodeFactory.createNode(otherIndex, methodSig).get());
   }
 
   @Test
@@ -139,7 +152,10 @@ class ValueToNodeConversionTest {
     val newArrayExpr =
         JavaJimple.newNewArrayExpr(aType, IntConstant.getInstance(1), new JavaIdentifierFactory());
     val node = nodeFactory.createNode(newArrayExpr, methodSig);
-    assertTrue(node.isEmpty());
+    // an array is an allocated object
+    assertTrue(node.isPresent());
+    assertTrue(node.get() instanceof AllocationNode);
+    assertEquals(ArrayType.createArrayType(aType, 1), node.get().getType());
   }
 
   @Test
@@ -149,7 +165,10 @@ class ValueToNodeConversionTest {
         JavaJimple.newNewMultiArrayExpr(
             arrayType, List.of(IntConstant.getInstance(1), IntConstant.getInstance(1)));
     val node = nodeFactory.createNode(newMultiArrayExpr, methodSig);
-    assertTrue(node.isEmpty());
+    // the outermost array is an allocated object
+    assertTrue(node.isPresent());
+    assertTrue(node.get() instanceof AllocationNode);
+    assertEquals(arrayType, node.get().getType());
   }
 
   @Test
