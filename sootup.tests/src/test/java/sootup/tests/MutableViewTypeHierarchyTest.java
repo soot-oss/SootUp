@@ -123,6 +123,50 @@ public class MutableViewTypeHierarchyTest {
   }
 
   @Test
+  public void everyChangeIncreasesTheModificationCount() {
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+    hierarchy.subtypesOf(abstractDs);
+
+    long count = hierarchy.getModificationCount();
+    view.addClass(newSubclass("ds.Manager", abstractDs));
+    assertTrue(hierarchy.getModificationCount() > count, "add");
+
+    count = hierarchy.getModificationCount();
+    JavaSootClass oldDepartment = view.getClass(department).get();
+    view.replaceClass(oldDepartment, oldDepartment.withMethods(Collections.emptySet()));
+    assertTrue(hierarchy.getModificationCount() > count, "replace with the same supertypes");
+
+    count = hierarchy.getModificationCount();
+    JavaSootClass oldEmployee = view.getClass(employee).get();
+    view.replaceClass(oldEmployee, oldEmployee.withSuperclass(Optional.empty()));
+    assertTrue(hierarchy.getModificationCount() > count, "replace with other supertypes");
+
+    count = hierarchy.getModificationCount();
+    view.removeClass(department);
+    assertTrue(hierarchy.getModificationCount() > count, "remove");
+  }
+
+  @Test
+  public void cachedAnswersAreNotReturnedAfterARemoval() {
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+    // fill the caches of subtype classes and lowest common ancestors
+    assertEquals(2, hierarchy.subtypeClassesOf(abstractDs).count());
+    assertEquals(
+        Collections.singleton(abstractDs),
+        new HashSet<>(hierarchy.getLowestCommonAncestors(department, employee)));
+
+    view.removeClass(employee);
+
+    assertEquals(
+        Collections.singletonList(department),
+        hierarchy.subtypeClassesOf(abstractDs).map(SootClass::getType).toList());
+    // an unknown type has only Object in common with any other type
+    assertEquals(
+        Collections.singleton(object()),
+        new HashSet<>(hierarchy.getLowestCommonAncestors(department, employee)));
+  }
+
+  @Test
   public void removedSuperclassRemainsTheSupertypeOfItsSubclasses() {
     assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());
 
