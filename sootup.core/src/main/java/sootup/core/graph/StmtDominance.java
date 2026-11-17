@@ -35,6 +35,12 @@ import sootup.core.jimple.common.stmt.Stmt;
  * correctly: a statement whose only (post-)dominator is the virtual root has no immediate
  * (post-)dominator.
  *
+ * <p>Statements the virtual root does not reach have no (post-)dominators at all. For
+ * post-dominators, these are the statements that cannot reach an exit, e.g. those of an infinite
+ * loop, as in Soot's {@code MHGPostDominatorsFinder}. For dominators, every statement without a
+ * predecessor is a head, so unreachable code without predecessors is dominated only by the virtual
+ * root, and only unreachable code inside a cycle has no dominators.
+ *
  * <p>Exceptional control flow is taken into account if requested: a statement then also flows to
  * the handlers of the traps that cover it.
  */
@@ -195,7 +201,8 @@ public final class StmtDominance {
 
   /**
    * Returns the immediate (post-)dominator of the given statement, or empty if the statement is a
-   * head (tail) of the graph, is only (post-)dominated by the virtual root, or is unreachable.
+   * head (tail) of the graph, is only (post-)dominated by the virtual root, or is not reached from
+   * it (for post-dominators: cannot reach an exit).
    */
   @NonNull
   public Optional<Stmt> getImmediateDominator(@NonNull Stmt stmt) {
@@ -208,7 +215,8 @@ public final class StmtDominance {
 
   /**
    * Returns all (post-)dominators of the given statement, starting with the statement itself and
-   * ending with the head (tail) that (post-)dominates it, if any.
+   * ending with the head (tail) that (post-)dominates it, if any; empty if the virtual root does
+   * not reach the statement (for post-dominators: it cannot reach an exit).
    */
   @NonNull
   public List<Stmt> getDominators(@NonNull Stmt stmt) {
