@@ -65,6 +65,8 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   private final List<BodyInterceptor> bodyInterceptors;
 
+  private final SourceType sourceType;
+
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
   /**
@@ -81,9 +83,28 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
       Path apkPath,
       AndroidVersionInfo androidSDKVersionInfo,
       List<BodyInterceptor> bodyInterceptors) {
+    this(apkPath, androidSDKVersionInfo, bodyInterceptors, SourceType.Application);
+  }
+
+  /**
+   * Creates a new ApkAnalysisInputLocation whose classes have the given source type, e.g. to load
+   * the classes of libraries bundled in the APK as {@link SourceType#Library} classes when the
+   * input location is scoped to them.
+   *
+   * @param apkPath the path to the APK file
+   * @param androidSDKVersionInfo the Android version information of the APK
+   * @param bodyInterceptors the list of body interceptors to apply during analysis
+   * @param sourceType the source type of the classes in the APK
+   */
+  public ApkAnalysisInputLocation(
+      Path apkPath,
+      AndroidVersionInfo androidSDKVersionInfo,
+      List<BodyInterceptor> bodyInterceptors,
+      SourceType sourceType) {
     this.apk_path = apkPath;
     this.androidSDKVersionInfo = androidSDKVersionInfo;
     this.bodyInterceptors = bodyInterceptors;
+    this.sourceType = sourceType;
     this.classNamesList = extractDexFilesFromPath();
   }
 
@@ -133,7 +154,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   @NonNull
   @Override
   public SourceType getSourceType() {
-    return SourceType.Application;
+    return sourceType;
   }
 
   @NonNull
