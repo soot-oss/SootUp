@@ -48,10 +48,19 @@ public final class StmtDominance {
 
   private static final int ROOT = 0;
 
+  /**
+   * The immediate dominator of a node that is not known: not computed yet, or the node is not
+   * reached from the virtual root.
+   */
+  private static final int NO_IDOM = -1;
+
+  /** The reverse post-order number of a node that the virtual root does not reach. */
+  private static final int NOT_IN_ORDER = -2;
+
   private final Map<Stmt, Integer> index = new IdentityHashMap<>();
   private final List<Stmt> stmts = new ArrayList<>();
 
-  /** immediate dominator per node index; -1 if unreachable; ROOT for the virtual root itself */
+  /** immediate dominator per node index; NO_IDOM if unreached; ROOT for the virtual root itself */
   private final int[] idom;
 
   /** reverse post-order number per node index, used by the intersection */
@@ -101,28 +110,28 @@ public final class StmtDominance {
 
     // reverse post-order from the virtual root
     order = new int[n];
-    Arrays.fill(order, -1);
+    Arrays.fill(order, NOT_IN_ORDER);
     List<Integer> rpo = reversePostOrder(succs, n);
     for (int k = 0; k < rpo.size(); k++) {
       order[rpo.get(k)] = k;
     }
 
     idom = new int[n];
-    Arrays.fill(idom, -1);
+    Arrays.fill(idom, NO_IDOM);
     idom[ROOT] = ROOT;
     boolean changed = true;
     while (changed) {
       changed = false;
       for (int k = 1; k < rpo.size(); k++) {
         int b = rpo.get(k);
-        int newIdom = -1;
+        int newIdom = NO_IDOM;
         for (int p : preds.get(b)) {
-          if (idom[p] == -1) {
+          if (idom[p] == NO_IDOM) {
             continue;
           }
-          newIdom = newIdom == -1 ? p : intersect(p, newIdom);
+          newIdom = newIdom == NO_IDOM ? p : intersect(p, newIdom);
         }
-        if (newIdom != -1 && idom[b] != newIdom) {
+        if (newIdom != NO_IDOM && idom[b] != newIdom) {
           idom[b] = newIdom;
           changed = true;
         }
@@ -207,7 +216,7 @@ public final class StmtDominance {
   @NonNull
   public Optional<Stmt> getImmediateDominator(@NonNull Stmt stmt) {
     Integer i = index.get(stmt);
-    if (i == null || idom[i] == -1 || idom[i] == ROOT) {
+    if (i == null || idom[i] == NO_IDOM || idom[i] == ROOT) {
       return Optional.empty();
     }
     return Optional.of(stmts.get(idom[i]));
@@ -221,7 +230,7 @@ public final class StmtDominance {
   @NonNull
   public List<Stmt> getDominators(@NonNull Stmt stmt) {
     Integer i = index.get(stmt);
-    if (i == null || idom[i] == -1) {
+    if (i == null || idom[i] == NO_IDOM) {
       return Collections.emptyList();
     }
     List<Stmt> result = new ArrayList<>();
