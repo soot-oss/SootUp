@@ -105,6 +105,15 @@ implements <a href="../../core/inputlocation/AnalysisInputLocation.html" title="
 <div class="col-last even-row-color">
 <div class="block">Creates a new ApkAnalysisInputLocation.</div>
 </div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.nio.file.Path,sootup.apk.frontend.main.AndroidVersionInfo,java.util.List,sootup.core.model.SourceType)" class="member-name-link">ApkAnalysisInputLocation</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;apkPath,
+ <a href="main/AndroidVersionInfo.html" title="class in sootup.apk.frontend.main">AndroidVersionInfo</a>&nbsp;androidSDKVersionInfo,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
+ <a href="../../core/model/SourceType.html" title="enum class in sootup.core.model">SourceType</a>&nbsp;sourceType)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a new ApkAnalysisInputLocation whose classes have the given source type, e.g. to load
+ the classes of libraries bundled in the APK as <a href="../../core/model/SourceType.html#Library"><code>SourceType.Library</code></a> classes when the
+ input location is scoped to them.</div>
+</div>
 </div>
 </section>
 </li>
@@ -173,6 +182,25 @@ implements <a href="../../core/inputlocation/AnalysisInputLocation.html" title="
      references that are not defined in the APK itself, but are part of the Android system
      libraries. The Android platforms directory can be obtained from <a href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a></dd>
 <dd><code>bodyInterceptors</code> - the list of body interceptors to apply during analysis</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.nio.file.Path,sootup.apk.frontend.main.AndroidVersionInfo,java.util.List,sootup.core.model.SourceType)">
+<h3>ApkAnalysisInputLocation</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ApkAnalysisInputLocation</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;apkPath,
+ <a href="main/AndroidVersionInfo.html" title="class in sootup.apk.frontend.main">AndroidVersionInfo</a>&nbsp;androidSDKVersionInfo,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
+ <a href="../../core/model/SourceType.html" title="enum class in sootup.core.model">SourceType</a>&nbsp;sourceType)</span></div>
+<div class="block">Creates a new ApkAnalysisInputLocation whose classes have the given source type, e.g. to load
+ the classes of libraries bundled in the APK as <a href="../../core/model/SourceType.html#Library"><code>SourceType.Library</code></a> classes when the
+ input location is scoped to them.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>apkPath</code> - the path to the APK file</dd>
+<dd><code>androidSDKVersionInfo</code> - the Android version information of the APK</dd>
+<dd><code>bodyInterceptors</code> - the list of body interceptors to apply during analysis</dd>
+<dd><code>sourceType</code> - the source type of the classes in the APK</dd>
 </dl>
 </section>
 </li>
