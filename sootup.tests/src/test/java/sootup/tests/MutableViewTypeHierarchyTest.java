@@ -136,6 +136,25 @@ public class MutableViewTypeHierarchyTest {
   }
 
   @Test
+  public void removedSuperclassLeavesWithItsLastSubclass() {
+    view.getTypeHierarchy().subtypesOf(object());
+    JavaSootClass base = newSubclass("ds.Base", (JavaClassType) object());
+    JavaSootClass sub = newSubclass("ds.Sub", (JavaClassType) base.getType());
+    view.addClass(base);
+    view.addClass(sub);
+
+    view.removeClass(base.getType());
+    // still the superclass of ds.Sub
+    assertTrue(view.getTypeHierarchy().contains(base.getType()));
+    assertEquals(Optional.of(base.getType()), view.getTypeHierarchy().superClassOf(sub.getType()));
+
+    view.removeClass(sub.getType());
+    // no type references it anymore, so it is gone as in a hierarchy built without both
+    assertFalse(view.getTypeHierarchy().contains(base.getType()));
+    assertSameAsRebuilt(object(), abstractDs, department);
+  }
+
+  @Test
   public void removedClassCanBeAddedAgain() {
     JavaSootClass oldEmployee = view.getClass(employee).get();
     assertEquals(new HashSet<>(Arrays.asList(department, employee)), subtypesOfAbstractDs());

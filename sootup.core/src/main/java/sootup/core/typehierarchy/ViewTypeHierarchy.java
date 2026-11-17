@@ -1070,34 +1070,50 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
      * never been declared; otherwise it is removed.
      */
     void removeDeclaration(int id) {
+      IntArrayList supertypes = new IntArrayList();
       int superId = superClassId.get(id);
       if (superId != NO_SUPERCLASS) {
         directSubclasses.get(superId).remove(id);
         superClassId.set(id, NO_SUPERCLASS);
+        supertypes.add(superId);
       }
       IntArrayList implemented = directImplementedInterfaces.get(id);
       for (int i = 0; i < implemented.size(); i++) {
         directImplementers.get(implemented.get(i)).remove(id);
+        supertypes.add(implemented.get(i));
       }
       directImplementedInterfaces.set(id, new IntArrayList());
       IntArrayList extended = directExtendedInterfaces.get(id);
       for (int i = 0; i < extended.size(); i++) {
         directSubinterfaces.get(extended.get(i)).remove(id);
+        supertypes.add(extended.get(i));
       }
       directExtendedInterfaces.set(id, new IntArrayList());
       scanned.clear(id);
 
+      freeIfUnused(id);
+      // a supertype that is only a reference, e.g. a removed class, goes with its last reference
+      for (int i = 0; i < supertypes.size(); i++) {
+        if (!scanned.get(supertypes.get(i))) {
+          freeIfUnused(supertypes.get(i));
+        }
+      }
+    }
+
+    /** Frees the id of a type without a declaration if no other type references it anymore. */
+    private void freeIfUnused(int id) {
       boolean referenced =
           directSubclasses.get(id).size() > 0
               || directImplementers.get(id).size() > 0
               || directSubinterfaces.get(id).size() > 0;
-      if (!referenced) {
-        idOf.remove(classTypeOf.get(id));
-        classTypeOf.set(id, null);
-        isInterface.clear(id);
-        removed.set(id);
-        freeIds.add(id);
+      if (referenced || removed.get(id)) {
+        return;
       }
+      idOf.remove(classTypeOf.get(id));
+      classTypeOf.set(id, null);
+      isInterface.clear(id);
+      removed.set(id);
+      freeIds.add(id);
     }
 
     /**
