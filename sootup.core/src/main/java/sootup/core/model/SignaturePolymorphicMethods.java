@@ -1,4 +1,4 @@
-package sootup.callgraph;
+package sootup.core.model;
 
 /*-
  * #%L
@@ -25,9 +25,6 @@ package sootup.callgraph;
 import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
