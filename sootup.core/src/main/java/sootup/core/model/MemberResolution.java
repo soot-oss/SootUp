@@ -145,6 +145,86 @@ public final class MemberResolution {
   }
 
   /**
+   * Selects the method that a call runs for a receiver of the given class, like the JVM does for
+   * {@code invokevirtual} and {@code invokeinterface} (JVMS 5.4.6): a private resolved method is
+   * selected itself; otherwise the first instance method of the receiver class or its superclasses
+   * that overrides the resolved method (JVMS 5.4.5); otherwise the only non-abstract maximally
+   * specific method of the superinterfaces of the receiver class.
+   *
+   * <p>A method with the same name and descriptor does not always override: a private method never
+   * does, and a package-private method is only overridden from its own package, directly or through
+   * an override in between.
+   *
+   * @param view the view providing the classes and the type hierarchy
+   * @param receiver the class of the receiver object
+   * @param resolved the method the call refers to, see {@link #resolveMethod}
+   * @return the selected method, or empty if none is found or it would be abstract
+   */
+  @NonNull
+  public static Optional<? extends SootMethod> selectMethod(
+      @NonNull View view, @NonNull ClassType receiver, @NonNull SootMethod resolved) {
+    if (resolved.isPrivate()) {
+      return Optional.of(resolved);
+    }
+    MethodSubSignature subSignature = resolved.getSignature().getSubSignature();
+    ClassType current = receiver;
+    Set<ClassType> visitedClasses = new HashSet<>();
+    while (current != null && visitedClasses.add(current)) {
+      Optional<? extends SootClass> clazz = view.getClass(current);
+      if (!clazz.isPresent()) {
+        break;
+      }
+      Optional<? extends SootMethod> method = clazz.get().getMethod(subSignature);
+      if (method.isPresent()
+          && !method.get().isStatic()
+          && (method.get().getSignature().equals(resolved.getSignature())
+              || overrides(view, method.get(), resolved))) {
+        return method.get().isAbstract() ? Optional.empty() : method;
+      }
+      current = clazz.get().getSuperclass().orElse(null);
+    }
+    return resolveInSuperinterfaces(view, receiver, subSignature).filter(m -> !m.isAbstract());
+  }
+
+  /** Whether {@code overriding} overrides {@code overridden} (JVMS 5.4.5). */
+  private static boolean overrides(View view, SootMethod overriding, SootMethod overridden) {
+    if (overriding.isPrivate() || overriding.isStatic()) {
+      return false;
+    }
+    if (overridden.isPublic() || overridden.isProtected() || samePackage(overriding, overridden)) {
+      return true;
+    }
+    // a package-private method is also overridden through an override from its own package
+    ClassType overriddenClass = overridden.getDeclaringClassType();
+    Optional<? extends ClassType> current =
+        view.getClass(overriding.getDeclaringClassType()).flatMap(SootClass::getSuperclass);
+    Set<ClassType> visitedClasses = new HashSet<>();
+    while (current.isPresent()
+        && !current.get().equals(overriddenClass)
+        && visitedClasses.add(current.get())) {
+      Optional<? extends SootClass> clazz = view.getClass(current.get());
+      if (!clazz.isPresent()) {
+        return false;
+      }
+      Optional<? extends SootMethod> between =
+          clazz.get().getMethod(overridden.getSignature().getSubSignature());
+      if (between.isPresent()
+          && overrides(view, between.get(), overridden)
+          && overrides(view, overriding, between.get())) {
+        return true;
+      }
+      current = clazz.get().getSuperclass();
+    }
+    return false;
+  }
+
+  private static boolean samePackage(SootMethod a, SootMethod b) {
+    return a.getDeclaringClassType()
+        .getPackageName()
+        .equals(b.getDeclaringClassType().getPackageName());
+  }
+
+  /**
    * Resolves a field reference: the field declared in the referenced class, otherwise in its
    * superinterfaces, otherwise in its superclass (recursively).
    *

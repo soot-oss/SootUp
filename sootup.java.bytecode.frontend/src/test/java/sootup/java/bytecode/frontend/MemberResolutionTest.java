@@ -151,4 +151,35 @@ public class MemberResolutionTest {
                         "missing", view.getIdentifierFactory().getClassType("ResChild"), "int"))
             .isPresent());
   }
+
+  /** Selects {@code method} for a receiver of class {@code receiver}, as the declaring class. */
+  private String select(String receiver, String method) {
+    IdentifierFactory ids = view.getIdentifierFactory();
+    SootMethod resolved = view.getMethod(ids.parseMethodSignature(method)).get();
+    return MemberResolution.selectMethod(view, ids.getClassType(receiver), resolved)
+        .map(m -> m.getDeclaringClassType().getFullyQualifiedName())
+        .orElse(null);
+  }
+
+  @Test
+  public void selectionTakesTheNearestOverride() {
+    assertEquals("SelSub", select("SelSubSub", "<SelBase: java.lang.String n()>"));
+    assertEquals("SelBase", select("SelBase", "<SelBase: java.lang.String n()>"));
+  }
+
+  @Test
+  public void privateMethodsDoNotOverride() {
+    // SelPrivate.m has the same signature, but SelIface.m runs
+    assertEquals("SelIface", select("SelPrivateChild", "<SelIface: java.lang.String m()>"));
+  }
+
+  @Test
+  public void packagePrivateMethodsAreOnlyOverriddenInTheirPackage() {
+    // selq.B.m does not override selp.A.m
+    assertEquals("selp.A", select("selq.B", "<selp.A: void m()>"));
+    assertEquals("selq.B", select("selq.B", "<selq.B: void m()>"));
+    assertEquals("selp.A", select("selq.D", "<selp.A: void m()>"));
+    // selq.C.m overrides selp.B1.m, which overrides selp.A.m
+    assertEquals("selq.C", select("selq.C", "<selp.A: void m()>"));
+  }
 }
