@@ -29,7 +29,6 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.model.MemberResolution;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -192,28 +191,5 @@ public final class MethodLookup {
           start.getClassName());
     }
     return m;
-  }
-
-  /** Start class and its superclass chain; stops at first class not in the view. */
-  @NonNull
-  static Optional<SootMethod> findInSuperclasses(
-      @NonNull View view, @NonNull SootClass start, @NonNull MethodSubSignature subSig) {
-    SootClass c = start;
-    while (c != null) {
-      Optional<? extends SootMethod> m = c.getMethod(subSig);
-      if (m.isPresent()) {
-        return Optional.of(m.get());
-      }
-      c = c.getSuperclass().flatMap(view::getClass).orElse(null);
-    }
-    return Optional.empty();
-  }
-
-  /** Maximally specific method among the interfaces implemented by {@code start}. */
-  @NonNull
-  static Optional<SootMethod> findDefault(
-      @NonNull View view, @NonNull SootClass start, @NonNull MethodSubSignature subSig) {
-    return MemberResolution.resolveInSuperinterfaces(view, start.getType(), subSig)
-        .map(SootMethod.class::cast);
   }
 }

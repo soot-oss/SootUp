@@ -1121,35 +1121,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return MethodLookup.lookup(view, sig.getDeclClassType(), sig.getSubSignature());
   }
 
-  /**
-   * Searches for a method matching the given sub-signature in the class hierarchy starting from the
-   * given class and traversing superclasses.
-   */
-  protected static Optional<SootMethod> findMethodInHierarchy(
-      @NonNull View view,
-      @NonNull SootClass sootClass,
-      @NonNull MethodSubSignature targetMethodSignature) {
-    return MethodLookup.findInSuperclasses(view, sootClass, targetMethodSignature);
-  }
-
-  /**
-   * Searches the default method that would be used as a target of the given SootClass and
-   * MethodSubSignature. All interfaces are checked and it returns that SootMethod object of the
-   * interface which is the subtype of all possible fitting default method.
-   *
-   * @param view The view contains the hierarchy information and the classes and methods
-   * @param sootClass the sootClass which defines the start of the search
-   * @param defaultSignature the method-subsignature which defines the target method
-   * @return An Optional containing the default method or an empty Optional if there is no default
-   *     method, or a superclass is not in the view.
-   */
-  protected static Optional<? extends SootMethod> findDefaultMethod(
-      @NonNull View view,
-      @NonNull SootClass sootClass,
-      @NonNull MethodSubSignature defaultSignature) {
-    return MethodLookup.findDefault(view, sootClass, defaultSignature);
-  }
-
   /** Returns true if the given class type represents an interface. */
   protected boolean isInterface(ClassType classType) {
     return typeHierarchy.isInterface(classType);
