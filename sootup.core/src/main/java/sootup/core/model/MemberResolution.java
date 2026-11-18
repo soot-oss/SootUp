@@ -22,12 +22,8 @@ package sootup.core.model;
  * #L%
  */
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +32,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -45,7 +42,8 @@ import sootup.core.views.View;
  * denote a member that is declared in a superclass or a superinterface of {@code B}.
  *
  * <p>The lookup only follows classes that are part of the view: the supertypes of a missing class
- * are unknown, so the search along that path ends there.
+ * are unknown, so the search along that path ends there. Method resolution takes the
+ * superinterfaces from the view's type hierarchy.
  */
 public final class MemberResolution {
 
@@ -69,10 +67,12 @@ public final class MemberResolution {
     MethodSubSignature subSignature = signature.getSubSignature();
     ClassType referenced = signature.getDeclClassType();
     Optional<? extends SootClass> referencedClass = view.getClass(referenced);
-    boolean interfaceReference = referencedClass.isPresent() && referencedClass.get().isInterface();
+    if (!referencedClass.isPresent()) {
+      return Optional.empty();
+    }
+    boolean interfaceReference = referencedClass.get().isInterface();
 
     // the class and its superclasses; for an interface: the interface and java.lang.Object
-    Set<ClassType> superinterfaces = new LinkedHashSet<>();
     ClassType current = referenced;
     Set<ClassType> visitedClasses = new HashSet<>();
     while (current != null && visitedClasses.add(current)) {
@@ -86,26 +86,25 @@ public final class MemberResolution {
           && (!objectOfInterface || (method.get().isPublic() && !method.get().isStatic()))) {
         return method;
       }
-      collectSuperinterfaces(view, clazz.get().getInterfaces(), superinterfaces);
       current = clazz.get().getSuperclass().orElse(null);
     }
 
     // the superinterfaces: private and static methods are not inherited
-    List<SootMethod> candidates = new ArrayList<>();
-    for (ClassType superinterface : superinterfaces) {
-      view.getClass(superinterface)
-          .flatMap(i -> i.getMethod(subSignature))
-          .filter(m -> !m.isPrivate() && !m.isStatic())
-          .ifPresent(candidates::add);
-    }
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+    List<SootMethod> candidates =
+        hierarchy
+            .implementedInterfacesOf(referenced)
+            .flatMap(i -> view.getClass(i).flatMap(c -> c.getMethod(subSignature)).stream())
+            .filter(m -> !m.isPrivate() && !m.isStatic())
+            .collect(Collectors.toList());
     // maximally specific: not declared in a superinterface of another candidate's interface
     List<SootMethod> maximallySpecific = new ArrayList<>();
     for (SootMethod candidate : candidates) {
       boolean overridden = false;
       for (SootMethod other : candidates) {
         if (other != candidate
-            && superinterfacesOf(view, other.getDeclaringClassType())
-                .contains(candidate.getDeclaringClassType())) {
+            && hierarchy.isSubtype(
+                candidate.getDeclaringClassType(), other.getDeclaringClassType())) {
           overridden = true;
           break;
         }
@@ -120,35 +119,6 @@ public final class MemberResolution {
       return Optional.of(nonAbstract.get(0));
     }
     return maximallySpecific.stream().findFirst();
-  }
-
-  /** Adds the given interfaces and all interfaces they extend, in breadth-first order. */
-  private static void collectSuperinterfaces(
-      View view, Collection<? extends ClassType> interfaces, Set<ClassType> result) {
-    Deque<ClassType> queue = new ArrayDeque<>();
-    for (ClassType i : interfaces) {
-      if (result.add(i)) {
-        queue.add(i);
-      }
-    }
-    while (!queue.isEmpty()) {
-      view.getClass(queue.poll())
-          .ifPresent(
-              i -> {
-                for (ClassType extended : i.getInterfaces()) {
-                  if (result.add(extended)) {
-                    queue.add(extended);
-                  }
-                }
-              });
-    }
-  }
-
-  /** Returns all interfaces that the given interface extends, directly or indirectly. */
-  private static Set<ClassType> superinterfacesOf(View view, ClassType type) {
-    Set<ClassType> result = new HashSet<>();
-    view.getClass(type).ifPresent(i -> collectSuperinterfaces(view, i.getInterfaces(), result));
-    return result;
   }
 
   /**
