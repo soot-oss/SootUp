@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.model.SignaturePolymorphicMethods;
+import sootup.core.model.MemberResolution;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -41,8 +41,8 @@ import sootup.core.views.View;
  * JVM method lookup shared by all call graph / points-to algorithms: from a start class (declared
  * owner for resolution, receiver type for dispatch) find the method a sub-signature binds to.
  *
- * <p>Order: start class and superclasses, then maximally specific interface method (default
- * methods), then signature-polymorphic methods ({@link SignaturePolymorphicMethods}). May return an
+ * <p>Resolves like {@link MemberResolution#resolveMethod}: start class and superclasses (including
+ * signature-polymorphic methods), then the maximally specific interface method. May return an
  * abstract method (e.g. re-abstracted override); use {@link #findConcrete} for dispatch.
  *
  * <p>Not pluggable on purpose: JVM semantics, one right answer. Pluggable target models
@@ -125,31 +125,21 @@ public final class MethodLookup {
   @NonNull
   static Optional<SootMethod> lookup(
       @NonNull View view, @NonNull ClassType start, @NonNull MethodSubSignature subSig) {
-    SootClass startClass = view.getClass(start).orElse(null);
-    if (startClass == null) {
+    if (!view.getClass(start).isPresent()) {
       logger.warn("Could not find \"{}\" to resolve \"{}\"", start, subSig);
       return Optional.empty();
     }
-    Optional<SootMethod> m = findInSuperclasses(view, startClass, subSig);
-    if (m.isPresent()) {
-      return m;
-    }
-    m = findDefault(view, startClass, subSig);
-    if (m.isPresent()) {
-      return m;
-    }
-    // call-site descriptor of MethodHandle/VarHandle polymorphic call never matches declaration
-    m =
-        SignaturePolymorphicMethods.resolveInHierarchy(view, startClass, subSig.getName())
+    Optional<SootMethod> m =
+        MemberResolution.resolveMethod(
+                view, view.getIdentifierFactory().getMethodSignature(start, subSig))
             .map(SootMethod.class::cast);
-    if (m.isPresent()) {
-      return m;
+    if (m.isEmpty()) {
+      logger.warn(
+          "Could not find \"{}\" in {} and in its superclasses and interfaces",
+          subSig,
+          start.getClassName());
     }
-    logger.warn(
-        "Could not find \"{}\" in {} and in its superclasses and interfaces",
-        subSig,
-        start.getClassName());
-    return Optional.empty();
+    return m;
   }
 
   /** Start class and its superclass chain; stops at first class not in the view. */
@@ -167,25 +157,11 @@ public final class MethodLookup {
     return Optional.empty();
   }
 
-  /**
-   * Maximally specific method among all interfaces implemented by {@code start}: the one whose
-   * declaring interface is a subtype of all other candidates' interfaces.
-   */
+  /** Maximally specific method among the interfaces implemented by {@code start}. */
   @NonNull
   static Optional<SootMethod> findDefault(
       @NonNull View view, @NonNull SootClass start, @NonNull MethodSubSignature subSig) {
-    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
-    return typeHierarchy
-        .implementedInterfacesOf(start.getType())
-        .flatMap(
-            itf ->
-                view.getClass(itf).flatMap(c -> c.getMethod(subSig)).stream()
-                    .map(SootMethod.class::cast))
-        .reduce(
-            (currentLeastSubMethod, m) ->
-                typeHierarchy.isSubtype(
-                        currentLeastSubMethod.getDeclaringClassType(), m.getDeclaringClassType())
-                    ? m
-                    : currentLeastSubMethod);
+    return MemberResolution.resolveInSuperinterfaces(view, start.getType(), subSig)
+        .map(SootMethod.class::cast);
   }
 }

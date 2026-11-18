@@ -64,6 +64,23 @@ public class MethodLookupTest {
   }
 
   @Test
+  public void staticInterfaceMethodsAreNotInherited() {
+    // List.of is static, ArrayList does not inherit it
+    MethodLookup lookup = new MethodLookup(view);
+    assertFalse(find(lookup, "<java.util.ArrayList: java.util.List of()>").isPresent());
+  }
+
+  @Test
+  public void interfaceReferenceSkipsNonPublicMethodsOfObject() {
+    // Object.clone is protected, an interface does not get it
+    MethodLookup lookup = new MethodLookup(view);
+    assertFalse(find(lookup, "<java.util.List: java.lang.Object clone()>").isPresent());
+    assertEquals(
+        Optional.of(sig("<java.lang.Object: java.lang.String toString()>")),
+        find(lookup, "<java.lang.Runnable: java.lang.String toString()>"));
+  }
+
+  @Test
   public void missAndHitCached() {
     MethodLookup lookup = new MethodLookup(view);
     MethodSignature missing = sig("java.lang.String#noSuchMethod(): void");
