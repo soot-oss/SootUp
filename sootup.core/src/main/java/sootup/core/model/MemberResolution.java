@@ -96,11 +96,27 @@ public final class MemberResolution {
       current = clazz.get().getSuperclass().orElse(null);
     }
 
-    // the superinterfaces: private and static methods are not inherited
+    return resolveInSuperinterfaces(view, referenced, subSignature);
+  }
+
+  /**
+   * Resolves a method in the superinterfaces of the given type (JVMS 5.4.3.3 step 3), the last step
+   * of {@link #resolveMethod}: private and static interface methods are not inherited; among the
+   * maximally specific methods, i.e. those not overridden in a subinterface, the only non-abstract
+   * one is chosen; if there is none or more than one, a maximally specific one.
+   *
+   * @param view the view providing the classes and the type hierarchy
+   * @param type the class or interface whose superinterfaces are searched
+   * @param subSignature the method to find
+   * @return the resolved method, or empty if no superinterface declares a matching method
+   */
+  @NonNull
+  public static Optional<? extends SootMethod> resolveInSuperinterfaces(
+      @NonNull View view, @NonNull ClassType type, @NonNull MethodSubSignature subSignature) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
     List<SootMethod> candidates =
         hierarchy
-            .implementedInterfacesOf(referenced)
+            .implementedInterfacesOf(type)
             .flatMap(i -> view.getClass(i).flatMap(c -> c.getMethod(subSignature)).stream())
             .filter(m -> !m.isPrivate() && !m.isStatic())
             .collect(Collectors.toList());
