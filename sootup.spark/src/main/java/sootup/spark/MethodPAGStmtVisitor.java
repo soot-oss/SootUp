@@ -45,6 +45,7 @@ import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -126,6 +127,11 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       val rightNode = nodeFactory.createNode(right, methodSignature);
       if (leftNode.isPresent() && rightNode.isPresent()) {
         addPagEdge(rightNode.get(), leftNode.get());
+        if (right instanceof JNewMultiArrayExpr multiArray && left instanceof Local target) {
+          nodeFactory
+              .createInnerArrayEdges(multiArray, target, methodSignature)
+              .forEach(edge -> addPagEdge(edge.getKey(), edge.getValue()));
+        }
       } else {
         log.warn("Missing nodes for left: {} <- right: {}", left, right);
       }

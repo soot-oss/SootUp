@@ -22,16 +22,26 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
+import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
+import sootup.spark.node.VariableNode;
 
 /**
  * It is responsible for creating a SPARK representative nodes (nodes present in SPARK, AllocNode,
@@ -56,5 +66,46 @@ public class NodeFactory {
         new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
     value.accept(visitor);
     return visitor.getResult();
+  }
+
+  /**
+   * Returns the edges that model the inner arrays of {@code target = new T[n1][n2]...}: like Soot,
+   * each dimension below the outermost one gets an allocation, which is stored into the elements of
+   * the enclosing array, also for dimensions without a given size.
+   *
+   * @param expr the multi-dimensional array creation
+   * @param target the local that the outermost array is assigned to
+   * @return the edges, from source to target
+   */
+  @NonNull
+  public List<Map.Entry<Node, Node>> createInnerArrayEdges(
+      @NonNull JNewMultiArrayExpr expr,
+      @NonNull Local target,
+      @NonNull MethodSignature containingMethodSig) {
+    ValueToNodeConversionVisitor visitor =
+        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
+    List<Map.Entry<Node, Node>> edges = new ArrayList<>();
+    String enclosingName = target.getName();
+    // the base of the first store is the node of the target local, so it has the local's type
+    Type enclosingVariableType = target.getType();
+    ArrayType enclosingType = (ArrayType) expr.getType();
+    while (enclosingType.getElementType() instanceof ArrayType innerType) {
+      AllocationNode inner = visitor.allocation(innerType);
+      VariableNode innerVariable =
+          VariableNode.builder()
+              .name(enclosingName + "[]")
+              .type(innerType)
+              .containingMethodSig(containingMethodSig)
+              .build();
+      edges.add(new SimpleImmutableEntry<>(inner, innerVariable));
+      edges.add(
+          new SimpleImmutableEntry<>(
+              innerVariable,
+              visitor.arrayElements(enclosingName, enclosingVariableType, innerType)));
+      enclosingName = innerVariable.getName();
+      enclosingVariableType = innerType;
+      enclosingType = innerType;
+    }
+    return edges;
   }
 }
