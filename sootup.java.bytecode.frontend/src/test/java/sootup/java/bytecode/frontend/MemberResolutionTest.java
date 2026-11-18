@@ -88,6 +88,32 @@ public class MemberResolutionTest {
   }
 
   @Test
+  public void signaturePolymorphicMethodsMatchAnyDescriptor() {
+    JavaView jdk = new JavaView(new JrtFileSystemAnalysisInputLocation());
+    IdentifierFactory ids = jdk.getIdentifierFactory();
+    SootMethod invokeExact =
+        MemberResolution.resolveMethod(
+                jdk,
+                ids.parseMethodSignature(
+                    "<java.lang.invoke.MethodHandle: java.lang.String invokeExact(java.lang.String,int)>"))
+            .get();
+    assertEquals("invokeExact", invokeExact.getName());
+    assertEquals(
+        "java.lang.invoke.MethodHandle",
+        invokeExact.getDeclaringClassType().getFullyQualifiedName());
+    // referenced through a subclass of MethodHandle
+    SootMethod invokeBasic =
+        MemberResolution.resolveMethod(
+                jdk,
+                ids.parseMethodSignature(
+                    "<java.lang.invoke.DirectMethodHandle: java.lang.Object invokeBasic(java.lang.Object)>"))
+            .get();
+    assertEquals(
+        "java.lang.invoke.MethodHandle",
+        invokeBasic.getDeclaringClassType().getFullyQualifiedName());
+  }
+
+  @Test
   public void unknownMethodsAndClassesAreNotResolved() {
     assertNull(resolve("<ResChild: void doesNotExist()>"));
     assertNull(resolve("<does.not.Exist: void m()>"));

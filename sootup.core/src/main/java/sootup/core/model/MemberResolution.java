@@ -51,11 +51,12 @@ public final class MemberResolution {
 
   /**
    * Resolves a method reference like the JVM: the method declared in the referenced class or its
-   * superclasses (for a reference to an interface: the interface, then the public methods of {@code
-   * java.lang.Object}), otherwise a method of a superinterface. Among the superinterface methods,
-   * which exclude private and static ones, the only non-abstract one of the maximally specific
-   * methods is chosen, i.e. of those not overridden in a subinterface; if there is none or more
-   * than one, a maximally specific one.
+   * superclasses (or the signature polymorphic method of that name, e.g. {@code
+   * MethodHandle.invokeExact}) (for a reference to an interface: the interface, then the public
+   * methods of {@code java.lang.Object}), otherwise a method of a superinterface. Among the
+   * superinterface methods, which exclude private and static ones, the only non-abstract one of the
+   * maximally specific methods is chosen, i.e. of those not overridden in a subinterface; if there
+   * is none or more than one, a maximally specific one.
    *
    * @param view the view providing the classes
    * @param signature the method reference
@@ -85,6 +86,12 @@ public final class MemberResolution {
       if (method.isPresent()
           && (!objectOfInterface || (method.get().isPublic() && !method.get().isStatic()))) {
         return method;
+      }
+      // a signature polymorphic method matches any descriptor at the call site
+      Optional<? extends SootMethod> polymorphic =
+          SignaturePolymorphicMethods.resolve(clazz.get(), subSignature.getName());
+      if (polymorphic.isPresent()) {
+        return polymorphic;
       }
       current = clazz.get().getSuperclass().orElse(null);
     }
