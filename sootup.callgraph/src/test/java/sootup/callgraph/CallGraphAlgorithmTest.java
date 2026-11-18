@@ -593,6 +593,37 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
+  public void testVirtualCall5PrivateMethodDoesNotOverride() {
+    CallGraph cg = loadCallGraph("VirtualCall", "vc5.Class");
+    MethodSignature greet =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc5.Greeter"),
+            "greet",
+            "void",
+            Collections.emptyList());
+    MethodSignature privateGreet =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc5.Base"), "greet", "void", Collections.emptyList());
+    InvokableStmt call = getInvokableStmt(mainMethodSignature, greet);
+    assertTrue(cg.containsCall(mainMethodSignature, greet, call));
+    assertFalse(cg.containsCall(mainMethodSignature, privateGreet, call));
+  }
+
+  @Test
+  public void testVirtualCall6PackagePrivateMethodIsNotOverriddenFromAnotherPackage() {
+    CallGraph cg = loadCallGraph("VirtualCall", "vc6.Class");
+    MethodSignature m =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc6.Class"), "m", "void", Collections.emptyList());
+    MethodSignature otherM =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc6.q.Sub"), "m", "void", Collections.emptyList());
+    InvokableStmt call = getInvokableStmt(mainMethodSignature, m);
+    assertTrue(cg.containsCall(mainMethodSignature, m, call));
+    assertFalse(cg.containsCall(mainMethodSignature, otherM, call));
+  }
+
+  @Test
   public void testDynamicInterfaceMethod0() {
     CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim0.Class");
     MethodSignature interfaceMethod =
