@@ -50,13 +50,16 @@ public final class MemberResolution {
   private MemberResolution() {}
 
   /**
-   * Resolves a method reference like the JVM: the method declared in the referenced class or its
-   * superclasses (or the signature polymorphic method of that name, e.g. {@code
-   * MethodHandle.invokeExact}) (for a reference to an interface: the interface, then the public
-   * methods of {@code java.lang.Object}), otherwise a method of a superinterface. Among the
-   * superinterface methods, which exclude private and static ones, the only non-abstract one of the
-   * maximally specific methods is chosen, i.e. of those not overridden in a subinterface; if there
-   * is none or more than one, a maximally specific one.
+   * Resolves a method reference like the JVM (JVMS 5.4.3.3, 5.4.3.4), taking the first of:
+   *
+   * <ol>
+   *   <li>the method declared in the referenced class or its superclasses; for a reference to an
+   *       interface: in the interface, then the public instance methods of {@code
+   *       java.lang.Object};
+   *   <li>in one of these classes, the signature polymorphic method of that name, e.g. {@code
+   *       MethodHandle.invokeExact}, whose descriptor need not match;
+   *   <li>a method of a superinterface, see {@link #resolveInSuperinterfaces}.
+   * </ol>
    *
    * @param view the view providing the classes
    * @param signature the method reference
@@ -154,6 +157,9 @@ public final class MemberResolution {
    * <p>A method with the same name and descriptor does not always override: a private method never
    * does, and a package-private method is only overridden from its own package, directly or through
    * an override in between.
+   *
+   * <p>If several non-abstract superinterface methods are maximally specific, the JVM throws an
+   * {@code IncompatibleClassChangeError}; this method then returns one of them.
    *
    * @param view the view providing the classes and the type hierarchy
    * @param receiver the class of the receiver object
