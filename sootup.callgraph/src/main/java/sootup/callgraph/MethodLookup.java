@@ -38,18 +38,20 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * JVM method lookup shared by all call graph / points-to algorithms: from a start class (declared
- * owner for resolution, receiver type for dispatch) find the method a sub-signature binds to.
+ * JVM method lookup shared by all call graph / points-to algorithms, a cached front end of {@link
+ * MemberResolution}:
  *
- * <p>Resolves like {@link MemberResolution#resolveMethod}: start class and superclasses (including
- * signature-polymorphic methods), then the maximally specific interface method. May return an
- * abstract method (e.g. re-abstracted override); use {@link #findConcrete} for dispatch.
+ * <ul>
+ *   <li>{@link #find} resolves a method reference from its referenced class, see {@link
+ *       MemberResolution#resolveMethod}. It may return an abstract method (e.g. a re-abstracted
+ *       override); {@link #findConcrete} maps that to empty.
+ *   <li>{@link #select} and {@link #dispatch} pick the method a receiver class runs for a call,
+ *       which is not always the first one with the same sub-signature, see {@link
+ *       MemberResolution#selectMethod}.
+ * </ul>
  *
  * <p>Not pluggable on purpose: JVM semantics, one right answer. Pluggable target models
  * (reflection, invokedynamic) live elsewhere.
- *
- * <p>{@link #select} and {@link #dispatch} pick the method a receiver class runs, which is not
- * always the first one with the same sub-signature, see {@link MemberResolution#selectMethod}.
  *
  * <p>Cache: per (class, sub-signature) and per (receiver class, resolved method), misses included;
  * dropped when the type hierarchy modification count changes. One instance per analysis, holds the
