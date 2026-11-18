@@ -15,6 +15,15 @@ public class VirtualDispatchTest {
 
   @Test
   public void privateMethodWithTheSameSignatureIsNotATargetOnTheFly() {
+    assertPrivateMethodIsNotATarget(true);
+  }
+
+  @Test
+  public void privateMethodWithTheSameSignatureIsNotATargetWithCha() {
+    assertPrivateMethodIsNotATarget(false);
+  }
+
+  private void assertPrivateMethodIsNotATarget(boolean onTheFly) {
     ClassType mainClass = SparkTestUtil.idFactory.getClassType("PrivateShadow");
     MethodSignature mainSig =
         SparkTestUtil.idFactory.getMethodSignature(
@@ -23,7 +32,7 @@ public class VirtualDispatchTest {
         Spark.builder()
             .view(SparkTestUtil.view)
             .entryPoints(Collections.singletonList(mainSig))
-            .sparkOptions(SparkOptions.builder().onFlyCallGraph(true).build())
+            .sparkOptions(SparkOptions.builder().onFlyCallGraph(onTheFly).build())
             .build();
     spark.solve();
     CallGraph cg = spark.getCallGraph();
