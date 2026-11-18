@@ -48,8 +48,12 @@ import sootup.core.views.View;
  * <p>Not pluggable on purpose: JVM semantics, one right answer. Pluggable target models
  * (reflection, invokedynamic) live elsewhere.
  *
- * <p>Cache: per (class, sub-signature), misses included; dropped when the type hierarchy
- * modification count changes. One instance per analysis, holds the view strongly.
+ * <p>{@link #select} and {@link #dispatch} pick the method a receiver class runs, which is not
+ * always the first one with the same sub-signature, see {@link MemberResolution#selectMethod}.
+ *
+ * <p>Cache: per (class, sub-signature) and per (receiver class, resolved method), misses included;
+ * dropped when the type hierarchy modification count changes. One instance per analysis, holds the
+ * view strongly.
  */
 public final class MethodLookup {
 
@@ -60,6 +64,10 @@ public final class MethodLookup {
 
   @NonNull
   private final Map<ClassType, Map<MethodSubSignature, Optional<SootMethod>>> cache =
+      new ConcurrentHashMap<>();
+
+  @NonNull
+  private final Map<ClassType, Map<MethodSignature, Optional<SootMethod>>> selectionCache =
       new ConcurrentHashMap<>();
 
   private volatile long cacheModCount;
@@ -84,19 +92,8 @@ public final class MethodLookup {
   /** Lookup starting at {@code start}; may yield an abstract method. Cached. */
   @NonNull
   public Optional<SootMethod> find(@NonNull ClassType start, @NonNull MethodSubSignature subSig) {
-    long modCount = typeHierarchy.getModificationCount();
-    if (modCount != cacheModCount) {
-      cache.clear();
-      cacheModCount = modCount;
-    }
-    Map<MethodSubSignature, Optional<SootMethod>> perClass = cache.get(start);
-    if (perClass == null) {
-      perClass = new ConcurrentHashMap<>(4);
-      Map<MethodSubSignature, Optional<SootMethod>> prev = cache.putIfAbsent(start, perClass);
-      if (prev != null) {
-        perClass = prev;
-      }
-    }
+    dropCachesIfHierarchyChanged();
+    Map<MethodSubSignature, Optional<SootMethod>> perClass = perClass(cache, start);
     Optional<SootMethod> result = perClass.get(subSig);
     if (result == null) {
       // no computeIfAbsent: lookup reads other classes, keep map ops non-reentrant
@@ -104,6 +101,59 @@ public final class MethodLookup {
       perClass.put(subSig, result);
     }
     return result;
+  }
+
+  /**
+   * The method that a receiver of class {@code receiver} runs for a call to {@code resolved}, see
+   * {@link MemberResolution#selectMethod}; empty if it would be abstract. Cached.
+   */
+  @NonNull
+  public Optional<SootMethod> select(@NonNull ClassType receiver, @NonNull SootMethod resolved) {
+    dropCachesIfHierarchyChanged();
+    Map<MethodSignature, Optional<SootMethod>> perClass = perClass(selectionCache, receiver);
+    Optional<SootMethod> result = perClass.get(resolved.getSignature());
+    if (result == null) {
+      result = MemberResolution.selectMethod(view, receiver, resolved).map(SootMethod.class::cast);
+      perClass.put(resolved.getSignature(), result);
+    }
+    return result;
+  }
+
+  /**
+   * Virtual dispatch of the call {@code sig} on a receiver of class {@code receiver}: resolves
+   * {@code sig}, then {@link #select selects}. If {@code sig} does not resolve, e.g. because its
+   * class is not in the view, falls back to {@link #findConcrete(ClassType, MethodSubSignature)}.
+   */
+  @NonNull
+  public Optional<SootMethod> dispatch(@NonNull ClassType receiver, @NonNull MethodSignature sig) {
+    Optional<SootMethod> resolved = find(sig);
+    if (resolved.isEmpty()) {
+      return findConcrete(receiver, sig.getSubSignature());
+    }
+    return select(receiver, resolved.get());
+  }
+
+  private void dropCachesIfHierarchyChanged() {
+    long modCount = typeHierarchy.getModificationCount();
+    if (modCount != cacheModCount) {
+      cache.clear();
+      selectionCache.clear();
+      cacheModCount = modCount;
+    }
+  }
+
+  @NonNull
+  private static <K> Map<K, Optional<SootMethod>> perClass(
+      Map<ClassType, Map<K, Optional<SootMethod>>> cache, ClassType type) {
+    Map<K, Optional<SootMethod>> perClass = cache.get(type);
+    if (perClass == null) {
+      perClass = new ConcurrentHashMap<>(4);
+      Map<K, Optional<SootMethod>> prev = cache.putIfAbsent(type, perClass);
+      if (prev != null) {
+        perClass = prev;
+      }
+    }
+    return perClass;
   }
 
   /** Like {@link #find(ClassType, MethodSubSignature)}, abstract result mapped to empty. */

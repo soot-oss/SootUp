@@ -81,6 +81,29 @@ public class MethodLookupTest {
   }
 
   @Test
+  public void dispatchSelectsTheOverrideOfTheReceiverClass() {
+    MethodLookup lookup = new MethodLookup(view);
+    assertEquals(
+        Optional.of(sig("java.util.ArrayList#size(): int")),
+        lookup
+            .dispatch(
+                factory.getClassType("java.util.ArrayList"), sig("java.util.List#size(): int"))
+            .map(SootMethod::getSignature));
+    // inherited default method
+    assertEquals(
+        Optional.of(sig("java.util.Collection#stream(): java.util.stream.Stream")),
+        lookup
+            .dispatch(
+                factory.getClassType("java.util.ArrayList"),
+                sig("java.util.List#stream(): java.util.stream.Stream"))
+            .map(SootMethod::getSignature));
+    SootMethod size = lookup.find(sig("java.util.List#size(): int")).orElseThrow();
+    assertSame(
+        lookup.select(factory.getClassType("java.util.ArrayList"), size),
+        lookup.select(factory.getClassType("java.util.ArrayList"), size));
+  }
+
+  @Test
   public void missAndHitCached() {
     MethodLookup lookup = new MethodLookup(view);
     MethodSignature missing = sig("java.lang.String#noSuchMethod(): void");
