@@ -211,9 +211,9 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   private void handleInvokeExprOtf(
       AbstractInvokeExpr expr, Optional<Value> lhs, InvokableStmt stmt) {
     if (expr instanceof JStaticInvokeExpr || expr instanceof JSpecialInvokeExpr) {
-      // The invocation names the class through which the method is called, which can be a subclass
-      // of the class that declares it (e.g., a static method called through a subclass, or a super
-      // call to a method that the direct superclass inherits).
+      // The reference can name a subclass of the declaring class, e.g. Sub.staticMethod() or
+      // super.inherited(). Resolving it is enough: there is no receiver to select on, and a super
+      // call's selection starts at the referenced direct superclass, which resolution already does.
       MethodSignature targetSig =
           otfContext
               .methodLookup()
