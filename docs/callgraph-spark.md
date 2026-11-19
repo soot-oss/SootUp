@@ -8,8 +8,9 @@ the reachable methods and propagates allocation sites through it. Spark can be u
   resolved to the run-time types of the objects its receiver may point to. This gives the precise call
   graph from the [tutorial's comparison](callgraphs.md#the-running-example).
 - **CHA-seeded** (the default): Spark computes points-to sets on a CHA call graph that is built up
-  front. The call graph you get back *is* that CHA graph. Use this mode when you only need points-to
-  sets.
+  front. The call graph you get back is that CHA graph without the virtual calls that none of the
+  receiver's objects dispatch to. The points-to sets can be less precise than on the fly, since
+  objects also flow through calls that only CHA has.
 
 Start with the [call graph tutorial](callgraphs.md) for the shared options. For context-sensitive
 analyses, see [Qilin](qilin.md).
@@ -34,7 +35,7 @@ analyses, see [Qilin](qilin.md).
 
 ## Building via `CallGraphConfig`
 
-=== "On the fly (precise call graph)"
+=== "On the fly"
 
     ```java
     --8<-- "sootup.examples/src/test/java/sootup/examples/callgraph/CallGraphComparisonTest.java:spark"
@@ -60,7 +61,7 @@ Every option, with its default:
 
 | Option | Default | Effect |
 |---|---|---|
-| `onFlyCallGraph` | `false` | Build the call graph together with the points-to sets instead of using CHA. Much more precise call graph |
+| `onFlyCallGraph` | `false` | Build the call graph together with the points-to sets instead of narrowing a CHA graph afterwards. Analyzes fewer methods, more precise points-to sets |
 | `ignoreBaseObjects` | `false` | Field-based analysis: `a.f` and `b.f` are the same node, no matter what `a` and `b` point to. Cheaper, less precise |
 | `typesForSites` | `false` | One abstract object per *type* instead of per `new` statement. Smaller points-to sets, less precise |
 | `simpleEdgesBidirectional` | `false` | Make assignment edges bidirectional, which turns the analysis into a unification-based (Steensgaard-style) one. Cheaper, much less precise |
