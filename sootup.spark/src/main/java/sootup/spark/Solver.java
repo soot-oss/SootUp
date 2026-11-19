@@ -53,6 +53,7 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -338,6 +339,10 @@ class Solver {
 
   /** Resolves a virtual / interface call given the runtime type of the receiver. */
   private Optional<MethodSignature> dispatch(Type allocType, MethodSignature calledSig) {
+    if (allocType instanceof ArrayType) {
+      // an array runs the methods of java.lang.Object
+      allocType = view.getIdentifierFactory().getClassType("java.lang.Object");
+    }
     if (!(allocType instanceof ClassType ct)) return Optional.empty();
     // resolves calledSig, then selects the method the receiver class runs; cached
     return methodLookup.dispatch(ct, calledSig).map(SootMethod::getSignature);
