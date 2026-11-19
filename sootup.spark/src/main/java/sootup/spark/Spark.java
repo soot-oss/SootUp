@@ -34,10 +34,10 @@ import sootup.core.views.View;
 /**
  * Main access point to SPARK's functionality.
  *
- * <p>Exposes the call graph (CHA up-front, supplied by the client, or built on-the-fly when {@code
- * SparkOptions#isOnFlyCallGraph()} is set) and a {@link PointsToAnalysis} over the resulting PAG.
- * Lower-level components such as the solver are package-private; clients should not bypass this
- * facade.
+ * <p>Exposes a {@link PointsToAnalysis} and the call graph it gives: built on-the-fly when {@code
+ * SparkOptions#isOnFlyCallGraph()} is set, otherwise the call graph the PAG is built on (CHA
+ * up-front, or supplied by the client) narrowed to the calls the points-to sets allow. Lower-level
+ * components such as the solver are package-private; clients should not bypass this facade.
  *
  * <pre>
  *   Spark spark = Spark.builder()
@@ -70,6 +70,7 @@ public class Spark {
   private final Solver solver;
   private boolean solved;
   private PointsToAnalysis pta;
+  private CallGraph pointsToCallGraph;
 
   @Builder
   Spark(
@@ -102,13 +103,22 @@ public class Spark {
   }
 
   /**
-   * Returns the call graph: the one passed to the builder, one built via class-hierarchy analysis
-   * at construction time, or one grown on-the-fly during {@link #solve()} when {@code
-   * SparkOptions#isOnFlyCallGraph()} is set.
+   * Returns the call graph that the points-to sets give. When {@code
+   * SparkOptions#isOnFlyCallGraph()} is set, it is grown on-the-fly during {@link #solve()}.
+   * Otherwise it is the call graph the PAG was built on (the one passed to the builder, or one
+   * built via class-hierarchy analysis), without the virtual and interface calls that no object the
+   * receiver points to dispatches to, and without the methods that are then no longer reachable.
+   * The result is cached.
    */
   public CallGraph getCallGraph() {
     solve();
-    return solver.getCallGraph();
+    if (solver.getSparkOptions().isOnFlyCallGraph()) {
+      return solver.getCallGraph();
+    }
+    if (pointsToCallGraph == null) {
+      pointsToCallGraph = solver.pointsToCallGraph(getPointsToAnalysis());
+    }
+    return pointsToCallGraph;
   }
 
   /** Returns a points-to analysis over the solved PAG. The result is cached. */
