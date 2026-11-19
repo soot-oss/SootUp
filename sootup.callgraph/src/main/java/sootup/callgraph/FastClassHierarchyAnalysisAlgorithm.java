@@ -73,8 +73,10 @@ import sootup.core.views.View;
  *       that holds a {@code B} and later a {@code C} is typed with their common supertype, so the
  *       same program gives a larger call graph. A {@code LocalPacker} that merges locals of
  *       different types widens them the same way.
- *   <li>A type that is too narrow makes the call graph unsound: calls whose receiver can be of
- *       another type lose their edges, without any error. Only use bodies whose typing you trust.
+ *   <li>It relies on the type of each local being a supertype of every value assigned to it. The
+ *       {@code TypeAssigner} guarantees this for bytecode. Bodies typed another way, e.g. Jimple
+ *       files or bodies built or changed in code, must keep it; otherwise calls on a wrongly typed
+ *       local silently lose edges.
  *   <li>Locals without a class type, e.g. untyped locals of dex bodies before a {@code
  *       TypeAssigner} ran, are resolved like CHA does.
  *   <li>It is not class hierarchy analysis in the textbook sense, which uses the declared type of
