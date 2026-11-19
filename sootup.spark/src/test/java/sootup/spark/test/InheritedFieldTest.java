@@ -85,6 +85,16 @@ public class InheritedFieldTest {
   }
 
   @Test
+  public void fieldQueryThroughSubclassSeesStore() {
+    PointsToAnalysis pta = SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis();
+
+    AllocationNode newSub = SparkTestUtil.alloc(subType, 1L, mainSig);
+    AllocationNode newValue = SparkTestUtil.alloc(valueType, 2L, mainSig);
+    FieldSignature viaSub = SparkTestUtil.idFactory.getFieldSignature("f", subType, valueType);
+    assertEquals(Set.of(newValue), pta.reachingObjects(Set.of(newSub), viaSub));
+  }
+
+  @Test
   public void fieldNodesUseDeclaredField() {
     NodeFactory nodeFactory = new NodeFactory(SparkOptions.defaultOptions(), SparkTestUtil.view);
     FieldSignature viaSub = SparkTestUtil.idFactory.getFieldSignature("f", subType, valueType);

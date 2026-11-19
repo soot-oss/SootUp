@@ -35,6 +35,8 @@ import org.graph4j.Digraph;
 import org.graph4j.Edge;
 import org.graph4j.EdgeIterator;
 import sootup.core.jimple.common.Value;
+import sootup.core.model.MemberResolution;
+import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
@@ -127,14 +129,18 @@ public class PointsToAnalysis {
    * {@code b.f.g}.
    *
    * @param objects the allocation sites whose field is queried
-   * @param field the field, as the PAG's field nodes represent it
+   * @param field the field, also as referenced through a subclass of the class that declares it
    * @return the allocation sites that the field may point to
    */
   public Set<AllocationNode> reachingObjects(
       @NonNull Set<AllocationNode> objects, @NonNull FieldSignature field) {
+    FieldSignature declared =
+        MemberResolution.resolveField(solver.getView(), field)
+            .<FieldSignature>map(SootField::getSignature)
+            .orElse(field);
     Set<AllocationNode> result = new LinkedHashSet<>();
     for (AllocationNode o : objects) {
-      Set<AllocationNode> stored = heap.get(new HeapKey(o, field));
+      Set<AllocationNode> stored = heap.get(new HeapKey(o, declared));
       if (stored != null) {
         result.addAll(stored);
       }
