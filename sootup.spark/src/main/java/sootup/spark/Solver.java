@@ -268,8 +268,8 @@ class Solver {
   /** Resolves a virtual / interface call given the runtime type of the receiver. */
   private Optional<MethodSignature> dispatch(Type allocType, MethodSignature calledSig) {
     if (!(allocType instanceof ClassType ct)) return Optional.empty();
-    // cached per (receiver type, sub-signature), misses included
-    return methodLookup.findConcrete(ct, calledSig.getSubSignature()).map(SootMethod::getSignature);
+    // resolves calledSig, then selects the method the receiver class runs; cached
+    return methodLookup.dispatch(ct, calledSig).map(SootMethod::getSignature);
   }
 
   private record ResolvedVirtualCall(

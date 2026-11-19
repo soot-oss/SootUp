@@ -54,6 +54,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.FieldModifier;
+import sootup.core.model.MemberResolution;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -359,9 +360,12 @@ public class PAG {
    * instead of a plain one, bypassing the abstract-type guard - the type is deliberately the
    * functional interface, not a concrete class, and the target is already statically known.
    */
-  /** The field {@code sig} denotes: from the view, else a stable phantom stand-in. */
+  /**
+   * The field {@code sig} denotes, also when it is declared in a supertype of the referenced class;
+   * else a stable phantom stand-in.
+   */
   public SootField getField(FieldSignature sig) {
-    Optional<? extends SootField> field = pta.getView().getField(sig);
+    Optional<? extends SootField> field = MemberResolution.resolveField(pta.getView(), sig);
     if (field.isPresent()) {
       return field.get();
     }

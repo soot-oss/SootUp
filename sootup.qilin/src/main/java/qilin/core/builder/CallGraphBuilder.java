@@ -529,7 +529,13 @@ public class CallGraphBuilder {
       }
     } else {
       Type mType = site.recNode().getType();
-      virtualCalls.resolve(type, mType, site.subSig(), container.method(), targetsQueue);
+      MethodSignature reference = site.iie().getMethodSignature();
+      if (reference.getSubSignature().equals(site.subSig())) {
+        virtualCalls.resolve(type, mType, reference, container.method(), targetsQueue);
+      } else {
+        // a modelled call, e.g. Thread.start to run: no reference to resolve
+        virtualCalls.resolve(type, mType, site.subSig(), container.method(), targetsQueue);
+      }
     }
     return targets;
   }

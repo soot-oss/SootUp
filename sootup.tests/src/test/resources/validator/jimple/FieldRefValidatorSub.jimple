@@ -1,0 +1,26 @@
+public super class FieldRefValidatorSub extends FieldRefValidator
+{
+    public void <init>()
+    {
+        FieldRefValidatorSub l0;
+
+
+        l0 := @this: FieldRefValidatorSub;
+        specialinvoke l0.<FieldRefValidator: void <init>()>();
+
+        return;
+    }
+
+    public void testInheritedFieldRefs_pass()
+    {
+        FieldRefValidatorSub l0;
+        unknown $stack1, $stack2;
+
+        l0 := @this: FieldRefValidatorSub;
+        $stack1 = l0.<FieldRefValidatorSub: int x>;
+        $stack2 = <FieldRefValidatorSub: int y>;
+
+        return;
+    }
+
+}
