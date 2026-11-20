@@ -3,7 +3,6 @@ package sootup.spark.test.options;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,8 +40,9 @@ public class CustomCallGraphTest {
   }
 
   /**
-   * A client-supplied call graph must be used as-is (no CHA re-run) and drive PAG construction the
-   * same way Spark's own CHA-computed call graph would.
+   * A client-supplied call graph must be used (no CHA re-run) and drive PAG construction the same
+   * way Spark's own CHA-computed call graph would; the call graph Spark exposes is that graph
+   * narrowed by the points-to sets.
    */
   @Test
   public void clientSuppliedCallGraphIsUsedInPlaceOfCha() {
@@ -52,7 +52,9 @@ public class CustomCallGraphTest {
 
     Spark spark = Spark.builder().view(SparkTestUtil.view).callGraph(clientCg).build();
 
-    assertSame(clientCg, spark.getCallGraph(), "Spark must expose the supplied call graph as-is");
+    assertTrue(
+        clientCg.getCalls().containsAll(spark.getCallGraph().getCalls()),
+        "Spark must expose calls of the supplied call graph only");
     assertTrue(
         spark.getCallGraph().containsMethod(getValueSig),
         "the client-built CHA graph must already contain the resolved virtual callee");
