@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -1764,8 +1764,9 @@ the reachable methods and propagates allocation sites through it. Spark can be u
   resolved to the run-time types of the objects its receiver may point to. This gives the precise call
   graph from the <a href="../callgraphs/#the-running-example">tutorial's comparison</a>.</li>
 <li><strong>CHA-seeded</strong> (the default): Spark computes points-to sets on a CHA call graph that is built up
-  front. The call graph you get back <em>is</em> that CHA graph. Use this mode when you only need points-to
-  sets.</li>
+  front. The call graph you get back is that CHA graph without the virtual calls that none of the
+  receiver's objects dispatch to. The points-to sets can be less precise than on the fly, since
+  objects also flow through calls that only CHA has.</li>
 </ul>
 <p>Start with the <a href="../callgraphs/">call graph tutorial</a> for the shared options. For context-sensitive
 analyses, see <a href="../qilin/">Qilin</a>.</p>
@@ -1791,7 +1792,7 @@ analyses, see <a href="../qilin/">Qilin</a>.</p>
 </div>
 </div>
 <h2 id="building-via-callgraphconfig">Building via <code>CallGraphConfig</code></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">On the fly (precise call graph)</label><label for="__tabbed_2_2">CHA-seeded (default)</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">On the fly</label><label for="__tabbed_2_2">CHA-seeded (default)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1826,7 +1827,7 @@ analyses, see <a href="../qilin/">Qilin</a>.</p>
 <span class="w">        </span><span class="p">.</span><span class="na">into</span><span class="p">(</span><span class="n">SparkCallGraphConfig</span><span class="p">::</span><span class="n">from</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">sparkOptions</span><span class="p">(</span><span class="n">SparkOptions</span><span class="p">.</span><span class="na">defaultOptions</span><span class="p">())</span><span class="w"> </span><span class="c1">// onFlyCallGraph = false</span>
 <span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span><span class="w"> </span><span class="c1">// = the CHA graph Spark was seeded with</span>
+<span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span><span class="w"> </span><span class="c1">// the CHA seed, narrowed by the points-to sets</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1872,7 +1873,7 @@ configure the CHA graph. In on-the-fly mode they are not used, and Spark current
 <tr>
 <td><code>onFlyCallGraph</code></td>
 <td><code>false</code></td>
-<td>Build the call graph together with the points-to sets instead of using CHA. Much more precise call graph</td>
+<td>Build the call graph together with the points-to sets instead of narrowing a CHA graph afterwards. Analyzes fewer methods, more precise points-to sets</td>
 </tr>
 <tr>
 <td><code>ignoreBaseObjects</code></td>
