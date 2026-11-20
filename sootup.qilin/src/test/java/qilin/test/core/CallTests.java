@@ -46,4 +46,9 @@ public class CallTests extends QilinFrameworkTests {
   public void testInheritedStaticCall() {
     checkAssertions(run("qilin.microben.core.call.InheritedStaticCall"));
   }
+
+  @Test
+  public void testPrivateNotOverriding() {
+    checkAssertions(run("qilin.microben.core.call.PrivateNotOverriding"));
+  }
 }

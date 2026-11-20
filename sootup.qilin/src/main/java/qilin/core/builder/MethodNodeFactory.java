@@ -339,7 +339,9 @@ public class MethodNodeFactory {
   }
 
   private VarNode caseStaticFieldRef(JStaticFieldRef sfr) {
-    return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
+    // one node per declared field, whichever subclass the reference names
+    return pag.makeGlobalVarNode(
+        pag.getField(sfr.getFieldSignature()).getSignature(), sfr.getType());
   }
 
   private PagNode caseNullConstant(NullConstant nr) {

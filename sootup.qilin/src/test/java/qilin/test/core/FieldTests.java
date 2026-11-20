@@ -41,4 +41,9 @@ public class FieldTests extends QilinFrameworkTests {
   public void testFieldSensitivity2() {
     checkAssertions(run("qilin.microben.core.field.FieldSensitivity2"));
   }
+
+  @Test
+  public void testInheritedFieldRef() {
+    checkAssertions(run("qilin.microben.core.field.InheritedFieldRef"));
+  }
 }

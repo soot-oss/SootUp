@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -103,6 +104,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     return body;
   }
 
+  /** Returns the body owning the given statement, or null if the statement is not known. */
+  protected Body findBodyOf(Stmt stmt) {
+    return stmtToOwner.get(stmt);
+  }
+
   @Override
   public SootMethod getMethodOf(Stmt stmt) {
     Body b = getBodyOf(stmt);
@@ -112,6 +118,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     return view.getMethod(b.getMethodSignature()).orElse(null);
   }
 
+  /**
+   * Returns the successors of the given statement. If exceptions are enabled, this includes the
+   * heads of the trap handlers that may catch an exception thrown at the given statement.
+   */
   @Override
   public List<Stmt> getSuccsOf(Stmt stmt) {
     Body body = getBodyOf(stmt);
@@ -119,7 +129,28 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptyList();
     }
     ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
-    return controlFlowGraph.successors(stmt);
+    List<Stmt> successors = controlFlowGraph.successors(stmt);
+    if (!enableExceptions) {
+      return successors;
+    }
+    return appendMissing(successors, controlFlowGraph.exceptionalSuccessors(stmt).values());
+  }
+
+  /** Appends the elements of additional that are not yet contained (by identity) in base. */
+  private static List<Stmt> appendMissing(List<Stmt> base, Collection<Stmt> additional) {
+    if (additional.isEmpty()) {
+      return base;
+    }
+    List<Stmt> result = new ArrayList<>(base.size() + additional.size());
+    result.addAll(base);
+    Set<Stmt> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    seen.addAll(base);
+    for (Stmt stmt : additional) {
+      if (seen.add(stmt)) {
+        result.add(stmt);
+      }
+    }
+    return result;
   }
 
   @Override
@@ -150,9 +181,30 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isStartPoint(Stmt stmt) {
-    Body body = getBodyOf(stmt);
+    return getStartPoints(getBodyOf(stmt)).contains(stmt);
+  }
+
+  /**
+   * Returns the heads of the graph exposed by this ICFG. Without exceptional edges, trap handlers
+   * have no predecessor and are therefore heads as well (like Soot's BriefUnitGraph). With
+   * exceptional edges, trap handlers are reached from the statements they protect and only the
+   * statements without any predecessor remain heads (like Soot's ExceptionalUnitGraph).
+   */
+  protected Collection<Stmt> getStartPoints(Body body) {
     ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
-    return controlFlowGraph.getEntrypoints().contains(stmt);
+    Collection<Stmt> entrypoints = controlFlowGraph.getEntrypoints();
+    if (!enableExceptions) {
+      return entrypoints;
+    }
+    Stmt startingStmt = controlFlowGraph.getStartingStmt();
+    List<Stmt> heads = new ArrayList<>();
+    heads.add(startingStmt);
+    for (Stmt entrypoint : entrypoints) {
+      if (entrypoint != startingStmt && getPredsOf(entrypoint).isEmpty()) {
+        heads.add(entrypoint);
+      }
+    }
+    return heads;
   }
 
   @Override
@@ -162,13 +214,18 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return false;
     }
     Body body = getBodyOf(stmt);
-    return body.getControlFlowGraph().successors(stmt).get(0) == successorCandidate;
+    // the first successor of a statement that falls through is its fall-through successor
+    return getOrCreateControlFlowGraph(body).successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
   public boolean isBranchTarget(Stmt u, Stmt succ) {
     assert getSuccsOf(u).contains(succ);
-    return u.branches();
+    if (!(u instanceof BranchingStmt) || !u.branches()) {
+      return false;
+    }
+    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(getBodyOf(u));
+    return controlFlowGraph.getBranchTargetsOf((BranchingStmt) u).contains(succ);
   }
 
   @Override
@@ -181,9 +238,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!m.hasBody()) {
       return Collections.emptySet();
     }
-    Body body = m.getBody();
-    ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
-    return controlFlowGraph.getEntrypoints();
+    return getStartPoints(m.getBody());
   }
 
   public boolean setOwnerStatement(Stmt u, Body b) {
@@ -227,6 +282,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     b.getControlFlowGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
   }
 
+  /**
+   * Returns the predecessors of the given statement. If exceptions are enabled and the statement is
+   * the head of a trap handler, this includes the statements protected by that handler.
+   */
   @Override
   public List<Stmt> getPredsOf(Stmt u) {
     assert u != null;
@@ -235,7 +294,19 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptyList();
     }
     ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
-    return controlFlowGraph.predecessors(u);
+    // ControlFlowGraph.predecessors() of a trap handler also returns the last statement of each
+    // block that can throw into the handler, while successors() only returns normal flow. Keep only
+    // the normal predecessors so that predecessors and successors stay symmetric.
+    List<Stmt> predecessors = new ArrayList<>();
+    for (Stmt pred : controlFlowGraph.predecessors(u)) {
+      if (controlFlowGraph.successors(pred).contains(u)) {
+        predecessors.add(pred);
+      }
+    }
+    if (!enableExceptions) {
+      return predecessors;
+    }
+    return appendMissing(predecessors, controlFlowGraph.exceptionalPredecessors(u));
   }
 
   @Override

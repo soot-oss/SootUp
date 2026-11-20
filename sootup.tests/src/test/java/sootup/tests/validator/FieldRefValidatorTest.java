@@ -104,4 +104,24 @@ public class FieldRefValidatorTest {
 
     assertEquals(2, validationExceptions_fail.size());
   }
+
+  @Test
+  public void testInheritedFieldRefs() {
+    // x and y are declared in the superclass FieldRefValidator
+    List<ValidationException> validationExceptions =
+        fieldRefValidator.validate(
+            classes.stream()
+                .filter(c -> c.getType().getClassName().equals("FieldRefValidatorSub"))
+                .findFirst()
+                .get()
+                .getMethods()
+                .stream()
+                .filter(m -> m.getName().equals("testInheritedFieldRefs_pass"))
+                .map(m -> m.getBody())
+                .findFirst()
+                .get(),
+            jimpleView);
+
+    assertEquals(0, validationExceptions.size());
+  }
 }

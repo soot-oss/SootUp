@@ -39,6 +39,7 @@ import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -57,6 +58,10 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
 
+  /**
+   * Kept for API compatibility with Soot. SootUp call graphs do not distinguish reflective call
+   * edges, so this flag currently has no effect: all edges of the call graph are used.
+   */
   protected boolean includeReflectiveCalls;
 
   @DontSynchronize("readonly")
@@ -67,26 +72,31 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @NonNull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
+          if (!isCallStmt(stmt)) {
+            return Collections.emptyList();
+          }
+          Body body = findBodyOf(stmt);
+          if (body == null) {
+            return Collections.emptyList();
+          }
+          MethodSignature callerSignature = body.getMethodSignature();
+          if (!cg.containsMethod(callerSignature)) {
+            logger.debug("Method {} is not reachable in the Call Graph", callerSignature);
+            return Collections.emptyList();
+          }
+          // the call graph determines the possible targets of the call site, e.g. all overriding
+          // implementations of a virtual call
           ArrayList<SootMethod> res = new ArrayList<>();
-          if (!stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isEmpty()) {
-            return res;
-          }
-          MethodSignature methodSignature =
-              stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
-
-          if (!cg.containsMethod(methodSignature)) {
-            logger.warn(
-                "Method {} is not reachable in the Call Graph!", methodSignature, new Exception());
-            return res;
-          }
-          Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
-          if (smOpt.isPresent()) {
-            SootMethod sm = smOpt.get();
-            if (sm.hasBody()) {
-              res.add(sm);
+          for (CallGraph.Call call : cg.callsFrom(callerSignature)) {
+            if (call.invokableStmt() != stmt) {
+              continue;
+            }
+            Optional<? extends SootMethod> smOpt = view.getMethod(call.targetMethodSignature());
+            if (smOpt.isPresent() && smOpt.get().hasBody()) {
+              res.add(smOpt.get());
             } else {
-              logger.error(
-                  "Method {} is referenced but has no body!", sm.getSignature(), new Exception());
+              logger.debug(
+                  "Call target {} has no body and is not included", call.targetMethodSignature());
             }
           }
           res.trimToSize();

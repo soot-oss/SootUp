@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.model.SootClass;
+import sootup.core.model.MemberResolution;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -37,18 +37,24 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * JVM method lookup shared by all call graph / points-to algorithms: from a start class (declared
- * owner for resolution, receiver type for dispatch) find the method a sub-signature binds to.
+ * JVM method lookup shared by all call graph / points-to algorithms, a cached front end of {@link
+ * MemberResolution}:
  *
- * <p>Order: start class and superclasses, then maximally specific interface method (default
- * methods), then signature-polymorphic methods ({@link SignaturePolymorphicMethods}). May return an
- * abstract method (e.g. re-abstracted override); use {@link #findConcrete} for dispatch.
+ * <ul>
+ *   <li>{@link #find} resolves a method reference from its referenced class, see {@link
+ *       MemberResolution#resolveMethod}. It may return an abstract method (e.g. a re-abstracted
+ *       override); {@link #findConcrete} maps that to empty.
+ *   <li>{@link #select} and {@link #dispatch} pick the method a receiver class runs for a call,
+ *       which is not always the first one with the same sub-signature, see {@link
+ *       MemberResolution#selectMethod}.
+ * </ul>
  *
  * <p>Not pluggable on purpose: JVM semantics, one right answer. Pluggable target models
  * (reflection, invokedynamic) live elsewhere.
  *
- * <p>Cache: per (class, sub-signature), misses included; dropped when the type hierarchy
- * modification count changes. One instance per analysis, holds the view strongly.
+ * <p>Cache: per (class, sub-signature) and per (receiver class, resolved method), misses included;
+ * dropped when the type hierarchy modification count changes. One instance per analysis, holds the
+ * view strongly.
  */
 public final class MethodLookup {
 
@@ -59,6 +65,10 @@ public final class MethodLookup {
 
   @NonNull
   private final Map<ClassType, Map<MethodSubSignature, Optional<SootMethod>>> cache =
+      new ConcurrentHashMap<>();
+
+  @NonNull
+  private final Map<ClassType, Map<MethodSignature, Optional<SootMethod>>> selectionCache =
       new ConcurrentHashMap<>();
 
   private volatile long cacheModCount;
@@ -83,19 +93,8 @@ public final class MethodLookup {
   /** Lookup starting at {@code start}; may yield an abstract method. Cached. */
   @NonNull
   public Optional<SootMethod> find(@NonNull ClassType start, @NonNull MethodSubSignature subSig) {
-    long modCount = typeHierarchy.getModificationCount();
-    if (modCount != cacheModCount) {
-      cache.clear();
-      cacheModCount = modCount;
-    }
-    Map<MethodSubSignature, Optional<SootMethod>> perClass = cache.get(start);
-    if (perClass == null) {
-      perClass = new ConcurrentHashMap<>(4);
-      Map<MethodSubSignature, Optional<SootMethod>> prev = cache.putIfAbsent(start, perClass);
-      if (prev != null) {
-        perClass = prev;
-      }
-    }
+    dropCachesIfHierarchyChanged();
+    Map<MethodSubSignature, Optional<SootMethod>> perClass = perClass(cache, start);
     Optional<SootMethod> result = perClass.get(subSig);
     if (result == null) {
       // no computeIfAbsent: lookup reads other classes, keep map ops non-reentrant
@@ -103,6 +102,59 @@ public final class MethodLookup {
       perClass.put(subSig, result);
     }
     return result;
+  }
+
+  /**
+   * The method that a receiver of class {@code receiver} runs for a call to {@code resolved}, see
+   * {@link MemberResolution#selectMethod}; empty if it would be abstract. Cached.
+   */
+  @NonNull
+  public Optional<SootMethod> select(@NonNull ClassType receiver, @NonNull SootMethod resolved) {
+    dropCachesIfHierarchyChanged();
+    Map<MethodSignature, Optional<SootMethod>> perClass = perClass(selectionCache, receiver);
+    Optional<SootMethod> result = perClass.get(resolved.getSignature());
+    if (result == null) {
+      result = MemberResolution.selectMethod(view, receiver, resolved).map(SootMethod.class::cast);
+      perClass.put(resolved.getSignature(), result);
+    }
+    return result;
+  }
+
+  /**
+   * Virtual dispatch of the call {@code sig} on a receiver of class {@code receiver}: resolves
+   * {@code sig}, then {@link #select selects}. If {@code sig} does not resolve, e.g. because its
+   * class is not in the view, falls back to {@link #findConcrete(ClassType, MethodSubSignature)}.
+   */
+  @NonNull
+  public Optional<SootMethod> dispatch(@NonNull ClassType receiver, @NonNull MethodSignature sig) {
+    Optional<SootMethod> resolved = find(sig);
+    if (resolved.isEmpty()) {
+      return findConcrete(receiver, sig.getSubSignature());
+    }
+    return select(receiver, resolved.get());
+  }
+
+  private void dropCachesIfHierarchyChanged() {
+    long modCount = typeHierarchy.getModificationCount();
+    if (modCount != cacheModCount) {
+      cache.clear();
+      selectionCache.clear();
+      cacheModCount = modCount;
+    }
+  }
+
+  @NonNull
+  private static <K> Map<K, Optional<SootMethod>> perClass(
+      Map<ClassType, Map<K, Optional<SootMethod>>> cache, ClassType type) {
+    Map<K, Optional<SootMethod>> perClass = cache.get(type);
+    if (perClass == null) {
+      perClass = new ConcurrentHashMap<>(4);
+      Map<K, Optional<SootMethod>> prev = cache.putIfAbsent(type, perClass);
+      if (prev != null) {
+        perClass = prev;
+      }
+    }
+    return perClass;
   }
 
   /** Like {@link #find(ClassType, MethodSubSignature)}, abstract result mapped to empty. */
@@ -124,67 +176,20 @@ public final class MethodLookup {
   @NonNull
   static Optional<SootMethod> lookup(
       @NonNull View view, @NonNull ClassType start, @NonNull MethodSubSignature subSig) {
-    SootClass startClass = view.getClass(start).orElse(null);
-    if (startClass == null) {
+    if (!view.getClass(start).isPresent()) {
       logger.warn("Could not find \"{}\" to resolve \"{}\"", start, subSig);
       return Optional.empty();
     }
-    Optional<SootMethod> m = findInSuperclasses(view, startClass, subSig);
-    if (m.isPresent()) {
-      return m;
-    }
-    m = findDefault(view, startClass, subSig);
-    if (m.isPresent()) {
-      return m;
-    }
-    // call-site descriptor of MethodHandle/VarHandle polymorphic call never matches declaration
-    m =
-        SignaturePolymorphicMethods.resolveInHierarchy(view, startClass, subSig.getName())
+    Optional<SootMethod> m =
+        MemberResolution.resolveMethod(
+                view, view.getIdentifierFactory().getMethodSignature(start, subSig))
             .map(SootMethod.class::cast);
-    if (m.isPresent()) {
-      return m;
+    if (m.isEmpty()) {
+      logger.warn(
+          "Could not find \"{}\" in {} and in its superclasses and interfaces",
+          subSig,
+          start.getClassName());
     }
-    logger.warn(
-        "Could not find \"{}\" in {} and in its superclasses and interfaces",
-        subSig,
-        start.getClassName());
-    return Optional.empty();
-  }
-
-  /** Start class and its superclass chain; stops at first class not in the view. */
-  @NonNull
-  static Optional<SootMethod> findInSuperclasses(
-      @NonNull View view, @NonNull SootClass start, @NonNull MethodSubSignature subSig) {
-    SootClass c = start;
-    while (c != null) {
-      Optional<? extends SootMethod> m = c.getMethod(subSig);
-      if (m.isPresent()) {
-        return Optional.of(m.get());
-      }
-      c = c.getSuperclass().flatMap(view::getClass).orElse(null);
-    }
-    return Optional.empty();
-  }
-
-  /**
-   * Maximally specific method among all interfaces implemented by {@code start}: the one whose
-   * declaring interface is a subtype of all other candidates' interfaces.
-   */
-  @NonNull
-  static Optional<SootMethod> findDefault(
-      @NonNull View view, @NonNull SootClass start, @NonNull MethodSubSignature subSig) {
-    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
-    return typeHierarchy
-        .implementedInterfacesOf(start.getType())
-        .flatMap(
-            itf ->
-                view.getClass(itf).flatMap(c -> c.getMethod(subSig)).stream()
-                    .map(SootMethod.class::cast))
-        .reduce(
-            (currentLeastSubMethod, m) ->
-                typeHierarchy.isSubtype(
-                        currentLeastSubMethod.getDeclaringClassType(), m.getDeclaringClassType())
-                    ? m
-                    : currentLeastSubMethod);
+    return m;
   }
 }

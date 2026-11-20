@@ -39,10 +39,9 @@ import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.MethodModifier;
-import sootup.core.model.SootClass;
+import sootup.core.model.SignaturePolymorphicMethods;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -57,6 +56,8 @@ import sootup.core.views.View;
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @NonNull protected Set<ClassType> instantiatedClasses;
+
+  /** Calls per receiver class that is not instantiated yet; the target is the resolved method. */
   @NonNull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
 
   /**
@@ -328,35 +329,27 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       return Stream.of(actualTargetMethod.getSignature());
     }
 
-    // get all instantiated subclasses
-    // the target method is used since this is the type of the invoke
-    List<? extends SootClass> subclasses =
-        typeHierarchy.subtypeClassesOf(targetMethodSignature.getDeclClassType()).toList();
-
-    // get all targets of these subtypes
+    // every instantiated subtype of the referenced class is a possible receiver: the method it
+    // runs; the others are saved until they are instantiated
+    SootMethod resolved = actualTargetMethod;
     Stream<MethodSignature> targets =
-        resolveAllCallTargets(
-            subclasses,
-            sourceMethod.getSignature(),
-            actualTargetMethod.getSignature(),
-            invokableStmt);
-
-    // if the current implementation of the method is a default method the algorithm changes
-    // because superclasses can overwrite default methods which are not subtypes of the interface
+        typeHierarchy
+            .subtypeClassesOf(targetMethodSignature.getDeclClassType())
+            .filter(receiver -> !receiver.isInterface())
+            .flatMap(
+                receiver -> {
+                  if (!instantiatedClasses.contains(receiver.getType())) {
+                    saveIgnoredCall(
+                        sourceMethod.getSignature(),
+                        receiver.getType(),
+                        resolved.getSignature(),
+                        invokableStmt);
+                    return Stream.empty();
+                  }
+                  return methodLookup.select(receiver.getType(), resolved).stream();
+                })
+            .map(SootMethod::getSignature);
     boolean isDefaultMethod = isInterface(actualTargetMethod.getDeclaringClassType());
-    if (isDefaultMethod) {
-      // get all default methods of sub-interfaces of the interface
-      // which are interfaces of the subtypes
-      targets =
-          Stream.concat(
-              targets, resolveAllDefaultTargets(subclasses, actualTargetMethod.getSignature()));
-      // all subtypes that do not have an implementation of the method
-      // can have an implementation in the supertype
-      targets =
-          Stream.concat(
-              targets,
-              resolveAllOverwrittenTargets(subclasses, targetMethodSignature.getSubSignature()));
-    }
 
     // if the actual base method is abstract it cannot be called by the invoke
     if (actualTargetMethod.isAbstract()) {
@@ -369,102 +362,29 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets);
     }
     // save the ignored call
-    saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
+    saveIgnoredCall(
+        sourceMethod.getSignature(),
+        targetMethodSignature.getDeclClassType(),
+        actualTargetMethod.getSignature(),
+        invokableStmt);
     return targets;
   }
 
   /**
-   * Resolves all targets of the given signature of the call. Only instantiated classes are
-   * considered as target. All possible class of non instantiated classes are saved to the
-   * ignoredCall Hashmap, because the classes can be instantiated at a later time
-   *
-   * @param source the method which contains call
-   * @param targetBase the base of the resolving. All subtypes of the declaring class are analyzed
-   *     as potential targets
-   * @param invokableStmt the statement causing the call
-   * @return a stream of all method signatures of instantiated classes that can be resolved as
-   *     target from the given base method signature.
-   */
-  private Stream<MethodSignature> resolveAllCallTargets(
-      List<? extends SootClass> subclasses,
-      MethodSignature source,
-      MethodSignature targetBase,
-      InvokableStmt invokableStmt) {
-    return subclasses.stream()
-        .flatMap(
-            sootClass -> {
-              if (!instantiatedClasses.contains(sootClass.getType())) {
-                saveIgnoredCall(
-                    source,
-                    view.getIdentifierFactory()
-                        .getMethodSignature(sootClass.getType(), targetBase.getSubSignature()),
-                    invokableStmt);
-                return Stream.empty();
-              }
-              SootMethod targetMethod =
-                  findMethodInHierarchy(view, sootClass, targetBase.getSubSignature()).orElse(null);
-              return Stream.ofNullable(targetMethod);
-            })
-        .map(SootMethod::getSignature);
-  }
-
-  private Stream<MethodSignature> resolveAllDefaultTargets(
-      List<? extends SootClass> subclasses, MethodSignature targetSignature) {
-
-    ArrayListMultimap<ClassType, ClassType> interfaces = ArrayListMultimap.create();
-    // saves all interfaces and put the classes next to them
-    subclasses.forEach(
-        sootClass ->
-            sootClass
-                .getInterfaces()
-                .forEach(interfaceClass -> interfaces.put(interfaceClass, sootClass.getType())));
-
-    return typeHierarchy
-        .subinterfacesOf(targetSignature.getDeclClassType())
-        .flatMap(
-            sootClass ->
-                view
-                    .getMethod(
-                        view.getIdentifierFactory()
-                            .getMethodSignature(sootClass, targetSignature.getSubSignature()))
-                    .stream())
-        .filter(sootMethod -> interfaces.containsKey(sootMethod.getDeclaringClassType()))
-        .flatMap(
-            interfaceMethod -> {
-              // check if any of the classes which implement the interface are initialized
-              List<ClassType> classes = interfaces.get(interfaceMethod.getDeclaringClassType());
-              if (classes.stream().anyMatch(classType -> instantiatedClasses.contains(classType))) {
-                // check if they have an default method
-                return Stream.of(interfaceMethod.getSignature());
-              }
-              // does not need to be saved,
-              // since it will be added later if this is a target of currently not instantiated
-              // class
-              return Stream.empty();
-            });
-  }
-
-  private Stream<MethodSignature> resolveAllOverwrittenTargets(
-      List<? extends SootClass> subclasses, MethodSubSignature targetMethodSignature) {
-    return subclasses.stream()
-        .filter(sootClass -> instantiatedClasses.contains(sootClass.getType()))
-        .filter(sootClass -> sootClass.getMethod(targetMethodSignature).isEmpty())
-        .flatMap(
-            sootClass -> findMethodInHierarchy(view, sootClass, targetMethodSignature).stream())
-        .map(SootMethod::getSignature);
-  }
-
-  /**
-   * This method saves an ignored call If this is the first ignored call of the class type in the
-   * target method, an entry for the class type is created in the ignoredCalls Hashmap
+   * Saves a call that a receiver of the not yet instantiated class {@code receiver} would make; it
+   * is added once the class is instantiated.
    *
    * @param source the source method of the call
-   * @param target the target method of the call
+   * @param receiver the class of the receiver
+   * @param resolved the method the call refers to
    * @param invokableStmt the statement causing the call
    */
   private void saveIgnoredCall(
-      MethodSignature source, MethodSignature target, InvokableStmt invokableStmt) {
-    ignoredCalls.put(target.getDeclClassType(), new Call(source, target, invokableStmt));
+      MethodSignature source,
+      ClassType receiver,
+      MethodSignature resolved,
+      InvokableStmt invokableStmt) {
+    ignoredCalls.put(receiver, new Call(source, resolved, invokableStmt));
   }
 
   /**
@@ -524,7 +444,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         .filter(Objects::nonNull)
         .flatMap(
             call ->
-                methodLookup.find(call.targetMethodSignature()).stream()
+                view.getMethod(call.targetMethodSignature()).stream()
+                    .flatMap(resolved -> methodLookup.select(classType, resolved).stream())
                     .map(
                         sootMethod ->
                             new Call(
