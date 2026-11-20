@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
@@ -51,7 +53,16 @@ class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths) {
-    super(path, srcType, bodyInterceptors, ignoredPaths);
+    this(path, srcType, bodyInterceptors, ignoredPaths, Collections.emptySet());
+  }
+
+  protected DirectoryBasedAnalysisInputLocation(
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
+    super(path, srcType, bodyInterceptors, ignoredPaths, extendedScope);
   }
 
   @Override
