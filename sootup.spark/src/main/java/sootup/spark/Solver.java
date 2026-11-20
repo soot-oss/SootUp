@@ -214,7 +214,8 @@ class Solver {
                 .view(view)
                 .nodeFactory(nodeFactory)
                 .otfContext(
-                    new MethodPAGStmtVisitor.OtfContext(incrementalAnalysis, worklist, pending))
+                    new MethodPAGStmtVisitor.OtfContext(
+                        incrementalAnalysis, worklist, pending, methodLookup))
                 .reflectionModel(reflectionModel)
                 .dynamicInvokeResolver(dynamicInvokeResolver)
                 .build();
