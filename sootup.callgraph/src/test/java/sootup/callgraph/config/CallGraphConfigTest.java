@@ -22,6 +22,7 @@ package sootup.callgraph.config;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -77,6 +78,49 @@ public class CallGraphConfigTest {
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(targetMethod));
     assertTrue(cg.callTargetsFrom(mainMethodSignature).contains(targetMethod));
+  }
+
+  @Test
+  public void testFastChaStageDispatchesOnTheReceiverType() {
+    JavaView view = createView("src/test/resources/callgraph/FastCHA/binary");
+    MethodSignature mainMethodSignature =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("fastcha.Main"),
+            identifierFactory.getMainSubSignature());
+    MethodSignature dispatchA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("fastcha.A"),
+            "virtualDispatch",
+            "void",
+            Collections.emptyList());
+    MethodSignature dispatchE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("fastcha.E"),
+            "virtualDispatch",
+            "void",
+            Collections.emptyList());
+
+    CallGraph fast =
+        CallGraphConfig.builder()
+            .view(view)
+            .entryPoints(Collections.singletonList(mainMethodSignature))
+            .cha()
+            .fast()
+            .build()
+            .computeCallGraph();
+    CallGraph cha =
+        CallGraphConfig.builder()
+            .view(view)
+            .entryPoints(Collections.singletonList(mainMethodSignature))
+            .cha()
+            .build()
+            .computeCallGraph();
+
+    // no receiver in main is typed E, so only the classic CHA reaches E's implementation
+    assertFalse(fast.callTargetsFrom(mainMethodSignature).contains(dispatchE));
+    assertTrue(cha.callTargetsFrom(mainMethodSignature).contains(dispatchE));
+    // G inherits A's implementation
+    assertTrue(fast.callTargetsFrom(mainMethodSignature).contains(dispatchA));
   }
 
   @Test
