@@ -47,9 +47,13 @@ import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -229,17 +233,8 @@ class Solver {
         if (receiver.isEmpty()) continue;
         Set<AllocationNode> reaching = incrementalAnalysis.reachingObjects(receiver.get());
         for (AllocationNode o : reaching) {
-          FunctionalObject fo =
-              o instanceof LambdaAllocationNode lambda
-                      && lambda
-                          .getFunctionalObject()
-                          .answers(expr.getMethodSignature(), view.getTypeHierarchy())
-                  ? lambda.getFunctionalObject()
-                  : null;
-          MethodSignature targetSig =
-              fo != null
-                  ? fo.dispatchedImplementation(view)
-                  : dispatch(o.getType(), expr.getMethodSignature()).orElse(null);
+          FunctionalObject fo = answeringFunctionalObject(o, expr);
+          MethodSignature targetSig = target(o, expr).orElse(null);
           if (targetSig == null) continue;
           ResolvedVirtualCall key = new ResolvedVirtualCall(call.srcSig(), call.stmt(), targetSig);
           if (!resolved.add(key)) continue;
@@ -265,8 +260,89 @@ class Solver {
     }
   }
 
+  /** The functional object of {@code o} if it answers the call {@code expr}, else null. */
+  private FunctionalObject answeringFunctionalObject(
+      AllocationNode o, AbstractInstanceInvokeExpr expr) {
+    return o instanceof LambdaAllocationNode lambda
+            && lambda
+                .getFunctionalObject()
+                .answers(expr.getMethodSignature(), view.getTypeHierarchy())
+        ? lambda.getFunctionalObject()
+        : null;
+  }
+
+  /** The method that the virtual or interface call {@code expr} runs on the object {@code o}. */
+  private Optional<MethodSignature> target(AllocationNode o, AbstractInstanceInvokeExpr expr) {
+    FunctionalObject fo = answeringFunctionalObject(o, expr);
+    return fo != null
+        ? Optional.of(fo.dispatchedImplementation(view))
+        : dispatch(o.getType(), expr.getMethodSignature());
+  }
+
+  /**
+   * The call graph that the solved points-to sets give, like Soot builds after a SPARK run without
+   * an on-the-fly call graph: the calls of the call graph the PAG was built on, without the virtual
+   * and interface calls that no object the receiver points to dispatches to, and only the methods
+   * that stay reachable from the entry methods. The other calls, e.g. static calls and calls to
+   * static initializers, are kept.
+   */
+  CallGraph pointsToCallGraph(PointsToAnalysis pta) {
+    List<MethodSignature> entryMethods = callGraph.getEntryMethods();
+    GraphBasedCallGraph result = new GraphBasedCallGraph(new ArrayList<>(entryMethods));
+    Deque<MethodSignature> worklist = new ArrayDeque<>();
+    for (MethodSignature entryMethod : entryMethods) {
+      if (callGraph.containsMethod(entryMethod) && !result.containsMethod(entryMethod)) {
+        result.addMethod(entryMethod);
+        worklist.add(entryMethod);
+      }
+    }
+    Map<CallSite, Set<MethodSignature>> virtualTargets = new HashMap<>();
+    while (!worklist.isEmpty()) {
+      MethodSignature source = worklist.poll();
+      for (CallGraph.Call call : callGraph.callsFrom(source)) {
+        MethodSignature target = call.targetMethodSignature();
+        Optional<AbstractInstanceInvokeExpr> virtualCall = virtualCall(call.invokableStmt());
+        if (virtualCall.isPresent()
+            && !virtualTargets
+                .computeIfAbsent(
+                    new CallSite(source, call.invokableStmt()),
+                    site -> virtualTargets(pta, source, virtualCall.get()))
+                .contains(target)) {
+          continue;
+        }
+        if (!result.containsMethod(target)) {
+          result.addMethod(target);
+          worklist.add(target);
+        }
+        result.addCallIfAbsent(source, target, call.invokableStmt());
+      }
+    }
+    return result;
+  }
+
+  private static Optional<AbstractInstanceInvokeExpr> virtualCall(InvokableStmt stmt) {
+    return stmt.getInvokeExpr()
+        .filter(e -> e instanceof JVirtualInvokeExpr || e instanceof JInterfaceInvokeExpr)
+        .map(AbstractInstanceInvokeExpr.class::cast);
+  }
+
+  private Set<MethodSignature> virtualTargets(
+      PointsToAnalysis pta, MethodSignature source, AbstractInstanceInvokeExpr expr) {
+    Set<MethodSignature> targets = new HashSet<>();
+    for (AllocationNode o : pta.reachingObjects(expr.getBase(), source)) {
+      target(o, expr).ifPresent(targets::add);
+    }
+    return targets;
+  }
+
+  private record CallSite(MethodSignature source, InvokableStmt stmt) {}
+
   /** Resolves a virtual / interface call given the runtime type of the receiver. */
   private Optional<MethodSignature> dispatch(Type allocType, MethodSignature calledSig) {
+    if (allocType instanceof ArrayType) {
+      // an array runs the methods of java.lang.Object
+      allocType = view.getIdentifierFactory().getClassType("java.lang.Object");
+    }
     if (!(allocType instanceof ClassType ct)) return Optional.empty();
     // resolves calledSig, then selects the method the receiver class runs; cached
     return methodLookup.dispatch(ct, calledSig).map(SootMethod::getSignature);

@@ -71,7 +71,7 @@ public class SparkCallGraphTest {
   }
 
   @Test
-  public void defaultsAreChaSeeded() {
+  public void defaultsNarrowTheChaSeed() {
     // --8<-- [start:cha-seeded]
     CallGraph cg =
         CallGraphConfig.builder()
@@ -80,11 +80,10 @@ public class SparkCallGraphTest {
             .into(SparkCallGraphConfig::from)
             .sparkOptions(SparkOptions.defaultOptions()) // onFlyCallGraph = false
             .build()
-            .computeCallGraph(); // = the CHA graph Spark was seeded with
+            .computeCallGraph(); // the CHA seed, narrowed by the points-to sets
     // --8<-- [end:cha-seeded]
     assertEquals(
-        Set.of("Circle", "Square", "Triangle", "Hexagon"),
-        areaTargets(cg, CallGraphComparisonTest.CALL_SITE_2));
+        Set.of("Square", "Triangle"), areaTargets(cg, CallGraphComparisonTest.CALL_SITE_2));
   }
 
   @Test
