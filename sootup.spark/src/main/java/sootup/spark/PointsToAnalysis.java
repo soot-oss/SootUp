@@ -128,6 +128,9 @@ public class PointsToAnalysis {
    * {@link #reachingObjects(Value, MethodSignature)}, this follows chains of field accesses such as
    * {@code b.f.g}.
    *
+   * <p>In field-based mode ({@link SparkOptions#isIgnoreBaseObjects()}) the field is one global
+   * variable, so the result is what it points to, whatever the objects, as in Soot.
+   *
    * @param objects the allocation sites whose field is queried
    * @param field the field, also as referenced through a subclass of the class that declares it
    * @return the allocation sites that the field may point to
@@ -138,6 +141,9 @@ public class PointsToAnalysis {
         MemberResolution.resolveField(solver.getView(), field)
             .<FieldSignature>map(SootField::getSignature)
             .orElse(field);
+    if (solver.getSparkOptions().isIgnoreBaseObjects()) {
+      return new LinkedHashSet<>(ptsOf(nodeFactory.globalField(declared)));
+    }
     Set<AllocationNode> result = new LinkedHashSet<>();
     for (AllocationNode o : objects) {
       Set<AllocationNode> stored = heap.get(new HeapKey(o, declared));

@@ -35,12 +35,14 @@ import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.StaticFieldRefNode;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 import sootup.spark.node.VariableNode;
 
@@ -89,6 +91,17 @@ public class NodeFactory {
             containingMethodSig, sparkOptions, identifierFactory, view);
     value.accept(visitor);
     return visitor.getResult();
+  }
+
+  /**
+   * The node of a field that is one global variable, see {@link
+   * ValueToNodeConversionVisitor#globalField}.
+   */
+  @NonNull
+  public StaticFieldRefNode globalField(@NonNull FieldSignature field) {
+    // a global node belongs to no method
+    return new ValueToNodeConversionVisitor(null, sparkOptions, identifierFactory, view)
+        .globalField(field);
   }
 
   /**

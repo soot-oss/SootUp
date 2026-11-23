@@ -383,33 +383,43 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
-    val field = resolve(ref.getFieldSignature());
-    this.node =
-        // a static field is one global variable, shared by all methods
-        StaticFieldRefNode.builder()
-            .field(field)
-            .type(field.getType())
-            .containingMethodSig(globalScope)
-            .build();
+    this.node = globalField(resolve(ref.getFieldSignature()));
+  }
+
+  /**
+   * The node of a field that is one global variable, shared by all methods: a static field, or any
+   * field in field-based mode ({@link SparkOptions#isIgnoreBaseObjects()}). Writes and reads of it
+   * are assignments.
+   */
+  @NonNull
+  public StaticFieldRefNode globalField(@NonNull FieldSignature field) {
+    return StaticFieldRefNode.builder()
+        .field(field)
+        .type(field.getType())
+        .containingMethodSig(globalScope)
+        .build();
   }
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
-    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
-    val baseName = fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
+    FieldSignature field = resolve(ref.getFieldSignature());
+    if (sparkOptions.isIgnoreBaseObjects()) {
+      // field-based: the field is one global variable, whatever object it belongs to
+      this.node = globalField(field);
+      return;
+    }
     val base =
         VariableNode.builder()
-            .name(baseName)
+            .name(ref.getBase().getName())
             .type(ref.getBase().getType())
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
-            .field(resolve(ref.getFieldSignature()))
+            .field(field)
             .type(ref.getType())
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
