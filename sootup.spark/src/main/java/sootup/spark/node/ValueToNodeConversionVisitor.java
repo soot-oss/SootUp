@@ -29,6 +29,7 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -73,12 +74,15 @@ import sootup.core.jimple.common.expr.JUshrExpr;
 import sootup.core.jimple.common.expr.JXorExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
+import sootup.core.model.MemberResolution;
+import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
+import sootup.core.views.View;
 import sootup.spark.Engine;
 import sootup.spark.SparkOptions;
 
@@ -106,15 +110,28 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
    */
   public static final String ARRAY_ELEMENT_FIELD_NAME = "<arrayElement>";
 
+  final @Nullable View view;
   Node node;
 
   public ValueToNodeConversionVisitor(
       MethodSignature containingMethodSig,
       SparkOptions sparkOptions,
       @NonNull IdentifierFactory identifierFactory) {
+    this(containingMethodSig, sparkOptions, identifierFactory, null);
+  }
+
+  /**
+   * @param view if not null, field references are resolved to the declared fields in this view
+   */
+  public ValueToNodeConversionVisitor(
+      MethodSignature containingMethodSig,
+      SparkOptions sparkOptions,
+      @NonNull IdentifierFactory identifierFactory,
+      @Nullable View view) {
     this.containingMethodSig = containingMethodSig;
     this.sparkOptions = sparkOptions;
     this.identifierFactory = identifierFactory;
+    this.view = view;
     this.globalScope =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("GLOBAL", "sootup.global"),
@@ -126,6 +143,20 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             ARRAY_ELEMENT_FIELD_NAME,
             identifierFactory.getClassType("GLOBAL", "sootup.global"),
             identifierFactory.getClassType("java.lang.Object"));
+  }
+
+  /**
+   * Resolves a field reference to the declared field, so that all references to a field share one
+   * field node regardless of the class through which the field is accessed. References that cannot
+   * be resolved, or are converted without a view, are kept as they are.
+   */
+  private FieldSignature resolve(FieldSignature reference) {
+    if (view == null) {
+      return reference;
+    }
+    return MemberResolution.resolveField(view, reference)
+        .<FieldSignature>map(SootField::getSignature)
+        .orElse(reference);
   }
 
   /**
@@ -352,11 +383,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
+    val field = resolve(ref.getFieldSignature());
     this.node =
         // a static field is one global variable, shared by all methods
         StaticFieldRefNode.builder()
-            .field(ref.getFieldSignature())
-            .type(ref.getFieldSignature().getType())
+            .field(field)
+            .type(field.getType())
             .containingMethodSig(globalScope)
             .build();
   }
@@ -375,7 +407,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
-            .field(ref.getFieldSignature())
+            .field(resolve(ref.getFieldSignature()))
             .type(ref.getType())
             .containingMethodSig(baseMethodSig)
             .build();
