@@ -36,7 +36,7 @@ import sootup.core.types.ReferenceType;
 
 /**
  * Intraprocedural must-alias analysis for locals of reference type, ported from Soot's {@code
- * LocalMustAliasAnalysis} and {@code StrongLocalMustAliasAnalysis}.
+ * LocalMustAliasAnalysis}.
  *
  * <p>Every local is mapped to a value number before each statement: {@code this} and the parameters
  * have fixed numbers, every other right-hand side (e.g. an allocation or a method call) gets a
@@ -45,14 +45,14 @@ import sootup.core.types.ReferenceType;
  * the merge are still recognized as aliases. Two locals must-alias at a statement if they have the
  * same number before it.
  *
- * <p>In strong mode, numbers assigned inside loops are discarded: such a number stands for the
- * objects of all iterations, and two locals with the same number may refer to objects of different
- * iterations.
+ * <p>A number assigned inside a loop stands for the objects of all iterations, so two locals with
+ * that number may refer to objects of different iterations; {@link StrongLocalMustAliasAnalysis}
+ * discards such numbers.
  */
 public class LocalMustAliasAnalysis {
 
   private final Map<Stmt, Map<Local, Integer>> flowBefore = new IdentityHashMap<>();
-  private final Set<Integer> invalidNumbers = new HashSet<>();
+  private final Map<Stmt, List<Stmt>> succs = new IdentityHashMap<>();
   private final Map<Value, Integer> rhsToNumber = new IdentityHashMap<>();
   private final Map<Stmt, Map<Local, Integer>> mergeNumbers = new IdentityHashMap<>();
   private int nextNumber = 1;
@@ -62,12 +62,8 @@ public class LocalMustAliasAnalysis {
    *
    * @param graph the control flow graph of the method
    * @param exceptionalEdges whether statements also flow to the handlers of the traps covering them
-   * @param strong whether numbers assigned inside loops are discarded, as in Soot's {@code
-   *     StrongLocalMustAliasAnalysis}
    */
-  public LocalMustAliasAnalysis(
-      @NonNull ControlFlowGraph<?> graph, boolean exceptionalEdges, boolean strong) {
-    Map<Stmt, List<Stmt>> succs = new IdentityHashMap<>();
+  public LocalMustAliasAnalysis(@NonNull ControlFlowGraph<?> graph, boolean exceptionalEdges) {
     Map<Stmt, List<Stmt>> preds = new IdentityHashMap<>();
     for (Stmt s : graph.getNodes()) {
       succs.put(s, new ArrayList<>());
@@ -86,9 +82,6 @@ public class LocalMustAliasAnalysis {
       }
     }
     solve(graph, succs, preds);
-    if (strong) {
-      invalidateLoopNumbers(succs);
-    }
     rhsToNumber.clear();
     mergeNumbers.clear();
   }
@@ -189,89 +182,23 @@ public class LocalMustAliasAnalysis {
     return out;
   }
 
-  /** Discards the numbers of locals that are defined inside a loop. */
-  private void invalidateLoopNumbers(Map<Stmt, List<Stmt>> succs) {
-    for (Set<Stmt> scc : stronglyConnectedComponents(succs)) {
-      boolean loop =
-          scc.size() > 1 || succs.get(scc.iterator().next()).contains(scc.iterator().next());
-      if (!loop) {
-        continue;
-      }
-      for (Stmt s : scc) {
-        if (s instanceof AbstractDefinitionStmt) {
-          Value lhs = ((AbstractDefinitionStmt) s).getLeftOp();
-          if (lhs instanceof Local && lhs.getType() instanceof ReferenceType) {
-            Integer before = flowBefore.getOrDefault(s, Collections.emptyMap()).get(lhs);
-            if (before != null) {
-              invalidNumbers.add(before);
-            }
-            for (Stmt t : succs.get(s)) {
-              Integer after = flowBefore.getOrDefault(t, Collections.emptyMap()).get(lhs);
-              if (after != null) {
-                invalidNumbers.add(after);
-              }
-            }
-          }
-        }
-      }
-    }
+  /** The successors of each statement, including exceptional ones if requested. */
+  @NonNull
+  protected Map<Stmt, List<Stmt>> successors() {
+    return Collections.unmodifiableMap(succs);
   }
 
-  /** Tarjan's algorithm, iterative */
-  private static List<Set<Stmt>> stronglyConnectedComponents(Map<Stmt, List<Stmt>> succs) {
-    Map<Stmt, Integer> index = new IdentityHashMap<>();
-    Map<Stmt, Integer> lowLink = new IdentityHashMap<>();
-    Deque<Stmt> stack = new ArrayDeque<>();
-    Set<Stmt> onStack = Collections.newSetFromMap(new IdentityHashMap<>());
-    List<Set<Stmt>> result = new ArrayList<>();
-    int[] counter = {0};
-    for (Stmt root : succs.keySet()) {
-      if (index.containsKey(root)) {
-        continue;
-      }
-      Deque<Object[]> work = new ArrayDeque<>();
-      work.push(new Object[] {root, 0});
-      index.put(root, counter[0]);
-      lowLink.put(root, counter[0]++);
-      stack.push(root);
-      onStack.add(root);
-      while (!work.isEmpty()) {
-        Object[] frame = work.peek();
-        Stmt v = (Stmt) frame[0];
-        int i = (Integer) frame[1];
-        List<Stmt> next = succs.get(v);
-        if (i < next.size()) {
-          frame[1] = i + 1;
-          Stmt w = next.get(i);
-          if (!index.containsKey(w)) {
-            index.put(w, counter[0]);
-            lowLink.put(w, counter[0]++);
-            stack.push(w);
-            onStack.add(w);
-            work.push(new Object[] {w, 0});
-          } else if (onStack.contains(w)) {
-            lowLink.put(v, Math.min(lowLink.get(v), index.get(w)));
-          }
-        } else {
-          work.pop();
-          if (!work.isEmpty()) {
-            Stmt parent = (Stmt) work.peek()[0];
-            lowLink.put(parent, Math.min(lowLink.get(parent), lowLink.get(v)));
-          }
-          if (lowLink.get(v).equals(index.get(v))) {
-            Set<Stmt> scc = Collections.newSetFromMap(new IdentityHashMap<>());
-            Stmt w;
-            do {
-              w = stack.pop();
-              onStack.remove(w);
-              scc.add(w);
-            } while (w != v);
-            result.add(scc);
-          }
-        }
-      }
-    }
-    return result;
+  /** The value number of {@code l} before {@code s}, or null if the analysis knows none. */
+  protected Integer numberBefore(@NonNull Local l, @NonNull Stmt s) {
+    return flowBefore.getOrDefault(s, Collections.emptyMap()).get(l);
+  }
+
+  /**
+   * Whether a value number identifies one object, so that locals with that number must-alias.
+   * Always true here; {@link StrongLocalMustAliasAnalysis} rejects the numbers of loops.
+   */
+  protected boolean isValid(int number) {
+    return true;
   }
 
   public static int thisRefNumber() {
@@ -295,11 +222,7 @@ public class LocalMustAliasAnalysis {
     }
     Integer n1 = before1.get(l1);
     Integer n2 = before2.get(l2);
-    return n1 != null
-        && n2 != null
-        && !invalidNumbers.contains(n1)
-        && !invalidNumbers.contains(n2)
-        && n1.equals(n2);
+    return n1 != null && n2 != null && isValid(n1) && isValid(n2) && n1.equals(n2);
   }
 
   /**
@@ -308,10 +231,10 @@ public class LocalMustAliasAnalysis {
    */
   @NonNull
   public Optional<String> instanceKeyString(@NonNull Local l, @NonNull Stmt s) {
-    Integer n = flowBefore.getOrDefault(s, Collections.emptyMap()).get(l);
+    Integer n = numberBefore(l, s);
     if (n == null) {
       return Optional.empty();
     }
-    return Optional.of(invalidNumbers.contains(n) ? "UNKNOWN" : n.toString());
+    return Optional.of(isValid(n) ? n.toString() : "UNKNOWN");
   }
 }

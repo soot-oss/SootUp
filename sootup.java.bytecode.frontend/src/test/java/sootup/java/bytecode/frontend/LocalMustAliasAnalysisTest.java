@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.analysis.intraprocedural.LocalMustAliasAnalysis;
+import sootup.analysis.intraprocedural.StrongLocalMustAliasAnalysis;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -53,8 +54,7 @@ public class LocalMustAliasAnalysisTest {
   public void copiesAliasAndAllocationsDoNot() {
     Body body = body("copies", "");
     Stmt call = sinkCall(body);
-    LocalMustAliasAnalysis lmaa =
-        new LocalMustAliasAnalysis(body.getControlFlowGraph(), false, true);
+    LocalMustAliasAnalysis lmaa = new LocalMustAliasAnalysis(body.getControlFlowGraph(), false);
     Local b = arg(call, 0);
     Local c = arg(call, 1);
     assertTrue(lmaa.mustAlias(b, call, b, call));
@@ -67,8 +67,7 @@ public class LocalMustAliasAnalysisTest {
   public void aliasesSurviveAMergeOfTheSameValue() {
     Body body = body("merge", "boolean");
     Stmt call = sinkCall(body);
-    LocalMustAliasAnalysis lmaa =
-        new LocalMustAliasAnalysis(body.getControlFlowGraph(), false, true);
+    LocalMustAliasAnalysis lmaa = new LocalMustAliasAnalysis(body.getControlFlowGraph(), false);
     assertTrue(lmaa.mustAlias(arg(call, 0), call, arg(call, 1), call));
   }
 
@@ -78,9 +77,19 @@ public class LocalMustAliasAnalysisTest {
     Stmt call = sinkCall(body);
     Local current = arg(call, 1);
     LocalMustAliasAnalysis strong =
-        new LocalMustAliasAnalysis(body.getControlFlowGraph(), false, true);
+        new StrongLocalMustAliasAnalysis(body.getControlFlowGraph(), false);
     assertFalse(strong.mustAlias(current, call, current, call));
     assertEquals("UNKNOWN", strong.instanceKeyString(current, call).orElse("UNKNOWN"));
     assertFalse(strong.mustAlias(arg(call, 0), call, current, call));
+  }
+
+  @Test
+  public void plainAnalysisKeepsNumbersFromLoops() {
+    Body body = body("loop", "int");
+    Stmt call = sinkCall(body);
+    Local current = arg(call, 1);
+    LocalMustAliasAnalysis plain = new LocalMustAliasAnalysis(body.getControlFlowGraph(), false);
+    assertTrue(plain.mustAlias(current, call, current, call));
+    assertFalse(plain.instanceKeyString(current, call).orElse("UNKNOWN").equals("UNKNOWN"));
   }
 }
