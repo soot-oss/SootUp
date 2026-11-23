@@ -158,6 +158,14 @@ public final class CallGraphConfigBuilder {
     return new ChaCallGraphConfig.Builder(snapshot());
   }
 
+  /**
+   * Transitions to the stage of {@link sootup.callgraph.FastClassHierarchyAnalysisAlgorithm}, the
+   * CHA variant that resolves virtual calls on the type of the receiver local.
+   */
+  public FastChaCallGraphConfig.@NonNull Builder fastCha() {
+    return new FastChaCallGraphConfig.Builder(snapshot());
+  }
+
   /** Transitions to the RTA-specific stage. */
   public RtaCallGraphConfig.@NonNull Builder rta() {
     return new RtaCallGraphConfig.Builder(snapshot());
