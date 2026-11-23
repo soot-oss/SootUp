@@ -30,27 +30,33 @@ import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 /**
  * CHA-specific stage of the unified {@link CallGraphConfig} builder chain. Obtained via {@link
  * CallGraphConfigBuilder#cha()}; has no algorithm-specific knobs of its own beyond the properties
- * {@link CallGraphConfigBuilder} already collected.
+ * {@link CallGraphConfigBuilder} already collected. Subclasses can run a variant of the algorithm,
+ * see {@link FastChaCallGraphConfig}.
  */
-public final class ChaCallGraphConfig implements CallGraphConfig {
+public class ChaCallGraphConfig implements CallGraphConfig {
 
-  @NonNull private final CommonCallGraphSettings common;
+  @NonNull protected final CommonCallGraphSettings common;
 
-  private ChaCallGraphConfig(@NonNull CommonCallGraphSettings common) {
+  protected ChaCallGraphConfig(@NonNull CommonCallGraphSettings common) {
     this.common = common;
+  }
+
+  /** The algorithm that {@link #computeCallGraph()} runs, set up with the common settings. */
+  @NonNull
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm() {
+    return new ClassHierarchyAnalysisAlgorithm(
+        common.getView(),
+        common.getCallResolver(),
+        common.getVirtualCallResolver(),
+        common.getSeedEntryPointClinits(true),
+        common.getReflectionModel(),
+        common.getDynamicInvokeResolver());
   }
 
   @NonNull
   @Override
   public CallGraph computeCallGraph() {
-    ClassHierarchyAnalysisAlgorithm cha =
-        new ClassHierarchyAnalysisAlgorithm(
-            common.getView(),
-            common.getCallResolver(),
-            common.getVirtualCallResolver(),
-            common.getSeedEntryPointClinits(true),
-            common.getReflectionModel(),
-            common.getDynamicInvokeResolver());
+    ClassHierarchyAnalysisAlgorithm cha = createAlgorithm();
     return common.getEntryPoints().isEmpty()
         ? cha.initialize()
         : cha.initialize(common.getEntryPoints());
