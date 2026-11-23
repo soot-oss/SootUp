@@ -132,12 +132,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = identifierFactory;
     this.view = view;
-    this.globalScope =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("GLOBAL", "sootup.global"),
-            "GLOBAL_SCOPE",
-            VoidType.getInstance(),
-            Collections.emptyList());
+    this.globalScope = globalScope(identifierFactory);
     this.arrayElementField =
         identifierFactory.getFieldSignature(
             ARRAY_ELEMENT_FIELD_NAME,
@@ -383,16 +378,29 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
-    this.node = globalField(resolve(ref.getFieldSignature()));
+    this.node = globalField(resolve(ref.getFieldSignature()), globalScope);
+  }
+
+  /** The pseudo method that global nodes, e.g. those of static fields, belong to. */
+  @NonNull
+  public static MethodSignature globalScope(@NonNull IdentifierFactory identifierFactory) {
+    return identifierFactory.getMethodSignature(
+        identifierFactory.getClassType("GLOBAL", "sootup.global"),
+        "GLOBAL_SCOPE",
+        VoidType.getInstance(),
+        Collections.emptyList());
   }
 
   /**
    * The node of a field that is one global variable, shared by all methods: a static field, or any
    * field in field-based mode ({@link SparkOptions#isIgnoreBaseObjects()}). Writes and reads of it
    * are assignments.
+   *
+   * @param globalScope see {@link #globalScope(IdentifierFactory)}
    */
   @NonNull
-  public StaticFieldRefNode globalField(@NonNull FieldSignature field) {
+  public static StaticFieldRefNode globalField(
+      @NonNull FieldSignature field, @NonNull MethodSignature globalScope) {
     return StaticFieldRefNode.builder()
         .field(field)
         .type(field.getType())
@@ -405,7 +413,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     FieldSignature field = resolve(ref.getFieldSignature());
     if (sparkOptions.isIgnoreBaseObjects()) {
       // field-based: the field is one global variable, whatever object it belongs to
-      this.node = globalField(field);
+      this.node = globalField(field, globalScope);
       return;
     }
     val base =

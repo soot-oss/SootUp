@@ -56,6 +56,7 @@ public class NodeFactory {
   @NonNull SparkOptions sparkOptions;
   @NonNull IdentifierFactory identifierFactory;
   @Nullable View view;
+  @NonNull MethodSignature globalScope;
 
   /**
    * Creates a node factory that resolves field references in the given view, so that all references
@@ -65,6 +66,7 @@ public class NodeFactory {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = view.getIdentifierFactory();
     this.view = view;
+    this.globalScope = ValueToNodeConversionVisitor.globalScope(identifierFactory);
   }
 
   /**
@@ -76,6 +78,7 @@ public class NodeFactory {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = identifierFactory;
     this.view = null;
+    this.globalScope = ValueToNodeConversionVisitor.globalScope(identifierFactory);
   }
 
   /**
@@ -99,9 +102,7 @@ public class NodeFactory {
    */
   @NonNull
   public StaticFieldRefNode globalField(@NonNull FieldSignature field) {
-    // a global node belongs to no method
-    return new ValueToNodeConversionVisitor(null, sparkOptions, identifierFactory, view)
-        .globalField(field);
+    return ValueToNodeConversionVisitor.globalField(field, globalScope);
   }
 
   /**
