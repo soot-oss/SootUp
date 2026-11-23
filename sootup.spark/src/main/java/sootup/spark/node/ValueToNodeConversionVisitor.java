@@ -447,19 +447,18 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @NonNull
   public InstanceFieldRefNode arrayElements(
       @NonNull String baseName, @NonNull Type baseType, @NonNull Type elementType) {
-    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
+    // also in field-based mode the elements belong to the array objects, as in Soot
     val base =
         VariableNode.builder()
-            .name(fieldBasedScope ? baseType.toString() : baseName)
+            .name(baseName)
             .type(baseType)
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
     return InstanceFieldRefNode.builder()
         .base(base)
         .field(arrayElementField)
         .type(elementType)
-        .containingMethodSig(baseMethodSig)
+        .containingMethodSig(containingMethodSig)
         .build();
   }
 
