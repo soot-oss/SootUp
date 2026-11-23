@@ -26,42 +26,37 @@ import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.callgraph.FastClassHierarchyAnalysisAlgorithm;
 
 /**
  * CHA-specific stage of the unified {@link CallGraphConfig} builder chain. Obtained via {@link
  * CallGraphConfigBuilder#cha()}; has no algorithm-specific knobs of its own beyond the properties
- * {@link CallGraphConfigBuilder} already collected.
+ * {@link CallGraphConfigBuilder} already collected. Subclasses can run a variant of the algorithm,
+ * see {@link FastChaCallGraphConfig}.
  */
-public final class ChaCallGraphConfig implements CallGraphConfig {
+public class ChaCallGraphConfig implements CallGraphConfig {
 
-  @NonNull private final CommonCallGraphSettings common;
-  private final boolean fast;
+  @NonNull protected final CommonCallGraphSettings common;
 
-  private ChaCallGraphConfig(@NonNull CommonCallGraphSettings common, boolean fast) {
+  protected ChaCallGraphConfig(@NonNull CommonCallGraphSettings common) {
     this.common = common;
-    this.fast = fast;
+  }
+
+  /** The algorithm that {@link #computeCallGraph()} runs, set up with the common settings. */
+  @NonNull
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm() {
+    return new ClassHierarchyAnalysisAlgorithm(
+        common.getView(),
+        common.getCallResolver(),
+        common.getVirtualCallResolver(),
+        common.getSeedEntryPointClinits(true),
+        common.getReflectionModel(),
+        common.getDynamicInvokeResolver());
   }
 
   @NonNull
   @Override
   public CallGraph computeCallGraph() {
-    ClassHierarchyAnalysisAlgorithm cha =
-        fast
-            ? new FastClassHierarchyAnalysisAlgorithm(
-                common.getView(),
-                common.getCallResolver(),
-                common.getVirtualCallResolver(),
-                common.getSeedEntryPointClinits(true),
-                common.getReflectionModel(),
-                common.getDynamicInvokeResolver())
-            : new ClassHierarchyAnalysisAlgorithm(
-                common.getView(),
-                common.getCallResolver(),
-                common.getVirtualCallResolver(),
-                common.getSeedEntryPointClinits(true),
-                common.getReflectionModel(),
-                common.getDynamicInvokeResolver());
+    ClassHierarchyAnalysisAlgorithm cha = createAlgorithm();
     return common.getEntryPoints().isEmpty()
         ? cha.initialize()
         : cha.initialize(common.getEntryPoints());
@@ -70,26 +65,14 @@ public final class ChaCallGraphConfig implements CallGraphConfig {
   public static final class Builder {
 
     @NonNull private final CommonCallGraphSettings common;
-    private boolean fast;
 
     Builder(@NonNull CommonCallGraphSettings common) {
       this.common = common;
     }
 
-    /**
-     * Resolves virtual calls on the type of the receiver local, as Soot's CHA does, with a {@link
-     * FastClassHierarchyAnalysisAlgorithm}. Read its documentation for the caveats: the bodies of
-     * the view have to be typed after their locals were split.
-     */
-    @NonNull
-    public Builder fast() {
-      this.fast = true;
-      return this;
-    }
-
     @NonNull
     public ChaCallGraphConfig build() {
-      return new ChaCallGraphConfig(common, fast);
+      return new ChaCallGraphConfig(common);
     }
   }
 }

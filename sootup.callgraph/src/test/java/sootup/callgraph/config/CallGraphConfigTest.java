@@ -104,8 +104,7 @@ public class CallGraphConfigTest {
         CallGraphConfig.builder()
             .view(view)
             .entryPoints(Collections.singletonList(mainMethodSignature))
-            .cha()
-            .fast()
+            .fastCha()
             .build()
             .computeCallGraph();
     CallGraph cha =
