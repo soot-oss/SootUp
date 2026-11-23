@@ -393,7 +393,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   /**
    * The node of a field that is one global variable, shared by all methods: a static field, or any
-   * field in field-based mode ({@link SparkOptions#isIgnoreBaseObjects()}). Writes and reads of it
+   * field in field-based mode ({@code SparkOptions#isIgnoreBaseObjects()}). Writes and reads of it
    * are assignments.
    *
    * @param globalScope see {@link #globalScope(IdentifierFactory)}

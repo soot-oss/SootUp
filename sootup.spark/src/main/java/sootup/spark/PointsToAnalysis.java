@@ -128,7 +128,7 @@ public class PointsToAnalysis {
    * {@link #reachingObjects(Value, MethodSignature)}, this follows chains of field accesses such as
    * {@code b.f.g}.
    *
-   * <p>In field-based mode ({@link SparkOptions#isIgnoreBaseObjects()}) the field is one global
+   * <p>In field-based mode ({@code SparkOptions#isIgnoreBaseObjects()}) the field is one global
    * variable, so the result is what it points to, whatever the objects, as in Soot.
    *
    * @param objects the allocation sites whose field is queried
