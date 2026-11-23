@@ -1807,10 +1807,10 @@ It can be extended with a command-line interface, included in other software pro
 <ul>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.core">core module</a> contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core">java.core module</a> contains parts that are essential for analyzing Java code.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode">java.bytecode module</a> contains the functionality that is necessary for taking as input java bytecode.</li>
+<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode.frontend">java.bytecode module</a> contains the functionality that is necessary for taking as input java bytecode.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph">callgraph module</a> contains implementations of common call graph construction algorithms such as <strong>CHA</strong>, <strong>RTA</strong>. A reimplementation of <strong>Spark</strong> pointer analysis framework is in progress.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser">jimple.parser module</a> contains the functionalty that is necessary for taking as input .jimple files.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis">analysis module</a> enables performing interprocedural dataflow analyses.</li>
+<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.frontend">jimple.parser module</a> contains the functionalty that is necessary for taking as input .jimple files.</li>
+<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis.interprocedural">analysis module</a> enables performing interprocedural dataflow analyses.</li>
 </ul>
 <h3 id="no-more-singletons">No More Singletons</h3>
 <p>Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
