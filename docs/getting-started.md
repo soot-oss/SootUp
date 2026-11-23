@@ -296,4 +296,4 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
 
 !!! info "Access a complete example of the code used above"
 
-    Download [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
+    Download [BasicSetup.java](https://github.com/soot-oss/SootUp-Examples/blob/main/BasicSetupExample/src/main/java/sootup/examples/BasicSetup.java)
