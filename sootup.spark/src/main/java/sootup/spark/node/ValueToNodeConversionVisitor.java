@@ -136,7 +136,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     this.arrayElementField =
         identifierFactory.getFieldSignature(
             ARRAY_ELEMENT_FIELD_NAME,
-            identifierFactory.getClassType("GLOBAL", "sootup.global"),
+            SyntheticClassType.GLOBAL,
             identifierFactory.getClassType("java.lang.Object"));
   }
 
@@ -385,10 +385,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @NonNull
   public static MethodSignature globalScope(@NonNull IdentifierFactory identifierFactory) {
     return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType("GLOBAL", "sootup.global"),
-        "GLOBAL_SCOPE",
-        VoidType.getInstance(),
-        Collections.emptyList());
+        SyntheticClassType.GLOBAL, "GLOBAL_SCOPE", VoidType.getInstance(), Collections.emptyList());
   }
 
   /**
