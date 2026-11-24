@@ -44,8 +44,9 @@ import sootup.core.views.View;
  * Dex code shares one return instruction between the branches of a method: the branches jump to it.
  * Like Soot's <code>DexReturnInliner</code>, this interceptor gives the branches their own returns:
  * a <code>goto</code> to a return becomes a copy of the return, and every <code>if</code> that
- * jumps to a return that is also reached otherwise jumps to its own copy. Afterwards, each return
- * has a single predecessor, so constant values can be propagated into returns.
+ * jumps to a return that is also reached otherwise jumps to its own copy. Afterwards, a return is
+ * only shared by cases of a <code>switch</code> that jump to it directly, as in Soot, so constant
+ * values can be propagated into returns.
  */
 public class DexReturnInliner implements BodyInterceptor {
 
