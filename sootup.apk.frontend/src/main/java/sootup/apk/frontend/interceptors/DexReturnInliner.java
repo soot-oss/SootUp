@@ -25,6 +25,7 @@ package sootup.apk.frontend.interceptors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
@@ -111,18 +112,16 @@ public class DexReturnInliner implements BodyInterceptor {
         continue;
       }
       Map<ClassType, Stmt> traps = graph.exceptionalSuccessors(ret);
-      // the original stays where it is if a predecessor cannot jump to a copy; otherwise the first
-      // conditional jump keeps it
-      boolean keepOriginal =
-          predecessors.stream().anyMatch(pred -> !canJumpToCopy(graph, pred, ret));
-      for (Stmt pred : predecessors) {
-        if (!canJumpToCopy(graph, pred, ret)) {
-          continue;
-        }
-        if (!keepOriginal) {
-          keepOriginal = true;
-          continue;
-        }
+      // the predecessors that only jump to the return; if no other predecessor reaches it, the
+      // first of them keeps it
+      List<Stmt> redirected =
+          predecessors.stream()
+              .filter(pred -> canJumpToCopy(graph, pred, ret))
+              .collect(Collectors.toList());
+      if (redirected.size() == predecessors.size()) {
+        redirected.remove(0);
+      }
+      for (Stmt pred : redirected) {
         Stmt copy = copyReturn(ret, ret.getPositionInfo());
         graph.addNode(copy, traps);
         List<Stmt> successors = new ArrayList<>(graph.successors(pred));
