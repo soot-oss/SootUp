@@ -73,7 +73,7 @@ public class DexReturnInliner implements BodyInterceptor {
           continue;
         }
         Stmt target = graph.successors(stmt).get(0);
-        if (!isReturn(target) || target == stmt) {
+        if (!isReturn(target)) {
           continue;
         }
         graph.replaceNode(stmt, copyReturn(target, stmt.getPositionInfo()));
