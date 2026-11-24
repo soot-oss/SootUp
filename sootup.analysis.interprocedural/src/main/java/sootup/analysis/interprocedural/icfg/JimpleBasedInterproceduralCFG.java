@@ -66,8 +66,8 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   /**
    * Whether call targets without a body (e.g. native methods) are callees of their call sites, like
-   * Soot's includePhantomCallees. Clients that decide by the callees whether a call is resolved
-   * need them, even though no flow enters such a callee.
+   * Soot's includePhantomCallees. No flow enters such a callee, but a client learns the target of
+   * the call, e.g. to apply its own model of the method.
    */
   protected volatile boolean includeBodylessCallees = false;
 
