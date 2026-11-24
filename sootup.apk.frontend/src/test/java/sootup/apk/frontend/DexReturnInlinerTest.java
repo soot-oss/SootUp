@@ -24,6 +24,8 @@ package sootup.apk.frontend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -70,6 +72,16 @@ public class DexReturnInlinerTest {
     return builder;
   }
 
+  /** The input has a single return that both branches reach */
+  private static void assertOneSharedReturn(MutableControlFlowGraph graph, Stmt ret) {
+    assertEquals(
+        List.of(ret),
+        graph.getNodes().stream()
+            .filter(s -> s instanceof JReturnStmt)
+            .collect(Collectors.toList()));
+    assertEquals(2, graph.predecessors(ret).size());
+  }
+
   private static List<Stmt> returns(Body body) {
     return body.getStmts().stream()
         .filter(s -> s instanceof JReturnStmt)
@@ -104,6 +116,7 @@ public class DexReturnInlinerTest {
     graph.putEdge(x1, jump);
     graph.putEdge(jump, JGotoStmt.BRANCH_IDX, ret);
     graph.putEdge(x0, ret);
+    assertOneSharedReturn(graph, ret);
 
     new DexReturnInliner().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
@@ -140,6 +153,7 @@ public class DexReturnInlinerTest {
     graph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, x1);
     graph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, ret);
     graph.putEdge(x1, ret);
+    assertOneSharedReturn(graph, ret);
 
     new DexReturnInliner().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
@@ -149,6 +163,12 @@ public class DexReturnInlinerTest {
     for (Stmt r : returns) {
       assertEquals(1, body.getControlFlowGraph().predecessors(r).size());
     }
+    // the fall-through keeps the original return, the jump goes to a copy
+    List<Stmt> branches = body.getControlFlowGraph().successors(ifStmt);
+    assertEquals(x1, branches.get(JIfStmt.FALSE_BRANCH_IDX));
+    assertTrue(branches.get(JIfStmt.TRUE_BRANCH_IDX) instanceof JReturnStmt);
+    assertNotSame(ret, branches.get(JIfStmt.TRUE_BRANCH_IDX));
+    assertEquals(List.of(x1), body.getControlFlowGraph().predecessors(ret));
   }
 
   /** After the default dex interceptors, the inliner leaves no jump to a return in an APK. */
