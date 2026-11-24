@@ -59,6 +59,21 @@ public class DexReturnInliner implements BodyInterceptor {
     return Jimple.newReturnVoidStmt(position);
   }
 
+  /**
+   * Whether {@code pred} reaches {@code ret} only by jumping to it, so that it can jump to a copy
+   * of {@code ret} instead. A predecessor that falls into {@code ret} (a statement before it, or an
+   * {@code if} whose false branch it is) or jumps to it in another way, e.g. a {@code switch},
+   * keeps the original.
+   */
+  private static boolean canJumpToCopy(MutableControlFlowGraph graph, Stmt pred, Stmt ret) {
+    if (!(pred instanceof JIfStmt)) {
+      return false;
+    }
+    List<Stmt> successors = graph.successors(pred);
+    return successors.get(JIfStmt.TRUE_BRANCH_IDX) == ret
+        && successors.get(JIfStmt.FALSE_BRANCH_IDX) != ret;
+  }
+
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableControlFlowGraph graph = builder.getControlFlowGraph();
@@ -96,18 +111,12 @@ public class DexReturnInliner implements BodyInterceptor {
         continue;
       }
       Map<ClassType, Stmt> traps = graph.exceptionalSuccessors(ret);
-      // the first conditional jump keeps the return if nothing falls through to it
+      // the original stays where it is if a predecessor cannot jump to a copy; otherwise the first
+      // conditional jump keeps it
       boolean keepOriginal =
-          predecessors.stream()
-              .anyMatch(
-                  pred ->
-                      !(pred instanceof JIfStmt)
-                          || pred.fallsThrough()
-                              && graph.successors(pred).get(JIfStmt.FALSE_BRANCH_IDX) == ret);
+          predecessors.stream().anyMatch(pred -> !canJumpToCopy(graph, pred, ret));
       for (Stmt pred : predecessors) {
-        if (!(pred instanceof JIfStmt)
-            || graph.successors(pred).get(JIfStmt.TRUE_BRANCH_IDX) != ret
-            || graph.successors(pred).get(JIfStmt.FALSE_BRANCH_IDX) == ret) {
+        if (!canJumpToCopy(graph, pred, ret)) {
           continue;
         }
         if (!keepOriginal) {
