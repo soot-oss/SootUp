@@ -2,18 +2,25 @@ package sootup.spark.test.options;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+import java.util.Set;
 import org.graph4j.Graph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.spark.Engine;
 import sootup.spark.PAGEdge;
+import sootup.spark.PointsToAnalysis;
+import sootup.spark.Spark;
 import sootup.spark.SparkOptions;
+import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.StaticFieldRefNode;
 import sootup.spark.test.SparkTestUtil;
 
 public class IgnoreBaseObjectsTest {
@@ -78,35 +85,66 @@ public class IgnoreBaseObjectsTest {
     SparkOptions options = SparkOptions.builder().ignoreBaseObjects(true).build();
     Graph<Node, PAGEdge> delegate = SparkTestUtil.solveMain(mainSig, options);
 
-    // Single merged field ref node keyed by base type, scoped to GLOBAL_SCOPE
-    InstanceFieldRefNode mergedFieldRef =
-        SparkTestUtil.fieldRef(
-            SparkTestUtil.var(containerType, containerType.toString(), SparkTestUtil.GLOBAL_SCOPE),
-            valueField,
-            valueType,
-            SparkTestUtil.GLOBAL_SCOPE);
+    // the field is one global variable, whatever the base
+    StaticFieldRefNode field =
+        StaticFieldRefNode.builder()
+            .field(valueField)
+            .type(valueType)
+            .containingMethodSig(SparkTestUtil.GLOBAL_SCOPE)
+            .build();
+    assertTrue(SparkTestUtil.containsVertex(delegate, field), "global field node missing");
 
+    // Both stores converge on the global node
     assertTrue(
-        SparkTestUtil.containsVertex(delegate, mergedFieldRef), "Merged field ref node missing");
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack7", mainSig), field),
+        "$stack7 -> value missing");
+    assertTrue(
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack8", mainSig), field),
+        "$stack8 -> value missing");
 
-    // Both stores converge on the single merged node
+    // Both loads come from the global node
     assertTrue(
-        SparkTestUtil.containsEdge(
-            delegate, SparkTestUtil.var(valueType, "$stack7", mainSig), mergedFieldRef),
-        "$stack7 -> merged.value missing");
+        SparkTestUtil.containsEdge(delegate, field, SparkTestUtil.var(valueType, "l5", mainSig)),
+        "value -> l5 missing");
     assertTrue(
-        SparkTestUtil.containsEdge(
-            delegate, SparkTestUtil.var(valueType, "$stack8", mainSig), mergedFieldRef),
-        "$stack8 -> merged.value missing");
+        SparkTestUtil.containsEdge(delegate, field, SparkTestUtil.var(valueType, "l6", mainSig)),
+        "value -> l6 missing");
+  }
 
-    // Both loads come from the same merged node
-    assertTrue(
-        SparkTestUtil.containsEdge(
-            delegate, mergedFieldRef, SparkTestUtil.var(valueType, "l5", mainSig)),
-        "merged.value -> l5 missing");
-    assertTrue(
-        SparkTestUtil.containsEdge(
-            delegate, mergedFieldRef, SparkTestUtil.var(valueType, "l6", mainSig)),
-        "merged.value -> l6 missing");
+  private PointsToAnalysis pointsTo(SparkOptions options) {
+    return Spark.builder()
+        .view(SparkTestUtil.view)
+        .entryPoints(List.of(mainSig))
+        .sparkOptions(options)
+        .build()
+        .getPointsToAnalysis();
+  }
+
+  @Test
+  public void fieldBasedLoadsSeeTheStoresOfAllBases() {
+    PointsToAnalysis pta = pointsTo(SparkOptions.builder().ignoreBaseObjects(true).build());
+    Set<AllocationNode> both =
+        Set.of(
+            SparkTestUtil.alloc(valueType, 1L, mainSig),
+            SparkTestUtil.alloc(valueType, 2L, mainSig));
+    assertEquals(both, pta.reachingObjects(Jimple.newLocal("l5", valueType), mainSig));
+    assertEquals(both, pta.reachingObjects(Jimple.newLocal("l6", valueType), mainSig));
+    // a field query sees the global variable, whatever the objects
+    assertEquals(
+        both,
+        pta.reachingObjects(Set.of(SparkTestUtil.alloc(containerType, 3L, mainSig)), valueField));
+  }
+
+  @Test
+  public void fieldSensitiveLoadsSeeTheStoresOfTheirBase() {
+    PointsToAnalysis pta = pointsTo(SparkOptions.defaultOptions());
+    assertEquals(
+        Set.of(SparkTestUtil.alloc(valueType, 1L, mainSig)),
+        pta.reachingObjects(Jimple.newLocal("l5", valueType), mainSig));
+    assertEquals(
+        Set.of(SparkTestUtil.alloc(valueType, 2L, mainSig)),
+        pta.reachingObjects(Jimple.newLocal("l6", valueType), mainSig));
   }
 }
