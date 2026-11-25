@@ -373,14 +373,19 @@ public class PointsToAnalysis {
       Map<Integer, Integer> lowLink,
       Deque<Integer> component,
       Set<Integer> onComponentStack) {
-    index.put(v, index.size());
-    lowLink.put(v, index.get(v));
+    int number = index.size();
+    index.put(v, number);
+    lowLink.put(v, number);
     component.push(v);
     onComponentStack.add(v);
     return new int[] {v, 0};
   }
 
   private Node representative(Node n) {
+    if (representatives.isEmpty()) {
+      // no cycles collapsed: each node stands for itself
+      return n;
+    }
     return representatives.getOrDefault(n, n);
   }
 
