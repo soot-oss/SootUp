@@ -200,6 +200,20 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   @Override
+  protected Collection<MethodSignature> getCallTargets(MethodSignature caller, Stmt call) {
+    if (!cg.containsMethod(caller)) {
+      return Collections.emptyList();
+    }
+    List<MethodSignature> targets = new ArrayList<>();
+    for (CallGraph.Call c : cg.callsFrom(caller)) {
+      if (c.invokableStmt() == call) {
+        targets.add(c.targetMethodSignature());
+      }
+    }
+    return targets;
+  }
+
+  @Override
   public Collection<SootMethod> getCalleesOfCallAt(@NonNull Stmt u) {
     return stmtToCallees.getUnchecked(u);
   }

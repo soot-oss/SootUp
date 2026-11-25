@@ -37,6 +37,8 @@ import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<Stmt, SootMethod> {
@@ -44,6 +46,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected final boolean enableExceptions;
 
   protected View view;
+
+  /** if not null, a call only reaches the handlers that can catch what its callees may throw */
+  private volatile CallExceptionAnalysis callExceptionAnalysis;
+
+  @SynchronizedBy("synchronized map")
+  private final Map<Stmt, CallExceptionAnalysis.ThrownTypes> callToThrownTypes =
+      Collections.synchronizedMap(new IdentityHashMap<>());
 
   @DontSynchronize("written by single thread; read afterwards")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
@@ -98,6 +107,51 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     this.enableExceptions = enableExceptions;
   }
 
+  /**
+   * Sets whether a call reaches only the trap handlers that can catch an exception its callees may
+   * throw, as computed by {@link CallExceptionAnalysis} (like Soot's interprocedural throw
+   * analysis). By default, a call may throw any exception and reaches all handlers that cover it.
+   */
+  public void setAnalyzeCallExceptions(boolean analyzeCallExceptions) {
+    this.callExceptionAnalysis =
+        analyzeCallExceptions ? new CallExceptionAnalysis(view, this::getCallTargets) : null;
+    callToThrownTypes.clear();
+  }
+
+  /**
+   * Returns the possible targets of the given call statement in the given method, or an empty
+   * collection if they are not known.
+   */
+  protected Collection<MethodSignature> getCallTargets(MethodSignature caller, Stmt call) {
+    return Collections.emptyList();
+  }
+
+  /** Returns whether an exception thrown at the given statement can reach a handler of the type. */
+  private boolean mayThrowTo(Body body, Stmt thrower, ClassType handlerType) {
+    CallExceptionAnalysis analysis = callExceptionAnalysis;
+    if (analysis == null || !isCallStmt(thrower)) {
+      return true;
+    }
+    CallExceptionAnalysis.ThrownTypes thrown = callToThrownTypes.get(thrower);
+    if (thrown == null) {
+      thrown = analysis.mightThrow(body.getMethodSignature(), thrower);
+      callToThrownTypes.put(thrower, thrown);
+    }
+    return thrown.catchableAs(handlerType, view.getTypeHierarchy());
+  }
+
+  /** Returns the handlers that an exception thrown at the given statement can reach. */
+  private List<Stmt> handlersOf(Body body, ControlFlowGraph<?> controlFlowGraph, Stmt thrower) {
+    List<Stmt> handlers = new ArrayList<>();
+    for (Map.Entry<ClassType, ?> entry :
+        controlFlowGraph.exceptionalSuccessors(thrower).entrySet()) {
+      if (mayThrowTo(body, thrower, entry.getKey())) {
+        handlers.add((Stmt) entry.getValue());
+      }
+    }
+    return handlers;
+  }
+
   public Body getBodyOf(Stmt stmt) {
     Body body = stmtToOwner.get(stmt);
     assert body != null : "Statement " + stmt + " not in Stmt-to-owner mapping";
@@ -120,7 +174,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   /**
    * Returns the successors of the given statement. If exceptions are enabled, this includes the
-   * heads of the trap handlers that may catch an exception thrown at the given statement.
+   * heads of the trap handlers that may catch an exception thrown at the given statement, and the
+   * heads of the handlers that may catch an exception thrown at one of its normal successors: a
+   * statement that throws may do so before it has any effect, so the handler is reached with the
+   * state before that statement (like the edges from the predecessors of an excepting unit in
+   * Soot's ExceptionalUnitGraph).
    */
   @Override
   public List<Stmt> getSuccsOf(Stmt stmt) {
@@ -133,7 +191,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!enableExceptions) {
       return successors;
     }
-    return appendMissing(successors, controlFlowGraph.exceptionalSuccessors(stmt).values());
+    List<Stmt> handlers = handlersOf(body, controlFlowGraph, stmt);
+    for (Stmt successor : successors) {
+      handlers.addAll(handlersOf(body, controlFlowGraph, successor));
+    }
+    return appendMissing(successors, handlers);
   }
 
   /** Appends the elements of additional that are not yet contained (by identity) in base. */
@@ -200,7 +262,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     List<Stmt> heads = new ArrayList<>();
     heads.add(startingStmt);
     for (Stmt entrypoint : entrypoints) {
-      if (entrypoint != startingStmt && getPredsOf(entrypoint).isEmpty()) {
+      // a handler that no call can throw to is unreachable, not a head
+      if (entrypoint != startingStmt
+          && getPredsOf(entrypoint).isEmpty()
+          && controlFlowGraph.exceptionalPredecessors(entrypoint).isEmpty()) {
         heads.add(entrypoint);
       }
     }
@@ -297,16 +362,36 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     // ControlFlowGraph.predecessors() of a trap handler also returns the last statement of each
     // block that can throw into the handler, while successors() only returns normal flow. Keep only
     // the normal predecessors so that predecessors and successors stay symmetric.
-    List<Stmt> predecessors = new ArrayList<>();
-    for (Stmt pred : controlFlowGraph.predecessors(u)) {
-      if (controlFlowGraph.successors(pred).contains(u)) {
-        predecessors.add(pred);
-      }
-    }
+    List<Stmt> predecessors = normalPredecessors(controlFlowGraph, u);
     if (!enableExceptions) {
       return predecessors;
     }
-    return appendMissing(predecessors, controlFlowGraph.exceptionalPredecessors(u));
+    // the statements that may throw into the handler, and their normal predecessors (see
+    // getSuccsOf)
+    List<Stmt> throwers = new ArrayList<>();
+    for (Stmt thrower : controlFlowGraph.exceptionalPredecessors(u)) {
+      if (handlersOf(body, controlFlowGraph, thrower).contains(u)) {
+        throwers.add(thrower);
+      }
+    }
+    if (throwers.isEmpty()) {
+      return predecessors;
+    }
+    List<Stmt> exceptional = new ArrayList<>(throwers);
+    for (Stmt thrower : throwers) {
+      exceptional.addAll(normalPredecessors(controlFlowGraph, thrower));
+    }
+    return appendMissing(predecessors, exceptional);
+  }
+
+  private static List<Stmt> normalPredecessors(ControlFlowGraph<?> controlFlowGraph, Stmt stmt) {
+    List<Stmt> predecessors = new ArrayList<>();
+    for (Stmt pred : controlFlowGraph.predecessors(stmt)) {
+      if (controlFlowGraph.successors(pred).contains(stmt)) {
+        predecessors.add(pred);
+      }
+    }
+    return predecessors;
   }
 
   @Override
