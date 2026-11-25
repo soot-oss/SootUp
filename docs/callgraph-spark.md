@@ -65,6 +65,7 @@ Every option, with its default:
 | `ignoreBaseObjects` | `false` | Field-based analysis: `a.f` and `b.f` are the same node, no matter what `a` and `b` point to. Cheaper, less precise |
 | `typesForSites` | `false` | One abstract object per *type* instead of per `new` statement. Smaller points-to sets, less precise |
 | `simpleEdgesBidirectional` | `false` | Make assignment edges bidirectional, which turns the analysis into a unification-based (Steensgaard-style) one. Cheaper, much less precise |
+| `simplifySccs` | `false` | Propagate the points-to set of each cycle of assignments (a strongly connected component of the pointer assignment graph) once, for all its variables, like Soot's `simplify-sccs`. Faster, same results. Only without `onFlyCallGraph` |
 | `parmsAsFields` | `false` | *Not implemented yet, no effect.* In Soot: model parameters as field-reference nodes |
 | `returnsAsFields` | `false` | *Not implemented yet, no effect.* In Soot: model return values as field-reference nodes |
 | `mergeStringBuffer` | `true` | *Not implemented yet, no effect.* In Soot: one abstract object for all `StringBuffer`/`StringBuilder` allocations |

@@ -58,4 +58,11 @@ public class SparkOptions {
   @Builder.Default boolean simulateNatives = true; // Model standard library native methods
   @Builder.Default boolean simpleEdgesBidirectional = false; // For unification-based analysis
   @Builder.Default boolean onFlyCallGraph = false; // Build interprocedural edges dynamically
+
+  /**
+   * Propagates the points-to set of each cycle of assignments once, for all its variables, like
+   * Soot's {@code simplify-sccs}. The results stay the same. As in Soot, only without {@code
+   * onFlyCallGraph}.
+   */
+  @Builder.Default boolean simplifySccs = false;
 }

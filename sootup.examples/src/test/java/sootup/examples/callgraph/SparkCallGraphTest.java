@@ -51,6 +51,7 @@ public class SparkCallGraphTest {
             .ignoreBaseObjects(false) // true: field-based instead of field-sensitive
             .typesForSites(false) // true: one abstract object per type, not per `new`
             .simpleEdgesBidirectional(false) // true: unification-based (Steensgaard-like)
+            .simplifySccs(false) // true: propagate each cycle of assignments once
             // accepted, but not implemented yet:
             .parmsAsFields(false)
             .returnsAsFields(false)
