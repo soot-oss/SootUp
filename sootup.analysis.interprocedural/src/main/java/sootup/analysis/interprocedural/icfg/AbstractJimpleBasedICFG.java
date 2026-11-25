@@ -120,7 +120,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   /**
    * Returns the successors of the given statement. If exceptions are enabled, this includes the
-   * heads of the trap handlers that may catch an exception thrown at the given statement.
+   * heads of the trap handlers that may catch an exception thrown at the given statement, and the
+   * heads of the handlers that may catch an exception thrown at one of its normal successors: a
+   * statement that throws may do so before it has any effect, so the handler is reached with the
+   * state before that statement (like the edges from the predecessors of an excepting unit in
+   * Soot's ExceptionalUnitGraph).
    */
   @Override
   public List<Stmt> getSuccsOf(Stmt stmt) {
@@ -133,7 +137,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!enableExceptions) {
       return successors;
     }
-    return appendMissing(successors, controlFlowGraph.exceptionalSuccessors(stmt).values());
+    List<Stmt> handlers = new ArrayList<>(controlFlowGraph.exceptionalSuccessors(stmt).values());
+    for (Stmt successor : successors) {
+      handlers.addAll(controlFlowGraph.exceptionalSuccessors(successor).values());
+    }
+    return appendMissing(successors, handlers);
   }
 
   /** Appends the elements of additional that are not yet contained (by identity) in base. */
@@ -297,16 +305,31 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     // ControlFlowGraph.predecessors() of a trap handler also returns the last statement of each
     // block that can throw into the handler, while successors() only returns normal flow. Keep only
     // the normal predecessors so that predecessors and successors stay symmetric.
-    List<Stmt> predecessors = new ArrayList<>();
-    for (Stmt pred : controlFlowGraph.predecessors(u)) {
-      if (controlFlowGraph.successors(pred).contains(u)) {
-        predecessors.add(pred);
-      }
-    }
+    List<Stmt> predecessors = normalPredecessors(controlFlowGraph, u);
     if (!enableExceptions) {
       return predecessors;
     }
-    return appendMissing(predecessors, controlFlowGraph.exceptionalPredecessors(u));
+    // the statements that may throw into the handler, and their normal predecessors (see
+    // getSuccsOf)
+    List<Stmt> throwers = controlFlowGraph.exceptionalPredecessors(u);
+    if (throwers.isEmpty()) {
+      return predecessors;
+    }
+    List<Stmt> exceptional = new ArrayList<>(throwers);
+    for (Stmt thrower : throwers) {
+      exceptional.addAll(normalPredecessors(controlFlowGraph, thrower));
+    }
+    return appendMissing(predecessors, exceptional);
+  }
+
+  private static List<Stmt> normalPredecessors(ControlFlowGraph<?> controlFlowGraph, Stmt stmt) {
+    List<Stmt> predecessors = new ArrayList<>();
+    for (Stmt pred : controlFlowGraph.predecessors(stmt)) {
+      if (controlFlowGraph.successors(pred).contains(stmt)) {
+        predecessors.add(pred);
+      }
+    }
+    return predecessors;
   }
 
   @Override
