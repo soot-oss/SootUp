@@ -134,7 +134,8 @@ public class JavaSootField extends SootClassMember<FieldSignature>
   /**
    * Returns the classfile ConstantValue attribute, or an empty optional if absent. This does not
    * infer values from field initializers. Boolean, byte, char and short attributes are represented
-   * as integer constants, matching their classfile representation.
+   * as integer constants, matching their classfile representation. For a class from a dex file,
+   * this is the initial value of a static field, which dex stores also for non-final fields.
    */
   @NonNull
   public Optional<Constant> getConstantValue() {
