@@ -78,6 +78,10 @@ For example, with one abstract object per type:
 
 In the running example, this makes no difference, since every class is instantiated only once.
 
+`SparkOptions.vta()` combines `ignoreBaseObjects` and `typesForSites` with a CHA-seeded graph, like
+Soot's `vta` option (Variable Type Analysis). Unlike Soot, it doesn't collapse the strongly
+connected components of the pointer assignment graph, so it is slower than Soot's VTA.
+
 ## The `Spark` facade: points-to sets
 
 To get the points-to analysis as well as the call graph, use `Spark.builder()`:
