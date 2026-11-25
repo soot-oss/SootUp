@@ -9,7 +9,6 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
@@ -20,6 +19,7 @@ import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.ValueToNodeConversionVisitor;
 import sootup.spark.node.VariableNode;
 
 @UtilityClass
@@ -29,11 +29,7 @@ public class SparkTestUtil {
   public static final JavaView view =
       new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
   public static final MethodSignature GLOBAL_SCOPE =
-      idFactory.getMethodSignature(
-          idFactory.getClassType("GLOBAL", "sootup.global"),
-          "GLOBAL_SCOPE",
-          VoidType.getInstance(),
-          Collections.emptyList());
+      ValueToNodeConversionVisitor.globalScope(idFactory);
 
   public static ClassType simpleType(String name) {
     return new ClassType() {

@@ -90,6 +90,20 @@ public class StaticFieldsAndArraysTest {
   }
 
   @Test
+  public void objectsFlowThroughArraysInFieldBasedMode() {
+    PointsToAnalysis pta =
+        Spark.builder()
+            .view(SparkTestUtil.view)
+            .entryPoints(Collections.singletonList(mainSig))
+            .sparkOptions(SparkOptions.builder().ignoreBaseObjects(true).build())
+            .build()
+            .getPointsToAnalysis();
+    // the elements still belong to the array objects
+    assertEquals(Collections.singleton("StaticAndArrays$Square"), reachingTypes(pta, "fromArray"));
+    assertEquals(Collections.singleton("StaticAndArrays$Triangle"), reachingTypes(pta, "fromGrid"));
+  }
+
+  @Test
   public void objectsFlowThroughTheInnerArraysOfMultiDimensionalArrays() {
     for (boolean onTheFly : new boolean[] {false, true}) {
       Engine.resetAllocCount();

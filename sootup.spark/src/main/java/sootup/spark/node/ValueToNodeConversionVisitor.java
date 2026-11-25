@@ -132,16 +132,11 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = identifierFactory;
     this.view = view;
-    this.globalScope =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("GLOBAL", "sootup.global"),
-            "GLOBAL_SCOPE",
-            VoidType.getInstance(),
-            Collections.emptyList());
+    this.globalScope = globalScope(identifierFactory);
     this.arrayElementField =
         identifierFactory.getFieldSignature(
             ARRAY_ELEMENT_FIELD_NAME,
-            identifierFactory.getClassType("GLOBAL", "sootup.global"),
+            SyntheticClassType.GLOBAL,
             identifierFactory.getClassType("java.lang.Object"));
   }
 
@@ -383,33 +378,53 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
-    val field = resolve(ref.getFieldSignature());
-    this.node =
-        // a static field is one global variable, shared by all methods
-        StaticFieldRefNode.builder()
-            .field(field)
-            .type(field.getType())
-            .containingMethodSig(globalScope)
-            .build();
+    this.node = globalField(resolve(ref.getFieldSignature()), globalScope);
+  }
+
+  /** The pseudo method that global nodes, e.g. those of static fields, belong to. */
+  @NonNull
+  public static MethodSignature globalScope(@NonNull IdentifierFactory identifierFactory) {
+    return identifierFactory.getMethodSignature(
+        SyntheticClassType.GLOBAL, "GLOBAL_SCOPE", VoidType.getInstance(), Collections.emptyList());
+  }
+
+  /**
+   * The node of a field that is one global variable, shared by all methods: a static field, or any
+   * field in field-based mode ({@code SparkOptions#isIgnoreBaseObjects()}). Writes and reads of it
+   * are assignments.
+   *
+   * @param globalScope see {@link #globalScope(IdentifierFactory)}
+   */
+  @NonNull
+  public static StaticFieldRefNode globalField(
+      @NonNull FieldSignature field, @NonNull MethodSignature globalScope) {
+    return StaticFieldRefNode.builder()
+        .field(field)
+        .type(field.getType())
+        .containingMethodSig(globalScope)
+        .build();
   }
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
-    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
-    val baseName = fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
+    FieldSignature field = resolve(ref.getFieldSignature());
+    if (sparkOptions.isIgnoreBaseObjects()) {
+      // field-based: the field is one global variable, whatever object it belongs to
+      this.node = globalField(field, globalScope);
+      return;
+    }
     val base =
         VariableNode.builder()
-            .name(baseName)
+            .name(ref.getBase().getName())
             .type(ref.getBase().getType())
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
-            .field(resolve(ref.getFieldSignature()))
+            .field(field)
             .type(ref.getType())
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
@@ -437,19 +452,18 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @NonNull
   public InstanceFieldRefNode arrayElements(
       @NonNull String baseName, @NonNull Type baseType, @NonNull Type elementType) {
-    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
+    // also in field-based mode the elements belong to the array objects, as in Soot
     val base =
         VariableNode.builder()
-            .name(fieldBasedScope ? baseType.toString() : baseName)
+            .name(baseName)
             .type(baseType)
-            .containingMethodSig(baseMethodSig)
+            .containingMethodSig(containingMethodSig)
             .build();
     return InstanceFieldRefNode.builder()
         .base(base)
         .field(arrayElementField)
         .type(elementType)
-        .containingMethodSig(baseMethodSig)
+        .containingMethodSig(containingMethodSig)
         .build();
   }
 
