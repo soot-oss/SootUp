@@ -48,6 +48,7 @@ public class VtaPresetTest {
     assertTrue(vta.isIgnoreBaseObjects());
     assertTrue(vta.isTypesForSites());
     assertFalse(vta.isOnFlyCallGraph());
+    assertTrue(vta.isSimplifySccs());
   }
 
   @Test

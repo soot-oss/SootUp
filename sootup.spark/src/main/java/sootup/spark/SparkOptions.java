@@ -36,15 +36,15 @@ public class SparkOptions {
   /**
    * Options that emulate Variable Type Analysis (Sundaresan et al., 2000), like Soot's {@code vta}
    * option: field-based ({@code ignoreBaseObjects}), one abstract object per type ({@code
-   * typesForSites}), and the points-to sets computed on a CHA call graph, which they then narrow
-   * (no {@code onFlyCallGraph}). Unlike Soot, the strongly connected components of the pointer
-   * assignment graph are not collapsed, so it takes longer than Soot's VTA.
+   * typesForSites}), the points-to sets computed on a CHA call graph, which they then narrow (no
+   * {@code onFlyCallGraph}), and cycles of assignments collapsed ({@code simplifySccs}).
    */
   public static SparkOptions vta() {
     return SparkOptions.builder()
         .ignoreBaseObjects(true)
         .typesForSites(true)
         .onFlyCallGraph(false)
+        .simplifySccs(true)
         .build();
   }
 
