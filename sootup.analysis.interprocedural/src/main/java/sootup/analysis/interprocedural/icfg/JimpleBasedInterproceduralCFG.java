@@ -30,6 +30,8 @@ import heros.SynchronizedBy;
 import heros.ThreadSafe;
 import heros.solver.IDESolver;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -73,6 +75,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   @DontSynchronize("readonly")
   protected final CallGraph cg;
+
+  /** Decides whether the statements of a method are registered when the ICFG is created. */
+  private final Predicate<SootMethod> registerEagerly;
+
+  /** The methods of the call graph whose statements are not registered yet. */
+  private final Set<MethodSignature> lazyMethods = ConcurrentHashMap.newKeySet();
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
       new CacheLoader<>() {
@@ -121,6 +129,11 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Override
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
+          // the call statements are handed out, so their methods must be known as their owners
+          for (CallGraph.Call call : calls) {
+            view.getMethod(call.sourceMethodSignature())
+                .ifPresent(JimpleBasedInterproceduralCFG.this::registerOwnersOf);
+          }
           return calls.stream().map(Call::invokableStmt).collect(Collectors.toSet());
         }
       };
@@ -143,10 +156,30 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public JimpleBasedInterproceduralCFG(
       CallGraph cg, View view, boolean enableExceptions, boolean includeReflectiveCalls) {
+    this(cg, view, enableExceptions, includeReflectiveCalls, method -> true);
+  }
+
+  /**
+   * Creates an ICFG that registers the statements of only some methods of the call graph upfront.
+   * The statements of the other methods are registered when a client first asks for the start
+   * points, end points, calls or control flow graph of the method, or for a statement that is not
+   * known yet. Methods whose bodies no client uses are then not loaded, e.g., library methods whose
+   * calls the call graph did not resolve.
+   *
+   * @param registerEagerly decides for each method of the call graph whether its statements are
+   *     registered when the ICFG is created
+   */
+  public JimpleBasedInterproceduralCFG(
+      CallGraph cg,
+      View view,
+      boolean enableExceptions,
+      boolean includeReflectiveCalls,
+      Predicate<SootMethod> registerEagerly) {
     super(enableExceptions);
     this.includeReflectiveCalls = includeReflectiveCalls;
     this.view = view;
     this.cg = cg;
+    this.registerEagerly = registerEagerly;
     initializeStmtToOwner();
   }
 
@@ -214,7 +247,41 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected void initializeStmtToOwner() {
     for (MethodSignature methodSignature : cg.getMethodSignatures()) {
       final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-      methodOpt.ifPresent(this::initializeStmtToOwner);
+      methodOpt.ifPresent(
+          method -> {
+            if (registerEagerly.test(method)) {
+              initializeStmtToOwner(method);
+            } else {
+              lazyMethods.add(methodSignature);
+            }
+          });
+    }
+  }
+
+  @Override
+  protected void registerOwnersOf(SootMethod m) {
+    if (!lazyMethods.contains(m.getSignature())) {
+      return;
+    }
+    // a method leaves the set only after its statements are registered
+    synchronized (lazyMethods) {
+      if (lazyMethods.contains(m.getSignature())) {
+        initializeStmtToOwner(m);
+        lazyMethods.remove(m.getSignature());
+      }
+    }
+  }
+
+  @Override
+  protected void registerRemainingOwners() {
+    if (lazyMethods.isEmpty()) {
+      return;
+    }
+    synchronized (lazyMethods) {
+      for (MethodSignature methodSignature : new ArrayList<>(lazyMethods)) {
+        view.getMethod(methodSignature).ifPresent(this::initializeStmtToOwner);
+        lazyMethods.remove(methodSignature);
+      }
     }
   }
 
