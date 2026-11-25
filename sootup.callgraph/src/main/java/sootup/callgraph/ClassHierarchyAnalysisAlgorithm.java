@@ -25,6 +25,7 @@ package sootup.callgraph;
 import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
@@ -181,6 +182,29 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         seedEntryPointClinits,
         reflectionModel,
         dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest CHA constructor: like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver,
+   * VirtualCallResolver, boolean, ReflectionModel, DynamicInvokeResolver)}, plus an {@link
+   * ImplicitCallModel} for calls that methods perform implicitly.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver,
+      @NonNull ImplicitCallModel implicitCallModel) {
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver,
+        implicitCallModel);
   }
 
   @NonNull

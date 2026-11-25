@@ -22,8 +22,6 @@ package sootup.callgraph;
  * #L%
  */
 
-import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -34,6 +32,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
@@ -47,11 +46,11 @@ import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -65,7 +64,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
 import sootup.core.views.View;
 
 /**
@@ -117,6 +115,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @NonNull private Map<MethodSubSignature, List<InterfaceCall>> interfaceCalls = new HashMap<>();
 
   private record InterfaceCall(SootMethod source, InvokableStmt stmt, MethodSignature called) {}
+
+  /** Models the calls that methods perform implicitly. */
+  @NonNull private final ImplicitCallModel implicitCallModel;
+
+  /**
+   * The call statements that cause implicit invocations. Implicit invocations are resolved as
+   * synthetic statements, but their edges are attributed to the statement that causes them.
+   */
+  @NonNull
+  private final Map<InvokableStmt, InvokableStmt> implicitCallSites = new IdentityHashMap<>();
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
@@ -248,6 +256,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       boolean seedEntryPointClinits,
       @NonNull ReflectionModel reflectionModel,
       @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    this(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver,
+        ImplicitCallModel.threadStart());
+  }
+
+  /**
+   * Widest constructor: like {@link #AbstractCallGraphAlgorithm(View, CallResolver,
+   * VirtualCallResolver, boolean, ReflectionModel, DynamicInvokeResolver)}, plus an {@link
+   * ImplicitCallModel} for calls that methods perform implicitly, e.g. {@code Thread.start()}
+   * calling {@code run()}. The other constructors use {@link ImplicitCallModel#threadStart()}.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver,
+      @NonNull ImplicitCallModel implicitCallModel) {
+    this.implicitCallModel = implicitCallModel;
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.methodLookup = new MethodLookup(view);
@@ -469,7 +502,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // promotion: an earlier edge left this target unexpanded, but this edge wants it expanded
       frontier.workList.push(target);
     }
-    cg.addCallIfAbsent(source, target, invokeStmt);
+    cg.addCallIfAbsent(source, target, callSiteOf(invokeStmt));
   }
 
   /**
@@ -515,7 +548,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       cg.addMethod(target);
       workList.push(target);
     }
-    cg.addCallIfAbsent(source, target, invokeStmt);
+    cg.addCallIfAbsent(source, target, callSiteOf(invokeStmt));
   }
 
   /**
@@ -628,7 +661,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull MutableCallGraph cg,
       @NonNull Frontier frontier) {
     ExplorationVerdict verdict =
-        virtualCallResolver.tryAdvanceCall(sourceMethod, targetMethod, stmt);
+        virtualCallResolver.tryAdvanceCall(sourceMethod, targetMethod, callSiteOf(stmt));
     if (verdict == ExplorationVerdict.STOP) {
       return;
     }
@@ -642,19 +675,22 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * It resolves the start-run implicit calls caused by the given source method
+   * Resolves the calls that the given source method performs implicitly according to the {@link
+   * ImplicitCallModel}, e.g. {@code Thread.start()} calling {@code run()}. The edges are attributed
+   * to the call statements that cause them.
    *
    * @param sourceMethod the inspected source method
    * @param calls the statements whose calls are resolved
-   * @param cg implicit start-run calls will be added to the call graph
-   * @param frontier new run methods will be added to the work list
+   * @param cg implicit calls will be added to the call graph
+   * @param frontier new target methods will be added to the work list
    */
-  protected void implicitStartRunCall(
+  protected void implicitCalls(
       @NonNull SootMethod sourceMethod,
       @NonNull CallFilter calls,
       @NonNull MutableCallGraph cg,
       @NonNull Frontier frontier) {
-    for (Stmt stmt : getBody(sourceMethod).getStmts()) {
+    Body body = getBody(sourceMethod);
+    for (Stmt stmt : body.getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
@@ -662,40 +698,29 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (!calls.resolves(invokableStmt)) {
         continue;
       }
-      AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
-      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
-        continue;
+      for (AbstractInstanceInvokeExpr implicitInvoke :
+          implicitCallModel.resolve(view, body, invokableStmt)) {
+        InvokableStmt implicitStmt =
+            new JInvokeStmt(implicitInvoke, invokableStmt.getPositionInfo());
+        implicitCallSites.put(implicitStmt, invokableStmt);
+        resolveCall(sourceMethod, implicitStmt)
+            .forEach(
+                target -> {
+                  if (view.getMethod(target).isPresent()) {
+                    addResolvedCall(sourceMethod, target, implicitStmt, cg, frontier);
+                  }
+                });
       }
-      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
-      if (!methodSig.getType().equals(VoidType.getInstance())
-          || !methodSig.getParameterTypes().isEmpty()
-          || !methodSig.getName().equals("start")) {
-        continue;
-      }
-      // check if java.lang.Thread is superClass of methodSig.classType()
-      if (typeHierarchy
-          .superClassesOf(methodSig.getDeclClassType())
-          .noneMatch(classType -> classType.equals(threadType))) {
-        continue;
-      }
-      MethodSignature implicitRunMethodSig =
-          view.getIdentifierFactory()
-              .getMethodSignature(
-                  methodSig.getDeclClassType(),
-                  "run",
-                  methodSig.getType(),
-                  methodSig.getParameterTypes());
-      JVirtualInvokeExpr runInvokeExpr =
-          sourceMethodInvokeExpr.asJVirtualInvokeExpr().withMethodSignature(implicitRunMethodSig);
-      InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());
-      resolveCall(sourceMethod, runInvokableStmt)
-          .forEach(
-              runMethodSignature -> {
-                if (view.getMethod(runMethodSignature).isPresent()) {
-                  addResolvedCall(sourceMethod, runMethodSignature, runInvokableStmt, cg, frontier);
-                }
-              });
     }
+  }
+
+  /**
+   * Returns the statement to which the edges of the given resolved statement are attributed: the
+   * causing call statement for implicit invocations, otherwise the statement itself.
+   */
+  @NonNull
+  protected InvokableStmt callSiteOf(@NonNull InvokableStmt stmt) {
+    return implicitCallSites.getOrDefault(stmt, stmt);
   }
 
   /**
@@ -711,7 +736,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull CallFilter calls,
       @NonNull MutableCallGraph cg,
       @NonNull Frontier frontier) {
-    implicitStartRunCall(sourceMethod, calls, cg, frontier);
+    implicitCalls(sourceMethod, calls, cg, frontier);
     ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls =
         resolveAllStaticInitializerCalls(sourceMethod, calls);
     Stream<Call> staticInitializerCalls =
