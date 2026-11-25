@@ -64,6 +64,13 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
    */
   protected boolean includeReflectiveCalls;
 
+  /**
+   * Whether call targets without a body (e.g. native methods) are callees of their call sites, like
+   * Soot's includePhantomCallees. No flow enters such a callee, but a client learns the target of
+   * the call, e.g. to apply its own model of the method.
+   */
+  protected volatile boolean includeBodylessCallees = false;
+
   @DontSynchronize("readonly")
   protected final CallGraph cg;
 
@@ -92,7 +99,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
               continue;
             }
             Optional<? extends SootMethod> smOpt = view.getMethod(call.targetMethodSignature());
-            if (smOpt.isPresent() && smOpt.get().hasBody()) {
+            if (smOpt.isPresent() && (includeBodylessCallees || smOpt.get().hasBody())) {
               res.add(smOpt.get());
             } else {
               logger.debug(
@@ -141,6 +148,18 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     this.view = view;
     this.cg = cg;
     initializeStmtToOwner();
+  }
+
+  /**
+   * Sets whether call targets without a body (e.g. native methods) are reported as callees of their
+   * call sites. By default, only targets with a body are callees. Changing it drops the callees
+   * computed so far.
+   *
+   * @param includeBodylessCallees whether callees without a body are included
+   */
+  public void setIncludeBodylessCallees(boolean includeBodylessCallees) {
+    this.includeBodylessCallees = includeBodylessCallees;
+    stmtToCallees.invalidateAll();
   }
 
   public CallGraph getCg() {
