@@ -68,7 +68,12 @@ final class AsmClassMetadata {
       }
     }
     return new JavaClassFileMetadata(
-        node.sourceFile, node.sourceDebug, enclosingClass, enclosingMethod, innerClasses);
+        node.sourceFile,
+        node.sourceDebug,
+        enclosingClass,
+        enclosingMethod,
+        innerClasses,
+        node.signature);
   }
 
   @NonNull

@@ -43,17 +43,21 @@ import sootup.apk.frontend.instruction.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
+import sootup.java.core.language.JavaJimple;
+import sootup.java.core.types.JavaClassType;
 
 public class DexBody {
 
@@ -93,10 +97,6 @@ public class DexBody {
   protected ClassType classType;
 
   protected List<Trap> traps;
-
-  // the exception type of the try block reaching each handler address, so move-exception
-  // instructions can be jimplified with their real type instead of always java.lang.Throwable
-  private final Map<Integer, ClassType> handlerExceptionTypes = new HashMap<>();
 
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
@@ -143,6 +143,10 @@ public class DexBody {
   private final ArrayListMultimap<Integer, RegDbgEntry> localDebugs;
 
   @NonNull private final IdentifierFactory identifierFactory;
+
+  // the exception type of the try block reaching each handler address, so move-exception
+  // instructions can be jimplified with their real type instead of always java.lang.Throwable
+  private final Map<Integer, ClassType> handlerExceptionTypes = new HashMap<>();
 
   /** The {@link IdentifierFactory} of the view this body is converted for. */
   @NonNull
@@ -268,19 +272,6 @@ public class DexBody {
     return storeResultLocal;
   }
 
-  /** The exception type a move-exception at this code address should be typed with. */
-  public ClassType exceptionTypeAt(int codeAddress) {
-    ClassType type = handlerExceptionTypes.get(codeAddress);
-    return type != null ? type : exceptionClassType(null);
-  }
-
-  private ClassType exceptionClassType(@Nullable String dexExceptionType) {
-    return identifierFactory.getClassType(
-        dexExceptionType == null
-            ? "java.lang.Throwable"
-            : DexUtil.dottedClassName(dexExceptionType));
-  }
-
   public void add(Stmt stmt) {
     stmtList.add(stmt);
   }
@@ -368,13 +359,28 @@ public class DexBody {
         + parameterNames;
   }
 
+  /** The locals of the converted code; complete after {@link #buildGraph(MethodSignature)} */
+  /** The exception type a move-exception at this code address should be typed with. */
+  public ClassType exceptionTypeAt(int codeAddress) {
+    ClassType type = handlerExceptionTypes.get(codeAddress);
+    return type != null ? type : exceptionClassType(null);
+  }
+
+  private ClassType exceptionClassType(@Nullable String dexExceptionType) {
+    return identifierFactory.getClassType(
+        dexExceptionType == null
+            ? "java.lang.Throwable"
+            : DexUtil.dottedClassName(dexExceptionType));
+  }
+
   public Set<Local> getLocals() {
     return locals;
   }
 
-  /** Converts the dex instructions and returns them as a ControlFlowGraph. */
-  public MutableBlockControlFlowGraph buildControlFlowGraph() {
+  /** Converts the code of the method into a statement graph. */
+  public MutableBlockControlFlowGraph buildGraph(MethodSignature methodSignature) {
     jimplify();
+    // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
@@ -419,7 +425,7 @@ public class DexBody {
     if (!currentList.isEmpty()) {
       listList.add(currentList);
     }
-    checkTrapRanges(listList);
+    checkTrapRanges(listList, methodSignature);
     removeUnreachableBlocks(listList, branchingStmtListMap);
     checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
@@ -432,7 +438,7 @@ public class DexBody {
    * handler and delete it, together with the Trap, and the body would carry on without them. This
    * runs before that, so a wrong range fails here instead of as an unrelated error later on.
    */
-  private void checkTrapRanges(List<List<Stmt>> blocks) {
+  private void checkTrapRanges(List<List<Stmt>> blocks, MethodSignature methodSignature) {
     Map<Stmt, Integer> blockOfHead = new IdentityHashMap<>();
     for (int i = 0; i < blocks.size(); i++) {
       blockOfHead.put(blocks.get(i).get(0), i);
@@ -445,9 +451,7 @@ public class DexBody {
             "The Trap "
                 + trap
                 + " in "
-                + classType
-                + "."
-                + method.getName()
+                + methodSignature
                 + " ends at or before its begin, so it would cover no Stmt.");
       }
     }
@@ -752,6 +756,14 @@ public class DexBody {
             });
   }
 
+  public void insertBefore(Stmt tobeInserted, Stmt beforeThisStmt) {
+    int specificStmtIndex = stmtList.indexOf(beforeThisStmt);
+    if (specificStmtIndex > 0) {
+      // If the specific statement is found in the list
+      stmtList.add(specificStmtIndex, tobeInserted);
+    }
+  }
+
   /**
    * A Jimple handler has to start with a {@code := @caughtexception} Stmt, but a dex handler only
    * starts with move-exception when it uses the exception: without one (e.g. {@code catch
@@ -760,11 +772,13 @@ public class DexBody {
    * it, but appended to the body as {@code $x := @caughtexception; goto handler}.
    */
   private Stmt addCaughtExceptionEntry(ClassType type, Stmt handler) {
-    Local local = Jimple.newLocal(freshLocalName("$exception"), UnknownType.getInstance());
+    Local local = new LocalGenerator(locals).generateLocal(type);
     locals.add(local);
     Stmt caughtStmt =
         Jimple.newIdentityStmt(
-            local, new JCaughtExceptionRef(type), StmtPositionInfo.getNoStmtPositionInfo());
+            local,
+            new JCaughtExceptionRef(type),
+            StmtPositionInfo.getNoStmtPositionInfo());
     JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     add(caughtStmt);
     add(gotoStmt);
@@ -795,37 +809,79 @@ public class DexBody {
   }
 
   private void addTraps() {
-    Set<Stmt> emitted = Collections.newSetFromMap(new IdentityHashMap<>());
-    emitted.addAll(stmtList);
     // one entry per handler address and exception type, however many try blocks share them
     Map<String, Stmt> entryOfHandler = new HashMap<>();
     int codeStmtCount = stmtList.size();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
-      int endAddress = startAddress + tryItem.getCodeUnitCount();
-      Stmt beginStmt = firstStmtAtOrAfter(startAddress, endAddress, emitted);
-      if (beginStmt == null) {
-        continue;
-      }
-      // no Stmt behind the range: it reaches the end of the body (see endOfCode)
-      Stmt endStmt = firstStmtAtOrAfter(endAddress, Integer.MAX_VALUE, emitted);
-      if (endStmt == null) {
-        endStmt = endOfCode;
-      }
-      for (ExceptionHandler handler : tryItem.getExceptionHandlers()) {
-        ClassType type = exceptionClassType(handler.getExceptionType());
-        int handlerAddress = handler.getHandlerCodeAddress();
-        Stmt handlerStmt = firstStmtAtOrAfter(handlerAddress, Integer.MAX_VALUE, emitted);
-        if (handlerStmt == null) {
-          continue;
+      int length = tryItem.getCodeUnitCount(); // .getTryLength();
+      int endAddress = startAddress + length; // - 1;
+      Stmt beginStmt = instructionAtAddress(startAddress).getStmt();
+      // (startAddress + length) is the first address behind the range. When the range reaches the
+      // end of the code, no instruction is there: instructionAtAddress would walk back to the last
+      // instruction and leave it out of the range. The range reaches the end of the body instead,
+      // expressed by an end that is in no block (see endOfCode).
+      Stmt endStmt =
+          endAddress >= codeEndAddress ? endOfCode : instructionAtAddress(endAddress).getStmt();
+      List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
+      // The handlers of a try block are tried in order, so a handler behind one that catches
+      // Throwable or the same type never runs for this range, e.g. the catch-all that dx emits for
+      // the finally of a try-with-resources behind its catch (Throwable). No Trap leads to it then,
+      // so removeUnreachableBlocks drops its code unless another range reaches it.
+      Set<ClassType> caughtTypes = new HashSet<>();
+      boolean throwableCaught = false;
+      for (ExceptionHandler handler : hList) {
+        String exceptionType = handler.getExceptionType();
+        if (exceptionType == null) {
+          // a catch-all handler (finally, or catch (Throwable) after d8), as the bytecode
+          // frontend reads a TryCatchBlockNode without a type
+          exceptionType = "Ljava/lang/Throwable;";
         }
-        if (!isCaughtExceptionStmt(handlerStmt)) {
-          Stmt target = handlerStmt;
-          handlerStmt =
-              entryOfHandler.computeIfAbsent(
-                  handlerAddress + " " + type, key -> addCaughtExceptionEntry(type, target));
+        Type t = DexUtil.toSootType(exceptionType, 0, identifierFactory);
+        // exceptions can only be of ReferenceType
+        if (t instanceof JavaClassType) {
+          ClassType type = (ClassType) t;
+          if (throwableCaught || !caughtTypes.add(type)) {
+            continue;
+          }
+          throwableCaught = type.getFullyQualifiedName().equals("java.lang.Throwable");
+          DexLibAbstractInstruction instruction =
+              instructionAtAddress(handler.getHandlerCodeAddress());
+          if (!(instruction instanceof MoveExceptionInstruction)) {
+            logger.debug(
+                String.format(
+                    "First instruction of trap handler unit not MoveException but %s",
+                    instruction.getClass().getName()));
+          }
+          Stmt handlerStmt;
+          // The end of the range is left alone even when it is a nop: it is the Stmt behind the
+          // covered range in stmtList order, while the handler can sit anywhere in the body, so
+          // ending the range at the handler would cover the wrong Stmts (or none at all).
+          if (!(instruction instanceof MoveExceptionInstruction)) {
+            handlerStmt =
+                entryOfHandler.computeIfAbsent(
+                    handler.getHandlerCodeAddress() + " " + type,
+                    key -> addCaughtExceptionEntry(type, instruction.getStmt()));
+          } else {
+            handlerStmt = instruction.getStmt();
+          }
+          if (beginStmt != endStmt) {
+            Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
+            traps.add(trap);
+          }
+
+          //          try {
+          //            System.out.println(42);
+          //          }catch (IOException e){
+          //            // e : csaughtexc
+          //            System.out.println(1);
+          //          }
+          //          catch (IllegalArgumentException e1){
+          //            // e1 : caught...
+          //            System.out.println(3);
+          //          }
+
         }
-        traps.add(Jimple.newTrap(type, beginStmt, endStmt, handlerStmt));
       }
     }
     if (stmtList.size() > codeStmtCount) {
@@ -842,26 +898,6 @@ public class DexBody {
                       trap.getHandlerStmt())
                   : trap);
     }
-  }
-
-  /** The first emitted Stmt of an instruction in [from, until), or null if there is none. */
-  @Nullable
-  private Stmt firstStmtAtOrAfter(int from, int until, Set<Stmt> emitted) {
-    for (DexLibAbstractInstruction instruction : instructions) {
-      int address = instruction.getCodeAddress();
-      if (address >= until) {
-        return null;
-      }
-      if (address >= from && emitted.contains(instruction.getStmt())) {
-        return instruction.getStmt();
-      }
-    }
-    return null;
-  }
-
-  private static boolean isCaughtExceptionStmt(Stmt stmt) {
-    return stmt instanceof JIdentityStmt
-        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef;
   }
 
   public void setDanglingInstruction(DanglingInstruction i) {

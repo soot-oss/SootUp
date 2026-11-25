@@ -51,7 +51,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.types.JavaClassType;
 
-public class JavaSootClass implements SootClass, HasAnnotation {
+public class JavaSootClass implements SootClass, HasAnnotation, HasGenericSignature {
 
   final SootClassSource classSource;
   final SourceType sourceType;
@@ -74,7 +74,13 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.classSource = classSource;
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
-    this.lazyModifiers = Suppliers.memoize(classSource::resolveModifiers);
+    this.lazyModifiers =
+        Suppliers.memoize(
+            () -> {
+              Set<ClassModifier> mods = classSource.resolveModifiers();
+              ClassModifier.checkWellFormed(mods);
+              return mods;
+            });
     this.lazyInterfaces = Suppliers.memoize(classSource::resolveInterfaces);
     this.lazySuperclass = Suppliers.memoize(classSource::resolveSuperclass);
     this.lazyOuterClass = Suppliers.memoize(classSource::resolveOuterClass);
@@ -100,6 +106,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.classSignature = classSource.getClassType();
     this._lazyMethods = Suppliers.ofInstance(methods);
     this._lazyFields = Suppliers.ofInstance(fields);
+    ClassModifier.checkWellFormed(modifiers);
     this.lazyModifiers = Suppliers.ofInstance(modifiers);
     this.lazyInterfaces = Suppliers.ofInstance(interfaces);
     this.lazySuperclass = Suppliers.ofInstance(superclass);
@@ -257,6 +264,13 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public List<JavaInnerClassInfo> getInnerClasses() {
     return getClassFileMetadata().getInnerClasses();
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return getClassFileMetadata().getGenericSignature();
   }
 
   private JavaClassFileMetadata getClassFileMetadata() {

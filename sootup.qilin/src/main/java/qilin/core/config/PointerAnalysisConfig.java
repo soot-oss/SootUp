@@ -117,8 +117,10 @@ public final class PointerAnalysisConfig {
   }
 
   /**
-   * Whether each entry point's declaring-class {@code <clinit>} is eagerly seeded as a root before
-   * traversal starts, independently of whether the fake-main body actually triggers it. See {@link
+   * Whether the main class's {@code <clinit>} - and, as the JVM initializes superclasses first, the
+   * {@code <clinit>}s of its superclasses - are eagerly seeded as roots before traversal starts,
+   * independently of whether the fake-main body actually triggers them. The {@code <clinit>}s of
+   * other classes are never seeded; they are discovered on the fly. See {@link
    * sootup.callgraph.AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(sootup.core.views.View,
    * sootup.callgraph.scope.CallResolver, VirtualCallResolver, boolean)} for the four classic
    * static-initializer handling modes this, combined with {@link #getClinitVirtualCallResolver()},

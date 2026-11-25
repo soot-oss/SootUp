@@ -593,6 +593,37 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
+  public void testVirtualCall5PrivateMethodDoesNotOverride() {
+    CallGraph cg = loadCallGraph("VirtualCall", "vc5.Class");
+    MethodSignature greet =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc5.Greeter"),
+            "greet",
+            "void",
+            Collections.emptyList());
+    MethodSignature privateGreet =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc5.Base"), "greet", "void", Collections.emptyList());
+    InvokableStmt call = getInvokableStmt(mainMethodSignature, greet);
+    assertTrue(cg.containsCall(mainMethodSignature, greet, call));
+    assertFalse(cg.containsCall(mainMethodSignature, privateGreet, call));
+  }
+
+  @Test
+  public void testVirtualCall6PackagePrivateMethodIsNotOverriddenFromAnotherPackage() {
+    CallGraph cg = loadCallGraph("VirtualCall", "vc6.Class");
+    MethodSignature m =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc6.Class"), "m", "void", Collections.emptyList());
+    MethodSignature otherM =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("vc6.q.Sub"), "m", "void", Collections.emptyList());
+    InvokableStmt call = getInvokableStmt(mainMethodSignature, m);
+    assertTrue(cg.containsCall(mainMethodSignature, m, call));
+    assertFalse(cg.containsCall(mainMethodSignature, otherM, call));
+  }
+
+  @Test
   public void testDynamicInterfaceMethod0() {
     CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim0.Class");
     MethodSignature interfaceMethod =
@@ -1278,5 +1309,42 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
         cg.callsFrom(mainMethodSignature).stream()
             .filter(call -> call.targetMethodSignature().equals(methodSigOperation4))
             .count());
+  }
+
+  /**
+   * Signature-polymorphic calls (JVMS 2.9.3) carry the call-site descriptor, which never matches
+   * the declared {@code native varargs (Object[])} method. The edge must go to the declared method.
+   */
+  @Test
+  public void testSignaturePolymorphicCalls() {
+    CallGraph cg = loadCallGraph("Polymorphic", "PolymorphicSignatureExamples");
+    JavaClassType mh = identifierFactory.getClassType("java.lang.invoke.MethodHandle");
+    JavaClassType vh = identifierFactory.getClassType("java.lang.invoke.VarHandle");
+    List<String> objArr = Collections.singletonList("java.lang.Object[]");
+
+    Set<MethodSignature> targets = cg.callTargetsFrom(mainMethodSignature);
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(mh, "invokeExact", "java.lang.Object", objArr)));
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(mh, "invoke", "java.lang.Object", objArr)));
+    assertTrue(
+        targets.contains(
+            identifierFactory.getMethodSignature(vh, "get", "java.lang.Object", objArr)));
+
+    // no edge to the (non-existent) call-site signatures
+    assertFalse(
+        targets.contains(
+            identifierFactory.getMethodSignature(
+                mh,
+                "invokeExact",
+                "int",
+                Arrays.asList("java.lang.String", "java.lang.String", "int"))));
+    assertTrue(
+        targets.stream()
+            .filter(t -> t.getDeclClassType().equals(mh) || t.getDeclClassType().equals(vh))
+            .allMatch(t -> view.getMethod(t).isPresent()),
+        () -> "unresolved MethodHandle/VarHandle target in " + targets);
   }
 }

@@ -24,23 +24,22 @@ package sootup.apk.frontend.Util;
 
 import java.util.*;
 import org.jf.dexlib2.AnnotationVisibility;
+import org.jf.dexlib2.ValueType;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.ConstantUtil;
 import sootup.java.core.language.JavaJimple;
 
 public class DexUtil {
 
-  private static final Logger logger = LoggerFactory.getLogger(DexUtil.class);
 
   public static Type toSootType(
       String typeDescriptor, int pos, @NonNull IdentifierFactory identifierFactory) {
@@ -101,98 +100,176 @@ public class DexUtil {
   }
 
   /**
-   * Converts dex annotations like {@code AsmUtil.createAnnotationUsage}. System annotations
-   * (dalvik.annotation.*) describe class metadata such as inner classes or throws, so they are left
-   * out.
+   * Converts the annotations of a dex class, field, method or parameter. System annotations (<code>
+   * dalvik.annotation.*</code>, visibility SYSTEM) encode classfile attributes like Throws,
+   * Signature or InnerClass and are skipped, like the bytecode frontend does not report attributes
+   * as annotations. BUILD annotations are runtime invisible, RUNTIME ones runtime visible.
    */
+  @NonNull
   public static List<AnnotationUsage> createAnnotationUsage(
-      Set<? extends Annotation> annotations, @NonNull IdentifierFactory identifierFactory) {
-    List<AnnotationUsage> usages = new ArrayList<>();
-    for (Annotation annotation : annotations) {
-      if (annotation.getVisibility() != AnnotationVisibility.SYSTEM) {
-        usages.add(
-            createAnnotationUsage(
-                annotation.getType(), annotation.getElements(), identifierFactory));
-      }
+      @NonNull Set<? extends Annotation> annotations,
+      @NonNull IdentifierFactory identifierFactory) {
+    if (annotations.isEmpty()) {
+      return Collections.emptyList();
     }
-    return usages;
+    List<AnnotationUsage> annotationUsages = new ArrayList<>(annotations.size());
+    for (Annotation annotation : annotations) {
+      if (annotation.getVisibility() == AnnotationVisibility.SYSTEM) {
+        continue;
+      }
+      boolean runtimeVisible = annotation.getVisibility() == AnnotationVisibility.RUNTIME;
+      annotationUsages.add(
+          createAnnotationUsage(
+              annotation.getType(), annotation.getElements(), identifierFactory, runtimeVisible));
+    }
+    return annotationUsages;
   }
 
-  /** The exceptions of a method, which dex stores in its dalvik.annotation.Throws annotation. */
-  public static List<ClassType> getThrownExceptions(
-      Set<? extends Annotation> annotations, @NonNull IdentifierFactory identifierFactory) {
-    List<ClassType> exceptions = new ArrayList<>();
+  @NonNull
+  private static AnnotationUsage createAnnotationUsage(
+      @NonNull String type,
+      @NonNull Set<? extends AnnotationElement> elements,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    Map<String, Object> paramMap = new LinkedHashMap<>();
+    for (AnnotationElement element : elements) {
+      Object value = convertAnnotationValue(element.getValue(), identifierFactory, runtimeVisible);
+      if (value != null) {
+        paramMap.put(element.getName(), value);
+      }
+    }
+    return new AnnotationUsage(
+        identifierFactory.getClassType(toQualifiedName(type)), paramMap, runtimeVisible);
+  }
+
+  /**
+   * Converts an annotation element value into the representation of the bytecode frontend:
+   * constants, nested {@link AnnotationUsage}s, or lists for arrays.
+   *
+   * @return the converted value, or null for values that Java annotations cannot hold (field,
+   *     method, method type and method handle references)
+   */
+  private static Object convertAnnotationValue(
+      @NonNull EncodedValue value,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    switch (value.getValueType()) {
+      case ValueType.BYTE:
+        return ConstantUtil.fromObject(((ByteEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.SHORT:
+        return ConstantUtil.fromObject(((ShortEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.CHAR:
+        return ConstantUtil.fromObject(((CharEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.INT:
+        return ConstantUtil.fromObject(((IntEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.LONG:
+        return ConstantUtil.fromObject(((LongEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.FLOAT:
+        return ConstantUtil.fromObject(((FloatEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.DOUBLE:
+        return ConstantUtil.fromObject(((DoubleEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.BOOLEAN:
+        return ConstantUtil.fromObject(((BooleanEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.STRING:
+        return ConstantUtil.fromObject(((StringEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.NULL:
+        return ConstantUtil.fromObject(null, identifierFactory);
+      case ValueType.TYPE:
+        return JavaJimple.newClassConstant(
+            ((TypeEncodedValue) value).getValue(), identifierFactory);
+      case ValueType.ENUM:
+        FieldReference enumField = ((EnumEncodedValue) value).getValue();
+        return ConstantUtil.fromObject(
+            new String[] {toQualifiedName(enumField.getDefiningClass()), enumField.getName()},
+            identifierFactory);
+      case ValueType.ANNOTATION:
+        AnnotationEncodedValue annotation = (AnnotationEncodedValue) value;
+        return createAnnotationUsage(
+            annotation.getType(), annotation.getElements(), identifierFactory, runtimeVisible);
+      case ValueType.ARRAY:
+        List<Object> values = new ArrayList<>();
+        for (EncodedValue element : ((ArrayEncodedValue) value).getValue()) {
+          Object converted = convertAnnotationValue(element, identifierFactory, runtimeVisible);
+          if (converted != null) {
+            values.add(converted);
+          }
+        }
+        return values;
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Extracts the declared exceptions of a method from its <code>dalvik.annotation.Throws</code>
+   * system annotation.
+   */
+  @NonNull
+  public static List<ClassType> extractThrownExceptions(
+      @NonNull Set<? extends Annotation> annotations,
+      @NonNull IdentifierFactory identifierFactory) {
     for (Annotation annotation : annotations) {
-      if (!annotation.getType().equals("Ldalvik/annotation/Throws;")) {
+      if (!THROWS_ANNOTATION.equals(annotation.getType())) {
         continue;
       }
       for (AnnotationElement element : annotation.getElements()) {
-        if (element.getName().equals("value") && element.getValue() instanceof ArrayEncodedValue) {
-          for (EncodedValue value : ((ArrayEncodedValue) element.getValue()).getValue()) {
-            if (value instanceof TypeEncodedValue) {
-              exceptions.add(
-                  identifierFactory.getClassType(
-                      toQualifiedName(((TypeEncodedValue) value).getValue())));
-            }
+        if (!"value".equals(element.getName())
+            || !(element.getValue() instanceof ArrayEncodedValue)) {
+          continue;
+        }
+        List<ClassType> exceptions = new ArrayList<>();
+        for (EncodedValue exception : ((ArrayEncodedValue) element.getValue()).getValue()) {
+          if (exception instanceof TypeEncodedValue) {
+            exceptions.add(
+                getClassTypeFromClassName(
+                    ((TypeEncodedValue) exception).getValue(), identifierFactory));
           }
+        }
+        return exceptions;
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  private static final String THROWS_ANNOTATION = "Ldalvik/annotation/Throws;";
+
+  private static final String ANNOTATION_DEFAULT = "Ldalvik/annotation/AnnotationDefault;";
+
+  /**
+   * Returns the default values of the methods of an annotation by method name. Dex keeps them in
+   * the <code>dalvik.annotation.AnnotationDefault</code> system annotation of the annotation class,
+   * as an annotation of that class whose elements are the defaults.
+   */
+  @NonNull
+  public static Map<String, EncodedValue> getAnnotationDefaults(
+      @NonNull Set<? extends Annotation> classAnnotations) {
+    for (Annotation annotation : classAnnotations) {
+      if (!annotation.getType().equals(ANNOTATION_DEFAULT)) {
+        continue;
+      }
+      for (AnnotationElement element : annotation.getElements()) {
+        if (element.getName().equals("value")
+            && element.getValue() instanceof AnnotationEncodedValue) {
+          Map<String, EncodedValue> defaults = new HashMap<>();
+          for (AnnotationElement method :
+              ((AnnotationEncodedValue) element.getValue()).getElements()) {
+            defaults.put(method.getName(), method.getValue());
+          }
+          return defaults;
         }
       }
     }
-    return exceptions;
+    return Collections.emptyMap();
   }
 
-  private static AnnotationUsage createAnnotationUsage(
-      String type,
-      Set<? extends AnnotationElement> elements,
-      @NonNull IdentifierFactory identifierFactory) {
-    Map<String, Object> values = new HashMap<>();
-    for (AnnotationElement element : elements) {
-      values.put(element.getName(), convertAnnotationValue(element.getValue(), identifierFactory));
-    }
-    return new AnnotationUsage(identifierFactory.getClassType(toQualifiedName(type)), values);
-  }
-
-  private static Object convertAnnotationValue(
-      EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
-    if (value instanceof BooleanEncodedValue) {
-      return BooleanConstant.getInstance(((BooleanEncodedValue) value).getValue());
-    } else if (value instanceof ByteEncodedValue) {
-      return IntConstant.getInstance(((ByteEncodedValue) value).getValue());
-    } else if (value instanceof ShortEncodedValue) {
-      return IntConstant.getInstance(((ShortEncodedValue) value).getValue());
-    } else if (value instanceof CharEncodedValue) {
-      return IntConstant.getInstance(((CharEncodedValue) value).getValue());
-    } else if (value instanceof IntEncodedValue) {
-      return IntConstant.getInstance(((IntEncodedValue) value).getValue());
-    } else if (value instanceof LongEncodedValue) {
-      return LongConstant.getInstance(((LongEncodedValue) value).getValue());
-    } else if (value instanceof FloatEncodedValue) {
-      return FloatConstant.getInstance(((FloatEncodedValue) value).getValue());
-    } else if (value instanceof DoubleEncodedValue) {
-      return DoubleConstant.getInstance(((DoubleEncodedValue) value).getValue());
-    } else if (value instanceof StringEncodedValue) {
-      return JavaJimple.newStringConstant(
-          ((StringEncodedValue) value).getValue(), identifierFactory);
-    } else if (value instanceof TypeEncodedValue) {
-      return JavaJimple.newClassConstant(((TypeEncodedValue) value).getValue(), identifierFactory);
-    } else if (value instanceof EnumEncodedValue) {
-      FieldReference constant = ((EnumEncodedValue) value).getValue();
-      return JavaJimple.newEnumConstant(
-          constant.getName(), toQualifiedName(constant.getDefiningClass()), identifierFactory);
-    } else if (value instanceof AnnotationEncodedValue) {
-      AnnotationEncodedValue nested = (AnnotationEncodedValue) value;
-      return createAnnotationUsage(nested.getType(), nested.getElements(), identifierFactory);
-    } else if (value instanceof ArrayEncodedValue) {
-      List<Object> elements = new ArrayList<>();
-      for (EncodedValue element : ((ArrayEncodedValue) value).getValue()) {
-        elements.add(convertAnnotationValue(element, identifierFactory));
-      }
-      return elements;
-    } else if (value instanceof NullEncodedValue) {
-      return NullConstant.getInstance();
-    }
-    // method, field, method type and method handle values only occur in system annotations
-    return JavaJimple.newStringConstant(value.toString(), identifierFactory);
+  /**
+   * Converts the default value of an annotation method like the bytecode frontend does: nested
+   * annotations are runtime visible.
+   */
+  @Nullable
+  public static Object convertAnnotationDefault(
+      @NonNull EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
+    return convertAnnotationValue(value, identifierFactory, true);
   }
 
   public static ClassType stringToJimpleType(View view, String className) {
@@ -227,11 +304,14 @@ public class DexUtil {
     } else if (isByteCodeClassName(name)) {
       name = dottedClassName(name);
     }
+    ClassType javaClassType;
     try {
-      return identifierFactory.getClassType(name);
-    } catch (RuntimeException e) {
-      logger.warn("Could not build a class type from '{}'", name, e);
-      throw e;
+      javaClassType = identifierFactory.getClassType(name);
+    } catch (Exception exception) {
+      System.out.println("Exception when substring with className " + name);
+      throw new RuntimeException();
     }
+
+    return javaClassType;
   }
 }

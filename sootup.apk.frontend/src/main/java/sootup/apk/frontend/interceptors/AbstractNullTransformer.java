@@ -22,7 +22,6 @@ package sootup.apk.frontend.interceptors;
  * #L%
  */
 
-import java.util.Map;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
@@ -58,26 +57,28 @@ public abstract class AbstractNullTransformer extends DexTransformer {
   }
 
   /**
-   * Replace 0 with null in the given unit.
+   * Replaces 0 with null in the given statement. Statements are immutable, so the caller has to put
+   * the returned statement into the body in place of the given one.
    *
-   * @param stmt the unit where 0 will be replaced with null.
+   * @param stmt the statement where 0 will be replaced with null.
+   * @return the statement with null instead of 0, or the given statement if there is no 0 to
+   *     replace
    */
-  protected void replaceWithNull(Stmt stmt, Map<Stmt, Stmt> rewrites) {
-    Stmt current = current(rewrites, stmt);
-    if (current instanceof JIfStmt) {
-      JIfStmt ifStmt = (JIfStmt) current;
-      AbstractConditionExpr expr = ifStmt.getCondition();
+  protected Stmt replaceWithNull(Stmt stmt) {
+    if (stmt instanceof JIfStmt) {
+      AbstractConditionExpr expr = ((JIfStmt) stmt).getCondition();
       if (isZeroComparison(expr)) {
-        NullConstant nullConstant = NullConstant.getInstance();
-        rewrites.put(
-            stmt,
-            ifStmt.withCondition(
-                expr instanceof JEqExpr
-                    ? ((JEqExpr) expr).withOp2(nullConstant)
-                    : ((JNeExpr) expr).withOp2(nullConstant)));
+        if (expr instanceof JEqExpr) {
+          return ((JIfStmt) stmt)
+              .withCondition(((JEqExpr) expr).withOp2(NullConstant.getInstance()));
+        }
+        if (expr instanceof JNeExpr) {
+          return ((JIfStmt) stmt)
+              .withCondition(((JNeExpr) expr).withOp2(NullConstant.getInstance()));
+        }
       }
-    } else if (current instanceof JAssignStmt) {
-      JAssignStmt s = (JAssignStmt) current;
+    } else if (stmt instanceof JAssignStmt) {
+      JAssignStmt s = (JAssignStmt) stmt;
       Value v = s.getRightOp();
       if ((v instanceof IntConstant && ((IntConstant) v).getValue() == 0)
           || (v instanceof LongConstant && ((LongConstant) v).getValue() == 0)) {
@@ -86,10 +87,11 @@ public abstract class AbstractNullTransformer extends DexTransformer {
         // being an int.
         if (!(s.getLeftOp() instanceof JInstanceFieldRef)
             || s.getLeftOp().getType() instanceof ReferenceType) {
-          rewrites.put(stmt, s.withRValue(NullConstant.getInstance()));
+          return s.withRValue(NullConstant.getInstance());
         }
       }
     }
+    return stmt;
   }
 
   protected static boolean isObject(Type t) {

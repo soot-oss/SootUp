@@ -40,6 +40,8 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   public JVirtualInvokeExpr(
       @NonNull Local base, @NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[0]));
+    rejectName(method, "<init>", "virtualinvoke");
+    rejectName(method, "<clinit>", "virtualinvoke");
   }
 
   @Override

@@ -105,11 +105,8 @@ public class DexLocalSplitterTest {
     }
 
     List<BodyInterceptor> interceptors =
-        new ArrayList<>(DexBodyInterceptors.Default.bodyInterceptors());
-    // the default pipeline splits locals first; run that split with the flow under test instead
-    interceptors.replaceAll(
-        interceptor ->
-            interceptor instanceof LocalSplitter ? new LocalSplitter(exceptionalFlow) : interceptor);
+        new ArrayList<>(List.of(new LocalSplitter(exceptionalFlow)));
+    interceptors.addAll(DexBodyInterceptors.Transformers.bodyInterceptors());
     JavaView view =
         new JavaView(
             List.of(
@@ -203,9 +200,7 @@ public class DexLocalSplitterTest {
     for (Stmt stmt : body.getStmts()) {
       String text = stmt.toString();
       if (text.contains("void use(java.lang.Object)")) {
-        String local = text.substring(text.lastIndexOf('(') + 1, text.lastIndexOf(')'));
-        // drop the _n of DexSharedInitializationLocalSplitter's copies of a shared constant
-        reads.add(local.replaceFirst("_\\d+$", ""));
+        reads.add(text.substring(text.lastIndexOf('(') + 1, text.lastIndexOf(')')));
       }
     }
     // the normal path's use comes first in the dex code, the handler's second
@@ -231,10 +226,11 @@ public class DexLocalSplitterTest {
   }
 
   /**
-   * The iget throws before it writes v0, so the handler sees v0 from before the try.
+   * The iget throws before it writes v0, so the handler sees v0 from before the try: the constant,
+   * which the handler gets as its own copy ({@code DexSharedConstantSplitter}).
    *
    * <pre>{@code
-   *   $u0#0 = 0;
+   *   $u0#0 = null;
    * label1:
    *   $u0#1 = $u0#0.f;
    * label2:
@@ -242,7 +238,8 @@ public class DexLocalSplitterTest {
    *   return;
    * label3:
    *   $u1 := @caughtexception;
-   *   use($u0#0);
+   *   $u0#0#c1 = null;
+   *   use($u0#0#c1);
    *   return;
    * catch java.lang.Exception from label1 to label2 with label3;
    * }</pre>
@@ -251,7 +248,7 @@ public class DexLocalSplitterTest {
   public void fieldReadIntoItsObjectLeavesTheOldValueToItsHandler() {
     Body body = convert("FieldRead", 2, ExceptionalFlow.SYNCHRONOUS, fieldReadIntoItsObject(false));
     // handler, normal path
-    assertEquals(List.of("$u0#0", "$u0#1"), readsOfV0(body));
+    assertEquals(List.of("$u0#0#c1", "$u0#1"), readsOfV0(body));
   }
 
   /**

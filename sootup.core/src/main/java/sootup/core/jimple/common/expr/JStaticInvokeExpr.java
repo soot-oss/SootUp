@@ -38,6 +38,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr {
   /** Stores the values to the args array. */
   public JStaticInvokeExpr(@NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(method, args.toArray(new Immediate[0]));
+    rejectName(method, "<init>", "staticinvoke");
   }
 
   @Override

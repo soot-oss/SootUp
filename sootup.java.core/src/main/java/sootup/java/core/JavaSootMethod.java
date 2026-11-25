@@ -46,7 +46,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.StmtPrinter;
 
 public class JavaSootMethod extends SootClassMember<MethodSignature>
-    implements SootMethod, HasAnnotation {
+    implements SootMethod, HasAnnotation, HasGenericSignature {
 
   @NonNull private final ImmutableSet<MethodModifier> modifiers;
 
@@ -59,6 +59,7 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
   @NonNull private final Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   @NonNull private final Iterable<AnnotationUsage> annotations;
+  @Nullable private final String genericSignature;
 
   /** Constructs a SootMethod object with the given attributes. */
   public JavaSootMethod(
@@ -67,11 +68,14 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
       @NonNull Iterable<MethodModifier> modifiers,
       @NonNull Iterable<ClassType> thrownExceptions,
       @NonNull Position position) {
-    super(methodSignature, position);
-    this.bodySource = source;
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
-    this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
-    this.annotations = ImmutableUtils.emptyImmutableList();
+    this(
+        source,
+        methodSignature,
+        modifiers,
+        thrownExceptions,
+        ImmutableUtils.emptyImmutableList(),
+        position,
+        null);
   }
 
   public JavaSootMethod(
@@ -81,11 +85,45 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
       @NonNull Iterable<ClassType> thrownExceptions,
       @NonNull Iterable<AnnotationUsage> annotations,
       @NonNull Position position) {
+    this(source, methodSignature, modifiers, thrownExceptions, annotations, position, null);
+  }
+
+  /**
+   * Constructs a method with an optional classfile Signature attribute.
+   *
+   * @param source the source of the method body
+   * @param methodSignature the erased method signature
+   * @param modifiers the method modifiers
+   * @param thrownExceptions the declared exceptions
+   * @param annotations the method annotations
+   * @param position the source position
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootMethod(
+      @NonNull BodySource source,
+      @NonNull MethodSignature methodSignature,
+      @NonNull Iterable<MethodModifier> modifiers,
+      @NonNull Iterable<ClassType> thrownExceptions,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @Nullable String genericSignature) {
     super(methodSignature, position);
     this.bodySource = source;
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    MethodModifier.checkWellFormed(this.modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
     this.annotations = annotations;
+    this.genericSignature = genericSignature;
+  }
+
+  /**
+   * Returns the unparsed classfile Signature attribute, or an empty optional if absent. It is
+   * available for abstract and native methods without resolving a body.
+   */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
   }
 
   @NonNull
@@ -325,14 +363,21 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         getModifiers(),
         exceptions,
         getAnnotations(),
-        getPosition());
+        getPosition(),
+        genericSignature);
   }
 
   @NonNull
   @Override
   public JavaSootMethod withSource(@NonNull BodySource source) {
     return new JavaSootMethod(
-        source, getSignature(), getModifiers(), exceptions, getAnnotations(), getPosition());
+        source,
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        getAnnotations(),
+        getPosition(),
+        genericSignature);
   }
 
   @NonNull
@@ -344,7 +389,8 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         modifiers,
         getExceptionSignatures(),
         getAnnotations(),
-        getPosition());
+        getPosition(),
+        genericSignature);
   }
 
   @NonNull
@@ -356,7 +402,8 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         getModifiers(),
         thrownExceptions,
         getAnnotations(),
-        getPosition());
+        getPosition(),
+        genericSignature);
   }
 
   @NonNull
@@ -367,7 +414,8 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         getModifiers(),
         getExceptionSignatures(),
         annotations,
-        getPosition());
+        getPosition(),
+        genericSignature);
   }
 
   @NonNull
@@ -379,7 +427,20 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         getModifiers(),
         exceptions,
         getAnnotations(),
-        getPosition());
+        getPosition(),
+        genericSignature);
+  }
+
+  @NonNull
+  public JavaSootMethod withGenericSignature(@Nullable String genericSignature) {
+    return new JavaSootMethod(
+        bodySource,
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        getAnnotations(),
+        getPosition(),
+        genericSignature);
   }
 
   /**
@@ -395,6 +456,7 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     @NonNull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
     @NonNull private Position position = NoPositionInformation.getInstance();
     @Nullable private Iterable<AnnotationUsage> annotations;
+    @Nullable private String genericSignature;
 
     private JavaSootMethodBuilder() {}
 
@@ -431,6 +493,11 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
       CompleteStep withPosition(@NonNull Position position);
     }
 
+    public interface GenericSignatureStep {
+      /** Sets the unparsed Signature attribute; {@code null} clears it. */
+      CompleteStep withGenericSignature(@Nullable String genericSignature);
+    }
+
     public interface BuildStep {
       JavaSootMethod build();
     }
@@ -442,6 +509,7 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
             ThrownExceptionsStep,
             AnnotationsStep,
             PositionStep,
+            GenericSignatureStep,
             BuildStep {}
 
     private static class Steps implements CompleteStep {
@@ -490,6 +558,12 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
       }
 
       @Override
+      public CompleteStep withGenericSignature(@Nullable String genericSignature) {
+        instance.genericSignature = genericSignature;
+        return this;
+      }
+
+      @Override
       public JavaSootMethod build() {
         return new JavaSootMethod(
             instance.source,
@@ -497,7 +571,8 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
             instance.modifiers,
             instance.thrownExceptions,
             instance.annotations != null ? instance.annotations : Collections.emptyList(),
-            instance.position);
+            instance.position,
+            instance.genericSignature);
       }
     }
   }

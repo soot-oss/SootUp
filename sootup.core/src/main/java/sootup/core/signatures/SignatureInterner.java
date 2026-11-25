@@ -93,12 +93,14 @@ public final class SignatureInterner {
       @NonNull String name,
       @NonNull Type returnType,
       @NonNull Iterable<? extends Type> parameterTypes) {
+    JvmNames.checkMethodName(name);
     return METHOD_SUB_SIGNATURES.intern(new MethodSubSignature(name, parameterTypes, returnType));
   }
 
   /** Returns the unique {@link FieldSubSignature} for the given name and type. */
   @NonNull
   public static FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type) {
+    JvmNames.checkFieldName(name);
     return FIELD_SUB_SIGNATURES.intern(new FieldSubSignature(name, type));
   }
 

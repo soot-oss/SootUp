@@ -36,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.MethodLookup;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
@@ -45,6 +46,7 @@ import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -104,7 +106,8 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   public record OtfContext(
       IncrementalPointsToAnalysis propagator,
       java.util.Deque<MethodSignature> worklist,
-      List<PendingVirtualCall> otfPendingVirtualCalls) {}
+      List<PendingVirtualCall> otfPendingVirtualCalls,
+      MethodLookup methodLookup) {}
 
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
@@ -126,6 +129,11 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       val rightNode = nodeFactory.createNode(right, methodSignature);
       if (leftNode.isPresent() && rightNode.isPresent()) {
         addPagEdge(rightNode.get(), leftNode.get());
+        if (right instanceof JNewMultiArrayExpr multiArray && left instanceof Local target) {
+          nodeFactory
+              .createInnerArrayEdges(multiArray, target, methodSignature)
+              .forEach(edge -> addPagEdge(edge.getKey(), edge.getValue()));
+        }
       } else {
         log.warn("Missing nodes for left: {} <- right: {}", left, right);
       }
@@ -203,7 +211,15 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   private void handleInvokeExprOtf(
       AbstractInvokeExpr expr, Optional<Value> lhs, InvokableStmt stmt) {
     if (expr instanceof JStaticInvokeExpr || expr instanceof JSpecialInvokeExpr) {
-      MethodSignature targetSig = expr.getMethodSignature();
+      // The reference can name a subclass of the declaring class, e.g. Sub.staticMethod() or
+      // super.inherited(). Resolving it is enough: there is no receiver to select on, and a super
+      // call's selection starts at the referenced direct superclass, which resolution already does.
+      MethodSignature targetSig =
+          otfContext
+              .methodLookup()
+              .find(expr.getMethodSignature())
+              .map(SootMethod::getSignature)
+              .orElse(expr.getMethodSignature());
       installCallEdges(expr, lhs, targetSig);
       // Record direct call edge in the OTF call graph and enqueue the target.
       addOtfCallEdge(targetSig, stmt);

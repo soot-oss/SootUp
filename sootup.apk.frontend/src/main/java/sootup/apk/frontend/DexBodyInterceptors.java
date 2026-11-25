@@ -29,35 +29,43 @@ import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.interceptors.DexArrayIndexConstantInliner;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
-import sootup.apk.frontend.interceptors.DexSharedInitializationLocalSplitter;
+import sootup.apk.frontend.interceptors.DexSharedConstantSplitter;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.interceptors.LocalSplitter;
 import sootup.interceptors.TypeAssigner;
 import sootup.interceptors.UnusedLocalEliminator;
 
 public enum DexBodyInterceptors {
-  // the number and null passes need one local per value, since Dalvik reuses registers.
-  // TypeAssigner runs last: unlike javac-derived bytecode (where every local already carries a
-  // concrete declared type), dex bytecode is weakly typed at the bytecode level — a register can
-  // be used as an int, a boolean, or an object reference at different points, disambiguated only
-  // by how it's used — so dexlib2-derived Jimple locals start out with
-  // sootup.core.types.UnknownType until something resolves them. DexNumberTranformer/
-  // DexNullTransformer narrow numeric and null-vs-zero ambiguity first; TypeAssigner then does the
-  // same most-specific-common-supertype resolution JavaClassPathAnalysisInputLocation already
-  // applies to javac-derived bodies (see SootUpManager.createView in the FAIR project for the
-  // equivalent javac-side wiring), so a consumer that needs every local to carry a concrete,
-  // non-Unknown type (e.g. FAIR's TypeExtension.toFairType(), which has no case for UnknownType)
-  // doesn't need every downstream caller to remember to run its own type-resolution pass over dex
-  // bodies. DexArrayIndexConstantInliner runs after the null/number passes, which settle which
-  // constants are ints, and before UnusedLocalEliminator drops the index locals it inlines away.
+  /**
+   * Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+   * different types, and the number and null transformers decide per local whether its constants
+   * are floats or nulls. A constant that several statements use is then copied per statement
+   * ({@link DexSharedConstantSplitter}), so each use decides about its own copy.
+   *
+   * <p>{@link DexArrayIndexConstantInliner} runs after the null/number passes, which settle which
+   * constants are ints, and before {@link UnusedLocalEliminator} drops the index locals it inlines
+   * away. {@link TypeAssigner} runs last: dex registers are untyped, so dexlib2-derived locals start
+   * out as {@code UnknownType}; it applies the same type resolution the bytecode frontend applies to
+   * javac-derived bodies, so every local of a {@link #Default} body carries a concrete type.
+   */
   Default(
       new LocalSplitter(),
-      new DexSharedInitializationLocalSplitter(),
+      new DexSharedConstantSplitter(),
       new DexNumberTranformer(),
       new DexNullTransformer(),
       new DexArrayIndexConstantInliner(),
       new UnusedLocalEliminator(),
-      new TypeAssigner());
+      new TypeAssigner()),
+
+  /**
+   * The dex transformers of {@link #Default} without its {@link LocalSplitter}, for callers that
+   * put their own in front of them, e.g. one with another {@link LocalSplitter.ExceptionalFlow}.
+   */
+  Transformers(
+      new DexSharedConstantSplitter(),
+      new DexNumberTranformer(),
+      new DexNullTransformer(),
+      new DexArrayIndexConstantInliner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 

@@ -12,10 +12,10 @@ SootUp has a modular architecture, which enables its clients to include only the
 
 - [core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
 - [java.core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core) contains parts that are essential for analyzing Java code.
-- [java.bytecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
+- [java.bytecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode.frontend) contains the functionality that is necessary for taking as input java bytecode.
 - [callgraph module](https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**. A reimplementation of **Spark** pointer analysis framework is in progress.
-- [jimple.parser module](https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
-- [analysis module](https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis) enables performing interprocedural dataflow analyses.
+- [jimple.parser module](https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.frontend) contains the functionalty that is necessary for taking as input .jimple files.
+- [analysis module](https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis.interprocedural) enables performing interprocedural dataflow analyses.
 
 ### No More Singletons
 

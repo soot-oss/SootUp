@@ -235,6 +235,13 @@ visibility; the existing two-argument constructor defaults to runtime-visible.
 Missing attributes return empty optionals or lists; SMAP text is preserved without
 remapping statement positions.
 
+## Reading Java Generic Signatures
+
+`getGenericSignature()` on `JavaSootClass`, `JavaSootField`, and `JavaSootMethod` (via
+`HasGenericSignature`) returns the raw classfile `Signature` attribute as an
+`Optional<String>`, or an empty optional if absent. Generic signatures do not change
+SootUp's erased types.
+
 ## Retrieving the Control-Flow Graph of a Method
 
 Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `ControlFlowGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
@@ -289,4 +296,4 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
 
 !!! info "Access a complete example of the code used above"
 
-    Download [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
+    Download [BasicSetup.java](https://github.com/soot-oss/SootUp-Examples/blob/main/BasicSetupExample/src/main/java/sootup/examples/BasicSetup.java)

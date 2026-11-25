@@ -30,6 +30,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.MemberResolution;
 import sootup.core.model.SootField;
 import sootup.core.views.View;
 
@@ -52,7 +53,8 @@ public class FieldRefValidator implements BodyValidator {
       if (fr instanceof JStaticFieldRef) {
         JStaticFieldRef v = (JStaticFieldRef) fr;
 
-        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        Optional<? extends SootField> fieldOpt =
+            MemberResolution.resolveField(view, v.getFieldSignature());
         if (!fieldOpt.isPresent()) {
           validationException.add(new ValidationException(v, "Resolved field is empty: "));
         } else {
@@ -66,7 +68,8 @@ public class FieldRefValidator implements BodyValidator {
       } else if (fr instanceof JInstanceFieldRef) {
         JInstanceFieldRef v = (JInstanceFieldRef) fr;
 
-        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        Optional<? extends SootField> fieldOpt =
+            MemberResolution.resolveField(view, v.getFieldSignature());
         if (!fieldOpt.isPresent()) {
           validationException.add(
               new ValidationException(fr, "Resolved field is null: " + fr.toString()));

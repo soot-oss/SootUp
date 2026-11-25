@@ -64,7 +64,7 @@ import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -131,7 +131,7 @@ public final class AndroidDummyMainFactory {
 
     JavaClassType objectType = (JavaClassType) identifierFactory.getClassType("java.lang.Object");
     return new JavaSootClass(
-        new OverridingJavaClassSource(
+        new InMemoryJavaClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
             EnumSet.of(ClassModifier.PUBLIC),

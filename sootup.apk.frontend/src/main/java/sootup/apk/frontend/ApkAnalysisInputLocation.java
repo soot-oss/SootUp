@@ -54,6 +54,8 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   // owned by this location, so the dex data is released together with it
   private final DexLibWrapper dexLibWrapper;
 
+  private final SourceType sourceType;
+
   /**
    * Package prefixes for third-party libraries commonly statically linked into an app's own dex
    * (support-v4/v7, AndroidX, Play Services, Kotlin's runtime): {@link #getClassSources(View)}
@@ -135,8 +137,28 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
       Path apkPath,
       AndroidVersionInfo androidSDKVersionInfo,
       List<BodyInterceptor> bodyInterceptors) {
+    this(apkPath, androidSDKVersionInfo, bodyInterceptors, SourceType.Application);
+  }
+
+  /**
+   * Creates a new ApkAnalysisInputLocation whose classes have the given source type, e.g. to load
+   * the classes of libraries bundled in the APK as {@link SourceType#Library} classes when the
+   * input location is scoped to them. Classes under {@link #isBundledLibraryClass} prefixes are
+   * reported as {@link SourceType#Library} regardless.
+   *
+   * @param apkPath the APK, dex or odex file, or a directory of dex files
+   * @param androidSDKVersionInfo API level information of the APK
+   * @param bodyInterceptors the list of body interceptors to apply during analysis
+   * @param sourceType the source type of the classes in the APK
+   */
+  public ApkAnalysisInputLocation(
+      Path apkPath,
+      AndroidVersionInfo androidSDKVersionInfo,
+      List<BodyInterceptor> bodyInterceptors,
+      SourceType sourceType) {
     this.apk_path = apkPath;
     this.bodyInterceptors = bodyInterceptors;
+    this.sourceType = sourceType;
     try {
       this.dexLibWrapper =
           new DexLibWrapper(
@@ -188,7 +210,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   @NonNull
   @Override
   public SourceType getSourceType() {
-    return SourceType.Application;
+    return sourceType;
   }
 
   @NonNull

@@ -108,7 +108,7 @@ public class AggregatorTest {
     controlFlowGraph.putEdge(assignB, ret);
 
     builder.setMethodSignature(
-        identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 

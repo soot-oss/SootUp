@@ -24,6 +24,7 @@ package sootup.java.core.views;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,14 @@ import sootup.java.core.JavaSootMethod;
  */
 public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
+
+  /**
+   * The types whose classes were removed and not added again. Their class files are still in the
+   * input locations, from which {@link #getClass(ClassType)} and {@link #getClasses()} would load
+   * them again.
+   */
+  private final Set<ClassType> removedClasses = new HashSet<>();
+
   private static final @NonNull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
   public MutableJavaView(@NonNull AnalysisInputLocation inputLocation) {
@@ -51,6 +60,29 @@ public class MutableJavaView extends JavaView implements MutableView {
 
   public MutableJavaView(@NonNull List<AnalysisInputLocation> inputLocations) {
     super(inputLocations, new MutableFullCacheProvider());
+  }
+
+  /** Returns the class of the given type, unless it was removed from this view. */
+  @Override
+  @NonNull
+  public synchronized Optional<JavaSootClass> getClass(@NonNull ClassType type) {
+    if (removedClasses.contains(type)) {
+      return Optional.empty();
+    }
+    return super.getClass(type);
+  }
+
+  /** Returns the classes of this view, without the removed ones. */
+  @Override
+  @NonNull
+  public synchronized Stream<JavaSootClass> getClasses() {
+    List<JavaSootClass> classes =
+        super.getClasses().filter(c -> !removedClasses.contains(c.getType())).toList();
+    // loading all classes from the input locations builds the removed ones again
+    for (ClassType removed : removedClasses) {
+      ((MutableClassCache) this.cache).removeClass(removed);
+    }
+    return classes.stream();
   }
 
   /**
@@ -64,8 +96,10 @@ public class MutableJavaView extends JavaView implements MutableView {
       return;
     }
     this.cache.putClass(classType, clazz);
+    removedClasses.remove(classType);
     // the type may have been looked up - and recorded as absent - before it was added here
     forgetAbsence(classType);
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.addType(clazz));
     this.fireAddition(clazz);
   }
 
@@ -75,6 +109,8 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
         (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
+    removedClasses.add(classType);
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.removeType(classType));
     this.fireRemoval(removedClass);
   }
 
@@ -86,8 +122,25 @@ public class MutableJavaView extends JavaView implements MutableView {
 
   /** Removes the provided oldClass from the view and adds the provided newClass. */
   public void replaceClass(JavaSootClass oldClass, JavaSootClass newClass) {
-    this.removeClass(oldClass);
-    this.addClass(newClass);
+    ClassType oldType = oldClass.getClassSource().getClassType();
+    ClassType newType = newClass.getClassSource().getClassType();
+    boolean sameSupertypes =
+        oldType.equals(newType)
+            && oldClass.getSuperclass().equals(newClass.getSuperclass())
+            && oldClass.getInterfaces().equals(newClass.getInterfaces());
+    if (!sameSupertypes) {
+      this.removeClass(oldClass);
+      this.addClass(newClass);
+      return;
+    }
+
+    // the class keeps its place in the type hierarchy, only the class object changes
+    JavaSootClass removedClass =
+        (JavaSootClass) ((MutableClassCache) this.cache).removeClass(oldType);
+    this.fireRemoval(removedClass);
+    this.cache.putClass(newType, newClass);
+    updateTypeHierarchy(typeHierarchy -> typeHierarchy.updateType(newClass));
+    this.fireAddition(newClass);
   }
 
   /**

@@ -133,6 +133,11 @@ public class ForwardingControlFlowGraph<V extends BasicBlock<V>> extends Control
   }
 
   @Override
+  public List<Stmt> getStmts() {
+    return backingGraph.getStmts();
+  }
+
+  @Override
   public void removeExceptionalFlowFromAllBlocks(
       @NonNull ClassType exceptionType, @NonNull Stmt exceptionHandlerStmt) {
     backingGraph.removeExceptionalFlowFromAllBlocks(exceptionType, exceptionHandlerStmt);

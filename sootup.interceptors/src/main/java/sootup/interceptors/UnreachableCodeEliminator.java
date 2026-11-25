@@ -27,6 +27,9 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -75,12 +78,42 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
       }
     }
 
+    // locals of removed stmts are candidates for removal
+    Set<Local> unusedLocals = new HashSet<>();
     Iterator<? extends BasicBlock<?>> iterator = allBlocks.iterator();
     while (iterator.hasNext()) {
       BasicBlock<?> basicBlock = iterator.next();
       if (!reachableNodes.contains(basicBlock)) {
+        for (Stmt stmt : basicBlock.getStmts()) {
+          collectLocals(stmt, unusedLocals);
+        }
         iterator.remove();
         graph.removeBlock(basicBlock);
+      }
+    }
+
+    if (unusedLocals.isEmpty()) {
+      return;
+    }
+    // keep locals which are still used/defined by remaining stmts
+    for (Stmt stmt : graph.getNodes()) {
+      for (Value value : stmt.getUsesAndDefs()) {
+        if (value instanceof Local) {
+          unusedLocals.remove(value);
+        }
+      }
+    }
+    if (!unusedLocals.isEmpty()) {
+      Set<Local> locals = new LinkedHashSet<>(builder.getLocals());
+      locals.removeAll(unusedLocals);
+      builder.setLocals(locals);
+    }
+  }
+
+  private static void collectLocals(@NonNull Stmt stmt, @NonNull Set<Local> locals) {
+    for (Value value : stmt.getUsesAndDefs()) {
+      if (value instanceof Local) {
+        locals.add((Local) value);
       }
     }
   }

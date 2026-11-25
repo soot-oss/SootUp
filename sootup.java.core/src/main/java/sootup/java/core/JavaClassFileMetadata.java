@@ -30,15 +30,16 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.core.types.JavaClassType;
 
 /** Immutable source and nesting attributes of a Java classfile. */
-public final class JavaClassFileMetadata {
+public final class JavaClassFileMetadata implements HasGenericSignature {
   private static final JavaClassFileMetadata EMPTY =
-      new JavaClassFileMetadata(null, null, null, null, List.of());
+      new JavaClassFileMetadata(null, null, null, null, List.of(), null);
 
   @Nullable private final String sourceFile;
   @Nullable private final String sourceDebugExtension;
   @Nullable private final JavaClassType enclosingClass;
   @Nullable private final MethodSignature enclosingMethod;
   @NonNull private final List<JavaInnerClassInfo> innerClasses;
+  @Nullable private final String genericSignature;
 
   /**
    * @param sourceFile the SourceFile attribute, or {@code null} if absent
@@ -57,6 +58,28 @@ public final class JavaClassFileMetadata {
       @Nullable JavaClassType enclosingClass,
       @Nullable MethodSignature enclosingMethod,
       @NonNull List<JavaInnerClassInfo> innerClasses) {
+    this(sourceFile, sourceDebugExtension, enclosingClass, enclosingMethod, innerClasses, null);
+  }
+
+  /**
+   * @param sourceFile the SourceFile attribute, or {@code null} if absent
+   * @param sourceDebugExtension the decoded, unparsed SourceDebugExtension attribute, or {@code
+   *     null} if absent
+   * @param enclosingClass the owner from EnclosingMethod, or {@code null} if that attribute is
+   *     absent
+   * @param enclosingMethod the enclosing method or constructor; {@code null} when the attribute is
+   *     absent or its method_index is zero (an initializer)
+   * @param innerClasses InnerClasses entries in classfile order; a defensive copy is made
+   * @param genericSignature the raw classfile generic signature, or {@code null} if absent
+   * @throws IllegalArgumentException if the enclosing method does not belong to the enclosing class
+   */
+  public JavaClassFileMetadata(
+      @Nullable String sourceFile,
+      @Nullable String sourceDebugExtension,
+      @Nullable JavaClassType enclosingClass,
+      @Nullable MethodSignature enclosingMethod,
+      @NonNull List<JavaInnerClassInfo> innerClasses,
+      @Nullable String genericSignature) {
     if (enclosingMethod != null && !enclosingMethod.getDeclClassType().equals(enclosingClass)) {
       throw new IllegalArgumentException("The enclosing method must belong to the enclosing class");
     }
@@ -65,6 +88,7 @@ public final class JavaClassFileMetadata {
     this.enclosingClass = enclosingClass;
     this.enclosingMethod = enclosingMethod;
     this.innerClasses = List.copyOf(innerClasses);
+    this.genericSignature = genericSignature;
   }
 
   @NonNull
@@ -99,5 +123,12 @@ public final class JavaClassFileMetadata {
   @NonNull
   public List<JavaInnerClassInfo> getInnerClasses() {
     return innerClasses;
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  @Override
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
   }
 }

@@ -18,15 +18,24 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.QilinFrameworkTests;
 
-// pre-existing, unrelated to this redesign: MethodPAG.buildException() body is a no-op
-// (dead/commented-out code) even when preciseExceptions is enabled, so precise exception
-// flow was never actually implemented. Needs a real fix, not just re-enabling.
-@Disabled
+/**
+ * Exercises {@link PointerAnalysisConfig#isPreciseExceptions()}, which the rest of the suite leaves
+ * off: with it, a thrown object flows to the matching {@code catch} parameter (and out to the
+ * caller's handler when nothing in the method catches it) instead of being merged into one global
+ * throw field.
+ */
 public class ExceptionTests extends QilinFrameworkTests {
+
+  @Override
+  protected PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
+    return super.configBuilder(contextSensitivity).preciseExceptions(true);
+  }
+
   @Test
   public void testSimpleException() {
     checkAssertions(run("qilin.microben.core.exception.SimpleException"));

@@ -419,14 +419,14 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
   /** Iterates the Stmts according to the jimple output order. */
   private class BlockControlFlowGraphIterator implements Iterator<Stmt> {
 
-    private final BlockGraphIterator blockIt;
+    private final Iterator<BasicBlock<?>> blockIt;
     @NonNull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
 
     public BlockControlFlowGraphIterator() {
-      this(new BlockGraphIterator(ControlFlowGraph.this));
+      this(getBlockIterator());
     }
 
-    public BlockControlFlowGraphIterator(@NonNull BlockGraphIterator blockIterator) {
+    public BlockControlFlowGraphIterator(@NonNull Iterator<BasicBlock<?>> blockIterator) {
       blockIt = blockIterator;
     }
 

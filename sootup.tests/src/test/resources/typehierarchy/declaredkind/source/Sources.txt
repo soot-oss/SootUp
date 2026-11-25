@@ -1,0 +1,10 @@
+referrers/ were compiled against
+    public interface X {}
+    public class Y {}
+from
+    public class A implements X {}
+    public interface B extends X {}
+    public class C extends Y {}
+declarations/ declare the types with the other kind:
+    public class X {}
+    public interface Y {}

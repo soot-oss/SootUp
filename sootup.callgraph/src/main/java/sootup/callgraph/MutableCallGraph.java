@@ -57,4 +57,23 @@ public interface MutableCallGraph extends CallGraph {
    * @param call this parameter defines the call that is transformed to the edge in the call graph.
    */
   void addCall(@NonNull Call call);
+
+  /**
+   * Adds the given call unless the call graph already contains it.
+   *
+   * @param sourceMethod the source node of the edge in the call graph.
+   * @param targetMethod the target node of the edge in the call graph.
+   * @param invokableStmt the invoke statement of the edge in the call graph.
+   * @return whether the call was added
+   */
+  default boolean addCallIfAbsent(
+      @NonNull MethodSignature sourceMethod,
+      @NonNull MethodSignature targetMethod,
+      @NonNull InvokableStmt invokableStmt) {
+    if (containsCall(sourceMethod, targetMethod, invokableStmt)) {
+      return false;
+    }
+    addCall(sourceMethod, targetMethod, invokableStmt);
+    return true;
+  }
 }

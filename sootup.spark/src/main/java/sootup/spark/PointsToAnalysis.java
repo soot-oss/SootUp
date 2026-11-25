@@ -35,6 +35,8 @@ import org.graph4j.Digraph;
 import org.graph4j.Edge;
 import org.graph4j.EdgeIterator;
 import sootup.core.jimple.common.Value;
+import sootup.core.model.MemberResolution;
+import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
@@ -56,6 +58,8 @@ import sootup.spark.node.Node;
  *       value may point to.
  *   <li>{@link #aliases(Value, MethodSignature)} — the set of PAG vertices whose points-to set
  *       intersects the query value's.
+ *   <li>{@link #reachingObjects(Set, FieldSignature)} — the set of {@link AllocationNode}s that a
+ *       field of given objects may point to.
  *   <li>{@link #reachingTypes(Value, MethodSignature)} — the set of run-time {@link Type}s induced
  *       by the points-to set.
  * </ul>
@@ -73,8 +77,7 @@ public class PointsToAnalysis {
 
   private PointsToAnalysis(Solver solver) {
     this.solver = solver;
-    this.nodeFactory =
-        new NodeFactory(solver.getSparkOptions(), solver.getView().getIdentifierFactory());
+    this.nodeFactory = new NodeFactory(solver.getSparkOptions(), solver.getView());
   }
 
   /**
@@ -117,6 +120,32 @@ public class PointsToAnalysis {
       @NonNull Value value, @NonNull MethodSignature containingMethodSig) {
     Optional<Node> node = nodeFactory.createNode(value, containingMethodSig);
     return node.map(this::reachingObjectsOfNode).orElse(Collections.emptySet());
+  }
+
+  /**
+   * Returns the set of allocation sites that the given field of the given objects may point to,
+   * i.e. the union of {@code heap[o, field]} over each {@code o} in {@code objects}. Together with
+   * {@link #reachingObjects(Value, MethodSignature)}, this follows chains of field accesses such as
+   * {@code b.f.g}.
+   *
+   * @param objects the allocation sites whose field is queried
+   * @param field the field, also as referenced through a subclass of the class that declares it
+   * @return the allocation sites that the field may point to
+   */
+  public Set<AllocationNode> reachingObjects(
+      @NonNull Set<AllocationNode> objects, @NonNull FieldSignature field) {
+    FieldSignature declared =
+        MemberResolution.resolveField(solver.getView(), field)
+            .<FieldSignature>map(SootField::getSignature)
+            .orElse(field);
+    Set<AllocationNode> result = new LinkedHashSet<>();
+    for (AllocationNode o : objects) {
+      Set<AllocationNode> stored = heap.get(new HeapKey(o, declared));
+      if (stored != null) {
+        result.addAll(stored);
+      }
+    }
+    return result;
   }
 
   /**

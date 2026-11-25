@@ -21,7 +21,9 @@ package qilin.core;
 import java.util.*;
 import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
+import sootup.callgraph.MethodLookup;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.model.SignaturePolymorphicMethods;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -38,12 +40,20 @@ import sootup.core.views.View;
  * @author Ondrej Lhotak
  */
 public class VirtualCalls {
-  private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl;
   protected View view;
+  private final MethodLookup methodLookup;
 
   public VirtualCalls(View view) {
-    this.view = view;
-    this.typeToVtbl = new HashMap<>();
+    this(new MethodLookup(view));
+  }
+
+  public VirtualCalls(MethodLookup methodLookup) {
+    this.view = methodLookup.getView();
+    this.methodLookup = methodLookup;
+  }
+
+  public MethodLookup getMethodLookup() {
+    return methodLookup;
   }
 
   public SootMethod resolveSpecial(
@@ -65,6 +75,9 @@ public class VirtualCalls {
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = view.getMethod(methodSig);
+      if (otgt.isEmpty()) {
+        otgt = SignaturePolymorphicMethods.resolve(view, methodSig);
+      }
       if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
@@ -79,40 +92,11 @@ public class VirtualCalls {
   }
 
   public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig, boolean appOnly) {
-    Map<MethodSubSignature, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> new HashMap<>(8));
-    SootMethod ret = vtbl.get(subSig);
-    if (ret != null) {
-      return ret;
-    }
-    Optional<? extends SootClass> ocls = view.getClass(t);
-    if (!ocls.isPresent()) {
+    if (appOnly && view.getClass(t).map(SootClass::isLibraryClass).orElse(true)) {
       return null;
     }
-    SootClass cls = ocls.get();
-    if (appOnly && cls.isLibraryClass()) {
-      return null;
-    }
-    Optional<? extends SootMethod> om = cls.getMethod(subSig);
-    if (om.isPresent()) {
-      SootMethod m = om.get();
-      if (!m.isAbstract()) {
-        ret = m;
-      }
-    } else {
-      Optional<? extends ClassType> oc = cls.getSuperclass();
-      if (oc.isPresent()) {
-        ClassType ct = oc.get();
-        Optional<? extends SootClass> oc2 = view.getClass(ct);
-        if (oc2.isPresent()) {
-          ret = resolveNonSpecial(oc2.get().getType(), subSig);
-        }
-      }
-    }
-    if (ret == null) {
-      return null;
-    }
-    vtbl.put(subSig, ret);
-    return ret;
+    // superclasses, then default methods, then signature-polymorphic; cached incl. misses
+    return methodLookup.findConcrete(t, subSig).orElse(null);
   }
 
   public void resolve(
@@ -142,6 +126,34 @@ public class VirtualCalls {
       SootMethod container,
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
+    resolve(t, declaredType, sigType, subSig, null, container, targets, appOnly);
+  }
+
+  /**
+   * Adds the method that a receiver of type {@code t} runs for a call to {@code reference}: the
+   * override of the method {@code reference} resolves to, which is not always the first method with
+   * the same sub-signature (a private or a package-private method from another package does not
+   * override).
+   */
+  public void resolve(
+      Type t,
+      Type declaredType,
+      MethodSignature reference,
+      SootMethod container,
+      ChunkedQueue<SootMethod> targets) {
+    resolve(
+        t, declaredType, null, reference.getSubSignature(), reference, container, targets, false);
+  }
+
+  private void resolve(
+      Type t,
+      Type declaredType,
+      Type sigType,
+      MethodSubSignature subSig,
+      MethodSignature reference,
+      SootMethod container,
+      ChunkedQueue<SootMethod> targets,
+      boolean appOnly) {
     if (declaredType instanceof ArrayType) {
       declaredType = JavaTypes.OBJECT;
     }
@@ -159,7 +171,10 @@ public class VirtualCalls {
       return;
     }
     if (t instanceof ClassType) {
-      SootMethod target = resolveNonSpecial((ClassType) t, subSig, appOnly);
+      SootMethod target =
+          reference == null
+              ? resolveNonSpecial((ClassType) t, subSig, appOnly)
+              : methodLookup.dispatch((ClassType) t, reference).orElse(null);
       if (target != null) {
         targets.add(target);
       }

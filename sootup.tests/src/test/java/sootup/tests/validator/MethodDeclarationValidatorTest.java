@@ -1,6 +1,7 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,20 +74,12 @@ public class MethodDeclarationValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 
@@ -110,24 +103,24 @@ public class MethodDeclarationValidatorTest {
 
   @Test
   public void testClassModifiersValidator_fail1() {
+    // illegal modifier combination: rejected when the class/member is built (JVMS)
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
-
-    JavaSootClass javaSootClass =
-        testClassCreatorWithModifiers(
-            EnumSet.of(ClassModifier.PUBLIC, ClassModifier.INTERFACE),
-            EnumSet.of(
-                MethodModifier.ABSTRACT,
-                MethodModifier.PRIVATE,
-                MethodModifier.FINAL,
-                MethodModifier.SYNCHRONIZED,
-                MethodModifier.NATIVE,
-                MethodModifier.STATIC,
-                MethodModifier.PROTECTED),
-            Collections.emptyList());
-
-    methodDeclarationValidator.validate(javaSootClass, validationExceptions_fail1);
-
-    assertEquals(10, validationExceptions_fail1.size());
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            methodDeclarationValidator.validate(
+                testClassCreatorWithModifiers(
+                    EnumSet.of(ClassModifier.PUBLIC, ClassModifier.INTERFACE),
+                    EnumSet.of(
+                        MethodModifier.ABSTRACT,
+                        MethodModifier.PRIVATE,
+                        MethodModifier.FINAL,
+                        MethodModifier.SYNCHRONIZED,
+                        MethodModifier.NATIVE,
+                        MethodModifier.STATIC,
+                        MethodModifier.PROTECTED),
+                    Collections.emptyList()),
+                validationExceptions_fail1));
   }
 
   @Test

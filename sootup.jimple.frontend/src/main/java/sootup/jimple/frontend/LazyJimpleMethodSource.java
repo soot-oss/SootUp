@@ -184,33 +184,17 @@ public class LazyJimpleMethodSource implements BodySource {
               sourcePath, util, declaringClass, identifierFactory, unresolvedBranches, locals);
       StmtVisitor stmtVisitor = new StmtVisitor(state);
       final JimpleParser.StatementsContext statements = method_body_contentsContext.statements();
+      final BlockBuilder blockBuilder = new BlockBuilder(blocks, unresolvedBranches);
       if (statements != null && statements.statement() != null) {
-        List<Stmt> currentStmtList = new ArrayList<>();
         for (JimpleParser.StatementContext stmtCtx : statements.statement()) {
           Stmt newestStmt = stmtVisitor.visitStatement(stmtCtx);
           if (stmtCtx.label_name != null) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
             final String labelname = stmtCtx.label_name.getText();
             labeledStmts.put(labelname, newestStmt);
           }
-
-          currentStmtList.add(newestStmt);
-
-          if (newestStmt.branches()) {
-            if (!currentStmtList.isEmpty()) {
-              blocks.add(currentStmtList);
-              currentStmtList = new ArrayList<>();
-            }
-          }
+          blockBuilder.add(newestStmt, stmtCtx.label_name != null);
         }
-
-        // check for dangling Block
-        if (!currentStmtList.isEmpty()) {
-          blocks.add(currentStmtList);
-        }
+        blockBuilder.finish();
       }
 
       // catch_clause
@@ -222,6 +206,8 @@ public class LazyJimpleMethodSource implements BodySource {
           String beginLabel = it.from.getText();
           String toLabel = it.to.getText();
           if (beginLabel.equals(toLabel)) continue;
+          // the Trap covers only omitted i.e. unreachable Stmts
+          if (blockBuilder.isOmitted(labeledStmts.get(beginLabel))) continue;
 
           String handlerLabel = it.with.getText();
           traps.add(

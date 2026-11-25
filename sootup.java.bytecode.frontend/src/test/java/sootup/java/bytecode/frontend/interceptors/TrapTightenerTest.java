@@ -1,233 +1,132 @@
 package sootup.java.bytecode.frontend.interceptors;
 
-import java.util.*;
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockControlFlowGraph;
-import sootup.core.graph.MutableControlFlowGraph;
-import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.Trap;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.model.Body;
-import sootup.core.model.Position;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
-import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.core.model.SourceType;
+import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.interceptors.TrapTightener;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.JavaClassType;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
 /**
  * @author Zun Wang
  */
-@Disabled("FIXME: needs .setTraps() adapted to MutableBlockControlFlowGraph")
 public class TrapTightenerTest {
-  public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
-  JavaIdentifierFactory factory = new JavaIdentifierFactory();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+  private static final JavaView view =
+      new JavaView(
+          Arrays.asList(
+              new JavaClassPathAnalysisInputLocation(
+                  "src/test/resources/interceptors/",
+                  SourceType.Application,
+                  BytecodeBodyInterceptors.Default.getBodyInterceptors()),
+              new DefaultRuntimeAnalysisInputLocation()));
 
-  JavaClassType intType = factory.getClassType("int");
-  JavaClassType classType = factory.getClassType("Test");
-  MethodSignature methodSignature =
-      new JavaIdentifierFactory()
-          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
-  IdentityRef identityRef = JavaJimple.newThisRef(classType);
+  private Body load(String methodName, String returnType, String... parameterTypes) {
+    return view.getMethod(
+            view.getIdentifierFactory()
+                .getMethodSignature(
+                    "TrapTightenerTarget", methodName, returnType, Arrays.asList(parameterTypes)))
+        .get()
+        .getBody();
+  }
 
-  // build locals
-  Local l0 = JavaJimple.newLocal("l0", intType);
-  Local l1 = JavaJimple.newLocal("l1", intType);
-  Local l2 = JavaJimple.newLocal("l2", intType);
-  Local l3 = JavaJimple.newLocal("l3", intType);
-
-  ClassType exception = factory.getClassType("java.lang.Throwable");
-  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef(factory);
-  FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-  // stmts
-  FallsThroughStmt stmt1 =
-      JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  FallsThroughStmt stmt2 = JavaJimple.newEnterMonitorStmt(l1, noStmtPositionInfo);
-  FallsThroughStmt stmt3 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  FallsThroughStmt stmt4 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
-  BranchingStmt stmt5 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-
-  FallsThroughStmt stmt6 = JavaJimple.newIdentityStmt(l3, caughtExceptionRef, noStmtPositionInfo);
-  FallsThroughStmt stmt7 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-  FallsThroughStmt stmt8 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
-  Stmt stmt9 = JavaJimple.newThrowStmt(l3, noStmtPositionInfo);
-  FallsThroughStmt stmt10 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
-  FallsThroughStmt stmt11 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(4), noStmtPositionInfo);
-  // trap
-  Trap trap1 = new Trap(exception, stmt2, stmt5, stmt6);
-  Trap trap2 = new Trap(exception, stmt1, stmt5, stmt6);
-  Trap trap3 = new Trap(exception, stmt7, stmt10, stmt6);
-
-  /**
-   *
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *  label1:
-   *    l1 = 1;
-   *    l2 = 2;
-   *    l2 = 3;
-   *  label2:
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 4;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
-   *
-   * after run trapTightener
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *    l1 = 1;
-   *  label1:
-   *    l2 = 2;
-   *  label2:
-   *    l2 = 3;
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 4;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
-   */
-  @Test
-  public void testSimpleBody() {
-
-    Body body = createSimpleBody();
+  private Body tighten(Body body) {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    new TrapTightener().interceptBody(builder, view);
+    return builder.build();
+  }
 
-    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
-    // modify exceptionalControlFlowGraph
-    controlFlowGraph.clearExceptionalEdges(stmt1);
-    controlFlowGraph.clearExceptionalEdges(stmt10);
-
-    TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
-
-    List<Trap> excepted = new ArrayList<>();
-    excepted.add(trap3);
-    briefStmtPrinter.buildTraps(controlFlowGraph);
-    List<Trap> actual = briefStmtPrinter.getTraps();
-    AssertUtils.assertTrapsEquiv(excepted, actual);
+  private Body tighten(String methodName, String... parameterTypes) {
+    return tighten(load(methodName, "int", parameterTypes));
   }
 
   /**
-   *
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *    l1 = 1;
-   *  label1:
-   *    entermonitor l1;
-   *    l2 = l1;
-   *    exitmonitor l2;
-   *  label2:
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 2;
-   *    exitmonitor l2;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
+   * @return each exceptional flow as "stmt -> caught type", sorted
    */
+  private static List<String> exceptionalFlows(Body body) {
+    ControlFlowGraph<?> graph = body.getControlFlowGraph();
+    return graph.getStmts().stream()
+        .flatMap(
+            stmt ->
+                graph.exceptionalSuccessors(stmt).keySet().stream()
+                    .map(type -> stmt + " -> " + type))
+        .sorted()
+        .collect(Collectors.toList());
+  }
+
+  private static long handlerCount(Body body) {
+    return body.getStmts().stream()
+        .filter(stmt -> stmt.toString().contains("@caughtexception"))
+        .count();
+  }
+
   @Test
-  public void testMonitoredBody() {
-
-    Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
-
-    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
-    // modify exceptionalControlFlowGraph
-    controlFlowGraph.clearExceptionalEdges(stmt2);
-    controlFlowGraph.clearExceptionalEdges(stmt4);
-    //  controlFlowGraph.putEdge(, stmt6);
-
-    TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
-
-    List<Trap> excepted = new ArrayList<>();
-    excepted.add(trap1);
-    briefStmtPrinter.buildTraps(controlFlowGraph);
-    List<Trap> actual = briefStmtPrinter.getTraps();
-    AssertUtils.assertTrapsEquiv(excepted, actual);
+  public void tightenRange() {
+    Body body = tighten("tightenRange", "int", "int");
+    assertEquals(
+        Collections.singletonList("l3#2 = l3#1 / l1 -> java.lang.ArithmeticException"),
+        exceptionalFlows(body));
   }
 
-  private Body createSimpleBody() {
-    MutableControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
-
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
-    builder.setLocals(locals);
-
-    // set graph
-    graph.addBlock(Arrays.asList(stmt1, stmt7, stmt10), Collections.singletonMap(exception, stmt6));
-    graph.putEdge(startingStmt, stmt1);
-    graph.putEdge(stmt10, stmt5);
-    graph.putEdge(stmt6, stmt11);
-    graph.putEdge(stmt11, stmt9);
-    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
-
-    // build startingStmt
-    graph.setStartingStmt(startingStmt);
-
-    return builder.build();
+  @Test
+  public void splitRange() {
+    Body body = tighten("splitRange", "int", "int");
+    assertEquals(
+        Arrays.asList(
+            "l3#1 = l1 / l2 -> java.lang.ArithmeticException",
+            "l3#3 = l3#2 / l2 -> java.lang.ArithmeticException"),
+        exceptionalFlows(body));
   }
 
-  private Body creatBodyWithMonitor() {
-    MutableControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+  @Test
+  public void noThrowingStmtRemovesHandler() {
+    Body body = tighten("noThrowingStmt", "int", "int");
+    assertEquals(Collections.emptyList(), exceptionalFlows(body));
+    assertEquals(0, handlerCount(body));
+  }
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
-    builder.setLocals(locals);
+  @Test
+  public void catchSupertypeKeepsFlow() {
+    Body body = tighten("catchSupertype", "int", "int");
+    assertEquals(
+        Collections.singletonList("l3#2 = l3#1 / l1 -> java.lang.RuntimeException"),
+        exceptionalFlows(body));
+  }
 
-    // set graph
-    graph.addBlock(Arrays.asList(stmt6, stmt7, stmt8, stmt9), Collections.emptyMap());
-    graph.addBlock(Arrays.asList(startingStmt, stmt1), Collections.emptyMap());
-    graph.addBlock(Arrays.asList(stmt2, stmt3, stmt4), Collections.singletonMap(exception, stmt6));
-    graph.putEdge(stmt1, stmt2);
-    graph.putEdge(stmt4, stmt5);
-    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
+  @Test
+  public void multipleHandlers() {
+    Body body = tighten("multipleHandlers", "int[]", "int", "int");
+    assertEquals(
+        Arrays.asList(
+            "l1[0] = l4#1 -> java.lang.NullPointerException",
+            "l4#1 = l2 / l3 -> java.lang.ArithmeticException"),
+        exceptionalFlows(body));
+    assertEquals(2, handlerCount(body));
+  }
 
-    // build startingStmt
-    graph.setStartingStmt(startingStmt);
+  @Test
+  public void invokeKeepsFlow() {
+    Body body = tighten("invoke", "int");
+    assertEquals(
+        Collections.singletonList(
+            "virtualinvoke this.<TrapTightenerTarget: void mayThrow()>() -> java.io.IOException"),
+        exceptionalFlows(body));
+  }
 
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+  @Test
+  public void synchronizedBlockKeepsCatchAll() {
+    Body before = load("synchronizedBlock", "void", "int", "int");
+    Body body = tighten(before);
+    assertEquals(exceptionalFlows(before), exceptionalFlows(body));
+    assertEquals(handlerCount(before), handlerCount(body));
   }
 }

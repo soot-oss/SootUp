@@ -63,17 +63,16 @@ In the given example above, the local variables`l1`,`l3`are summarized to be one
 
 
 ## TrapTightener
-**WIP - currently not available!**
 
-TrapTightener is a`BodyInterceptor`that shrinks the protected area covered by each Trap in a Body. 
+TrapTightener is a`BodyInterceptor`that removes exceptional flows which can not occur at runtime and thereby shrinks the protected areas covered by the Traps of a Body. An exceptional flow of a`Stmt`to a handler catching`T`is removed if no exception the`Stmt`might throw can be caught as`T`. Trap handlers which become unreachable are removed afterwards.
 
 Example:
 
 ![TrapTightener Example](assets/figures/TrapTightener%20Example.png)
 
-We assume in the example above that only the`Stmt`:`l2 := 2`might throw an exception caught by the`Trap`which is labeled with`label3`. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three`Stmts`:`l1 := 1; l2 := 2; l2 := 3`. But an exception could only arise at the`Stmt`:`l2 := 2`. After the implementation of TrapTightener, we will get a contractible protected area which contains only the`Stmt`that might throw an exception, namely the`Stmt`:`l2 := 2`.
+We assume in the example above that only the`Stmt`:`l2 := 2`might throw an exception caught by the`Trap`which is labeled with`label3`. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three`Stmts`:`l1 := 1; l2 := 2; l2 := 3`. But an exception could only arise at the`Stmt`:`l2 := 2`. After running the TrapTightener, the protected area contains only the`Stmt`that might throw an exception, namely the`Stmt`:`l2 := 2`.
 
-
+The exceptions a`Stmt`might throw are inferred intraprocedurally: an invocation might throw any exception, and as every`Stmt`might throw a`VirtualMachineError`, flows to catch-all handlers (e.g. the ones releasing the monitor of a`synchronized`block) are always kept. Unlike Soot, which only shrinks the beginning and the end of a protected area, SootUp derives Traps from the exceptional flows of the`ControlFlowGraph`. So a non-throwing`Stmt`in the middle of a protected area is excluded as well, which splits the Trap.
 
 ## EmptySwitchEliminator
 
