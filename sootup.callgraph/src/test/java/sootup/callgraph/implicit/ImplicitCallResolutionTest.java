@@ -220,9 +220,10 @@ public class ImplicitCallResolutionTest {
   }
 
   @Test
-  public void callOnAClassMissingFromTheViewFires() {
+  public void callOnAClassMissingFromTheViewDoesNotFire() {
+    // whether MissingExecutor implements Executor is unknown without its class
     for (CallGraph cg : callGraphs(model())) {
-      assertTrue(targets(cg, fixture("void missing()")).contains(sig("<ir.Job: void run()>")));
+      assertFalse(targets(cg, fixture("void missing()")).contains(sig("<ir.Job: void run()>")));
     }
   }
 

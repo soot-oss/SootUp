@@ -74,8 +74,9 @@ import sootup.core.views.View;
  *       method stands for them.
  *   <li>A {@code super} or static call fires the rule if it resolves to the source, or to an
  *       implementation that the analysis does not follow.
- *   <li>A call that does not resolve fires the rule if the class that it names is not in the view,
- *       or is a subtype of the source's class.
+ *   <li>A call that does not resolve fires the rule if it names the source's class, or a class in
+ *       the view that is a subtype of it. A call that names another class that is not in the view
+ *       does not: whether that class implements the source is unknown.
  * </ul>
  *
  * <p>An implicit invocation names the class in which its method is looked up: the target's {@link
@@ -177,8 +178,11 @@ public class RuleBasedImplicitCallModel implements ImplicitCallModel {
       if (rule.staticSource()) {
         return invoked.equals(source);
       }
-      return !context.view().getTypeHierarchy().contains(invoked.getDeclClassType())
-          || namesSubtypeOf(context, invoked.getDeclClassType(), source.getDeclClassType());
+      // a call that names another class that is not in the view may or may not call the source
+      ClassType named = invoked.getDeclClassType();
+      return named.equals(source.getDeclClassType())
+          || (context.view().getTypeHierarchy().contains(named)
+              && namesSubtypeOf(context, named, source.getDeclClassType()));
     }
     SootMethod method = resolved.get();
     boolean callsSource =
