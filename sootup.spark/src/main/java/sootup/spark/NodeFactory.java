@@ -35,12 +35,14 @@ import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.StaticFieldRefNode;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 import sootup.spark.node.VariableNode;
 
@@ -54,6 +56,7 @@ public class NodeFactory {
   @NonNull SparkOptions sparkOptions;
   @NonNull IdentifierFactory identifierFactory;
   @Nullable View view;
+  @NonNull MethodSignature globalScope;
 
   /**
    * Creates a node factory that resolves field references in the given view, so that all references
@@ -63,6 +66,7 @@ public class NodeFactory {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = view.getIdentifierFactory();
     this.view = view;
+    this.globalScope = ValueToNodeConversionVisitor.globalScope(identifierFactory);
   }
 
   /**
@@ -74,6 +78,7 @@ public class NodeFactory {
     this.sparkOptions = sparkOptions;
     this.identifierFactory = identifierFactory;
     this.view = null;
+    this.globalScope = ValueToNodeConversionVisitor.globalScope(identifierFactory);
   }
 
   /**
@@ -89,6 +94,15 @@ public class NodeFactory {
             containingMethodSig, sparkOptions, identifierFactory, view);
     value.accept(visitor);
     return visitor.getResult();
+  }
+
+  /**
+   * The node of a field that is one global variable, see {@link
+   * ValueToNodeConversionVisitor#globalField}.
+   */
+  @NonNull
+  public StaticFieldRefNode globalField(@NonNull FieldSignature field) {
+    return ValueToNodeConversionVisitor.globalField(field, globalScope);
   }
 
   /**

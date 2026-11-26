@@ -31,9 +31,19 @@ import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.value.BooleanEncodedValue;
+import org.jf.dexlib2.iface.value.ByteEncodedValue;
+import org.jf.dexlib2.iface.value.CharEncodedValue;
+import org.jf.dexlib2.iface.value.DoubleEncodedValue;
+import org.jf.dexlib2.iface.value.FloatEncodedValue;
+import org.jf.dexlib2.iface.value.IntEncodedValue;
+import org.jf.dexlib2.iface.value.LongEncodedValue;
 import org.jf.dexlib2.iface.value.MethodEncodedValue;
+import org.jf.dexlib2.iface.value.ShortEncodedValue;
+import org.jf.dexlib2.iface.value.StringEncodedValue;
 import org.jf.dexlib2.iface.value.TypeEncodedValue;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
@@ -42,6 +52,11 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.common.constant.Constant;
+import sootup.core.jimple.common.constant.DoubleConstant;
+import sootup.core.jimple.common.constant.FloatConstant;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
@@ -49,6 +64,7 @@ import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.*;
+import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -273,8 +289,41 @@ public class DexClassSource extends JavaSootClassSource {
                   fieldSignature,
                   modifiers,
                   DexUtil.createAnnotationUsage(field.getAnnotations(), signatureFactory),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  constantValueOf(field, signatureFactory));
             })
         .collect(Collectors.toSet());
+  }
+
+  /**
+   * Converts the initial value of a field, which a dex file stores for static fields (also for
+   * non-final ones, e.g., the resource ids of newer Android apps). Like in method bodies, the
+   * values of {@code boolean}, {@code byte}, {@code char} and {@code short} fields are {@code int}
+   * constants.
+   */
+  @Nullable
+  private static Constant constantValueOf(Field field, IdentifierFactory identifierFactory) {
+    org.jf.dexlib2.iface.value.EncodedValue value = field.getInitialValue();
+    if (value instanceof BooleanEncodedValue) {
+      return IntConstant.getInstance(((BooleanEncodedValue) value).getValue() ? 1 : 0);
+    } else if (value instanceof ByteEncodedValue) {
+      return IntConstant.getInstance(((ByteEncodedValue) value).getValue());
+    } else if (value instanceof CharEncodedValue) {
+      return IntConstant.getInstance(((CharEncodedValue) value).getValue());
+    } else if (value instanceof ShortEncodedValue) {
+      return IntConstant.getInstance(((ShortEncodedValue) value).getValue());
+    } else if (value instanceof IntEncodedValue) {
+      return IntConstant.getInstance(((IntEncodedValue) value).getValue());
+    } else if (value instanceof LongEncodedValue) {
+      return LongConstant.getInstance(((LongEncodedValue) value).getValue());
+    } else if (value instanceof FloatEncodedValue) {
+      return FloatConstant.getInstance(((FloatEncodedValue) value).getValue());
+    } else if (value instanceof DoubleEncodedValue) {
+      return DoubleConstant.getInstance(((DoubleEncodedValue) value).getValue());
+    } else if (value instanceof StringEncodedValue) {
+      return JavaJimple.newStringConstant(
+          ((StringEncodedValue) value).getValue(), identifierFactory);
+    }
+    return null;
   }
 }

@@ -24,7 +24,6 @@ package sootup.analysis.interprocedural.icfg;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
@@ -45,7 +44,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   protected View view;
 
-  @DontSynchronize("written by single thread; read afterwards")
+  @SynchronizedBy("concurrent map; owners can be registered lazily while the ICFG is in use")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
@@ -100,6 +99,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   public Body getBodyOf(Stmt stmt) {
     Body body = stmtToOwner.get(stmt);
+    if (body == null) {
+      registerRemainingOwners();
+      body = stmtToOwner.get(stmt);
+    }
     assert body != null : "Statement " + stmt + " not in Stmt-to-owner mapping";
     return body;
   }
@@ -120,7 +123,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   /**
    * Returns the successors of the given statement. If exceptions are enabled, this includes the
-   * heads of the trap handlers that may catch an exception thrown at the given statement.
+   * heads of the trap handlers that may catch an exception thrown at the given statement, and the
+   * heads of the handlers that may catch an exception thrown at one of its normal successors: a
+   * statement that throws may do so before it has any effect, so the handler is reached with the
+   * state before that statement (like the edges from the predecessors of an excepting unit in
+   * Soot's ExceptionalUnitGraph).
    */
   @Override
   public List<Stmt> getSuccsOf(Stmt stmt) {
@@ -133,7 +140,11 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!enableExceptions) {
       return successors;
     }
-    return appendMissing(successors, controlFlowGraph.exceptionalSuccessors(stmt).values());
+    List<Stmt> handlers = new ArrayList<>(controlFlowGraph.exceptionalSuccessors(stmt).values());
+    for (Stmt successor : successors) {
+      handlers.addAll(controlFlowGraph.exceptionalSuccessors(successor).values());
+    }
+    return appendMissing(successors, handlers);
   }
 
   /** Appends the elements of additional that are not yet contained (by identity) in base. */
@@ -155,6 +166,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod method) {
+    registerOwnersOf(method);
     return getOrCreateControlFlowGraph(method.getBody());
   }
 
@@ -167,6 +179,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
+    registerOwnersOf(method);
     return method.getBody().getStmts().stream()
         .filter(this::isCallStmt)
         .collect(Collectors.toSet());
@@ -238,6 +251,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!m.hasBody()) {
       return Collections.emptySet();
     }
+    registerOwnersOf(m);
     return getStartPoints(m.getBody());
   }
 
@@ -252,6 +266,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Set<Stmt> allNonCallStartNodes() {
+    registerRemainingOwners();
     return stmtToOwner.keySet().stream()
         .filter(u -> !(isStartPoint(u) || isCallStmt(u)))
         .collect(Collectors.toSet());
@@ -259,6 +274,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Set<Stmt> allNonCallEndNodes() {
+    registerRemainingOwners();
     return stmtToOwner.keySet().stream()
         .filter(u -> !(isExitStmt(u) || isCallStmt(u)))
         .collect(Collectors.toSet());
@@ -273,6 +289,20 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   public Set<Stmt> getCallsFromWithin(SootMethod m) {
     return methodToCallsFromWithin.getUnchecked(m);
   }
+
+  /**
+   * Registers the statements of the given method as owned by its body, if they are registered
+   * lazily and not yet known. Called before the statements of a method are handed out.
+   *
+   * @param m the method whose statements are about to be used
+   */
+  protected void registerOwnersOf(SootMethod m) {}
+
+  /**
+   * Registers the statements of all methods that are registered lazily and not yet known. Called
+   * when a statement is not known, and before all known statements are enumerated.
+   */
+  protected void registerRemainingOwners() {}
 
   public void initializeStmtToOwner(SootMethod m) {
     if (!m.hasBody()) {
@@ -297,16 +327,31 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     // ControlFlowGraph.predecessors() of a trap handler also returns the last statement of each
     // block that can throw into the handler, while successors() only returns normal flow. Keep only
     // the normal predecessors so that predecessors and successors stay symmetric.
-    List<Stmt> predecessors = new ArrayList<>();
-    for (Stmt pred : controlFlowGraph.predecessors(u)) {
-      if (controlFlowGraph.successors(pred).contains(u)) {
-        predecessors.add(pred);
-      }
-    }
+    List<Stmt> predecessors = normalPredecessors(controlFlowGraph, u);
     if (!enableExceptions) {
       return predecessors;
     }
-    return appendMissing(predecessors, controlFlowGraph.exceptionalPredecessors(u));
+    // the statements that may throw into the handler, and their normal predecessors (see
+    // getSuccsOf)
+    List<Stmt> throwers = controlFlowGraph.exceptionalPredecessors(u);
+    if (throwers.isEmpty()) {
+      return predecessors;
+    }
+    List<Stmt> exceptional = new ArrayList<>(throwers);
+    for (Stmt thrower : throwers) {
+      exceptional.addAll(normalPredecessors(controlFlowGraph, thrower));
+    }
+    return appendMissing(predecessors, exceptional);
+  }
+
+  private static List<Stmt> normalPredecessors(ControlFlowGraph<?> controlFlowGraph, Stmt stmt) {
+    List<Stmt> predecessors = new ArrayList<>();
+    for (Stmt pred : controlFlowGraph.predecessors(stmt)) {
+      if (controlFlowGraph.successors(pred).contains(stmt)) {
+        predecessors.add(pred);
+      }
+    }
+    return predecessors;
   }
 
   @Override
@@ -314,6 +359,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!m.hasBody()) {
       return Collections.emptySet();
     }
+    registerOwnersOf(m);
     Body body = m.getBody();
     ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
     return controlFlowGraph.getTails();
@@ -331,6 +377,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isReachable(Stmt u) {
+    if (stmtToOwner.containsKey(u)) {
+      return true;
+    }
+    registerRemainingOwners();
     return stmtToOwner.containsKey(u);
   }
 }

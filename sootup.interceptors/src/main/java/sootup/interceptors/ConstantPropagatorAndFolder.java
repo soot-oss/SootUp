@@ -90,12 +90,13 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
           if (!(value instanceof Local)) {
             continue;
           }
-          List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
-          if (defsOfUse.size() != 1) {
+          // the constant must be the only definition that reaches the return
+          List<Stmt> defsOfUse = ((Local) value).getDefsForLocalUse(controlFlowGraph, stmt);
+          if (defsOfUse.size() != 1 || !defs.contains(defsOfUse.get(0))) {
             continue;
           }
 
-          AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
+          AbstractDefinitionStmt definitionStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
           Value rhs = definitionStmt.getRightOp();
           if (rhs instanceof NumericConstant
               || rhs instanceof StringConstant
