@@ -34,7 +34,6 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
 
 /** The built-in implicit call models */
 final class ImplicitCalls {
@@ -62,12 +61,12 @@ final class ImplicitCalls {
     @Override
     @NonNull
     public List<AbstractInstanceInvokeExpr> resolve(
-        @NonNull View view, @NonNull Body body, @NonNull InvokableStmt stmt) {
+        @NonNull ImplicitCallContext context, @NonNull Body body, @NonNull InvokableStmt stmt) {
       return models
           .computeIfAbsent(
-              view.getIdentifierFactory(),
+              context.view().getIdentifierFactory(),
               factory -> new RuleBasedImplicitCallModel(rules.apply(factory)))
-          .resolve(view, body, stmt);
+          .resolve(context, body, stmt);
     }
   }
 

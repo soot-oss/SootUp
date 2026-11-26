@@ -28,7 +28,6 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.Body;
-import sootup.core.views.View;
 
 /**
  * Models calls that a method performs implicitly, e.g. {@code Thread.start()} calling {@code run()}
@@ -45,18 +44,18 @@ public interface ImplicitCallModel {
    * called method receives, or {@link sootup.core.jimple.common.constant.NullConstant} for
    * parameters without a value.
    *
-   * @param view the view providing the classes
+   * @param context the lookup and the analyzed methods of the analysis
    * @param body the body that contains the statement
    * @param stmt the call statement
    * @return the implicit invocations, empty if there are none
    */
   @NonNull List<AbstractInstanceInvokeExpr> resolve(
-      @NonNull View view, @NonNull Body body, @NonNull InvokableStmt stmt);
+      @NonNull ImplicitCallContext context, @NonNull Body body, @NonNull InvokableStmt stmt);
 
   /** Returns a model without implicit calls. */
   @NonNull
   static ImplicitCallModel none() {
-    return (view, body, stmt) -> List.of();
+    return (context, body, stmt) -> List.of();
   }
 
   /** Returns a model in which {@code Thread.start()} calls {@code run()} on the thread. */

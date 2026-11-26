@@ -1099,7 +1099,15 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+    // start() is overridden and calls super.start(), which starts the thread
+    assertTrue(
+        callSourcesMethodSigs.contains(
+            identifierFactory.getMethodSignature(
+                identifierFactory.getClassType("t1.UpdatedThread1"),
+                "start",
+                "void",
+                Collections.emptyList())));
+    assertFalse(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 
   @Test
@@ -1112,7 +1120,15 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+    // start() is overridden and calls super.start(), which starts the thread
+    assertTrue(
+        callSourcesMethodSigs.contains(
+            identifierFactory.getMethodSignature(
+                identifierFactory.getClassType("t2.UpdatedThreadOuter"),
+                "start",
+                "void",
+                Collections.emptyList())));
+    assertFalse(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 
   @Test
@@ -1125,7 +1141,15 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+    // start() is overridden and calls super.start(), which starts the thread
+    assertTrue(
+        callSourcesMethodSigs.contains(
+            identifierFactory.getMethodSignature(
+                identifierFactory.getClassType("t3.UpdatedThreadInner"),
+                "start",
+                "void",
+                Collections.emptyList())));
+    assertFalse(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 
   @Test

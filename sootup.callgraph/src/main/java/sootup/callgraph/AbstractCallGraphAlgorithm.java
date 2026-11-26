@@ -32,6 +32,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.implicit.ImplicitCallContext;
 import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
@@ -118,6 +119,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** Models the calls that methods perform implicitly. */
   @NonNull private final ImplicitCallModel implicitCallModel;
+
+  /** The lookup and the analyzed methods of this algorithm, for the {@link ImplicitCallModel} */
+  @NonNull private final ImplicitCallContext implicitCallContext;
 
   /**
    * The call statements that cause implicit invocations. Implicit invocations are resolved as
@@ -284,6 +288,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.methodLookup = new MethodLookup(view);
+    this.implicitCallContext = ImplicitCallContext.of(methodLookup, this::isAnalyzed);
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
@@ -699,7 +704,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       for (AbstractInstanceInvokeExpr implicitInvoke :
-          implicitCallModel.resolve(view, body, invokableStmt)) {
+          implicitCallModel.resolve(implicitCallContext, body, invokableStmt)) {
         InvokableStmt implicitStmt =
             new JInvokeStmt(implicitInvoke, invokableStmt.getPositionInfo());
         implicitCallSites.put(implicitStmt, invokableStmt);
@@ -712,6 +717,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 });
       }
     }
+  }
+
+  /**
+   * Whether this algorithm follows calls into the given method: it is concrete and the {@link
+   * CallResolver} does not exclude all of its calls. An {@link ImplicitCallModel} leaves the
+   * implementations of its rules' sources to such methods.
+   */
+  protected boolean isAnalyzed(@NonNull SootMethod method) {
+    return method.isConcrete() && !callResolver.tryAdvanceMethod(method).resolvesNone();
   }
 
   /**

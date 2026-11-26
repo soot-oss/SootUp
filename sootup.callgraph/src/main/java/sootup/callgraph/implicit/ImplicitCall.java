@@ -28,9 +28,8 @@ import sootup.core.signatures.MethodSignature;
 
 /**
  * A rule of an {@link ImplicitCallModel}: calls of the source method implicitly invoke the targets.
- * A static source matches calls of exactly that method. An instance source matches virtual and
- * interface calls with the same subsignature whose referenced class is the source's declaring class
- * or one of its subtypes.
+ * Which calls fire the rule is described in {@link RuleBasedImplicitCallModel}: calls that resolve
+ * to the source, and calls of implementations of the source that the analysis does not follow.
  *
  * @param source the method whose calls perform the implicit calls
  * @param staticSource whether the source is a static method
