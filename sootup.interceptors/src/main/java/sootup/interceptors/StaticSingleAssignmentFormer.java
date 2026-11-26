@@ -219,7 +219,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
     for (Local local : builder.getLocals()) {
       localToPhiBlocks.put(local, new HashSet<>());
-      Deque<BasicBlock<?>> blocks = new ArrayDeque<>(localToBlocks.get(local));
+      // a local without any definition has no entry and needs no phi statement
+      Deque<BasicBlock<?>> blocks =
+          new ArrayDeque<>(localToBlocks.getOrDefault(local, Collections.emptySet()));
       while (!blocks.isEmpty()) {
         BasicBlock<?> block = blocks.removeFirst();
         Set<BasicBlock<?>> dfs = dominanceFinder.getDominanceFrontiers(block);
