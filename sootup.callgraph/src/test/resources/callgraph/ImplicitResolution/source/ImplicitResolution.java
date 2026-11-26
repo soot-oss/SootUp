@@ -129,6 +129,17 @@ class ImplicitResolution {
     executor.execute(runnable);
   }
 
+  /** Not called from main: a plain Thread is instantiated only after the call of start() */
+  static void lateInstantiation() {
+    Thread thread = new NoStartThread();
+    thread.start();
+    instantiatePlainThread();
+  }
+
+  static void instantiatePlainThread() {
+    new Thread();
+  }
+
   static void work() {
     Util.post(new OtherJob());
   }

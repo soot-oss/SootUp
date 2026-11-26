@@ -123,6 +123,16 @@ public class ImplicitCallResolutionTest {
     return callGraphs(model, null);
   }
 
+  /** The CHA call graph, whose targets of a call are all subtypes of the class it names */
+  private CallGraph cha(ImplicitCallModel model) {
+    return callGraphs(model).get(0);
+  }
+
+  /** The RTA call graph, whose targets of a call are the instantiated subtypes */
+  private CallGraph rta(ImplicitCallModel model) {
+    return callGraphs(model).get(1);
+  }
+
   private static Set<MethodSignature> targets(CallGraph cg, MethodSignature source) {
     return cg.callsFrom(source).stream()
         .map(CallGraph.Call::targetMethodSignature)
@@ -148,13 +158,21 @@ public class ImplicitCallResolutionTest {
   }
 
   @Test
-  public void startOnAThreadTypedLocalCallsRun() {
-    // the call resolves to Thread.start(), which is modeled, although the thread overrides start()
-    for (CallGraph cg : callGraphs(model())) {
-      assertTrue(
-          targets(cg, fixture("void threadTypedOverride()"))
-              .contains(sig("<ir.NoStartThread: void run()>")));
-    }
+  public void startOnAThreadTypedLocalDependsOnTheTargetsOfTheCall() {
+    // the call names Thread.start(); CHA dispatches it to Thread.start() too, RTA only to the
+    // override of the instantiated NoStartThread, which never starts the thread
+    MethodSignature run = sig("<ir.NoStartThread: void run()>");
+    assertTrue(targets(cha(model()), fixture("void threadTypedOverride()")).contains(run));
+    assertFalse(targets(rta(model()), fixture("void threadTypedOverride()")).contains(run));
+  }
+
+  @Test
+  public void rtaStartsTheThreadOnceAPlainThreadIsInstantiated() {
+    // at the call of start(), only NoStartThread is instantiated; the Thread instantiated later
+    // gives the call Thread.start() as a target, which fires the rule
+    MethodSignature entry = fixture("void lateInstantiation()");
+    CallGraph rta = callGraphs(view, model(), null, entry).get(1);
+    assertTrue(targets(rta, entry).contains(sig("<ir.NoStartThread: void run()>")));
   }
 
   @Test
@@ -181,12 +199,17 @@ public class ImplicitCallResolutionTest {
   }
 
   @Test
-  public void interfaceTypedExecutorIsModeledAndDispatched() {
-    for (CallGraph cg : callGraphs(model())) {
-      Set<MethodSignature> targets = targets(cg, fixture("void interfaceTypedExecutor()"));
-      assertTrue(targets.contains(sig("<ir.Job: void run()>")));
-      assertTrue(targets.contains(sig("<ir.DroppingExecutor: void execute(java.lang.Runnable)>")));
-    }
+  public void interfaceTypedExecutorDependsOnTheTargetsOfTheCall() {
+    // CHA dispatches to the executors of the runtime, which are not analyzed; RTA only to the
+    // instantiated DroppingExecutor, which is
+    MethodSignature run = sig("<ir.Job: void run()>");
+    MethodSignature execute = sig("<ir.DroppingExecutor: void execute(java.lang.Runnable)>");
+    Set<MethodSignature> cha = targets(cha(model()), fixture("void interfaceTypedExecutor()"));
+    assertTrue(cha.contains(run));
+    assertTrue(cha.contains(execute));
+    Set<MethodSignature> rta = targets(rta(model()), fixture("void interfaceTypedExecutor()"));
+    assertFalse(rta.contains(run));
+    assertTrue(rta.contains(execute));
   }
 
   @Test
@@ -216,16 +239,16 @@ public class ImplicitCallResolutionTest {
 
   @Test
   public void localTypedNarrowerThanTheParameterNarrowsTheDispatch() {
-    for (CallGraph cg : callGraphs(model())) {
-      Set<MethodSignature> narrow =
-          targets(cg, fixture("void narrowLocal(java.util.concurrent.Executor)"));
-      assertTrue(narrow.contains(sig("<ir.Job: void run()>")));
-      assertFalse(narrow.contains(sig("<ir.OtherJob: void run()>")));
-      Set<MethodSignature> wide =
-          targets(cg, fixture("void wideLocal(java.util.concurrent.Executor,java.lang.Runnable)"));
-      assertTrue(wide.contains(sig("<ir.Job: void run()>")));
-      assertTrue(wide.contains(sig("<ir.OtherJob: void run()>")));
-    }
+    // CHA: the calls of execute() on an Executor parameter reach the runtime's executors
+    CallGraph cg = cha(model());
+    Set<MethodSignature> narrow =
+        targets(cg, fixture("void narrowLocal(java.util.concurrent.Executor)"));
+    assertTrue(narrow.contains(sig("<ir.Job: void run()>")));
+    assertFalse(narrow.contains(sig("<ir.OtherJob: void run()>")));
+    Set<MethodSignature> wide =
+        targets(cg, fixture("void wideLocal(java.util.concurrent.Executor,java.lang.Runnable)"));
+    assertTrue(wide.contains(sig("<ir.Job: void run()>")));
+    assertTrue(wide.contains(sig("<ir.OtherJob: void run()>")));
   }
 
   @Test

@@ -38,6 +38,7 @@ import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -57,17 +58,23 @@ import sootup.core.views.View;
  *
  * <p>A call with the subsignature of a rule's source fires the rule if the analysis would not see
  * the implicit call otherwise. The call is resolved with the {@link ImplicitCallContext}'s method
- * lookup:
+ * lookup; it must resolve to the source, or the class that it names must be a subtype of the
+ * source's class. Then:
  *
  * <ul>
- *   <li>If it resolves to the source, the rule fires: the source is modeled, e.g. {@code
- *       Thread.start()}, whose body calls {@code run()} only through the virtual machine. This also
- *       holds for {@code super.start()} and for a static source called through a subclass.
- *   <li>If it resolves to another instance method and the class that the call names is a subtype of
- *       the source's class, the method implements the source for that class, e.g. the {@code
- *       execute(Runnable)} of an {@link java.util.concurrent.Executor}. The rule fires only if the
- *       analysis does not follow calls into that method; otherwise its body shows what it does.
- *   <li>If it does not resolve, the rule fires if the class that the call names is not in the view,
+ *   <li>A virtual or interface call fires the rule if one of the methods that the analysis
+ *       dispatches it to ({@link ImplicitCallContext#callTargets}) is the source, e.g. {@code
+ *       Thread.start()}, whose body calls {@code run()} only through the virtual machine, or is an
+ *       implementation of the source that the analysis does not follow, e.g. the {@code
+ *       execute(Runnable)} of a library {@link java.util.concurrent.Executor}. An implementation
+ *       that it follows shows what it does itself. Which receivers the analysis considers, and so
+ *       which targets, depends on the analysis: CHA dispatches a call that names {@code Thread} to
+ *       {@code Thread.start()}, a points-to analysis that knows the receiver is a subclass that
+ *       overrides {@code start()} does not. If the analysis does not give the targets, the resolved
+ *       method stands for them.
+ *   <li>A {@code super} or static call fires the rule if it resolves to the source, or to an
+ *       implementation that the analysis does not follow.
+ *   <li>A call that does not resolve fires the rule if the class that it names is not in the view,
  *       or is a subtype of the source's class.
  * </ul>
  *
@@ -99,7 +106,8 @@ public class RuleBasedImplicitCallModel implements ImplicitCallModel {
     if (!invokeExpr.isPresent()) {
       return List.of();
     }
-    List<ImplicitCall> rules = matchingRules(context, invokeExpr.get());
+    List<ImplicitCall> rules =
+        matchingRules(context, body.getMethodSignature(), stmt, invokeExpr.get());
     if (rules.isEmpty()) {
       return List.of();
     }
@@ -125,7 +133,10 @@ public class RuleBasedImplicitCallModel implements ImplicitCallModel {
   }
 
   private List<ImplicitCall> matchingRules(
-      ImplicitCallContext context, AbstractInvokeExpr invokeExpr) {
+      ImplicitCallContext context,
+      MethodSignature caller,
+      InvokableStmt stmt,
+      AbstractInvokeExpr invokeExpr) {
     boolean staticCall = invokeExpr instanceof JStaticInvokeExpr;
     if (!staticCall && !(invokeExpr instanceof AbstractInstanceInvokeExpr)) {
       return List.of();
@@ -137,9 +148,14 @@ public class RuleBasedImplicitCallModel implements ImplicitCallModel {
       return List.of();
     }
     Optional<SootMethod> resolved = context.methodLookup().find(invoked);
+    // the targets of a virtual or interface call, as the analysis dispatches it
+    Optional<Set<MethodSignature>> targets =
+        staticCall || invokeExpr instanceof JSpecialInvokeExpr || resolved.isEmpty()
+            ? Optional.empty()
+            : context.callTargets(caller, stmt);
     List<ImplicitCall> rules = new ArrayList<>();
     for (ImplicitCall rule : candidates) {
-      if (fires(context, rule, invoked, resolved)) {
+      if (fires(context, rule, invoked, resolved, targets)) {
         rules.add(rule);
       }
     }
@@ -147,31 +163,45 @@ public class RuleBasedImplicitCallModel implements ImplicitCallModel {
   }
 
   /**
-   * Whether a call of {@code invoked}, which resolves to {@code resolved}, fires the rule, see the
-   * class documentation
+   * Whether a call of {@code invoked}, which resolves to {@code resolved} and is dispatched to
+   * {@code targets}, fires the rule, see the class documentation
    */
   private static boolean fires(
       ImplicitCallContext context,
       ImplicitCall rule,
       MethodSignature invoked,
-      Optional<SootMethod> resolved) {
+      Optional<SootMethod> resolved,
+      Optional<Set<MethodSignature>> targets) {
     MethodSignature source = rule.source();
-    if (resolved.isPresent()) {
-      SootMethod method = resolved.get();
-      if (method.getSignature().equals(source)) {
-        return true;
+    if (resolved.isEmpty()) {
+      if (rule.staticSource()) {
+        return invoked.equals(source);
       }
-      // a static method that hides the source is a method of its own
-      return !rule.staticSource()
-          && !method.isStatic()
-          && namesSubtypeOf(context, invoked.getDeclClassType(), source.getDeclClassType())
-          && !context.isAnalyzed(method);
+      return !context.view().getTypeHierarchy().contains(invoked.getDeclClassType())
+          || namesSubtypeOf(context, invoked.getDeclClassType(), source.getDeclClassType());
     }
-    if (rule.staticSource()) {
-      return invoked.equals(source);
+    SootMethod method = resolved.get();
+    boolean callsSource =
+        method.getSignature().equals(source)
+            // a static method that hides the source is a method of its own
+            || (!rule.staticSource()
+                && !method.isStatic()
+                && namesSubtypeOf(context, invoked.getDeclClassType(), source.getDeclClassType()));
+    if (!callsSource) {
+      return false;
     }
-    return !context.view().getTypeHierarchy().contains(invoked.getDeclClassType())
-        || namesSubtypeOf(context, invoked.getDeclClassType(), source.getDeclClassType());
+    if (targets.isEmpty()) {
+      return method.getSignature().equals(source) || !context.isAnalyzed(method);
+    }
+    return targets.get().stream()
+        .anyMatch(
+            target ->
+                target.equals(source)
+                    || context
+                        .view()
+                        .getMethod(target)
+                        .map(m -> !context.isAnalyzed(m))
+                        .orElse(true));
   }
 
   /**

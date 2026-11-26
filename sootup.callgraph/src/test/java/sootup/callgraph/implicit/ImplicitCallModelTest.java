@@ -114,13 +114,17 @@ public class ImplicitCallModelTest {
 
   @Test
   public void jdkModelCallsRunnablesOfThreadsExecutorsAndPrivilegedActions() {
-    for (CallGraph cg : callGraphs(Optional.of(ImplicitCallModel.jdk()))) {
+    List<CallGraph> callGraphs = callGraphs(Optional.of(ImplicitCallModel.jdk()));
+    // CHA dispatches execute() to the runtime's executors, which are not analyzed; RTA only to the
+    // instantiated DirectExecutor, whose execute() is analyzed and does not run the task
+    assertEquals(
+        Set.of(callSite("<java.util.concurrent.Executor: void execute(java.lang.Runnable)>")),
+        callSitesOf(callGraphs.get(0), "<im.Task: void run()>"));
+    assertTrue(callSitesOf(callGraphs.get(1), "<im.Task: void run()>").isEmpty());
+    for (CallGraph cg : callGraphs) {
       assertEquals(
           Set.of(callSite("<java.lang.Thread: void start()>")),
           callSitesOf(cg, "<im.ThreadRunnable: void run()>"));
-      assertEquals(
-          Set.of(callSite("<java.util.concurrent.Executor: void execute(java.lang.Runnable)>")),
-          callSitesOf(cg, "<im.Task: void run()>"));
       assertEquals(
           Set.of(
               callSite(

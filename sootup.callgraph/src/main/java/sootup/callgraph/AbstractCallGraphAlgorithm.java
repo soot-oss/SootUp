@@ -26,6 +26,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
@@ -119,9 +120,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** Models the calls that methods perform implicitly. */
   @NonNull private final ImplicitCallModel implicitCallModel;
-
-  /** The lookup and the analyzed methods of this algorithm, for the {@link ImplicitCallModel} */
-  @NonNull private final ImplicitCallContext implicitCallContext;
 
   /**
    * The call statements that cause implicit invocations. Implicit invocations are resolved as
@@ -288,7 +286,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.methodLookup = new MethodLookup(view);
-    this.implicitCallContext = ImplicitCallContext.of(methodLookup, this::isAnalyzed);
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
@@ -703,20 +700,97 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (!calls.resolves(invokableStmt)) {
         continue;
       }
-      for (AbstractInstanceInvokeExpr implicitInvoke :
-          implicitCallModel.resolve(implicitCallContext, body, invokableStmt)) {
-        InvokableStmt implicitStmt =
-            new JInvokeStmt(implicitInvoke, invokableStmt.getPositionInfo());
-        implicitCallSites.put(implicitStmt, invokableStmt);
-        resolveCall(sourceMethod, implicitStmt)
-            .forEach(
-                target -> {
-                  if (view.getMethod(target).isPresent()) {
-                    addResolvedCall(sourceMethod, target, implicitStmt, cg, frontier);
-                  }
-                });
+      implicitCallsAt(
+          sourceMethod,
+          body,
+          invokableStmt,
+          cg,
+          (implicitStmt, target) ->
+              addResolvedCall(sourceMethod, target, implicitStmt, cg, frontier));
+    }
+  }
+
+  /**
+   * Applies the {@link ImplicitCallModel} to a call statement whose call got new targets after its
+   * method was processed, e.g. in RTA when a class of its receiver is instantiated: the implicit
+   * calls depend on the targets of the call.
+   *
+   * @param caller the method that contains the statement
+   * @param stmt the call statement
+   * @param cg the call graph, which has the call's targets
+   * @param workList new target methods will be added to the work list
+   */
+  protected void reapplyImplicitCalls(
+      @NonNull MethodSignature caller,
+      @NonNull InvokableStmt stmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
+    if (implicitCallSites.containsKey(stmt)) {
+      // an implicit invocation itself
+      return;
+    }
+    view.getMethod(caller)
+        .filter(SootMethod::hasBody)
+        .ifPresent(
+            method ->
+                implicitCallsAt(
+                    method,
+                    getBody(method),
+                    stmt,
+                    cg,
+                    (implicitStmt, target) ->
+                        addCallToCG(new Call(caller, target, implicitStmt), cg, workList)));
+  }
+
+  /**
+   * Resolves the implicit invocations of a call statement and passes each target, with the
+   * synthetic statement of its invocation, to {@code add}
+   */
+  private void implicitCallsAt(
+      @NonNull SootMethod sourceMethod,
+      @NonNull Body body,
+      @NonNull InvokableStmt invokableStmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull BiConsumer<InvokableStmt, MethodSignature> add) {
+    ImplicitCallContext context =
+        ImplicitCallContext.of(
+            methodLookup,
+            this::isAnalyzed,
+            (caller, stmt) -> Optional.of(callTargetsAt(cg, caller, stmt)));
+    for (AbstractInstanceInvokeExpr implicitInvoke :
+        implicitCallModel.resolve(context, body, invokableStmt)) {
+      InvokableStmt implicitStmt = new JInvokeStmt(implicitInvoke, invokableStmt.getPositionInfo());
+      implicitCallSites.put(implicitStmt, invokableStmt);
+      resolveCall(sourceMethod, implicitStmt)
+          .forEach(
+              target -> {
+                if (view.getMethod(target).isPresent()) {
+                  add.accept(implicitStmt, target);
+                }
+              });
+    }
+  }
+
+  /**
+   * The targets that the call graph has for the call at {@code stmt}: the calls attributed to the
+   * statement with the subsignature of its invocation, which leaves out its implicit calls
+   */
+  @NonNull
+  private static Set<MethodSignature> callTargetsAt(
+      @NonNull CallGraph cg, @NonNull MethodSignature caller, @NonNull InvokableStmt stmt) {
+    Optional<AbstractInvokeExpr> invokeExpr = stmt.getInvokeExpr();
+    if (invokeExpr.isEmpty() || !cg.containsMethod(caller)) {
+      return Set.of();
+    }
+    MethodSubSignature subSignature = invokeExpr.get().getMethodSignature().getSubSignature();
+    Set<MethodSignature> targets = new HashSet<>();
+    for (Call call : cg.callsFrom(caller)) {
+      if (call.invokableStmt() == stmt
+          && call.targetMethodSignature().getSubSignature().equals(subSignature)) {
+        targets.add(call.targetMethodSignature());
       }
     }
+    return targets;
   }
 
   /**

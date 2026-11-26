@@ -22,10 +22,15 @@ package sootup.callgraph.implicit;
  * #L%
  */
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.MethodLookup;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
 /**
@@ -46,6 +51,17 @@ public interface ImplicitCallContext {
    */
   boolean isAnalyzed(@NonNull SootMethod method);
 
+  /**
+   * The methods that the analysis dispatches the call at {@code stmt} in {@code caller} to, as far
+   * as it knows them, e.g. those of the receiver classes it considers instantiated; empty if the
+   * analysis does not say. An analysis that finds more targets later asks the model again.
+   */
+  @NonNull
+  default Optional<Set<MethodSignature>> callTargets(
+      @NonNull MethodSignature caller, @NonNull InvokableStmt stmt) {
+    return Optional.empty();
+  }
+
   /** The view of the analysis. */
   @NonNull
   default View view() {
@@ -61,7 +77,32 @@ public interface ImplicitCallContext {
   @NonNull
   static ImplicitCallContext of(
       @NonNull MethodLookup methodLookup, @NonNull Predicate<SootMethod> isAnalyzed) {
+    return of(methodLookup, isAnalyzed, (caller, stmt) -> Optional.empty());
+  }
+
+  /**
+   * Returns a context with the given lookup, the given test for analyzed methods, and the given
+   * targets of calls.
+   *
+   * @param methodLookup the method lookup of the analysis
+   * @param isAnalyzed whether the analysis follows calls into a method
+   * @param callTargets the methods that the analysis dispatches a call in a method to, see {@link
+   *     #callTargets}
+   */
+  @NonNull
+  static ImplicitCallContext of(
+      @NonNull MethodLookup methodLookup,
+      @NonNull Predicate<SootMethod> isAnalyzed,
+      @NonNull BiFunction<MethodSignature, InvokableStmt, Optional<Set<MethodSignature>>>
+          callTargets) {
     return new ImplicitCallContext() {
+      @Override
+      @NonNull
+      public Optional<Set<MethodSignature>> callTargets(
+          @NonNull MethodSignature caller, @NonNull InvokableStmt stmt) {
+        return callTargets.apply(caller, stmt);
+      }
+
       @Override
       @NonNull
       public MethodLookup methodLookup() {
