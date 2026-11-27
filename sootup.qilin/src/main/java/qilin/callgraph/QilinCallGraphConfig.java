@@ -54,7 +54,8 @@ import sootup.core.types.ClassType;
  * <p>A reflection model set on the common stage overrides the {@link PointerAnalysisConfig}'s own
  * {@code reflectionModel}/{@code reflectionLogPath}; if unset, those apply unchanged. Likewise, an
  * invokedynamic resolver set on the common stage overrides the {@link PointerAnalysisConfig}'s own
- * {@code dynamicInvokeResolver}; if unset, that applies unchanged.
+ * {@code dynamicInvokeResolver}; if unset, that applies unchanged. So does an implicit call model
+ * for the {@link PointerAnalysisConfig}'s {@code implicitCallModel} (by default none).
  *
  * <p>The common stage's {@code CallResolver} (pre-dispatch) is <b>not</b> consulted: qilin's own
  * dispatch resolution ({@code qilin.core.VirtualCalls}) doesn't integrate with {@code
@@ -92,6 +93,9 @@ public final class QilinCallGraphConfig implements CallGraphConfig {
     }
     if (common.isDynamicInvokeResolverSet()) {
       configBuilder.dynamicInvokeResolver(common.getDynamicInvokeResolver());
+    }
+    if (common.isImplicitCallModelSet()) {
+      configBuilder.implicitCallModel(common.getImplicitCallModel());
     }
     PointerAnalysisConfig config = configBuilder.build();
     PTA pta = PointerAnalysisFactory.create(common.getView(), mainClass, config);

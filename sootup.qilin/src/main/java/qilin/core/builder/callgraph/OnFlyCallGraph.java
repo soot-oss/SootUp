@@ -67,7 +67,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     MethodSignature tgtSig = e.getTgt().method().getSignature();
     addMethod(srcSig);
     addMethod(tgtSig);
-    addCall(srcSig, tgtSig, e.srcStmt());
+    addCall(srcSig, tgtSig, e.callSite());
     stream.add(e);
 
     Edge position = srcUnitToEdge.get(e.srcUnit());

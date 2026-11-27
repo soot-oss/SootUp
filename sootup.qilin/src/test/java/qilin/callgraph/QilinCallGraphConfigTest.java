@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,16 @@ import qilin.core.config.ContextSensitivity;
 import qilin.test.util.QilinFrameworkTests;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
+import sootup.callgraph.config.CallGraphConfigBuilder;
+import sootup.callgraph.implicit.ImplicitCall;
+import sootup.callgraph.implicit.ImplicitCallModel;
+import sootup.callgraph.implicit.ImplicitCallTarget;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.reflection.TamiflexReflectionModel;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.core.views.View;
 
 /**
@@ -97,6 +104,76 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
             mainClassType,
             new TamiflexReflectionModel(view, refLogPath + File.separator + "Reflection.log"));
     assertTrue(with.callTargetsFrom(main).contains(target));
+  }
+
+  private static final String IMPLICIT = "qilin.microben.core.implicit.ImplicitCall";
+
+  private MethodSignature implicitMethod(String className, String name, List<String> params) {
+    return view.getIdentifierFactory()
+        .getMethodSignature(IMPLICIT + className, name, "void", params);
+  }
+
+  private CallGraph implicitCallGraph(ImplicitCallModel model) {
+    CallGraphConfigBuilder builder = CallGraphConfig.builder().view(view);
+    if (model != null) {
+      builder.implicitCallModel(model);
+    }
+    return builder
+        .into(QilinCallGraphConfig::from)
+        .mainClass(view.getIdentifierFactory().getClassType(IMPLICIT))
+        .pointerAnalysisConfig(configBuilder(ContextSensitivity.insensitive()))
+        .build()
+        .computeCallGraph();
+  }
+
+  /**
+   * An implicit call model set on the common stage reaches qilin: implicit calls are dispatched on
+   * the points-to set of their receiver and attributed to the causing statement.
+   */
+  @Test
+  public void testCommonImplicitCallModel() {
+    MethodSignature main = implicitMethod("", "main", List.of("java.lang.String[]"));
+    MethodSignature submit = implicitMethod("$Scheduler", "submit", List.of(IMPLICIT + "$Job"));
+    MethodSignature passedWork = implicitMethod("$Passed", "work", List.of());
+    MethodSignature notPassedWork = implicitMethod("$NotPassed", "work", List.of());
+    MethodSignature workerRun = implicitMethod("$Worker", "run", List.of());
+    MethodSignature taskRun = implicitMethod("$Task", "run", List.of());
+    List<ImplicitCall> rules = new ArrayList<>();
+    rules.add(
+        new ImplicitCall(
+            submit,
+            false,
+            List.of(
+                new ImplicitCallTarget.Direct(
+                    0,
+                    view.getIdentifierFactory()
+                        .getMethodSubSignature("work", VoidType.getInstance(), List.of())))));
+    ImplicitCallModel submitCallsWork = ImplicitCallModel.of(rules);
+    ImplicitCallModel withThreads =
+        (context, body, stmt) -> {
+          List<AbstractInstanceInvokeExpr> invokes =
+              new ArrayList<>(submitCallsWork.resolve(context, body, stmt));
+          invokes.addAll(ImplicitCallModel.threadStart().resolve(context, body, stmt));
+          return invokes;
+        };
+
+    CallGraph without = implicitCallGraph(null);
+    assertTrue(without.callTargetsFrom(main).contains(submit));
+    assertFalse(without.containsMethod(passedWork));
+    // qilin's native model of Thread.start0 calls run() already
+    assertTrue(without.containsMethod(workerRun));
+    assertFalse(without.callTargetsFrom(main).contains(workerRun));
+
+    CallGraph cg = implicitCallGraph(withThreads);
+    assertTrue(cg.callTargetsFrom(main).contains(passedWork), "attributed to the submit call");
+    assertFalse(cg.containsMethod(notPassedWork), "not pointed to by the argument");
+    // the start() calls of main, dispatched on the threads they start
+    assertTrue(cg.callTargetsFrom(main).contains(workerRun));
+    assertTrue(cg.containsMethod(taskRun));
+    MethodSignature threadRun =
+        view.getIdentifierFactory()
+            .getMethodSignature("java.lang.Thread", "run", "void", List.of());
+    assertTrue(cg.callTargetsFrom(main).contains(threadRun));
   }
 
   private CallGraph qilinCallGraph(View view, ClassType mainClass, ReflectionModel model) {

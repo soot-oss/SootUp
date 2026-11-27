@@ -74,6 +74,31 @@ public class Solver extends Propagator {
     this.pag.setEdgeQueue(edgeQueue);
     this.eh = pta.getExceptionHandler();
     this.pta = pta;
+    this.cgb.getImplicitCalls().ifPresent(calls -> calls.setRegister(this::recordImplicitCall));
+  }
+
+  /**
+   * Synthetic statements of implicit calls, recorded as call sites in {@link #processStmts}: they
+   * arise while the call sites of a receiver are dispatched, and may have the same receiver.
+   */
+  private final List<ImplicitCallSite> pendingImplicitCalls = new ArrayList<>();
+
+  private record ImplicitCallSite(ContextMethod m, InvokableStmt s) {}
+
+  private void recordImplicitCall(ContextMethod m, InvokableStmt s) {
+    pendingImplicitCalls.add(new ImplicitCallSite(m, s));
+  }
+
+  /** Records a synthetic statement of an implicit call as a virtual call site. */
+  private void recordImplicitCallSite(ContextMethod m, InvokableStmt s) {
+    AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) s.getInvokeExpr().orElseThrow();
+    VarNode recNode = cgb.getReceiverVarNode(iie.getBase(), m);
+    VirtualCallSite site =
+        new VirtualCallSite(
+            recNode, s, m, iie, iie.getMethodSignature().getSubSignature(), Edge.ieToKind(iie));
+    if (cgb.recordVirtualCallSite(recNode, site)) {
+      virtualCallSiteQueue.add(site);
+    }
   }
 
   @Override
@@ -116,6 +141,7 @@ public class Solver extends Propagator {
   }
 
   public void processStmts(Iterator<ContextMethod> newRMs) {
+    flushImplicitCalls();
     while (newRMs.hasNext()) {
       ContextMethod momc = newRMs.next();
       SootMethod method = momc.method();
@@ -148,8 +174,19 @@ public class Solver extends Propagator {
             sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
       }
       recordCallStmts(momc, mpag.getInvokeStmts());
+      cgb.getImplicitCalls()
+          .ifPresent(calls -> calls.record(momc, mpag.body, mpag.getInvokeStmts()));
       recordThrowStmts(momc, mpag.stmt2Handlers.keySet());
     }
+    flushImplicitCalls();
+  }
+
+  private void flushImplicitCalls() {
+    for (int i = 0; i < pendingImplicitCalls.size(); i++) {
+      ImplicitCallSite site = pendingImplicitCalls.get(i);
+      recordImplicitCallSite(site.m(), site.s());
+    }
+    pendingImplicitCalls.clear();
   }
 
   private void recordCallStmts(ContextMethod m, Collection<InvokableStmt> units) {
