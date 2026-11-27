@@ -22,10 +22,14 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,6 +78,12 @@ public class PointsToAnalysis {
   private final NodeFactory nodeFactory;
   private final Map<Node, Set<AllocationNode>> pointsTo = new HashMap<>();
   private final Map<HeapKey, Set<AllocationNode>> heap = new HashMap<>();
+
+  /**
+   * With {@code SparkOptions#isSimplifySccs()}, the node that stands for each other node of its
+   * strongly connected component of assignment edges. A node that is not a key stands for itself.
+   */
+  private final Map<Node, Node> representatives = new HashMap<>();
 
   private PointsToAnalysis(Solver solver) {
     this.solver = solver;
@@ -226,6 +236,9 @@ public class PointsToAnalysis {
 
   private void propagate() {
     Digraph<Node, PAGEdge> g = solver.getPag().getDelegate();
+    if (solver.getSparkOptions().isSimplifySccs()) {
+      collapseAssignmentCycles(g);
+    }
 
     // Seed via ALLOCATION edges: pts(target) |= {source}
     EdgeIterator<PAGEdge> seedIt = g.edgeIterator();
@@ -248,7 +261,11 @@ public class PointsToAnalysis {
         Node src = g.getVertexLabel(edge.source());
         Node tgt = g.getVertexLabel(edge.target());
         switch (e.getEdgeType()) {
-          case ASSIGNMENT -> changed |= unionInto(pointsTo, tgt, ptsOf(src));
+          case ASSIGNMENT -> {
+            if (!representative(src).equals(representative(tgt))) {
+              changed |= unionInto(tgt, ptsOf(src));
+            }
+          }
           case STORE -> {
             if (tgt instanceof InstanceFieldRefNode ifr) {
               Set<AllocationNode> srcPts = ptsOf(src);
@@ -267,7 +284,7 @@ public class PointsToAnalysis {
               for (AllocationNode o : new ArrayList<>(ptsOf(ifr.getBase()))) {
                 Set<AllocationNode> stored = heap.get(new HeapKey(o, ifr.getField()));
                 if (stored != null && !stored.isEmpty()) {
-                  changed |= unionInto(pointsTo, tgt, stored);
+                  changed |= unionInto(tgt, stored);
                 }
               }
             }
@@ -278,21 +295,112 @@ public class PointsToAnalysis {
         }
       }
     }
+    // every node of a collapsed component shares the set of its representative
+    representatives.forEach(
+        (node, representative) -> {
+          Set<AllocationNode> pts = pointsTo.get(representative);
+          if (pts != null) {
+            pointsTo.put(node, pts);
+          }
+        });
+  }
+
+  /**
+   * Lets one node stand for each strongly connected component of assignment edges, like Soot's
+   * {@code SCCCollapser}: the nodes of such a cycle always get the same points-to set, so it is
+   * propagated once instead of around the cycle. Soot merges only nodes of the same type, unless
+   * {@code ignore-types-for-sccs} is set, because it filters points-to sets by the declared type of
+   * each node; this propagation does not filter them, so collapsing does not change any result.
+   */
+  private void collapseAssignmentCycles(Digraph<Node, PAGEdge> g) {
+    Map<Integer, List<Integer>> successors = new HashMap<>();
+    EdgeIterator<PAGEdge> it = g.edgeIterator();
+    while (it.hasNext()) {
+      Edge<PAGEdge> edge = it.next();
+      if (edge.label().getEdgeType() == PAGEdge.EdgeType.ASSIGNMENT
+          && edge.source() != edge.target()) {
+        successors.computeIfAbsent(edge.source(), v -> new ArrayList<>()).add(edge.target());
+      }
+    }
+
+    // Tarjan's algorithm, with an explicit stack of (vertex, next successor) frames
+    Map<Integer, Integer> index = new HashMap<>();
+    Map<Integer, Integer> lowLink = new HashMap<>();
+    Deque<Integer> component = new ArrayDeque<>();
+    Set<Integer> onComponentStack = new HashSet<>();
+    Deque<int[]> frames = new ArrayDeque<>();
+    for (int root : successors.keySet()) {
+      if (index.containsKey(root)) {
+        continue;
+      }
+      frames.push(enter(root, index, lowLink, component, onComponentStack));
+      while (!frames.isEmpty()) {
+        int[] frame = frames.peek();
+        int v = frame[0];
+        List<Integer> out = successors.getOrDefault(v, List.of());
+        if (frame[1] < out.size()) {
+          int w = out.get(frame[1]++);
+          if (!index.containsKey(w)) {
+            frames.push(enter(w, index, lowLink, component, onComponentStack));
+          } else if (onComponentStack.contains(w)) {
+            lowLink.put(v, Math.min(lowLink.get(v), index.get(w)));
+          }
+          continue;
+        }
+        frames.pop();
+        if (!frames.isEmpty()) {
+          int parent = frames.peek()[0];
+          lowLink.put(parent, Math.min(lowLink.get(parent), lowLink.get(v)));
+        }
+        if (lowLink.get(v).equals(index.get(v))) {
+          Node representative = g.getVertexLabel(v);
+          int w;
+          do {
+            w = component.pop();
+            onComponentStack.remove(w);
+            if (w != v) {
+              representatives.put(g.getVertexLabel(w), representative);
+            }
+          } while (w != v);
+        }
+      }
+    }
+  }
+
+  private static int[] enter(
+      int v,
+      Map<Integer, Integer> index,
+      Map<Integer, Integer> lowLink,
+      Deque<Integer> component,
+      Set<Integer> onComponentStack) {
+    int number = index.size();
+    index.put(v, number);
+    lowLink.put(v, number);
+    component.push(v);
+    onComponentStack.add(v);
+    return new int[] {v, 0};
+  }
+
+  private Node representative(Node n) {
+    if (representatives.isEmpty()) {
+      // no cycles collapsed: each node stands for itself
+      return n;
+    }
+    return representatives.getOrDefault(n, n);
   }
 
   private Set<AllocationNode> ptsOf(Node n) {
-    Set<AllocationNode> s = pointsTo.get(n);
+    Set<AllocationNode> s = pointsTo.get(representative(n));
     return s == null ? Collections.emptySet() : s;
   }
 
   private boolean addPts(Node n, AllocationNode a) {
-    return pointsTo.computeIfAbsent(n, k -> new LinkedHashSet<>()).add(a);
+    return pointsTo.computeIfAbsent(representative(n), k -> new LinkedHashSet<>()).add(a);
   }
 
-  private static boolean unionInto(
-      Map<Node, Set<AllocationNode>> map, Node n, Set<AllocationNode> incoming) {
+  private boolean unionInto(Node n, Set<AllocationNode> incoming) {
     if (incoming.isEmpty()) return false;
-    return map.computeIfAbsent(n, k -> new LinkedHashSet<>()).addAll(incoming);
+    return pointsTo.computeIfAbsent(representative(n), k -> new LinkedHashSet<>()).addAll(incoming);
   }
 
   private boolean unionIntoHeap(
