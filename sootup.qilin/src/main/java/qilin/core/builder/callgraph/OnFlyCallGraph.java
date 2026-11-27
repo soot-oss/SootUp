@@ -33,6 +33,7 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphDifference;
 import sootup.callgraph.CallSequenceComparator;
 import sootup.callgraph.MutableCallGraph;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -67,7 +68,14 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     MethodSignature tgtSig = e.getTgt().method().getSignature();
     addMethod(srcSig);
     addMethod(tgtSig);
-    addCall(srcSig, tgtSig, e.srcStmt());
+    addCall(
+        new Call(
+            srcSig,
+            tgtSig,
+            e.callSite(),
+            e.callSite() == e.srcUnit()
+                ? null
+                : (AbstractInstanceInvokeExpr) e.srcUnit().getInvokeExpr().orElseThrow()));
     stream.add(e);
 
     Edge position = srcUnitToEdge.get(e.srcUnit());
@@ -431,15 +439,16 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt stmt) {
-    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> new HashSet<>());
-    if (targets.add(new Call(sourceMethod, targetMethod, stmt))) {
-      ++callCnt;
-    }
+    addCall(new Call(sourceMethod, targetMethod, stmt));
   }
 
   @Override
   public void addCall(@NonNull Call call) {
-    addCall(call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt());
+    Set<Call> targets =
+        this.calls.computeIfAbsent(call.sourceMethodSignature(), k -> new HashSet<>());
+    if (targets.add(call)) {
+      ++callCnt;
+    }
   }
 
   @NonNull
@@ -489,7 +498,14 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       InvokableStmt stmt) {
-    return containsCall(new Call(sourceMethod, targetMethod, stmt));
+    Set<Call> c = this.calls.get(sourceMethod);
+    // made by the statement itself or implicitly
+    return c != null
+        && c.stream()
+            .anyMatch(
+                call ->
+                    call.targetMethodSignature().equals(targetMethod)
+                        && call.invokableStmt().equals(stmt));
   }
 
   @Override

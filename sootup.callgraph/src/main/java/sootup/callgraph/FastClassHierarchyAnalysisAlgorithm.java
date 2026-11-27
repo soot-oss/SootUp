@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
@@ -164,6 +165,24 @@ public class FastClassHierarchyAnalysisAlgorithm extends ClassHierarchyAnalysisA
         seedEntryPointClinits,
         reflectionModel,
         dynamicInvokeResolver);
+  }
+
+  public FastClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver,
+      @NonNull ImplicitCallModel implicitCallModel) {
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver,
+        implicitCallModel);
   }
 
   @Override

@@ -48,7 +48,8 @@ public final class FastChaCallGraphConfig extends ChaCallGraphConfig {
         common.getVirtualCallResolver(),
         common.getSeedEntryPointClinits(true),
         common.getReflectionModel(),
-        common.getDynamicInvokeResolver());
+        common.getDynamicInvokeResolver(),
+        common.getImplicitCallModel());
   }
 
   public static final class Builder {

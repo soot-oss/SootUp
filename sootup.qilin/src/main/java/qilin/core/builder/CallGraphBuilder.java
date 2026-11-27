@@ -35,6 +35,7 @@ import qilin.util.queue.QueueReader;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
 import sootup.callgraph.MethodLookup;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -83,6 +84,9 @@ public class CallGraphBuilder {
 
   protected OnFlyCallGraph cicg;
 
+  /** The implicit calls of the configured model; null if there is none. */
+  private final ImplicitCallSites implicitCalls;
+
   /** Shared cached JVM method lookup (dispatch and static resolution). */
   public MethodLookup getMethodLookup() {
     return virtualCalls.getMethodLookup();
@@ -98,6 +102,17 @@ public class CallGraphBuilder {
     methodToInvokeStmt = new HashMap<>();
     reachMethods = new HashSet<>();
     calledges = new HashSet<>();
+    ImplicitCallModel model = pta.getConfig().getImplicitCallModel();
+    implicitCalls = model == null ? null : new ImplicitCallSites(model, getMethodLookup());
+  }
+
+  /** The implicit calls of the configured model, empty if there is none. */
+  public Optional<ImplicitCallSites> getImplicitCalls() {
+    return Optional.ofNullable(implicitCalls);
+  }
+
+  private InvokableStmt callSiteOf(InvokableStmt stmt) {
+    return implicitCalls == null ? stmt : implicitCalls.callSiteOf(stmt);
   }
 
   public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
@@ -153,7 +168,8 @@ public class CallGraphBuilder {
                     new ContextMethod(src, pta.emptyContext()),
                     e.srcUnit(),
                     new ContextMethod(tgt, pta.emptyContext()),
-                    e.kind()));
+                    e.kind(),
+                    e.callSite()));
           }
         });
   }
@@ -224,9 +240,12 @@ public class CallGraphBuilder {
     Context tgtContext =
         pta.createCalleeContext(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
-    Edge edge = new Edge(caller, callStmt, cstarget, Kind.LAMBDA);
+    Edge edge = new Edge(caller, callStmt, cstarget, Kind.LAMBDA, callSiteOf(callStmt));
     if (!calledges.add(edge)) {
       return;
+    }
+    if (implicitCalls != null) {
+      implicitCalls.onEdge(edge);
     }
     if (reachMethods.add(cstarget)) {
       rmQueue.add(cstarget);
@@ -304,7 +323,7 @@ public class CallGraphBuilder {
     Context tgtContext =
         pta.createCalleeContext(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
-    handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
+    handleCallEdge(new Edge(caller, callStmt, cstarget, kind, callSiteOf(callStmt)));
     PagNode thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, cstarget.context());
     pag.addEdge(receiverNode, thisRef);
@@ -413,6 +432,9 @@ public class CallGraphBuilder {
 
   protected void handleCallEdge(Edge edge) {
     if (calledges.add(edge)) {
+      if (implicitCalls != null) {
+        implicitCalls.onEdge(edge);
+      }
       ContextMethod callee = edge.getTgt();
       if (reachMethods.add(callee)) {
         rmQueue.add(callee);

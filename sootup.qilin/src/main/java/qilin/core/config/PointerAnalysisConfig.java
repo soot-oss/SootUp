@@ -18,6 +18,7 @@
 
 package qilin.core.config;
 
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -61,6 +62,7 @@ public final class PointerAnalysisConfig {
   private final ReflectionModel reflectionModel;
   private final boolean resolveDynamicInvoke;
   private final DynamicInvokeResolver dynamicInvokeResolver;
+  private final ImplicitCallModel implicitCallModel;
   private final boolean preAnalysisOnly;
   private final boolean ctxDebloating;
   private final DebloatApproach debloatApproach;
@@ -87,6 +89,7 @@ public final class PointerAnalysisConfig {
     this.reflectionModel = b.reflectionModel;
     this.resolveDynamicInvoke = b.resolveDynamicInvoke;
     this.dynamicInvokeResolver = b.dynamicInvokeResolver;
+    this.implicitCallModel = b.implicitCallModel;
     this.preAnalysisOnly = b.preAnalysisOnly;
     this.ctxDebloating = b.ctxDebloating;
     this.debloatApproach = b.debloatApproach;
@@ -194,6 +197,15 @@ public final class PointerAnalysisConfig {
     return dynamicInvokeResolver;
   }
 
+  /**
+   * Model of the calls that methods perform implicitly, e.g. {@code Thread.start()} calling {@code
+   * run()}, or {@code null} (default) for none. Implicit calls are dispatched on the points-to set
+   * of their receiver; their edges are attributed to the causing statement.
+   */
+  public ImplicitCallModel getImplicitCallModel() {
+    return implicitCallModel;
+  }
+
   public boolean isPreAnalysisOnly() {
     return preAnalysisOnly;
   }
@@ -259,6 +271,7 @@ public final class PointerAnalysisConfig {
     private boolean resolveDynamicInvoke = true;
     private DynamicInvokeResolver dynamicInvokeResolver =
         DynamicInvokeResolver.bootstrapMethodHandles();
+    private ImplicitCallModel implicitCallModel = null;
     private boolean preAnalysisOnly = false;
     private boolean ctxDebloating = false;
     private DebloatApproach debloatApproach = DebloatApproach.CONCH;
@@ -337,6 +350,12 @@ public final class PointerAnalysisConfig {
     /** Shared call-graph invokedynamic resolver; see {@link #getDynamicInvokeResolver()}. */
     public Builder dynamicInvokeResolver(DynamicInvokeResolver dynamicInvokeResolver) {
       this.dynamicInvokeResolver = dynamicInvokeResolver;
+      return this;
+    }
+
+    /** Shared call-graph implicit call model; see {@link #getImplicitCallModel()}. */
+    public Builder implicitCallModel(ImplicitCallModel implicitCallModel) {
+      this.implicitCallModel = implicitCallModel;
       return this;
     }
 

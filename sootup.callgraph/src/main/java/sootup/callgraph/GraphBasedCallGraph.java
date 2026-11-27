@@ -47,6 +47,9 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    */
   @NonNull private final Set<Call> calls;
 
+  /** The calls of the graph without their implicit invocation, for {@link #containsCall}. */
+  @NonNull private final Set<Call> callSites;
+
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   @SuppressWarnings("unchecked")
   public GraphBasedCallGraph(@NonNull List<MethodSignature> entryMethods) {
@@ -62,10 +65,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     this.graph = graph;
     this.entryMethods = entryMethods;
     this.calls = new HashSet<>();
+    this.callSites = new HashSet<>();
     EdgeIterator<Call> it = graph.edgeIterator();
     while (it.hasNext()) {
       it.next();
       calls.add(it.getLabel());
+      callSites.add(callSite(it.getLabel()));
     }
   }
 
@@ -101,20 +106,25 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     int target = vertexOrAdd(call.targetMethodSignature());
     graph.addLabeledEdge(source, target, call);
     calls.add(call);
+    callSites.add(callSite(call));
   }
 
   @Override
-  public boolean addCallIfAbsent(
-      @NonNull MethodSignature sourceMethod,
-      @NonNull MethodSignature targetMethod,
-      @NonNull InvokableStmt invokableStmt) {
-    Call call = new Call(sourceMethod, targetMethod, invokableStmt);
+  public boolean addCallIfAbsent(@NonNull Call call) {
     if (!calls.add(call)) {
       return false;
     }
     graph.addLabeledEdge(
         vertexOrAdd(call.sourceMethodSignature()), vertexOrAdd(call.targetMethodSignature()), call);
+    callSites.add(callSite(call));
     return true;
+  }
+
+  /** The call without its implicit invocation */
+  private static Call callSite(@NonNull Call call) {
+    return call.isImplicit()
+        ? new Call(call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt())
+        : call;
   }
 
   /** Returns the vertex of the given method, adding the method if it is not in the graph yet. */
@@ -204,7 +214,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt invokableStmt) {
-    return containsCall(new Call(sourceMethod, targetMethod, invokableStmt));
+    return callSites.contains(new Call(sourceMethod, targetMethod, invokableStmt));
   }
 
   @Override

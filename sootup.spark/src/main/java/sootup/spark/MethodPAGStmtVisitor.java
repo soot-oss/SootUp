@@ -198,7 +198,10 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
         }
       }
     }
-    callGraph.callTargetsFrom(methodSignature).stream()
+    callGraph.callsFrom(methodSignature).stream()
+        .filter(call -> !call.isImplicit())
+        .map(CallGraph.Call::targetMethodSignature)
+        .distinct()
         .filter(targetMethodSig -> !lambdaTargets.contains(targetMethodSig))
         .filter(
             targetMethodSig ->
@@ -206,6 +209,12 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                     .getSubSignature()
                     .equals(expr.getMethodSignature().getSubSignature()))
         .forEach(targetMethodSig -> installCallEdges(expr, lhs, targetMethodSig));
+    // implicit calls of the statement: their invocation gives receiver and arguments
+    for (CallGraph.Call call : callGraph.callsFrom(methodSignature)) {
+      if (call.isImplicit() && call.invokableStmt() == stmt) {
+        installCallEdges(call.implicitInvocation(), Optional.empty(), call.targetMethodSignature());
+      }
+    }
   }
 
   private void handleInvokeExprOtf(

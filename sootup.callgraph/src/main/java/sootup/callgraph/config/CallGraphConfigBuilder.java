@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
@@ -67,6 +68,8 @@ public final class CallGraphConfigBuilder {
 
   /** {@code null} means "not explicitly set" - see {@link #dynamicInvokeResolver}. */
   private DynamicInvokeResolver dynamicInvokeResolver;
+
+  private ImplicitCallModel implicitCallModel;
 
   public CallGraphConfigBuilder() {}
 
@@ -136,6 +139,16 @@ public final class CallGraphConfigBuilder {
     return this;
   }
 
+  /**
+   * Sets the model of calls that methods perform implicitly, e.g. {@code Thread.start()} calling
+   * {@code run()}. Defaults to {@link ImplicitCallModel#threadStart()}.
+   */
+  @NonNull
+  public CallGraphConfigBuilder implicitCallModel(@NonNull ImplicitCallModel implicitCallModel) {
+    this.implicitCallModel = implicitCallModel;
+    return this;
+  }
+
   @NonNull
   private CommonCallGraphSettings snapshot() {
     if (view == null) {
@@ -150,7 +163,8 @@ public final class CallGraphConfigBuilder {
         virtualCallResolver,
         seedEntryPointClinits,
         reflectionModel,
-        dynamicInvokeResolver);
+        dynamicInvokeResolver,
+        implicitCallModel);
   }
 
   /** Transitions to the CHA-specific stage. */

@@ -33,6 +33,21 @@ public class SparkOptions {
     return SparkOptions.builder().build();
   }
 
+  /**
+   * Options that emulate Variable Type Analysis (Sundaresan et al., 2000), like Soot's {@code vta}
+   * option: field-based ({@code ignoreBaseObjects}), one abstract object per type ({@code
+   * typesForSites}), the points-to sets computed on a CHA call graph, which they then narrow (no
+   * {@code onFlyCallGraph}), and cycles of assignments collapsed ({@code simplifySccs}).
+   */
+  public static SparkOptions vta() {
+    return SparkOptions.builder()
+        .ignoreBaseObjects(true)
+        .typesForSites(true)
+        .onFlyCallGraph(false)
+        .simplifySccs(true)
+        .build();
+  }
+
   @Builder.Default boolean ignoreBaseObjects = false; // Field-based vs. field-sensitive
   @Builder.Default boolean parmsAsFields = false; // Represent params as field ref nodes
   @Builder.Default boolean returnsAsFields = false; // Represent returns as field ref nodes
@@ -43,4 +58,11 @@ public class SparkOptions {
   @Builder.Default boolean simulateNatives = true; // Model standard library native methods
   @Builder.Default boolean simpleEdgesBidirectional = false; // For unification-based analysis
   @Builder.Default boolean onFlyCallGraph = false; // Build interprocedural edges dynamically
+
+  /**
+   * Propagates the points-to set of each cycle of assignments once, for all its variables, like
+   * Soot's {@code simplify-sccs}. The results stay the same. As in Soot, only without {@code
+   * onFlyCallGraph}.
+   */
+  @Builder.Default boolean simplifySccs = false;
 }

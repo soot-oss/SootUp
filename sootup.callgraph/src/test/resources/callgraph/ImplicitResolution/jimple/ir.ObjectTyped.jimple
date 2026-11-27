@@ -1,0 +1,16 @@
+class ir.ObjectTyped extends java.lang.Object
+{
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] l0;
+        java.lang.Object l1;
+        ir.Action $r0;
+
+        l0 := @parameter0: java.lang.String[];
+        $r0 = new ir.Action;
+        specialinvoke $r0.<ir.Action: void <init>()>();
+        l1 = $r0;
+        staticinvoke <java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedAction)>(l1);
+        return;
+    }
+}

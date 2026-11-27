@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
@@ -236,13 +237,39 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       boolean seedEntryPointClinits,
       @NonNull ReflectionModel reflectionModel,
       @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    this(
+        view,
+        preInstantiatedClasses,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver,
+        ImplicitCallModel.threadStart());
+  }
+
+  /**
+   * Widest RTA constructor: like {@link #RapidTypeAnalysisAlgorithm(View, Set, CallResolver,
+   * VirtualCallResolver, boolean, ReflectionModel, DynamicInvokeResolver)}, plus an {@link
+   * ImplicitCallModel} for calls that methods perform implicitly.
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver,
+      @NonNull ImplicitCallModel implicitCallModel) {
     super(
         view,
         callResolver,
         virtualCallResolver,
         seedEntryPointClinits,
         reflectionModel,
-        dynamicInvokeResolver);
+        dynamicInvokeResolver,
+        implicitCallModel);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
@@ -452,7 +479,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                                 call.sourceMethodSignature(),
                                 sootMethod.getSignature(),
                                 call.invokableStmt())))
-        .forEach(call -> addCallToCG(call, cg, workList));
+        .toList()
+        .forEach(
+            call -> {
+              addCallToCG(call, cg, workList);
+              // the call has a new target, which can change its implicit calls
+              reapplyImplicitCalls(
+                  call.sourceMethodSignature(), call.invokableStmt(), cg, workList);
+            });
     // can be removed because the instantiated class will be considered in future resolves
     ignoredCalls.removeAll(classType);
   }

@@ -1,6 +1,7 @@
 package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -356,6 +357,20 @@ public class StaticSingleAssignmentFormerTest {
             + "}\n";
 
     assertEquals(expectedBodyString, builder.build().toString());
+  }
+
+  /** A local which is declared but never assigned needs no phi statement. */
+  @Test
+  public void testSSAWithLocalWithoutDefinition() {
+    Body.BodyBuilder builder = createBody();
+    Local undefined = JavaJimple.newLocal("l4", intType);
+    builder.setLocals(ImmutableUtils.immutableSet(l0, l1, l2, l3, undefined));
+
+    new StaticSingleAssignmentFormer()
+        .interceptBody(builder, new JavaView(Collections.emptyList()));
+
+    assertTrue(builder.getLocals().contains(undefined));
+    assertTrue(builder.build().toString().contains("l2#4 = phi(l2#2, l2#10);"));
   }
 
   /**

@@ -25,6 +25,7 @@ package sootup.callgraph.config;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
@@ -49,6 +50,7 @@ public final class CommonCallGraphSettings {
   @Nullable private final Boolean seedEntryPointClinits;
   @Nullable private final ReflectionModel reflectionModel;
   @Nullable private final DynamicInvokeResolver dynamicInvokeResolver;
+  @Nullable private final ImplicitCallModel implicitCallModel;
 
   CommonCallGraphSettings(
       @NonNull View view,
@@ -57,7 +59,8 @@ public final class CommonCallGraphSettings {
       @NonNull VirtualCallResolver virtualCallResolver,
       @Nullable Boolean seedEntryPointClinits,
       @Nullable ReflectionModel reflectionModel,
-      @Nullable DynamicInvokeResolver dynamicInvokeResolver) {
+      @Nullable DynamicInvokeResolver dynamicInvokeResolver,
+      @Nullable ImplicitCallModel implicitCallModel) {
     this.view = view;
     this.entryPoints = entryPoints;
     this.callResolver = callResolver;
@@ -65,6 +68,7 @@ public final class CommonCallGraphSettings {
     this.seedEntryPointClinits = seedEntryPointClinits;
     this.reflectionModel = reflectionModel;
     this.dynamicInvokeResolver = dynamicInvokeResolver;
+    this.implicitCallModel = implicitCallModel;
   }
 
   @NonNull
@@ -134,5 +138,15 @@ public final class CommonCallGraphSettings {
    */
   public boolean isDynamicInvokeResolverSet() {
     return dynamicInvokeResolver != null;
+  }
+
+  /** The model of implicit calls, {@link ImplicitCallModel#threadStart()} if none was set */
+  @NonNull
+  public ImplicitCallModel getImplicitCallModel() {
+    return implicitCallModel != null ? implicitCallModel : ImplicitCallModel.threadStart();
+  }
+
+  public boolean isImplicitCallModelSet() {
+    return implicitCallModel != null;
   }
 }
