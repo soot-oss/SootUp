@@ -29,6 +29,7 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.CallResolver;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -67,10 +68,15 @@ import sootup.core.views.View;
  * same model and resolver instances, else reflective/invokedynamic edges and PAG disagree.
  *
  * <p>{@code implicitCallModel(...)} (default {@link ImplicitCallModel#threadStart()}): calls that
- * methods perform implicitly, e.g. {@code Thread.start()} calling {@code run()}. Non-OTF only: the
- * implicit receiver's points-to set decides which implicit edges stay, and its objects flow into
- * the callee. A pre-built {@code callGraph} must be built with the same model. OTF mode does not
- * model implicit calls yet.
+ * methods perform implicitly, e.g. {@code Thread.start()} calling {@code run()}. They are
+ * dispatched on the points-to set of their receiver, whose objects flow into the callee, and
+ * attributed to the causing statement. Without OTF, the call graph must contain them: Spark's own
+ * CHA does; build a pre-built {@code callGraph} with the same model. Edges of a pre-built graph
+ * that neither a call nor Spark's model explains are kept unfiltered, with a warning.
+ *
+ * <p>{@code callResolver(...)} (default {@code DefaultCallResolver}): without OTF, the methods
+ * whose calls Spark's own CHA follows; the implicit call model also asks it. Pass the resolver a
+ * pre-built {@code callGraph} was built with. OTF mode follows every concrete method.
  */
 public class Spark {
 
@@ -87,7 +93,8 @@ public class Spark {
       CallGraph callGraph,
       ReflectionModel reflectionModel,
       DynamicInvokeResolver dynamicInvokeResolver,
-      ImplicitCallModel implicitCallModel) {
+      ImplicitCallModel implicitCallModel,
+      CallResolver callResolver) {
     this.solver =
         Solver.builder()
             .view(view)
@@ -97,6 +104,7 @@ public class Spark {
             .reflectionModel(reflectionModel)
             .dynamicInvokeResolver(dynamicInvokeResolver)
             .implicitCallModel(implicitCallModel)
+            .callResolver(callResolver)
             .build();
   }
 
