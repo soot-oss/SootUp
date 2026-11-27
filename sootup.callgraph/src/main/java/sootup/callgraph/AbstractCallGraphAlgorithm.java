@@ -504,7 +504,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // promotion: an earlier edge left this target unexpanded, but this edge wants it expanded
       frontier.workList.push(target);
     }
-    cg.addCallIfAbsent(source, target, callSiteOf(invokeStmt));
+    cg.addCallIfAbsent(callOf(source, target, invokeStmt));
   }
 
   /**
@@ -550,7 +550,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       cg.addMethod(target);
       workList.push(target);
     }
-    cg.addCallIfAbsent(source, target, callSiteOf(invokeStmt));
+    cg.addCallIfAbsent(callOf(source, target, invokeStmt));
   }
 
   /**
@@ -772,8 +772,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * The targets that the call graph has for the call at {@code stmt}: the calls attributed to the
-   * statement with the subsignature of its invocation, which leaves out its implicit calls
+   * The targets that the call graph has for the call at {@code stmt}: the calls that the statement
+   * makes itself, not its implicit calls, with the subsignature of its invocation
    */
   @NonNull
   private static Set<MethodSignature> callTargetsAt(
@@ -786,6 +786,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Set<MethodSignature> targets = new HashSet<>();
     for (Call call : cg.callsFrom(caller)) {
       if (call.invokableStmt() == stmt
+          && !call.isImplicit()
           && call.targetMethodSignature().getSubSignature().equals(subSignature)) {
         targets.add(call.targetMethodSignature());
       }
@@ -806,6 +807,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * Returns the statement to which the edges of the given resolved statement are attributed: the
    * causing call statement for implicit invocations, otherwise the statement itself.
    */
+  @NonNull
+  private Call callOf(
+      @NonNull MethodSignature source,
+      @NonNull MethodSignature target,
+      @NonNull InvokableStmt resolvedStmt) {
+    InvokableStmt callSite = implicitCallSites.get(resolvedStmt);
+    return callSite == null
+        ? new Call(source, target, resolvedStmt)
+        : new Call(
+            source,
+            target,
+            callSite,
+            (AbstractInstanceInvokeExpr) resolvedStmt.getInvokeExpr().orElseThrow());
+  }
+
   @NonNull
   protected InvokableStmt callSiteOf(@NonNull InvokableStmt stmt) {
     return implicitCallSites.getOrDefault(stmt, stmt);
@@ -1130,7 +1146,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (updated.containsMethod(overriddenMethodSig)) {
                 for (Call calls : updated.callsTo(overriddenMethodSig)) {
                   updated.addCall(
-                      calls.sourceMethodSignature(), overridingMethodSig, calls.invokableStmt());
+                      new Call(
+                          calls.sourceMethodSignature(),
+                          overridingMethodSig,
+                          calls.invokableStmt(),
+                          calls.implicitInvocation()));
                 }
               }
             });

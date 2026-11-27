@@ -167,6 +167,14 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
     CallGraph cg = implicitCallGraph(withThreads);
     assertTrue(cg.callTargetsFrom(main).contains(passedWork), "attributed to the submit call");
     assertFalse(cg.containsMethod(notPassedWork), "not pointed to by the argument");
+    assertTrue(
+        cg.callsFrom(main).stream()
+            .filter(call -> call.targetMethodSignature().equals(passedWork))
+            .allMatch(
+                call ->
+                    call.isImplicit()
+                        && call.implicitInvocation().getMethodSignature().getName().equals("work")),
+        "exported with the invocation");
     // the start() calls of main, dispatched on the threads they start
     assertTrue(cg.callTargetsFrom(main).contains(workerRun));
     assertTrue(cg.containsMethod(taskRun));

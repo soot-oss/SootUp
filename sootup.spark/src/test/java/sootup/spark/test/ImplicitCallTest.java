@@ -153,9 +153,9 @@ public class ImplicitCallTest {
             .contains(SparkTestUtil.idFactory.getClassType("ImplicitCall$Picked")));
   }
 
-  /** Implicit calls of a pre-built graph that Spark's model does not give are kept, not dropped */
+  /** A pre-built graph brings its implicit calls: Spark needs no model to follow them precisely */
   @Test
-  public void keepsImplicitCallsOfAnotherModel() {
+  public void followsTheImplicitCallsOfAPreBuiltGraph() {
     CallGraph cha =
         new ClassHierarchyAnalysisAlgorithm(
                 SparkTestUtil.view,
@@ -166,14 +166,22 @@ public class ImplicitCallTest {
                 DynamicInvokeResolver.bootstrapMethodHandles(),
                 callsWork)
             .initialize(List.of(mainSig));
-    CallGraph cg =
+    assertTrue(cha.callTargetsFrom(mainSig).contains(notPassedWork), "CHA calls every Job");
+    Spark spark =
         Spark.builder()
             .view(SparkTestUtil.view)
             .callGraph(cha)
             .implicitCallModel(ImplicitCallModel.none())
-            .build()
-            .getCallGraph();
+            .build();
+    CallGraph cg = spark.getCallGraph();
     assertTrue(cg.callTargetsFrom(mainSig).contains(passedWork));
-    assertTrue(cg.callTargetsFrom(mainSig).contains(notPassedWork));
+    assertFalse(cg.containsMethod(notPassedWork));
+    assertTrue(
+        cg.callsFrom(mainSig).stream()
+            .filter(call -> call.targetMethodSignature().equals(passedWork))
+            .allMatch(CallGraph.Call::isImplicit));
+    assertEquals(
+        Set.of(SparkTestUtil.idFactory.getClassType("ImplicitCall$Passed")),
+        thisTypes(spark, passedWork));
   }
 }

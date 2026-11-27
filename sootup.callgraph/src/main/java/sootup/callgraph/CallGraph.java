@@ -27,16 +27,43 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
+  /**
+   * A call from the source to the target method at a call statement of the source.
+   *
+   * @param sourceMethodSignature the calling method
+   * @param targetMethodSignature the called method
+   * @param invokableStmt the call statement of the source that makes the call
+   * @param implicitInvocation null for a call that the statement makes itself; for an implicit call
+   *     (see {@link sootup.callgraph.implicit.ImplicitCallModel}), the invocation the statement
+   *     performs implicitly: a call on a local of the source whose arguments are the values the
+   *     target receives. Compared by structure ({@link AbstractInstanceInvokeExpr#equivTo}).
+   */
   record Call(
       @NonNull MethodSignature sourceMethodSignature,
       @NonNull MethodSignature targetMethodSignature,
-      @NonNull InvokableStmt invokableStmt) {
+      @NonNull InvokableStmt invokableStmt,
+      @Nullable AbstractInstanceInvokeExpr implicitInvocation) {
+
+    /** A call that the statement makes itself */
+    public Call(
+        @NonNull MethodSignature sourceMethodSignature,
+        @NonNull MethodSignature targetMethodSignature,
+        @NonNull InvokableStmt invokableStmt) {
+      this(sourceMethodSignature, targetMethodSignature, invokableStmt, null);
+    }
+
+    /** Whether the statement makes the call implicitly, see {@link #implicitInvocation()} */
+    public boolean isImplicit() {
+      return implicitInvocation != null;
+    }
 
     /**
      * The line number of the stmt causing the call
@@ -59,7 +86,18 @@ public interface CallGraph {
       Call call = (Call) o;
       return sourceMethodSignature.equals(call.sourceMethodSignature)
           && targetMethodSignature.equals(call.targetMethodSignature)
-          && invokableStmt.equals(call.invokableStmt);
+          && invokableStmt.equals(call.invokableStmt)
+          && (implicitInvocation == null
+              ? call.implicitInvocation == null
+              : implicitInvocation.equivTo(call.implicitInvocation));
+    }
+
+    @Override
+    public int hashCode() {
+      int hash =
+          (sourceMethodSignature.hashCode() * 31 + targetMethodSignature.hashCode()) * 31
+              + invokableStmt.hashCode();
+      return implicitInvocation == null ? hash : hash * 31 + implicitInvocation.equivHashCode();
     }
 
     @Override
@@ -71,6 +109,7 @@ public interface CallGraph {
           + targetMethodSignature
           + " via "
           + invokableStmt
+          + (implicitInvocation == null ? "" : " implicitly " + implicitInvocation)
           + ";";
     }
   }
@@ -156,7 +195,8 @@ public interface CallGraph {
    * @param sourceMethod it defines the source node in the call graph
    * @param targetMethod it defines the target node in the call graph
    * @param invokableStmt it defines the invoke stmt of the call
-   * @return true if the edge is contained in the call graph, otherwise it will be false.
+   * @return true if the call graph contains a call from the source to the target at the statement,
+   *     made by the statement itself or implicitly
    */
   boolean containsCall(
       @NonNull MethodSignature sourceMethod,
@@ -168,7 +208,8 @@ public interface CallGraph {
    * and target method signature which can be nodes in the call graph
    *
    * @param call it defines the requested call in the call graph
-   * @return true if the edge is contained in the call graph, otherwise it will be false.
+   * @return true if the call graph contains this call, including its {@link
+   *     Call#implicitInvocation()}
    */
   boolean containsCall(@NonNull Call call);
 

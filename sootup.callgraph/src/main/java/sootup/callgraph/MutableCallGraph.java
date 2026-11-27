@@ -70,10 +70,20 @@ public interface MutableCallGraph extends CallGraph {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt invokableStmt) {
-    if (containsCall(sourceMethod, targetMethod, invokableStmt)) {
+    return addCallIfAbsent(new Call(sourceMethod, targetMethod, invokableStmt));
+  }
+
+  /**
+   * Adds the given call unless the call graph already contains it, see {@link #containsCall(Call)}.
+   *
+   * @param call the call to add
+   * @return whether the call was added
+   */
+  default boolean addCallIfAbsent(@NonNull Call call) {
+    if (containsCall(call)) {
       return false;
     }
-    addCall(sourceMethod, targetMethod, invokableStmt);
+    addCall(call);
     return true;
   }
 }

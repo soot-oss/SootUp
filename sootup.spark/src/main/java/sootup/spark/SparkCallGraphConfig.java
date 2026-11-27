@@ -100,8 +100,6 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
               .sparkOptions(sparkOptions)
               .reflectionModel(common.getReflectionModel())
               .dynamicInvokeResolver(common.getDynamicInvokeResolver())
-              .implicitCallModel(common.getImplicitCallModel())
-              .callResolver(common.getCallResolver())
               .build();
     }
     return spark.getCallGraph();
