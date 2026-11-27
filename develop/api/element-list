@@ -52,6 +52,7 @@ sootup.apk.frontend.tag
 sootup.apk.frontend.Util
 sootup.callgraph
 sootup.callgraph.config
+sootup.callgraph.implicit
 sootup.callgraph.invokedynamic
 sootup.callgraph.reflection
 sootup.callgraph.scope
