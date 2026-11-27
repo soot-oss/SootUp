@@ -43,12 +43,12 @@ import sootup.callgraph.config.CommonCallGraphSettings;
  * </pre>
  *
  * <p>In on-the-fly mode ({@code SparkOptions#isOnFlyCallGraph()}), the common {@code
- * CallResolver}/{@code VirtualCallResolver}/{@code seedEntryPointClinits} settings are not
- * consulted - OTF mode grows its own call graph incrementally and, as of today, has no {@code
- * <clinit>} modeling at all (see {@code Spark}'s javadoc). Otherwise, they drive a CHA graph built
- * up front and handed to {@link Spark} via {@code callGraph(...)}, exactly the pattern {@code
- * sootup.spark.test.options.ClinitHandlingViaCustomCallGraphTest} demonstrates by hand; the
- * computed call graph is that graph narrowed by the points-to sets, see {@link
+ * CallResolver}/{@code VirtualCallResolver}/{@code seedEntryPointClinits}/{@code ImplicitCallModel}
+ * settings are not consulted - OTF mode grows its own call graph incrementally and, as of today,
+ * has no {@code <clinit>} modeling at all (see {@code Spark}'s javadoc). Otherwise, they drive a
+ * CHA graph built up front and handed to {@link Spark} via {@code callGraph(...)}, exactly the
+ * pattern {@code sootup.spark.test.options.ClinitHandlingViaCustomCallGraphTest} demonstrates by
+ * hand; the computed call graph is that graph narrowed by the points-to sets, see {@link
  * Spark#getCallGraph()}.
  */
 public final class SparkCallGraphConfig implements CallGraphConfig {
@@ -89,7 +89,8 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
                   common.getVirtualCallResolver(),
                   common.getSeedEntryPointClinits(true),
                   common.getReflectionModel(),
-                  common.getDynamicInvokeResolver())
+                  common.getDynamicInvokeResolver(),
+                  common.getImplicitCallModel())
               .initialize(common.getEntryPoints());
       spark =
           Spark.builder()
@@ -98,6 +99,7 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
               .sparkOptions(sparkOptions)
               .reflectionModel(common.getReflectionModel())
               .dynamicInvokeResolver(common.getDynamicInvokeResolver())
+              .implicitCallModel(common.getImplicitCallModel())
               .build();
     }
     return spark.getCallGraph();

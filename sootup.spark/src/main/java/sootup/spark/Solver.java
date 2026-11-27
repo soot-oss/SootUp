@@ -41,6 +41,8 @@ import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
 import sootup.callgraph.MethodLookup;
 import sootup.callgraph.MutableCallGraph;
+import sootup.callgraph.implicit.ImplicitCallContext;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
@@ -50,9 +52,11 @@ import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -74,6 +78,11 @@ class Solver {
   private SparkOptions sparkOptions;
   private ReflectionModel reflectionModel;
   private DynamicInvokeResolver dynamicInvokeResolver;
+  private ImplicitCallModel implicitCallModel;
+
+  /** CHA mode: the implicit invocations of each method's call statements, see {@link #solve()}. */
+  private Map<MethodSignature, Map<InvokableStmt, List<AbstractInstanceInvokeExpr>>>
+      implicitInvokes = new HashMap<>();
 
   /** Non-null only when {@link SparkOptions#isOnFlyCallGraph()} is set. */
   private IncrementalPointsToAnalysis incrementalAnalysis;
@@ -85,7 +94,8 @@ class Solver {
       SparkOptions sparkOptions,
       CallGraph callGraph,
       ReflectionModel reflectionModel,
-      DynamicInvokeResolver dynamicInvokeResolver) {
+      DynamicInvokeResolver dynamicInvokeResolver,
+      ImplicitCallModel implicitCallModel) {
     this.view = view;
     this.methodLookup = new MethodLookup(view);
     this.reflectionModel = reflectionModel != null ? reflectionModel : ReflectionModel.none();
@@ -93,6 +103,8 @@ class Solver {
         dynamicInvokeResolver != null
             ? dynamicInvokeResolver
             : DynamicInvokeResolver.bootstrapMethodHandles();
+    this.implicitCallModel =
+        implicitCallModel != null ? implicitCallModel : ImplicitCallModel.threadStart();
     this.entryPoints = entryPoints;
     this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     this.pag = new PAG(this.sparkOptions);
@@ -121,7 +133,8 @@ class Solver {
                   VirtualCallResolver.all(),
                   true,
                   this.reflectionModel,
-                  this.dynamicInvokeResolver)
+                  this.dynamicInvokeResolver,
+                  this.implicitCallModel)
               .initialize(entryPoints);
       this.incrementalAnalysis = null;
     }
@@ -154,8 +167,58 @@ class Solver {
                         .computeIfAbsent(fo.dispatchedImplementation(view), k -> new ArrayList<>())
                         .add(fo));
       }
+      for (SootMethod method : methods) {
+        Map<InvokableStmt, List<AbstractInstanceInvokeExpr>> invokes =
+            implicitInvokes(body(method));
+        if (!invokes.isEmpty()) {
+          implicitInvokes.put(method.getSignature(), invokes);
+        }
+      }
       methods.forEach(method -> buildMethodPAG(method, functionalObjects));
     }
+  }
+
+  /**
+   * The implicit invocations of the call statements in {@code body}, resolved against the call
+   * graph the PAG is built on, as the algorithm that built it resolved them.
+   */
+  private Map<InvokableStmt, List<AbstractInstanceInvokeExpr>> implicitInvokes(Body body) {
+    ImplicitCallContext context =
+        ImplicitCallContext.of(
+            methodLookup,
+            SootMethod::isConcrete,
+            (caller, stmt) -> Optional.of(callTargetsAt(caller, stmt)));
+    Map<InvokableStmt, List<AbstractInstanceInvokeExpr>> result = new HashMap<>();
+    for (Stmt stmt : body.getStmts()) {
+      if (!stmt.isInvokableStmt() || stmt.asInvokableStmt().getInvokeExpr().isEmpty()) continue;
+      InvokableStmt invokableStmt = stmt.asInvokableStmt();
+      List<AbstractInstanceInvokeExpr> invokes =
+          implicitCallModel.resolve(context, body, invokableStmt);
+      if (!invokes.isEmpty()) {
+        result.put(invokableStmt, invokes);
+      }
+    }
+    return result;
+  }
+
+  /** The targets of the call graph at {@code stmt} with the subsignature of its invocation. */
+  private Set<MethodSignature> callTargetsAt(MethodSignature caller, InvokableStmt stmt) {
+    if (!callGraph.containsMethod(caller)) return Set.of();
+    MethodSubSignature subSignature =
+        stmt.getInvokeExpr().orElseThrow().getMethodSignature().getSubSignature();
+    Set<MethodSignature> targets = new HashSet<>();
+    for (CallGraph.Call call : callGraph.callsFrom(caller)) {
+      if (call.invokableStmt() == stmt
+          && call.targetMethodSignature().getSubSignature().equals(subSignature)) {
+        targets.add(call.targetMethodSignature());
+      }
+    }
+    return targets;
+  }
+
+  private List<AbstractInstanceInvokeExpr> implicitInvokesAt(
+      MethodSignature method, InvokableStmt stmt) {
+    return implicitInvokes.getOrDefault(method, Map.of()).getOrDefault(stmt, List.of());
   }
 
   private Body body(SootMethod method) {
@@ -176,6 +239,7 @@ class Solver {
             .reflectionModel(reflectionModel)
             .dynamicInvokeResolver(dynamicInvokeResolver)
             .functionalObjects(functionalObjects)
+            .implicitInvokes(implicitInvokes.getOrDefault(method.getSignature(), Map.of()))
             .build();
     body(method).getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
@@ -298,27 +362,65 @@ class Solver {
       }
     }
     Map<CallSite, Set<MethodSignature>> virtualTargets = new HashMap<>();
+    Map<CallSite, Set<MethodSignature>> implicitTargets = new HashMap<>();
     while (!worklist.isEmpty()) {
       MethodSignature source = worklist.poll();
       for (CallGraph.Call call : callGraph.callsFrom(source)) {
         MethodSignature target = call.targetMethodSignature();
-        Optional<AbstractInstanceInvokeExpr> virtualCall = virtualCall(call.invokableStmt());
+        InvokableStmt stmt = call.invokableStmt();
+        CallSite callSite = new CallSite(source, stmt);
+        List<AbstractInstanceInvokeExpr> implicit = implicitInvokesAt(source, stmt);
+        // an implicit call is kept by the objects its own receiver points to
+        if (implicit.stream()
+            .anyMatch(
+                e -> e.getMethodSignature().getSubSignature().equals(target.getSubSignature()))) {
+          if (implicitTargets
+              .computeIfAbsent(callSite, site -> implicitTargets(pta, source, implicit))
+              .contains(target)) {
+            addCall(result, worklist, source, target, stmt);
+            continue;
+          }
+          if (!stmt.getInvokeExpr()
+              .orElseThrow()
+              .getMethodSignature()
+              .getSubSignature()
+              .equals(target.getSubSignature())) {
+            continue;
+          }
+        }
+        Optional<AbstractInstanceInvokeExpr> virtualCall = virtualCall(stmt);
         if (virtualCall.isPresent()
             && !virtualTargets
-                .computeIfAbsent(
-                    new CallSite(source, call.invokableStmt()),
-                    site -> virtualTargets(pta, source, virtualCall.get()))
+                .computeIfAbsent(callSite, site -> virtualTargets(pta, source, virtualCall.get()))
                 .contains(target)) {
           continue;
         }
-        if (!result.containsMethod(target)) {
-          result.addMethod(target);
-          worklist.add(target);
-        }
-        result.addCallIfAbsent(source, target, call.invokableStmt());
+        addCall(result, worklist, source, target, stmt);
       }
     }
     return result;
+  }
+
+  private static void addCall(
+      GraphBasedCallGraph result,
+      Deque<MethodSignature> worklist,
+      MethodSignature source,
+      MethodSignature target,
+      InvokableStmt stmt) {
+    if (!result.containsMethod(target)) {
+      result.addMethod(target);
+      worklist.add(target);
+    }
+    result.addCallIfAbsent(source, target, stmt);
+  }
+
+  private Set<MethodSignature> implicitTargets(
+      PointsToAnalysis pta, MethodSignature source, List<AbstractInstanceInvokeExpr> invokes) {
+    Set<MethodSignature> targets = new HashSet<>();
+    for (AbstractInstanceInvokeExpr invoke : invokes) {
+      targets.addAll(virtualTargets(pta, source, invoke));
+    }
+    return targets;
   }
 
   private static Optional<AbstractInstanceInvokeExpr> virtualCall(InvokableStmt stmt) {

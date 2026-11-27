@@ -60,6 +60,7 @@ import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.LambdaAllocationNode;
@@ -89,6 +90,13 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
    * the object {@link FunctionalObject#answers answers} is a lambda call.
    */
   @Builder.Default Map<MethodSignature, List<FunctionalObject>> functionalObjects = Map.of();
+
+  /**
+   * CHA mode: the implicit invocations of the call statements of this method, from the {@link
+   * sootup.callgraph.implicit.ImplicitCallModel} the call graph was built with. The call graph
+   * attributes their edges to the causing statement.
+   */
+  @Builder.Default Map<InvokableStmt, List<AbstractInstanceInvokeExpr>> implicitInvokes = Map.of();
 
   /** Captured invoke site whose targets are decided by the OTF builder via points-to. */
   public record PendingVirtualCall(
@@ -206,6 +214,16 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                     .getSubSignature()
                     .equals(expr.getMethodSignature().getSubSignature()))
         .forEach(targetMethodSig -> installCallEdges(expr, lhs, targetMethodSig));
+    for (AbstractInstanceInvokeExpr implicitInvoke :
+        implicitInvokes.getOrDefault(stmt, List.of())) {
+      MethodSubSignature subSignature = implicitInvoke.getMethodSignature().getSubSignature();
+      for (CallGraph.Call call : callGraph.callsFrom(methodSignature)) {
+        if (call.invokableStmt() == stmt
+            && call.targetMethodSignature().getSubSignature().equals(subSignature)) {
+          installCallEdges(implicitInvoke, Optional.empty(), call.targetMethodSignature());
+        }
+      }
+    }
   }
 
   private void handleInvokeExprOtf(
