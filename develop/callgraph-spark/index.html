@@ -1848,12 +1848,14 @@ configure the CHA graph. In on-the-fly mode they are not used, and Spark current
 <span class="normal"> 9</span>
 <span class="normal">10</span>
 <span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SparkOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SparkOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">SparkOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">onFlyCallGraph</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="c1">// grow the call graph with the points-to sets (default: false)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">ignoreBaseObjects</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// true: field-based instead of field-sensitive</span>
 <span class="w">        </span><span class="p">.</span><span class="na">typesForSites</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// true: one abstract object per type, not per `new`</span>
 <span class="w">        </span><span class="p">.</span><span class="na">simpleEdgesBidirectional</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// true: unification-based (Steensgaard-like)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">simplifySccs</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="c1">// true: propagate each cycle of assignments once</span>
 <span class="w">        </span><span class="c1">// accepted, but not implemented yet:</span>
 <span class="w">        </span><span class="p">.</span><span class="na">parmsAsFields</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">returnsAsFields</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
@@ -1889,6 +1891,11 @@ configure the CHA graph. In on-the-fly mode they are not used, and Spark current
 <td><code>simpleEdgesBidirectional</code></td>
 <td><code>false</code></td>
 <td>Make assignment edges bidirectional, which turns the analysis into a unification-based (Steensgaard-style) one. Cheaper, much less precise</td>
+</tr>
+<tr>
+<td><code>simplifySccs</code></td>
+<td><code>false</code></td>
+<td>Propagate the points-to set of each cycle of assignments (a strongly connected component of the pointer assignment graph) once, for all its variables, like Soot's <code>simplify-sccs</code>. Faster, same results. Only without <code>onFlyCallGraph</code></td>
 </tr>
 <tr>
 <td><code>parmsAsFields</code></td>
@@ -1930,6 +1937,8 @@ configure the CHA graph. In on-the-fly mode they are not used, and Spark current
 <span class="w">        </span><span class="p">.</span><span class="na">computeCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 <p>In the running example, this makes no difference, since every class is instantiated only once.</p>
+<p><code>SparkOptions.vta()</code> combines <code>ignoreBaseObjects</code>, <code>typesForSites</code> and <code>simplifySccs</code> with a
+CHA-seeded graph, like Soot's <code>vta</code> option (Variable Type Analysis).</p>
 <h2 id="the-spark-facade-points-to-sets">The <code>Spark</code> facade: points-to sets</h2>
 <p>To get the points-to analysis as well as the call graph, use <code>Spark.builder()</code>:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
