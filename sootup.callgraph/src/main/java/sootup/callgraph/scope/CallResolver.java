@@ -32,6 +32,10 @@ import sootup.core.model.SootMethod;
  * whole method ({@link CallFilter#all()}, {@link CallFilter#none()}) or per invokable statement
  * ({@link CallFilter#of}). A method whose calls are all excluded still appears as a node in the
  * resulting call graph if it is reached as a target, it simply ends up with no outgoing edges.
+ *
+ * <p>The decision must depend on the method only: the algorithms may also ask it before they reach
+ * a method, and more than once, e.g. to decide whether an {@link
+ * sootup.callgraph.implicit.ImplicitCallModel} models a call into it.
  */
 @FunctionalInterface
 public interface CallResolver {

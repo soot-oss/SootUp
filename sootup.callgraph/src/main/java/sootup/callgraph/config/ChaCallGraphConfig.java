@@ -50,7 +50,8 @@ public class ChaCallGraphConfig implements CallGraphConfig {
         common.getVirtualCallResolver(),
         common.getSeedEntryPointClinits(true),
         common.getReflectionModel(),
-        common.getDynamicInvokeResolver());
+        common.getDynamicInvokeResolver(),
+        common.getImplicitCallModel());
   }
 
   @NonNull
