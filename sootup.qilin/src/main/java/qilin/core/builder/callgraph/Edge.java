@@ -34,6 +34,12 @@ public final class Edge implements Invalidatable {
   private InvokableStmt srcUnit;
 
   /**
+   * The statement of the caller that the call is attributed to: {@link #srcUnit} or, for an
+   * implicit call, the statement that causes it
+   */
+  private final InvokableStmt callSite;
+
+  /**
    * The kind of edge. Note: kind should not be tested by other classes; instead, accessors such as
    * isExplicit() should be added.
    */
@@ -42,11 +48,20 @@ public final class Edge implements Invalidatable {
   private boolean invalid = false;
 
   public Edge(ContextMethod src, InvokableStmt srcUnit, ContextMethod tgt, Kind kind) {
+    this(src, srcUnit, tgt, kind, srcUnit);
+  }
 
+  public Edge(
+      ContextMethod src,
+      InvokableStmt srcUnit,
+      ContextMethod tgt,
+      Kind kind,
+      InvokableStmt callSite) {
     this.src = src;
     this.srcUnit = srcUnit;
     this.tgt = tgt;
     this.kind = kind;
+    this.callSite = callSite;
   }
 
   public Edge(ContextMethod src, InvokableStmt srcUnit, ContextMethod tgt) {
@@ -55,6 +70,7 @@ public final class Edge implements Invalidatable {
     this.src = src;
     this.srcUnit = srcUnit;
     this.tgt = tgt;
+    this.callSite = srcUnit;
   }
 
   public SootMethod src() {
@@ -75,6 +91,11 @@ public final class Edge implements Invalidatable {
 
   public InvokableStmt srcStmt() {
     return srcUnit;
+  }
+
+  /** See {@link #callSite} */
+  public InvokableStmt callSite() {
+    return callSite;
   }
 
   public SootMethod tgt() {

@@ -26,8 +26,10 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.implicit.ImplicitCallModel;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.CallResolver;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -64,6 +66,16 @@ import sootup.core.views.View;
  * DynamicInvokeResolver.bootstrapMethodHandles()}) decides invokedynamic targets; values captured
  * by a lambda flow into its body. When passing a pre-built {@code callGraph}, build it with the
  * same model and resolver instances, else reflective/invokedynamic edges and PAG disagree.
+ *
+ * <p>{@code implicitCallModel(...)} (default {@link ImplicitCallModel#threadStart()}): calls that
+ * methods perform implicitly, e.g. {@code Thread.start()} calling {@code run()}, for OTF mode and
+ * Spark's own CHA. A pre-built {@code callGraph} brings its own implicit calls ({@code
+ * CallGraph.Call#implicitInvocation()}). Either way, an implicit call is dispatched on the
+ * points-to set of its invocation's receiver, whose values flow into the callee, and attributed to
+ * the causing statement.
+ *
+ * <p>{@code callResolver(...)} (default {@code DefaultCallResolver}): the methods whose calls
+ * Spark's own CHA follows. Ignored with a pre-built {@code callGraph} or OTF mode.
  */
 public class Spark {
 
@@ -79,7 +91,9 @@ public class Spark {
       SparkOptions sparkOptions,
       CallGraph callGraph,
       ReflectionModel reflectionModel,
-      DynamicInvokeResolver dynamicInvokeResolver) {
+      DynamicInvokeResolver dynamicInvokeResolver,
+      ImplicitCallModel implicitCallModel,
+      CallResolver callResolver) {
     this.solver =
         Solver.builder()
             .view(view)
@@ -88,6 +102,8 @@ public class Spark {
             .callGraph(callGraph)
             .reflectionModel(reflectionModel)
             .dynamicInvokeResolver(dynamicInvokeResolver)
+            .implicitCallModel(implicitCallModel)
+            .callResolver(callResolver)
             .build();
   }
 

@@ -1,6 +1,7 @@
 package sootup.callgraph.implicit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.config.CallGraphConfigBuilder;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -135,6 +137,38 @@ public class ImplicitCallModelTest {
       assertTrue(
           callSitesOf(cg, "<im.MyThread: void run()>")
               .contains(callSite("<im.MyThread: void start()>")));
+    }
+  }
+
+  @Test
+  public void implicitCallsCarryTheirInvocation() {
+    InvokableStmt start = callSite("<java.lang.Thread: void start()>");
+    AbstractInstanceInvokeExpr startExpr =
+        (AbstractInstanceInvokeExpr) start.getInvokeExpr().orElseThrow();
+    for (CallGraph cg : callGraphs(Optional.of(ImplicitCallModel.jdk()))) {
+      CallGraph.Call runnableRun =
+          cg.callsFrom(main).stream()
+              .filter(
+                  call ->
+                      call.targetMethodSignature().equals(sig("<im.ThreadRunnable: void run()>")))
+              .findFirst()
+              .orElseThrow();
+      assertTrue(runnableRun.isImplicit());
+      // run() on the Runnable passed to the thread's constructor, not on the thread
+      assertEquals("run", runnableRun.implicitInvocation().getMethodSignature().getName());
+      assertFalse(runnableRun.implicitInvocation().getBase().equivTo(startExpr.getBase()));
+      // still found as a call at the statement
+      assertTrue(cg.containsCall(main, runnableRun.targetMethodSignature(), start));
+      assertFalse(
+          cg.containsCall(new CallGraph.Call(main, runnableRun.targetMethodSignature(), start)),
+          "only implicitly");
+      // the call the statement makes itself is not implicit
+      assertTrue(
+          cg.callsFrom(main).stream()
+              .filter(
+                  call ->
+                      call.targetMethodSignature().equals(sig("<java.lang.Thread: void start()>")))
+              .noneMatch(CallGraph.Call::isImplicit));
     }
   }
 

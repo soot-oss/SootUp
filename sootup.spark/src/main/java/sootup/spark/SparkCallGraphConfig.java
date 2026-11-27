@@ -49,7 +49,7 @@ import sootup.callgraph.config.CommonCallGraphSettings;
  * up front and handed to {@link Spark} via {@code callGraph(...)}, exactly the pattern {@code
  * sootup.spark.test.options.ClinitHandlingViaCustomCallGraphTest} demonstrates by hand; the
  * computed call graph is that graph narrowed by the points-to sets, see {@link
- * Spark#getCallGraph()}.
+ * Spark#getCallGraph()}. The common {@code ImplicitCallModel} applies in both modes.
  */
 public final class SparkCallGraphConfig implements CallGraphConfig {
 
@@ -80,6 +80,7 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
               .sparkOptions(sparkOptions)
               .reflectionModel(common.getReflectionModel())
               .dynamicInvokeResolver(common.getDynamicInvokeResolver())
+              .implicitCallModel(common.getImplicitCallModel())
               .build();
     } else {
       CallGraph cha =
@@ -89,7 +90,8 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
                   common.getVirtualCallResolver(),
                   common.getSeedEntryPointClinits(true),
                   common.getReflectionModel(),
-                  common.getDynamicInvokeResolver())
+                  common.getDynamicInvokeResolver(),
+                  common.getImplicitCallModel())
               .initialize(common.getEntryPoints());
       spark =
           Spark.builder()
