@@ -115,25 +115,23 @@ public class Body implements HasPosition {
     return locals;
   }
 
-  /** Return unit containing the \@this-assignment * */
+  /**
+   * Returns the \@this-assignment, which is the first stmt of the body of a non-static method (see
+   * {@link sootup.core.validation.IdentityStmtsValidator}).
+   *
+   * @return the \@this-assignment, or null if the body does not start with one
+   */
   @Nullable
   public Stmt getThisStmt() {
-    for (Stmt stmt : graph) {
-      if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
-          return stmt;
-        }
-      } else {
-        // TODO: possible optimisation see getParameterLocals()
-        //  break;
-      }
+    Stmt first = graph.getStartingStmt();
+    if (first instanceof JIdentityStmt
+        && ((JIdentityStmt) first).getRightOp() instanceof JThisRef) {
+      return first;
     }
     return null;
-    //    throw new IllegalArgumentException("couldn't find this-assignment!" + " in " +
-    // getMethodSignature());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@this. */
+  /** Return LHS of the \@this-assignment, or null if the body does not start with one. */
   @Nullable
   public Local getThisLocal() {
     final JIdentityStmt thisStmt = (JIdentityStmt) getThisStmt();
@@ -143,22 +141,24 @@ public class Body implements HasPosition {
     return thisStmt.getLeftOp();
   }
 
-  /** Return LHS of the first identity stmt assigning from \@parameter i. */
+  /**
+   * Return LHS of the identity stmt assigning from \@parameter i. The \@parameter-assignments
+   * follow the \@this-assignment, in the order of the parameters (see {@link
+   * sootup.core.validation.IdentityStmtsValidator}).
+   *
+   * @throws IllegalArgumentException if the method has no parameter i
+   * @throws IllegalStateException if parameter i is not assigned at its position
+   */
   @NonNull
   public Local getParameterLocal(int i) {
-    for (Stmt stmt : graph) {
-      // TODO: possible optimisation see getParameterLocals()
-      if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt) stmt).getRightOp() instanceof JParameterRef) {
-          JIdentityStmt idStmt = (JIdentityStmt) stmt;
-          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          if (pr.getIndex() == i) {
-            return idStmt.getLeftOp();
-          }
-        }
-      }
+    if (i < 0 || i >= methodSignature.getParameterTypes().size()) {
+      throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
     }
-    throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
+    Stmt stmt = getFirstParameterAssignment();
+    for (int k = 0; k < i; k++) {
+      stmt = getNextParameterAssignment(stmt);
+    }
+    return getParameterLocal(stmt, i);
   }
 
   /**
@@ -166,29 +166,54 @@ public class Body implements HasPosition {
    *
    * @return a list of size as per <code>getMethod().getParameterCount()</code> with all elements
    *     ordered as per the parameter index.
-   * @throws RuntimeException if a JParameterRef is missing
+   * @throws IllegalStateException if a parameter is not assigned at its position
    */
   @NonNull
   public Collection<Local> getParameterLocals() {
-    final List<Local> retVal = new ArrayList<>();
-    // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
-    // fixed index positions at the beginning?
-    for (Stmt u : graph) {
-      if (u instanceof JIdentityStmt) {
-        JIdentityStmt idStmt = (JIdentityStmt) u;
-        if (idStmt.getRightOp() instanceof JParameterRef) {
-          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), idStmt.getLeftOp());
-        }
+    int parameterCount = methodSignature.getParameterTypes().size();
+    final List<Local> retVal = new ArrayList<>(parameterCount);
+    if (parameterCount > 0) {
+      Stmt stmt = getFirstParameterAssignment();
+      retVal.add(getParameterLocal(stmt, 0));
+      for (int i = 1; i < parameterCount; i++) {
+        stmt = getNextParameterAssignment(stmt);
+        retVal.add(getParameterLocal(stmt, i));
       }
-      /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
-      else{
-        break;
-      }
-      * */
-
     }
     return Collections.unmodifiableCollection(retVal);
+  }
+
+  /** The \@parameter0-assignment comes first, or right after the \@this-assignment. */
+  @Nullable
+  private Stmt getFirstParameterAssignment() {
+    Stmt first = graph.getStartingStmt();
+    return getThisStmt() == null ? first : getNextParameterAssignment(first);
+  }
+
+  @Nullable
+  private Stmt getNextParameterAssignment(@Nullable Stmt stmt) {
+    if (stmt == null) {
+      return null;
+    }
+    List<Stmt> successors = graph.successors(stmt);
+    return successors.size() == 1 ? successors.get(0) : null;
+  }
+
+  @NonNull
+  private Local getParameterLocal(@Nullable Stmt stmt, int i) {
+    if (stmt instanceof JIdentityStmt) {
+      JIdentityStmt identityStmt = (JIdentityStmt) stmt;
+      if (identityStmt.getRightOp() instanceof JParameterRef
+          && ((JParameterRef) identityStmt.getRightOp()).getIndex() == i) {
+        return identityStmt.getLeftOp();
+      }
+    }
+    throw new IllegalStateException(
+        "Parameter "
+            + i
+            + " of "
+            + methodSignature
+            + " is not assigned at its position in the body (see IdentityStmtsValidator)");
   }
 
   /**
