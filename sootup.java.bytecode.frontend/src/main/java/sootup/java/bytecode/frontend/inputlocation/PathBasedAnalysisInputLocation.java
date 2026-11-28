@@ -10,6 +10,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.interceptor.BodyInterceptor;
@@ -53,6 +54,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   @NonNull protected Collection<Path> ignoredPaths;
   @NonNull protected final SourceType sourceType;
   @NonNull protected final List<BodyInterceptor> bodyInterceptors;
+  @NonNull protected final Set<AnalysisExtendedScope> extendedScope;
 
   protected PathBasedAnalysisInputLocation(@NonNull Path path, @NonNull SourceType srcType) {
     this(path, srcType, Collections.emptyList());
@@ -70,6 +72,15 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths) {
+    this(path, srcType, bodyInterceptors, ignoredPaths, Collections.emptySet());
+  }
+
+  protected PathBasedAnalysisInputLocation(
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
     this.path = path;
     this.ignoredPaths =
         ignoredPaths.stream()
@@ -77,6 +88,10 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
             .collect(Collectors.toCollection(HashSet::new));
     this.sourceType = srcType;
     this.bodyInterceptors = bodyInterceptors;
+    this.extendedScope =
+        extendedScope.isEmpty()
+            ? Collections.emptySet()
+            : Collections.unmodifiableSet(EnumSet.copyOf(extendedScope));
 
     if (!Files.exists(path)) {
       throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
@@ -93,6 +108,12 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
+  }
+
+  @Override
+  @NonNull
+  public Set<AnalysisExtendedScope> getExtendedScope() {
+    return extendedScope;
   }
 
   @Override
@@ -118,6 +139,16 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths) {
+    return create(path, srcType, bodyInterceptors, ignoredPaths, Collections.emptySet());
+  }
+
+  @NonNull
+  public static PathBasedAnalysisInputLocation create(
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
 
     if (ignoredPaths.stream()
         .anyMatch(ignoPath -> path.toString().startsWith(ignoPath.toString()))) {
@@ -126,13 +157,16 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     }
 
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+      return new DirectoryBasedAnalysisInputLocation(
+          path, srcType, bodyInterceptors, ignoredPaths, extendedScope);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
+        return new ArchiveBasedAnalysisInputLocation(
+            path, srcType, bodyInterceptors, extendedScope);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
-          return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+          return new WarArchiveAnalysisInputLocation(
+              path, srcType, bodyInterceptors, ignoredPaths, extendedScope);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
